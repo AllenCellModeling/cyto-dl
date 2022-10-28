@@ -1,0 +1,17 @@
+# See here for more info on this class:
+# https://lightning-bolts.readthedocs.io/en/latest/datamodules/vision.html#mnist
+# NOTE: to use this config yaml, you'll have to install the lightning-bolts package
+
+_target_: pl_bolts.datamodules.MNISTDataModule
+
+# leave uncommented to download MNIST
+# data_dir:
+
+val_split: 0.2
+num_workers: 0
+normalize: False
+batch_size: 32
+seed: 42
+shuffle: True
+pin_memory: True
+drop_last: False

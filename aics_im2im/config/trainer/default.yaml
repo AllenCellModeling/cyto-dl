@@ -1,0 +1,8 @@
+defaults:
+  - /defaults/trainer/default@_here_ #inherit serotiny's trainer config
+  - callbacks: default
+
+_target_: pytorch_lightning.Trainer
+max_epochs:
+gpus:
+enable_checkpointing: True

@@ -1,0 +1,7 @@
+# example dummy model
+#_target_: serotiny.models.DummyModel
+#hparam1: 1
+#hparam2: "abc"
+#optimizer:
+#  _partial_: true
+#  _target_: torch.optim.Adam

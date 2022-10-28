@@ -1,0 +1,11 @@
+defaults:
+  - /defaults/mlflow/default@_here_ #inherit serotiny's mlflow config
+
+#tracking_uri: 
+#experiment_name:
+#run_name:
+#autolog:
+  #log_every_n_epoch:
+  #log_models:
+  ## see more options here:
+  ## https://www.mlflow.org/docs/latest/python_api/mlflow.pytorch.html#mlflow.pytorch.autolog

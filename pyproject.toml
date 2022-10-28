@@ -1,0 +1,56 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "aics_im2im"
+version = "0.0.0"
+authors = []
+description = "A collection of im2im models, in a serotiny package"
+readme = "README.md"
+packages = [
+    { include = "aics_im2im" },
+]
+include = [
+    "LICENSE",
+    "**/*.yaml",
+    "**/*.json",
+    ".serotiny"
+]
+exclude = [
+    "**/*.pyc",
+    "**/__pycache__"
+]
+classifiers = [
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+poethepoet = "^0.10.0"
+serotiny = {version = ">=0.0.0", allow-prereleases = true}
+
+[tool.poe.tasks]
+force-cuda101 = "python -m pip install --force-reinstall 'torch>=1.8.1+cu101' -f https://download.pytorch.org/whl/cu101/torch_stable.html"
+force-cuda116 = "python -m pip install --force-reinstall --pre 'torch>=1.8.0+cu116' --extra-index-url https://download.pytorch.org/whl/nightly/cu116"
+
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+
+[tool.poetry.extras]
+
+
+[tool.flake8]
+ignore = [
+	"E203",
+	"E402",
+	"W291",
+	"W503"
+]
+max-line-length = 88
