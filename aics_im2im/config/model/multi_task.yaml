@@ -6,8 +6,6 @@ backbone:
     - aics_im2im.networks.STN
     - monai.networks.DynUNet
 
-
-# the keys in this dict should match those of the `task_heads` dict
 tasks:
   hr_lamin:
     head:
