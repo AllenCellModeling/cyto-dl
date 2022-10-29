@@ -1,0 +1,27 @@
+_target_: aics_im2im.models.MultiTaskIm2Im
+
+backbone:
+  _target_: torch.nn.Sequential
+  _args_:
+    - aics_im2im.networks.STN
+    - monai.networks.DynUNet
+
+
+# the keys in this dict should match those of the `task_heads` dict
+tasks:
+  hr_lamin:
+    head:
+      _target_: aics_im2im.networks.AuxHead
+      resolution:
+      in_channels:
+      out_channels:
+      final_act:
+        _target_: torch.nn.ReLU
+
+    loss:
+      _target_: aics_im2im.utils.LossWrapper
+      loss_fn:
+        _target_: torch.nn.MSELoss
+      channel_weight:
+      loss_scale:
+
