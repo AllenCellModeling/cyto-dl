@@ -32,11 +32,15 @@ transforms:
         b_min: -1
         b_max: 1
         clip: True
-      
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['bf']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
         patch_shape: [64, 256, 256]
-        patch_per_image: 50
+        patch_per_image: 2
         scales_dict:
           1: ['seg']
           2: ['bf']
@@ -62,11 +66,15 @@ transforms:
         b_min: -1
         b_max: 1
         clip: True
-      
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['bf']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
         patch_shape: [64, 256, 256]
-        patch_per_image: 50
+        patch_per_image: 2
         scales_dict:
           1: ['seg']
           2: ['bf']
@@ -93,11 +101,15 @@ transforms:
         b_min: -1
         b_max: 1
         clip: True
-      
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['bf']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
         patch_shape: [64, 256, 256]
-        patch_per_image: 50
+        patch_per_image: 2
         scales_dict:
           1: ['seg']
           2: ['bf']
