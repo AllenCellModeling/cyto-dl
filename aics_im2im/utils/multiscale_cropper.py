@@ -4,6 +4,7 @@ import numpy as np
 
 class RandomMultiScaleCropd(RandomizableTransform):
     def __init__(self, keys, patch_shape, patch_per_image, scales_dict):
+        super().__init__()
         self.roi_size = np.asarray(patch_shape)
         self.keys = keys
         self.num_samples = patch_per_image
@@ -45,9 +46,9 @@ class RandomMultiScaleCropd(RandomizableTransform):
     def __call__(self, image_dict):
         slices = self.generate_slices(image_dict)
         patches = []
-        for i in self.num_samples:
+        for i in range(self.num_samples):
             patch_dict = {
-                key: data[slices[self.reversed_scale_dict[key][i]]]
+                key: data[slices[self.reversed_scale_dict[key]][i]]
                 for key, data in image_dict.items()
                 if key in self.keys
             }
