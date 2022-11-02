@@ -2,10 +2,11 @@ from monai.transforms import RandomizableTransform
 import numpy as np
 
 
-class MultiScaleCrops(RandomizableTransform):
-    def __init__(self, roi_size, num_samples, scales_dict):
-        self.roi_size = np.asarray(roi_size)
-        self.num_samples = num_samples
+class RandomMultiScaleCropd(RandomizableTransform):
+    def __init__(self, keys, patch_shape, patch_per_image, scales_dict):
+        self.roi_size = np.asarray(patch_shape)
+        self.keys = keys
+        self.num_samples = patch_per_image
         self.scale_dict = scales_dict
         self.reversed_scale_dict = {}
         for k, v in scales_dict.items():
@@ -48,7 +49,7 @@ class MultiScaleCrops(RandomizableTransform):
             patch_dict = {
                 key: data[slices[self.reversed_scale_dict[key][i]]]
                 for key, data in image_dict.items()
-                if "meta_dict" not in key
+                if key in self.keys
             }
             patches.append(patch_dict)
         return patches
