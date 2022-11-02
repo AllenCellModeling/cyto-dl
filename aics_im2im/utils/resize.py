@@ -36,10 +36,6 @@ class Resized(Transform):
                     align_corners=self.align_corners,
                     antialias=self.antialias,
                 ).squeeze(0)
-                print("pre", pre_shape, "post", resized[key].shape)
             else:
                 resized[key] = img[key]
-                print("\n\n")
-                print(key, img[key])
-                print("\n\n")
         return resized
