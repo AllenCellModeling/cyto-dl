@@ -1,0 +1,105 @@
+_target_: aics_im2im.datamodules.PatchDatamodule
+manifest_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/big_train_w_boundary/"
+
+dataloader_kwargs:
+  num_workers: 4
+  batch_size: 2
+  pin_memory: True
+  persistent_workers: True
+
+images_per_epoch: 3
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['seg', 'bf']
+        reader: 
+        - _target_: aics_im2im.utils.monai_bio_reader
+
+      - _target_: monai.transforms.EnsureChannelFirstd
+        keys: ['seg', 'bf']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['bf', 'seg']
+        channel_wise: True
+
+      - _target_: monai.transforms.ScaleIntensityRanged
+        keys: ['seg']
+        a_min: -18
+        a_max: 20
+        b_min: -1
+        b_max: 1
+        clip: True
+      
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['seg', 'bf']
+        patch_shape: [64, 256, 256]
+        patch_per_image: 50
+        scales_dict:
+          1: ['seg']
+          2: ['bf']
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['seg', 'bf']
+        reader: 
+        - _target_: aics_im2im.utils.monai_bio_reader
+
+      - _target_: monai.transforms.EnsureChannelFirstd
+        keys: ['seg', 'bf']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['bf', 'seg']
+        channel_wise: True
+
+      - _target_: monai.transforms.ScaleIntensityRanged
+        keys: ['seg']
+        a_min: -18
+        a_max: 20
+        b_min: -1
+        b_max: 1
+        clip: True
+      
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['seg', 'bf']
+        patch_shape: [64, 256, 256]
+        patch_per_image: 50
+        scales_dict:
+          1: ['seg']
+          2: ['bf']
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['seg', 'bf']
+        reader: 
+        - _target_: aics_im2im.utils.monai_bio_reader
+
+      - _target_: monai.transforms.EnsureChannelFirstd
+        keys: ['seg', 'bf']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['bf', 'seg']
+        channel_wise: True
+
+      - _target_: monai.transforms.ScaleIntensityRanged
+        keys: ['seg']
+        a_min: -18
+        a_max: 20
+        b_min: -1
+        b_max: 1
+        clip: True
+      
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['seg', 'bf']
+        patch_shape: [64, 256, 256]
+        patch_per_image: 50
+        scales_dict:
+          1: ['seg']
+          2: ['bf']
+
+
