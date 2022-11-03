@@ -13,7 +13,7 @@ import warnings
 
 warnings.filterwarnings("once")
 
-# TODO allow channel reading specification
+
 @require_pkg(pkg_name="aicsimageio")
 class monai_bio_reader(ImageReader):
     def __init__(self, reader_args={}, **kwargs):
@@ -34,7 +34,6 @@ class monai_bio_reader(ImageReader):
 
         for img_obj in ensure_tuple(img):
             data = img_obj.get_image_dask_data(**self.reader_args).compute()
-            print(data.shape)
             img_array.append(data)
 
         return _stack_images(img_array, {}), {}
