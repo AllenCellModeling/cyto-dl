@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import pytorch_lightning as pl
-from torch.utils.data import DataLoader
+from monai.data import DataLoader
 from monai.data import SmartCacheDataset
 
 
