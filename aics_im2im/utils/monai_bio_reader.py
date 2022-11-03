@@ -13,11 +13,12 @@ import warnings
 
 warnings.filterwarnings("once")
 
-
+# TODO allow channel reading specification
 @require_pkg(pkg_name="aicsimageio")
 class monai_bio_reader(ImageReader):
-    def __init__(self, **kwargs):
+    def __init__(self, reader_args={}, **kwargs):
         super().__init__()
+        self.reader_args = reader_args
         self.kwargs = kwargs
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
@@ -32,7 +33,8 @@ class monai_bio_reader(ImageReader):
         img_array: List[np.ndarray] = []
 
         for img_obj in ensure_tuple(img):
-            data = img_obj.get_image_dask_data("ZYX", C=0, T=0).compute()
+            data = img_obj.get_image_dask_data(**self.reader_args).compute()
+            print(data.shape)
             img_array.append(data)
 
         return _stack_images(img_array, {}), {}
