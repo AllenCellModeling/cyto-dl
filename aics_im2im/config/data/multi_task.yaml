@@ -3,7 +3,7 @@ manifest_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cell
 
 dataloader_kwargs:
   num_workers: 4
-  batch_size: 2
+  batch_size: 4
   pin_memory: True
   persistent_workers: True
 
@@ -15,11 +15,10 @@ transforms:
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ['seg', 'bf']
-        reader: 
+        reader:
         - _target_: aics_im2im.utils.monai_bio_reader
-
-      - _target_: monai.transforms.EnsureChannelFirstd
-        keys: ['seg', 'bf']
+          reader_args:
+            dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['bf', 'seg']
@@ -51,9 +50,8 @@ transforms:
         keys: ['seg', 'bf']
         reader: 
         - _target_: aics_im2im.utils.monai_bio_reader
-
-      - _target_: monai.transforms.EnsureChannelFirstd
-        keys: ['seg', 'bf']
+          reader_args:
+              dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['bf', 'seg']
@@ -74,7 +72,7 @@ transforms:
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
         patch_shape: [64, 256, 256]
-        patch_per_image: 2
+        patch_per_image: 12
         scales_dict:
           1: ['seg']
           2: ['bf']
@@ -86,9 +84,8 @@ transforms:
         keys: ['seg', 'bf']
         reader: 
         - _target_: aics_im2im.utils.monai_bio_reader
-
-      - _target_: monai.transforms.EnsureChannelFirstd
-        keys: ['seg', 'bf']
+          reader_args:
+              dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['bf', 'seg']
