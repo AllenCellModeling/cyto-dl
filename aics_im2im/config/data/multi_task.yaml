@@ -1,13 +1,19 @@
 _target_: aics_im2im.datamodules.PatchDatamodule
-manifest_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/big_train_w_boundary/"
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version
 
 dataloader_kwargs:
-  num_workers: 4
-  batch_size: 4
+  num_workers: 0 #64
+  batch_size: 2
   pin_memory: True
-  persistent_workers: True
+  persistent_workers: False
 
-images_per_epoch: 3
+
+buffer_replace_rate: 1.0 # per update frequency
+buffer_update_frequency: 5 # number of epochs after which to replace buffer_replace_rate fraction of images
+buffer_size: 
+  train: 3
+  valid: -1
+  test: 1
 
 transforms:
   train:
@@ -19,15 +25,17 @@ transforms:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['seg', 'bf']
 
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf', 'seg']
+        keys: ['bf']
         channel_wise: True
 
       - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['seg']
-        a_min: -18
-        a_max: 20
+        keys: ['bf']
+        a_min: -8.5
+        a_max: 13.5
         b_min: -1
         b_max: 1
         clip: True
@@ -38,29 +46,31 @@ transforms:
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
-        patch_shape: [64, 256, 256]
+        patch_shape: [16, 32, 32] 
         patch_per_image: 2
         scales_dict:
           1: ['seg']
           2: ['bf']
+
+
   test:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ['seg', 'bf']
-        reader: 
+        reader:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
-              dimension_order_out: 'CZYX'
+            dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf', 'seg']
+        keys: ['bf']
         channel_wise: True
 
       - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['seg']
-        a_min: -18
-        a_max: 20
+        keys: ['bf']
+        a_min: -8.5
+        a_max: 13.5
         b_min: -1
         b_max: 1
         clip: True
@@ -68,33 +78,25 @@ transforms:
       - _target_: aics_im2im.utils.Resized
         keys: ['bf']
         scale_factor: [1.3067, 1.25025, 1.25025]   
-
-      - _target_: aics_im2im.utils.RandomMultiScaleCropd
-        keys: ['seg', 'bf']
-        patch_shape: [64, 256, 256]
-        patch_per_image: 12
-        scales_dict:
-          1: ['seg']
-          2: ['bf']
 
   valid:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ['seg', 'bf']
-        reader: 
+        reader:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
-              dimension_order_out: 'CZYX'
+            dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf', 'seg']
+        keys: ['bf']
         channel_wise: True
 
       - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['seg']
-        a_min: -18
-        a_max: 20
+        keys: ['bf']
+        a_min: -8.5
+        a_max: 13.5
         b_min: -1
         b_max: 1
         clip: True
@@ -105,7 +107,7 @@ transforms:
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
-        patch_shape: [64, 256, 256]
+        patch_shape: [64, 384, 384]
         patch_per_image: 2
         scales_dict:
           1: ['seg']
