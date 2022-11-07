@@ -1,6 +1,7 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
 x_key: bf
+buffer_update_frequency: ${data.buffer_update_frequency}
 
 backbone:
   _target_: monai.networks.nets.DynUNet

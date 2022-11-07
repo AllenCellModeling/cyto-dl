@@ -1,51 +1,64 @@
 from pathlib import Path
 import pandas as pd
 import pytorch_lightning as pl
-from monai.data import DataLoader
-from monai.data import SmartCacheDataset
+from monai.data import DataLoader, SmartCacheDataset
 
 
 class PatchDatamodule(pl.LightningDataModule):
     def __init__(
         self,
-        images_per_epoch: int,
         manifest_path: str,
         dataloader_kwargs: dict = None,
+        buffer_size: int = 30,
+        buffer_replace_rate=1.0,
         transforms: list = [],
+        **kwargs
     ):
         super().__init__()
-        manifest_path = Path(manifest_path)
+        self.manifest_path = Path(manifest_path)
         self.dataloader_kwargs = dataloader_kwargs or {}
-        self.images_per_epoch = images_per_epoch
+        self.transforms = transforms
+        self.buffer_size = buffer_size
+        self.replace_rate = buffer_replace_rate
 
-        self.train = self.make_manifest_dataset(
-            manifest_path / "train.csv", transforms["train"]
-        )
-        self.valid = self.make_manifest_dataset(
-            manifest_path / "valid.csv", transforms["valid"]
-        )
-        self.test = self.make_manifest_dataset(
-            manifest_path / "test.csv", transforms["test"]
-        )
-
-    def make_manifest_dataset(self, manifest: str, transform):
+    def make_manifest_dataset(self, manifest: str, transform, n_imgs):
         dataframe = pd.read_csv(manifest)
-        dataframe = dataframe.sample(self.images_per_epoch)
         data_list = [
             {col: dataframe[col].iloc[i] for col in dataframe.columns}
             for i in range(len(dataframe))
         ]
-
-        return SmartCacheDataset(data=data_list, transform=transform)
+        if n_imgs < 0:
+            n_imgs = len(data_list)
+        return SmartCacheDataset(
+            data=data_list,
+            transform=transform,
+            replace_rate=self.replace_rate,
+            cache_num=n_imgs,
+        )
 
     def make_dataloader(self, dataset):
         return DataLoader(dataset=dataset, **self.dataloader_kwargs)
 
     def train_dataloader(self):
-        return self.make_dataloader(self.train)
+        dataset = self.make_manifest_dataset(
+            self.manifest_path / "train.csv",
+            self.transforms["train"],
+            self.buffer_size["train"],
+        )
+        return self.make_dataloader(dataset)
 
     def val_dataloader(self):
-        return self.make_dataloader(self.valid)
+        dataset = self.make_manifest_dataset(
+            self.manifest_path / "valid.csv",
+            self.transforms["valid"],
+            self.buffer_size["valid"],
+        )
+        return self.make_dataloader(dataset)
 
     def test_dataloader(self):
-        return self.make_dataloader(self.test)
+        dataset = self.make_manifest_dataset(
+            self.manifest_path / "test.csv",
+            self.transforms["test"],
+            self.buffer_size["test"],
+        )
+        return self.make_dataloader(dataset)
