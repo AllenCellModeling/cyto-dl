@@ -12,8 +12,6 @@ class MultiTaskIm2Im(BaseModel):
         *,
         backbone: nn.Module,
         tasks: Dict,
-        common_head: Optional[Union[Callable, nn.Module]],
-        common_loss: Optional[Union[Callable, nn.Module]],
         x_key: str,
         reduce_task_outs: str = "concat",
         automatic_optimization: bool = False,
@@ -22,8 +20,6 @@ class MultiTaskIm2Im(BaseModel):
         super().__init__(
             backbone=backbone,
             tasks=tasks,
-            common_head=common_head,
-            common_loss=common_loss,
             x_key=x_key,
             reduce_task_outs=reduce_task_outs,
             automatic_optimization=automatic_optimization,
@@ -38,9 +34,6 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
 
-        self.losses["common"] = common_loss
-
-        self.common_head = (common_head if common_head is not None else nn.Identity())
 
         if reduce_task_outs not in ("concat", "sum", "mean"):
             raise ValueError
@@ -50,8 +43,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def forward(self, x):
         z = self.backbone(x)
-        task_outs = {task: head(z) for task, head in self.task_heads.items()}
-        reduced_task_outs = self.reduce_task_outs(task_outs)
+        return {task: head(z) for task, head in self.task_heads.items()}
 
         return {"common": self.common_head(reduced_task_outs), **task_outs}
 
