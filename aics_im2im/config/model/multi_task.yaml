@@ -1,5 +1,8 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
+buffer_update_frequency: ${data.buffer_update_frequency}
+
+
 backbone:
   _target_: torch.nn.Sequential
   _args_:

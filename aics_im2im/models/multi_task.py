@@ -6,6 +6,7 @@ from torch.nn.modules.loss import _Loss as Loss
 
 from serotiny.models import BaseModel
 
+
 class MultiTaskIm2Im(BaseModel):
     def __init__(
         self,
@@ -40,7 +41,7 @@ class MultiTaskIm2Im(BaseModel):
 
         self.losses["common"] = common_loss
 
-        self.common_head = (common_head if common_head is not None else nn.Identity())
+        self.common_head = common_head if common_head is not None else nn.Identity()
 
         if reduce_task_outs not in ("concat", "sum", "mean"):
             raise ValueError
@@ -48,12 +49,26 @@ class MultiTaskIm2Im(BaseModel):
         self.reduce_task_outs = reduce_task_outs
         self.automatic_optimization = automatic_optimization
 
+    def on_train_start(self, **kwargs):
+        # start background thread for loading images to update cache
+        self.trainer.train_dataloader.dataset.datasets.start()
+
+    def on_train_end(self, **kwargs):
+        # shutdown background cache filler threads
+        self.trainer.train_dataloader.dataset.datasets.shutdown()
+
     def forward(self, x):
         z = self.backbone(x)
         task_outs = {task: head(z) for task, head in self.task_heads.items()}
         reduced_task_outs = self.reduce_task_outs(task_outs)
 
         return {"common": self.common_head(reduced_task_outs), **task_outs}
+
+    def on_train_epoch_end(self, **kwargs):
+        # update buffer by replacing percentage of images
+        if (self.current_epoch + 1) % self.hparams.buffer_update_frequency == 0:
+            self.trainer.train_dataloader.dataset.datasets.update_cache()
+            # self.trainer.val_dataloaders[0].dataset.update_cache()
 
     def _step(self, stage, batch, batch_idx, logger):
         x = batch[self.hparams.x_key]
@@ -64,8 +79,10 @@ class MultiTaskIm2Im(BaseModel):
         # TODO: implement step logic here. use variable `stage`
         # to distinguish between train/val/test
 
-        losses = {self.losses[task](task_out, targets[task])
-                  for task, task_out in outs.items()}
+        losses = {
+            self.losses[task](task_out, targets[task])
+            for task, task_out in outs.items()
+        }
 
         loss = self.compute_loss(x, targets)
 
@@ -75,19 +92,9 @@ class MultiTaskIm2Im(BaseModel):
     def configure_optimizers(self):
         raise NotImplementedError
 
-
     def reduce_task_outs(self, task_outs):
         if self.reduce_task_outs == "concat":
-            return torch.concat(
-                task_outs[sorted(task_outs.keys())].values(),
-                axis=1
-            )
+            return torch.concat(task_outs[sorted(task_outs.keys())].values(), axis=1)
         elif self.reduce_task_outs == "sum":
-            return torch.sum(
-                task_outs.values(),
-                axis=1
-            )
-        return torch.mean(
-            task_outs.values(),
-            axis=1
-        )
+            return torch.sum(task_outs.values(), axis=1)
+        return torch.mean(task_outs.values(), axis=1)
