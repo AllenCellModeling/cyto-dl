@@ -57,14 +57,15 @@ class MultiTaskIm2Im(BaseModel):
         z = self.backbone(x)
         return {task: head(z) for task, head in self.task_heads.items()}
 
-    def save_tensor(self, fn, img):
+    def save_tensor(self, fn, img, directory):
         img = img.detach().cpu().numpy()
-        # img *= 255
-        # img = np.clip(img, 0, 255)
-        with upload_artifacts("images") as save_dir:
+        img = (img - img.min()) / (img.max() - img.min())
+        img *= 255
+        img = np.clip(img, 0, 255)
+        with upload_artifacts(directory) as save_dir:
             OmeTiffWriter().save(
                 uri=Path(save_dir) / fn,
-                data=img,  # .astype(np.uint8),
+                data=img.astype(np.uint8),
                 dims_order="STCZYX"[-len(img.shape)],
             )
 
@@ -99,10 +100,17 @@ class MultiTaskIm2Im(BaseModel):
                 and self.current_epoch + 1 % self.hparams.save_images_every_n_epochs
             ):
                 for k, v in batch.items():
-                    self.save_tensor(f"{stage}_{k}_{self.global_step}.tif", v)
+                    self.save_tensor(
+                        f"{k}_{self.global_step}.tif", v, directory=f"{stage}_images"
+                    )
                 for k, v in outs.items():
-                    self.save_tensor(f"{stage}_{k}_{self.global_step}_pred.tif", v)
+                    self.save_tensor(
+                        f"{k}_{self.global_step}_pred.tif",
+                        v,
+                        directory=f"{stage}_images",
+                    )
         elif stage in ["predict", "test"]:
+            metadata = batch[f"{self.hparams.x_key}_meta_dict"]
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
@@ -113,14 +121,13 @@ class MultiTaskIm2Im(BaseModel):
                     mode="gaussian",
                 )
             # go from dict to multichannel output here
-            metadata = batch[f"{self.hparams.x_key}_meta_dict"]
             for k, v in outs.items():
                 for im_idx in range(v.shape[0]):
                     source_filename = (
                         str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
                     )
                     self.save_tensor(
-                        f"{k}_{source_filename}", v[im_idx], directory="test_images"
+                        f"{k}_{source_filename}", v[im_idx], directory=f"{stage}_images"
                     )
 
             if stage == "predict":
