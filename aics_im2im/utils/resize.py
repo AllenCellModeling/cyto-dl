@@ -26,7 +26,7 @@ class Resized(Transform):
         for key in img.keys():
             if key in self.keys:
                 out_size = list(
-                    (np.asarray(img[key].shape[-3:]) * self.scale_factor).astype(int)
+                    map(round, np.asarray(img[key].shape[-3:]) * self.scale_factor)
                 )
                 assert len(img[key].shape) == 4, "Images must have CZYX dimensions"
                 resized[key] = torch.nn.functional.interpolate(
