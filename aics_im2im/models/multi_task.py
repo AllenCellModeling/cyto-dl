@@ -97,7 +97,8 @@ class MultiTaskIm2Im(BaseModel):
             outs = self(x)
             if (
                 batch_idx == 0
-                and self.current_epoch + 1 % self.hparams.save_images_every_n_epochs
+                and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
+                == 0
             ):
                 for k, v in batch.items():
                     self.save_tensor(
