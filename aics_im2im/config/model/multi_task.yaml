@@ -1,7 +1,7 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
+save_images_every_n_epochs: 10
 x_key: bf
-buffer_update_frequency: ${data.buffer_update_frequency}
 patch_shape: [64, 384, 384]
 
 backbone:
@@ -46,7 +46,7 @@ optimizer:
 lr_scheduler:
   _partial_: True
   _target_: torch.optim.lr_scheduler.ExponentialLR
-  gamma: 0.995
+  gamma: 0.97
 
 
 

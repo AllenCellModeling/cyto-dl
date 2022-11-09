@@ -8,7 +8,6 @@ dataloader_kwargs:
   persistent_workers: False
 
 cache_dir: "/storage/cellnucmorph_cache/"
-buffer_update_frequency: 5 # number of epochs after which to replace buffer_replace_rate fraction of images
 buffer_size: 
   train: 60
   valid: -1
