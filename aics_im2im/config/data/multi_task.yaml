@@ -2,18 +2,16 @@ _target_: aics_im2im.datamodules.PatchDatamodule
 manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version
 
 dataloader_kwargs:
-  num_workers: 0 #64
-  batch_size: 2
+  num_workers: 64
+  batch_size: 1
   pin_memory: True
   persistent_workers: False
 
-
-buffer_replace_rate: 1.0 # per update frequency
+cache_dir: "/storage/cellnucmorph_cache/"
 buffer_update_frequency: 5 # number of epochs after which to replace buffer_replace_rate fraction of images
 buffer_size: 
-  train: 3
+  train: 60
   valid: -1
-  test: 1
 
 transforms:
   train:
@@ -32,26 +30,32 @@ transforms:
         keys: ['bf']
         channel_wise: True
 
-      - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['bf']
-        a_min: -8.5
-        a_max: 13.5
-        b_min: -1
-        b_max: 1
-        clip: True
-
       - _target_: aics_im2im.utils.Resized
         keys: ['bf']
         scale_factor: [1.3067, 1.25025, 1.25025]   
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
-        patch_shape: [16, 32, 32] 
-        patch_per_image: 2
+        patch_shape: [64, 384, 384]
+        patch_per_image: 4
         scales_dict:
           1: ['seg']
           2: ['bf']
 
+      - _target_: monai.transforms.RandHistogramShiftd
+        prob: 0.3
+        keys: ['bf']
+        num_control_points: [80, 500]
+
+      - _target_: monai.transforms.RandFlipd
+        keys: ['seg', 'bf']
+        prob: 0.5
+        spatial_axis: [1,2]
+
+      - _target_: monai.transforms.RandRotate90d
+        keys: ['seg', 'bf']
+        prob: 0.5
+        spatial_axes: [1,2]
 
   test:
     _target_: monai.transforms.Compose
@@ -66,14 +70,6 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['bf']
         channel_wise: True
-
-      - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['bf']
-        a_min: -8.5
-        a_max: 13.5
-        b_min: -1
-        b_max: 1
-        clip: True
 
       - _target_: aics_im2im.utils.Resized
         keys: ['bf']
@@ -93,14 +89,6 @@ transforms:
         keys: ['bf']
         channel_wise: True
 
-      - _target_: monai.transforms.ScaleIntensityRanged
-        keys: ['bf']
-        a_min: -8.5
-        a_max: 13.5
-        b_min: -1
-        b_max: 1
-        clip: True
-
       - _target_: aics_im2im.utils.Resized
         keys: ['bf']
         scale_factor: [1.3067, 1.25025, 1.25025]   
@@ -108,7 +96,7 @@ transforms:
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'bf']
         patch_shape: [64, 384, 384]
-        patch_per_image: 2
+        patch_per_image: 4
         scales_dict:
           1: ['seg']
           2: ['bf']
