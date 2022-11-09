@@ -10,7 +10,9 @@ class PatchDatamodule(pl.LightningDataModule):
         manifest_path: str,
         cache_dir: str,
         dataloader_kwargs: dict = None,
-        buffer_size: int = 30,
+        buffer_size= {
+            'train': -1, 'test':-1, 'valid':-1
+        },
         transforms: list = [],
         **kwargs
     ):
