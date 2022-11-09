@@ -1,16 +1,16 @@
 from pathlib import Path
 import pandas as pd
 import pytorch_lightning as pl
-from monai.data import DataLoader, SmartCacheDataset, Dataset
+from monai.data import DataLoader, Dataset, PersistentDataset
 
 
 class PatchDatamodule(pl.LightningDataModule):
     def __init__(
         self,
         manifest_path: str,
+        cache_dir: str,
         dataloader_kwargs: dict = None,
         buffer_size: int = 30,
-        buffer_replace_rate=1.0,
         transforms: list = [],
         **kwargs
     ):
@@ -19,23 +19,26 @@ class PatchDatamodule(pl.LightningDataModule):
         self.dataloader_kwargs = dataloader_kwargs or {}
         self.transforms = transforms
         self.buffer_size = buffer_size
-        self.replace_rate = buffer_replace_rate
+        self.cache_dir = cache_dir
 
     def make_manifest_dataset(self, manifest: str, transform, n_imgs=-1, test=False):
         dataframe = pd.read_csv(manifest)
+        if n_imgs < 0:
+            n_imgs = len(dataframe)
+        dataframe = dataframe.sample(n_imgs)
+
         data_list = [
             {col: dataframe[col].iloc[i] for col in dataframe.columns}
             for i in range(len(dataframe))
         ]
-        if n_imgs < 0:
-            n_imgs = len(data_list)
+
         if not test:
-            return SmartCacheDataset(
+            return PersistentDataset(
                 data=data_list,
                 transform=transform,
-                replace_rate=self.replace_rate,
-                cache_num=n_imgs,
+                cache_dir=self.cache_dir,
             )
+
         else:
             return Dataset(data=data_list, transform=transform)
 
