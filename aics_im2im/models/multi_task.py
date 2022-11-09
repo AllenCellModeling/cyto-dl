@@ -22,7 +22,6 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
-        buffer_update_frequency: int = 50,
         patch_shape=[32, 128, 128],
         **kwargs,
     ):
