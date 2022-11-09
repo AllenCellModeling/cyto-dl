@@ -11,6 +11,7 @@ from serotiny.models.base_model import BaseModel
 from serotiny.ml_ops.mlflow_utils import upload_artifacts
 from monai.inferers import sliding_window_inference
 
+
 class MultiTaskIm2Im(BaseModel):
     def __init__(
         self,
@@ -22,6 +23,7 @@ class MultiTaskIm2Im(BaseModel):
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
         buffer_update_frequency: int = 50,
+        patch_shape=[32, 128, 128],
         **kwargs,
     ):
         super().__init__(
@@ -39,7 +41,7 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
         self.task_heads = torch.nn.ModuleDict(self.task_heads)
-        
+
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
 
@@ -55,14 +57,15 @@ class MultiTaskIm2Im(BaseModel):
         z = self.backbone(x)
         return {task: head(z) for task, head in self.task_heads.items()}
 
-    def save_tensor(self, fn, img):
+    def save_tensor(self, fn, img, directory):
         img = img.detach().cpu().numpy()
-        # img *= 255
-        # img = np.clip(img, 0, 255)
-        with upload_artifacts("images") as save_dir:
+        img = (img - img.min()) / (img.max() - img.min())
+        img *= 255
+        img = np.clip(img, 0, 255)
+        with upload_artifacts(directory) as save_dir:
             OmeTiffWriter().save(
                 uri=Path(save_dir) / fn,
-                data=img,  # .astype(np.uint8),
+                data=img.astype(np.uint8),
                 dims_order="STCZYX"[-len(img.shape)],
             )
 
@@ -90,31 +93,47 @@ class MultiTaskIm2Im(BaseModel):
         x = batch[self.hparams.x_key]
         targets = {k: batch[k] for k in self.task_heads.keys()}
 
-        if stage != "test":
+        if stage in ["train", "val"]:
             outs = self(x)
             if (
                 batch_idx == 0
                 and self.current_epoch + 1 % self.hparams.save_images_every_n_epochs
             ):
                 for k, v in batch.items():
-                    self.save_tensor(f"{stage}_{k}_{self.global_step}.tif", v)
+                    self.save_tensor(
+                        f"{k}_{self.global_step}.tif", v, directory=f"{stage}_images"
+                    )
                 for k, v in outs.items():
-                    self.save_tensor(f"{stage}_{k}_{self.global_step}_pred.tif", v)
-        else:
+                    self.save_tensor(
+                        f"{k}_{self.global_step}_pred.tif",
+                        v,
+                        directory=f"{stage}_images",
+                    )
+        elif stage in ["predict", "test"]:
             metadata = batch[f"{self.hparams.x_key}_meta_dict"]
-            source_filename = str(Path(metadata["filename_or_obj"][0]).stem) + "ome.tif"
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
-                    roi_size=[32, 64, 64],
+                    roi_size=self.hparams.patch_shape,
                     sw_batch_size=4,
                     predictor=self.forward,
+                    overlap=0.1,
+                    mode="gaussian",
                 )
-            # TODO go from dict to multichannel output here
+            # go from dict to multichannel output here
             for k, v in outs.items():
-                self.save_tensor(f"{k}_{source_filename}", v)
+                for im_idx in range(v.shape[0]):
+                    source_filename = (
+                        str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
+                    )
+                    self.save_tensor(
+                        f"{k}_{source_filename}", v[im_idx], directory=f"{stage}_images"
+                    )
 
-        if stage != "train":
+            if stage == "predict":
+                return
+
+        if stage in ["val", "test"]:
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(
                 {f"{stage}_{k}_iou": v for k, v in iou_dict.items()},

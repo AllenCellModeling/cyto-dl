@@ -2,6 +2,7 @@ _target_: aics_im2im.models.MultiTaskIm2Im
 
 x_key: bf
 buffer_update_frequency: ${data.buffer_update_frequency}
+patch_shape: [64, 384, 384]
 
 backbone:
   _target_: monai.networks.nets.DynUNet
