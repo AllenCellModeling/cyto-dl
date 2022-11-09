@@ -45,14 +45,6 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
 
-    def on_train_start(self, **kwargs):
-        # start background thread for loading images to update cache
-        self.trainer.train_dataloader.dataset.datasets.start()
-
-    def on_train_end(self, **kwargs):
-        # shutdown background cache filler threads
-        self.trainer.train_dataloader.dataset.datasets.shutdown()
-
     def forward(self, x):
         z = self.backbone(x)
         return {task: head(z) for task, head in self.task_heads.items()}
@@ -82,12 +74,6 @@ class MultiTaskIm2Im(BaseModel):
                     target[key][:, ch], pred[key][:, ch] > 0.5
                 )
         return iou_dict
-
-    def on_train_epoch_end(self, **kwargs):
-        # update buffer by replacing percentage of images
-        if (self.current_epoch + 1) % self.hparams.buffer_update_frequency == 0:
-            self.trainer.train_dataloader.dataset.datasets.update_cache()
-            # self.trainer.val_dataloaders[0].dataset.update_cache()
 
     def _step(self, stage, batch, batch_idx, logger):
         x = batch[self.hparams.x_key]
