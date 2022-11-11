@@ -6,6 +6,7 @@ from torch.nn.modules.loss import _Loss as Loss
 from aicsimageio.writers import OmeTiffWriter
 from pathlib import Path
 import numpy as np
+from monai.data.meta_tensor import MetaTensor
 
 from serotiny.models.base_model import BaseModel
 from serotiny.ml_ops.mlflow_utils import upload_artifacts
@@ -23,6 +24,7 @@ class MultiTaskIm2Im(BaseModel):
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
         patch_shape=[32, 128, 128],
+        inference_heads=None,
         **kwargs,
     ):
         super().__init__(
@@ -36,6 +38,9 @@ class MultiTaskIm2Im(BaseModel):
 
         self.task_heads = {}
         self.losses = {}
+        self.inference_heads = (
+            tasks.keys() if inference_heads is None else inference_heads
+        )
         for task, task_dict in tasks.items():
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
@@ -44,13 +49,18 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
 
-    def forward(self, x):
+    def forward(self, x, test=False):
+        run_heads = self.task_heads.keys()
+        if test:
+            run_heads = self.inference_heads
         z = self.backbone(x)
-        return {task: head(z) for task, head in self.task_heads.items()}
+        return {
+            task: head(z) for task, head in self.task_heads.items() if task in run_heads
+        }
 
     def save_tensor(self, fn, img, directory):
         img = img.detach().cpu().numpy()
-        img = (img - img.min()) / (img.max() - img.min())
+        img = (img - img.min() + 1e-8) / (img.max() - img.min() + 1e-8)
         img *= 255
         img = np.clip(img, 0, 255)
         with upload_artifacts(directory) as save_dir:
@@ -60,10 +70,17 @@ class MultiTaskIm2Im(BaseModel):
                 dims_order="STCZYX"[-len(img.shape)],
             )
 
-    def _calculate_iou(self, im1, im2):
-        return (np.sum(np.logical_and(im1, im2)) + 1e-8) / (
-            np.sum(np.logical_or(im1, im2)) + 1e-8
-        )
+    def _calculate_iou(self, target, pred):
+        target = target.detach().cpu().numpy()
+        pred = pred.detach().cpu().numpy()
+
+        # only calculate iou on binary targets
+        if np.array_equal(np.unique(target), [0, 1]):
+            return (np.sum(np.logical_and(target, pred)) + 1e-8) / (
+                np.sum(np.logical_or(target, pred)) + 1e-8
+            )
+        else:
+            return np.nan
 
     def calculate_channelwise_iou(self, target, pred):
         iou_dict = {}
@@ -127,8 +144,13 @@ class MultiTaskIm2Im(BaseModel):
                 sync_dist=True,
             )
 
+        # convert monai metatensors to tensors
+        for k, v in targets.items():
+            if isinstance(v, MetaTensor):
+                targets[k] = v.as_tensor()
+
         losses = {
-            f"{task}_loss": self.losses[task](task_out, targets[task].as_tensor())
+            f"{task}_loss": self.losses[task](task_out, targets[task])
             for task, task_out in outs.items()
         }
 
