@@ -33,6 +33,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
     def generate_slices(self, image_dict):
+        # TODO this assumes all images are the same shape
         max_shape = np.asarray(image_dict[self.scale_dict[1][0]].shape[-3:])
         max_start_indices = max_shape - self.roi_size
         start_indices = np.asarray(
