@@ -25,6 +25,7 @@ class MultiTaskIm2Im(BaseModel):
         automatic_optimization: bool = True,
         patch_shape=[32, 128, 128],
         inference_heads=None,
+        hr_skip=nn.Identity(),
         **kwargs,
     ):
         super().__init__(
@@ -35,7 +36,7 @@ class MultiTaskIm2Im(BaseModel):
             **kwargs,
         )
         self.backbone = backbone
-
+        self.hr_skip = hr_skip
         self.task_heads = {}
         self.losses = {}
         self.inference_heads = (
@@ -54,8 +55,11 @@ class MultiTaskIm2Im(BaseModel):
         if test:
             run_heads = self.inference_heads
         z = self.backbone(x)
+        hr_skip = self.hr_skip(x)
         return {
-            task: head(z) for task, head in self.task_heads.items() if task in run_heads
+            task: head(z, hr_skip)
+            for task, head in self.task_heads.items()
+            if task in run_heads
         }
 
     def save_tensor(self, fn, img, directory):
@@ -122,6 +126,7 @@ class MultiTaskIm2Im(BaseModel):
                     predictor=self.forward,
                     overlap=0.1,
                     mode="gaussian",
+                    test=True,
                 )
             # go from dict to multichannel output here
             for k, v in outs.items():
