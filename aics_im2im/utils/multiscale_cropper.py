@@ -4,7 +4,13 @@ import numpy as np
 
 class RandomMultiScaleCropd(RandomizableTransform):
     def __init__(
-        self, keys, patch_shape, patch_per_image, scales_dict, selection_fn=None
+        self,
+        keys,
+        patch_shape,
+        patch_per_image,
+        scales_dict,
+        selection_fn=None,
+        max_attempts=100,
     ):
         super().__init__()
         self.roi_size = np.asarray(patch_shape)
@@ -13,6 +19,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         self.scale_dict = scales_dict
         self.reversed_scale_dict = {}
         self.selection_fn = selection_fn
+        self.max_attempts = max_attempts
         for k, v in scales_dict.items():
             for v_item in v:
                 self.reversed_scale_dict[v_item] = k
@@ -49,7 +56,13 @@ class RandomMultiScaleCropd(RandomizableTransform):
 
     def __call__(self, image_dict):
         patches = []
+        attempts = 0
         while len(patches) < self.num_samples:
+            if attempts > self.max_attempts:
+                print(
+                    "Max attempts reached. Please chack your selection function or adjust max_attempts"
+                )
+                quit()
             slices = self.generate_slices(image_dict)
             patch_dict = {
                 key: data[slices[self.reversed_scale_dict[key]][0]]
@@ -58,4 +71,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
             }
             if self.selection_fn is None or self.selection_fn(patch_dict):
                 patches.append(patch_dict)
+            attempts += 1
+
         return patches
