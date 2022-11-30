@@ -6,3 +6,6 @@ _target_: pytorch_lightning.Trainer
 max_epochs:
 gpus:
 enable_checkpointing: True
+precision: 16
+
+reload_dataloaders_every_n_epochs: 10

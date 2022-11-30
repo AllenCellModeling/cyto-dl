@@ -1,8 +1,8 @@
 defaults:
   - /defaults/mlflow/default@_here_ #inherit serotiny's mlflow config
 
-#tracking_uri: 
-#experiment_name:
+tracking_uri:  https://mlflow.a100.int.allencell.org/
+experiment_name: benji_im2im_serotiny_port
 #run_name:
 #autolog:
   #log_every_n_epoch:
