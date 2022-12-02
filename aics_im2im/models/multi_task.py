@@ -11,6 +11,7 @@ from monai.data.meta_tensor import MetaTensor
 from serotiny.models.base_model import BaseModel
 from serotiny.ml_ops.mlflow_utils import upload_artifacts
 from monai.inferers import sliding_window_inference
+from skimage.exposure import rescale_intensity
 
 
 class MultiTaskIm2Im(BaseModel):
@@ -26,6 +27,7 @@ class MultiTaskIm2Im(BaseModel):
         patch_shape=[32, 128, 128],
         inference_heads=None,
         hr_skip=nn.Identity(),
+        postprocessing=None,
         **kwargs,
     ):
         super().__init__(
@@ -49,6 +51,7 @@ class MultiTaskIm2Im(BaseModel):
 
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
+        self.postprocessing = {} if postprocessing is None else postprocessing
 
     def forward(self, x, test=False):
         run_heads = self.task_heads.keys()
@@ -62,15 +65,11 @@ class MultiTaskIm2Im(BaseModel):
             if task in run_heads
         }
 
-    def save_tensor(self, fn, img, directory):
-        img = img.detach().cpu().numpy()
-        img = (img - img.min() + 1e-8) / (img.max() - img.min() + 1e-8)
-        img *= 255
-        img = np.clip(img, 0, 255)
+    def save_image(self, fn, img, directory):
         with upload_artifacts(directory) as save_dir:
             OmeTiffWriter().save(
                 uri=Path(save_dir) / fn,
-                data=img.astype(np.uint8),
+                data=img.squeeze(),
                 dims_order="STCZYX"[-len(img.shape)],
             )
 
@@ -79,7 +78,7 @@ class MultiTaskIm2Im(BaseModel):
         pred = pred.detach().cpu().numpy()
 
         # only calculate iou on binary targets
-        if np.array_equal(np.unique(target), [0, 1]):
+        if len(np.unique(target)) <= 2:
             return (np.sum(np.logical_and(target, pred)) + 1e-8) / (
                 np.sum(np.logical_or(target, pred)) + 1e-8
             )
@@ -89,6 +88,8 @@ class MultiTaskIm2Im(BaseModel):
     def calculate_channelwise_iou(self, target, pred):
         iou_dict = {}
         for key in target.keys():
+            if not isinstance(target[key], torch.Tensor):
+                continue
             for ch in range(target[key].shape[1]):
                 iou_dict[f"{key}_{ch}"] = self._calculate_iou(
                     target[key][:, ch], pred[key][:, ch] > 0.5
@@ -96,6 +97,13 @@ class MultiTaskIm2Im(BaseModel):
         return iou_dict
 
     def _step(self, stage, batch, batch_idx, logger):
+        # only need filename
+        metadata = batch[f"{self.hparams.x_key}_meta_dict"]
+        # convert monai metatensors to tensors
+        for k, v in batch.items():
+            if isinstance(v, MetaTensor):
+                batch[k] = v.as_tensor()
+
         x = batch[self.hparams.x_key]
         targets = {k: batch[k] for k in self.task_heads.keys()}
 
@@ -106,18 +114,20 @@ class MultiTaskIm2Im(BaseModel):
                 and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
                 == 0
             ):
-                for k, v in batch.items():
-                    self.save_tensor(
-                        f"{k}_{self.global_step}.tif", v, directory=f"{stage}_images"
-                    )
-                for k, v in outs.items():
-                    self.save_tensor(
-                        f"{k}_{self.global_step}_pred.tif",
-                        v,
-                        directory=f"{stage}_images",
-                    )
+                for result, suffix, dict_type in zip(
+                    [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
+                ):
+                    for key in self.postprocessing[dict_type]:
+                        if key not in result:
+                            continue
+
+                        self.save_image(
+                            f"{self.global_step}_{key}{suffix}",
+                            self.postprocessing[dict_type][key](result[key]),
+                            directory=f"{stage}_images",
+                        )
+
         elif stage in ["predict", "test"]:
-            metadata = batch[f"{self.hparams.x_key}_meta_dict"]
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
@@ -134,13 +144,12 @@ class MultiTaskIm2Im(BaseModel):
                     source_filename = (
                         str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
                     )
-                    self.save_tensor(
+                    self.save_image(
                         f"{k}_{source_filename}", v[im_idx], directory=f"{stage}_images"
                     )
 
             if stage == "predict":
                 return
-
         if stage in ["val", "test"]:
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(
@@ -149,23 +158,17 @@ class MultiTaskIm2Im(BaseModel):
                 sync_dist=True,
             )
 
-        # convert monai metatensors to tensors
-        for k, v in targets.items():
-            if isinstance(v, MetaTensor):
-                targets[k] = v.as_tensor()
-
         losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
             for task, task_out in outs.items()
         }
-
         summ = 0
         for k, v in losses.items():
             summ += v
         losses["loss"] = summ
 
         self.log_dict(
-            {f"{stage}_{k}": v.detach() for k, v in losses.items()},
+            {f"{stage}_{k}": v for k, v in losses.items()},
             logger=True,
             sync_dist=True,
         )
