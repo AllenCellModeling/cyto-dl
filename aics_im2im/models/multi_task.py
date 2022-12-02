@@ -28,6 +28,8 @@ class MultiTaskIm2Im(BaseModel):
         inference_heads=None,
         hr_skip=nn.Identity(),
         postprocessing=None,
+        discriminator=None,
+        gan_loss = lambda x: 0
         **kwargs,
     ):
         super().__init__(
@@ -52,6 +54,9 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
         self.postprocessing = {} if postprocessing is None else postprocessing
+        self.discriminator = discriminator
+        self.gan_loss = gan_loss
+
 
     def forward(self, x, test=False):
         run_heads = self.task_heads.keys()
@@ -96,6 +101,60 @@ class MultiTaskIm2Im(BaseModel):
                 )
         return iou_dict
 
+    def optimize_discriminator(self, targets, outs, stage):
+        if stage != 'train' or self.discriminator is None:
+            return
+        assert not self.automatic_optimization, "automatic optimization must be off for GAN Training"
+        d_opt=self.optimizers['D']
+        self.discriminator.set_requires_grad(True)
+        loss_D = 0
+        for target_dict, target_type, d_target in zip(
+            [targets, outs], ["real", "fake"], [True, False]
+        ):
+            disc_out = self.discriminator(target_dict)
+            loss_D_partial = self.gan_loss(
+                disc_out, d_target, iter=self.global_step
+            )
+            self.log(f"D_{target_type}", loss_D_partial, progress_bar=False)
+            loss_D += loss_D_partial
+        loss_D *= 0.5
+        self.mnual_backward(loss_D)
+        d_opt.step()
+        self.discriminator.set_requires_grad(False)
+        self.log('loss_D', loss_D)
+
+    def optimize_generator(self, targets, outs, stage):
+        if stage == 'train' and not self.automatic_optimization:
+            g_opt = self.optimizers['generator']
+            g_opt.zero_grad()
+         losses = {
+            f"{task}_loss": self.losses[task](task_out, targets[task])
+            for task, task_out in outs.items()
+        }
+        pred_fake = self.discriminator(target_dict, detach=False)
+        losses['g_gan'] = self.gan_loss(pred_fake, True)
+
+        summ = 0
+        for k, v in losses.items():
+            summ += v
+        losses["loss"] = summ
+
+        self.log_dict(
+            {f"{stage}_{k}": v for k, v in losses.items()},
+            logger=True,
+            sync_dist=True,
+        )
+        if stage =='train' and not self.automatic_optimization:
+            self.manual_backward(losses['loss'])
+            g_opt.step()
+        
+        return losses
+
+    def should_save_image(self, batch_idx):
+        return batch_idx == 0
+                and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
+                == 0
+
     def _step(self, stage, batch, batch_idx, logger):
         # only need filename
         metadata = batch[f"{self.hparams.x_key}_meta_dict"]
@@ -109,11 +168,7 @@ class MultiTaskIm2Im(BaseModel):
 
         if stage in ["train", "val"]:
             outs = self(x)
-            if (
-                batch_idx == 0
-                and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
-                == 0
-            ):
+            if self.should_save_image(batch_idx):
                 for result, suffix, dict_type in zip(
                     [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
                 ):
@@ -157,20 +212,9 @@ class MultiTaskIm2Im(BaseModel):
                 logger=True,
                 sync_dist=True,
             )
+        
+        self.optimize_discriminator(targets, outs, stage)
+        losses = self.optimize_generator(targets, outs, stage)
 
-        losses = {
-            f"{task}_loss": self.losses[task](task_out, targets[task])
-            for task, task_out in outs.items()
-        }
-        summ = 0
-        for k, v in losses.items():
-            summ += v
-        losses["loss"] = summ
-
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in losses.items()},
-            logger=True,
-            sync_dist=True,
-        )
         if self.automatic_optimization or stage == "train":
             return losses
