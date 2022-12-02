@@ -1,0 +1,88 @@
+_target_: aics_im2im.datamodules.PatchDatamodule
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_main/embedseg
+
+dataloader_kwargs:
+  num_workers: 0
+  batch_size: 1
+  pin_memory: True
+  persistent_workers: False
+
+cache_dir: "/storage/embedseg/"
+buffer_size: 
+  train: 1
+  valid: 1
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.SplitChanneld
+        keys: ['GT', 'CE', 'CL']
+        output_postfixes: ['interphase', 'mitotic']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM']
+
+      - _target_: aics_im2im.utils.embedseg_transforms.EmbedSegConcatLabelsd
+        input_keys: ['GT_interphase', 'CE_interphase', "CL_interphase"]
+        output_key: interphase_seg
+      
+      - _target_: aics_im2im.utils.embedseg_transforms.EmbedSegConcatLabelsd
+        input_keys: ['GT_mitotic', 'CE_mitotic', "CL_mitotic"]
+        output_key: mitotic_seg
+
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'ZYX'
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM'] 
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.SplitChanneld
+        keys: ['GT', 'CE', 'CL']
+        output_postfixes: ['interphase', 'mitotic']
+
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM']
+
+      - _target_: aics_im2im.utils.embedseg_transforms.EmbedSegConcatLabelsd
+        input_keys: ['GT_interphase', 'CE_interphase', "CL_interphase"]
+        output_key: interphase_seg
+      
+      - _target_: aics_im2im.utils.embedseg_transforms.EmbedSegConcatLabelsd
+        input_keys: ['GT_mitotic', 'CE_mitotic', "CL_mitotic"]
+        output_key: mitotic_seg
+
+
