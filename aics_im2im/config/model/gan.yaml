@@ -18,23 +18,17 @@ backbone:
 
 
 tasks:
-  seg:
+  hr_lamin:
     head:
       _target_: aics_im2im.networks.AuxHead
       resolution: hr
       in_channels: 256
-      out_channels: 4
+      out_channels: 1
       final_act:
-        _target_: torch.nn.Softmax
-        dim: 1
+        _target_: torch.nn.Tanh
 
     loss:
-      _target_: aics_im2im.utils.LossWrapper
-      loss_fn:
-        _target_: monai.losses.DiceLoss
-        reduction: 'none'
-      channel_weight: [1,1.1,1.5,3]
-      loss_scale: 1
+      _target_: torch.nn.MSELoss
 
 gan_loss:
   _target_: aics_im2im.utils.gan_loss.GANLoss
@@ -42,8 +36,8 @@ gan_loss:
 
 discriminator:
   _target_: aics_im2im.networks.discriminator.NLayerDiscriminator
-  input_nc: 4
-  keys: ['bf', 'seg']
+  input_nc: 2
+  keys: ['lr_lamin', 'hr_lamin']
 
 
 
