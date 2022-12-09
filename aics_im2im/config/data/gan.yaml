@@ -2,15 +2,15 @@ _target_: aics_im2im.datamodules.PatchDatamodule
 manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/manifest_based_datamodule
 
 dataloader_kwargs:
-  num_workers: 4
+  num_workers: 8
   batch_size: 1
   pin_memory: True
   persistent_workers: False
 
 cache_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/manifest_based_datamodule/cache"
 buffer_size: 
-  train: 1
-  valid: 1
+  train: -1
+  valid: -1
 
 transforms:
   train:
@@ -28,7 +28,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['lr_lamin', 'hr_lamin']
 
-      _target_: monai.transforms.ScaleIntensityRangePercentilesd
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
         keys: 'hr_lamin'
         lower: 0.01
         upper: 99.99
@@ -65,7 +65,7 @@ transforms:
         keys: ['lr_lamin']
         scale_factor: [1.3067, 1.25025, 1.25025]   
 
-      _target_: monai.transforms.ScaleIntensityRangePercentilesd
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
         keys: 'hr_lamin'
         lower: 0.01
         upper: 99.99
@@ -86,7 +86,7 @@ transforms:
         keys: ['lr_lamin', 'hr_lamin']
         channel_wise: True
 
-      _target_: monai.transforms.ScaleIntensityRangePercentilesd
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
         keys: 'hr_lamin'
         lower: 0.01
         upper: 99.99

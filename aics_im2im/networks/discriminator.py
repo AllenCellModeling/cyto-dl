@@ -1,13 +1,14 @@
-
 from torch import nn
 from torch.nn.functional import interpolate
+import torch
 import functools
 import numpy as np
+
 
 class NLayerDiscriminator(nn.Module):
     """Defines a PatchGAN discriminator"""
 
-    def __init__(self, input_nc,keys, ndf=64, n_layers=3, norm_layer=nn.BatchNorm3d):
+    def __init__(self, input_nc, keys, ndf=64, n_layers=3, norm_layer=nn.BatchNorm3d):
         """Construct a PatchGAN discriminator
 
         Parameters:
@@ -67,19 +68,24 @@ class NLayerDiscriminator(nn.Module):
         self.model = nn.Sequential(*sequence)
         self.keys = keys
 
-    def set_requires_grad(self,  requires_grad=False):
+    def set_requires_grad(self, requires_grad=False):
         for param in self.model.parameters():
             param.requires_grad = requires_grad
 
-
-    def forward(self, input, detach=True):
+    def forward(self, input, x, detach=True):
         """Standard forward."""
-        output_im = []
+        output_im = [x]
         largest_shape = None
         for key in self.keys:
             im = input[key].detach() if detach else input[key]
             output_im.append(im)
-            im_shape =im.shape[-3:]
-            largest_shape = im_shape if largest_shape is None else np.maximum(largest_shape, im_shape)
-        output_im  = torch.cat([interpolate(im, size=largest_shape) for im in output_im], 1)
+            im_shape = im.shape[-3:]
+            largest_shape = (
+                im_shape
+                if largest_shape is None
+                else np.maximum(largest_shape, im_shape)
+            )
+        output_im = torch.cat(
+            [interpolate(im, size=largest_shape) for im in output_im], 1
+        )
         return self.model(output_im)

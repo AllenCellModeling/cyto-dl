@@ -28,14 +28,10 @@ class MultiTaskIm2Im(BaseModel):
         hr_skip=nn.Identity(),
         postprocessing=None,
         discriminator=None,
-        gan_loss = lambda x: 0
+        gan_loss=lambda x: 0,
         **kwargs,
     ):
         super().__init__(
-            backbone=backbone,
-            tasks=tasks,
-            x_key=x_key,
-            automatic_optimization=automatic_optimization,
             **kwargs,
         )
         self.backbone = backbone
@@ -49,6 +45,10 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
         self.task_heads = torch.nn.ModuleDict(self.task_heads)
+        # if discriminator is not None:
+        #     assert (
+        #         not automatic_optimization
+        #     ), "Automatic optimization must be off for GAN training. Please set this flag."
 
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
@@ -56,6 +56,24 @@ class MultiTaskIm2Im(BaseModel):
         self.discriminator = discriminator
         self.gan_loss = gan_loss
 
+    def configure_optimizers(self):
+        opts = []
+        scheds = []
+        for key in ["generator", "discriminator"]:
+            if key in self.hparams.optimizer.keys():
+                if key == "generator":
+                    opt = self.hparams.optimizer[key](
+                        list(self.backbone.parameters())
+                        + list(self.hr_skip.parameters())
+                        + list(self.task_heads.parameters())
+                    )
+                elif key == "generator":
+                    opt = self.haparams.optimizer[key](self.disciminator.parameters())
+                scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
+                opts.append(opt)
+                scheds.append(scheduler)
+
+        return (opts, scheds)
 
     def forward(self, x, test=False):
         run_heads = self.task_heads.keys()
@@ -101,37 +119,42 @@ class MultiTaskIm2Im(BaseModel):
         return iou_dict
 
     def optimize_discriminator(self, targets, outs, stage):
-        if stage != 'train' or self.discriminator is None:
+        if self.discriminator is None:  # stage != "train" or
             return
-        assert not self.automatic_optimization, "automatic optimization must be off for GAN Training"
-        d_opt=self.optimizers['D']
+        # assert (
+        #     not self.automatic_optimization
+        # ), "automatic optimization must be off for GAN Training"
+        # d_opt = self.optimizers()[1]
+        # d_opt.zero_grad()
         self.discriminator.set_requires_grad(True)
         loss_D = 0
+        x = targets[self.hparams.x_key]
         for target_dict, target_type, d_target in zip(
             [targets, outs], ["real", "fake"], [True, False]
         ):
-            disc_out = self.discriminator(target_dict)
-            loss_D_partial = self.gan_loss(
-                disc_out, d_target, iter=self.global_step
-            )
-            self.log(f"D_{target_type}", loss_D_partial, progress_bar=False)
+            disc_out = self.discriminator(target_dict, x)
+            loss_D_partial = self.gan_loss(disc_out, d_target)
+            self.log(f"D_{target_type}", loss_D_partial)
             loss_D += loss_D_partial
         loss_D *= 0.5
-        self.mnual_backward(loss_D)
-        d_opt.step()
+        # self.manual_backward(loss_D)
+        # d_opt.step()
         self.discriminator.set_requires_grad(False)
-        self.log('loss_D', loss_D)
+        self.log("loss_D", loss_D)
+        return loss_D
 
     def optimize_generator(self, targets, outs, stage):
-        if stage == 'train' and not self.automatic_optimization:
-            g_opt = self.optimizers['generator']
-            g_opt.zero_grad()
-         losses = {
+        # if stage == "train" and not self.automatic_optimization:
+        #     g_opt = self.optimizers()[0]
+        #     g_opt.zero_grad()
+        losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
             for task, task_out in outs.items()
         }
-        pred_fake = self.discriminator(target_dict, detach=False)
-        losses['g_gan'] = self.gan_loss(pred_fake, True)
+        pred_fake = self.discriminator(
+            targets, targets[self.hparams.x_key], detach=False
+        )
+        losses["g_gan"] = self.gan_loss(pred_fake, True)
 
         summ = 0
         for k, v in losses.items():
@@ -143,20 +166,21 @@ class MultiTaskIm2Im(BaseModel):
             logger=True,
             sync_dist=True,
         )
-        if stage =='train' and not self.automatic_optimization:
-            self.manual_backward(losses['loss'])
-            g_opt.step()
-        
+        # if stage == "train" and not self.automatic_optimization:
+        #     self.manual_backward(losses["loss"])
+        #     g_opt.step()
+
         return losses
 
     def should_save_image(self, batch_idx):
-        return batch_idx == 0
-                and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
-                == 0
+        return (
+            batch_idx == 0
+            and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
+        )
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
         # only need filename
-        metadata = batch[f"{self.hparams.x_key}_meta_dict"]
+        # metadata = batch[f"{self.hparams.x_key}_meta_dict"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -211,9 +235,10 @@ class MultiTaskIm2Im(BaseModel):
                 logger=True,
                 sync_dist=True,
             )
-        
-        self.optimize_discriminator(targets, outs, stage)
-        losses = self.optimize_generator(targets, outs, stage)
+        if optimizer_idx == 1:
+            losses = self.optimize_discriminator(batch, outs, stage)
+        elif optimizer_idx == 0:
+            losses = self.optimize_generator(batch, outs, stage)
 
-        if self.automatic_optimization or stage == "train":
-            return losses
+        # if self.automatic_optimization or stage == "train":
+        return losses
