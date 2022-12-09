@@ -1,5 +1,5 @@
 _target_: aics_im2im.datamodules.PatchDatamodule
-manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/pred_on_goldilocks/babybear_and_goldilocks_large_train_addition/gt/watershed_train
+manifest_path: //allen/aics/assay-dev/users/Benji/InactiveProjects/FBL_mitosis/1x_erode_and_hysteresis/train
 
 dataloader_kwargs:
   num_workers: 8
@@ -7,7 +7,7 @@ dataloader_kwargs:
   pin_memory: True
   persistent_workers: False
 
-cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/pred_on_goldilocks/babybear_and_goldilocks_large_train_addition/gt/watershed_train/cache
+cache_dir: //allen/aics/assay-dev/users/Benji/InactiveProjects/FBL_mitosis/1x_erode_and_hysteresis/train/cache
 buffer_size: 
   train: -1
   valid: -1
@@ -26,10 +26,13 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']  
 
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
+
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape: [48, 512, 512]
-        patch_per_image: 2
+        patch_shape: [10, 512, 512]
+        patch_per_image: 4
         scales_dict:
           1: ['seg', 'raw']
 
@@ -69,6 +72,8 @@ transforms:
             dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
 
   valid:
     _target_: monai.transforms.Compose
@@ -79,13 +84,17 @@ transforms:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
+
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']   
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
+
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape: [48, 512, 512]
-        patch_per_image: 1
+        patch_shape: [10, 512, 512]
+        patch_per_image: 4
         scales_dict:
           1: ['seg', 'raw']
 

@@ -4,6 +4,7 @@ save_images_every_n_epochs: 10
 x_key: bf
 patch_shape: [64, 384, 384]
 
+size: large
 backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: 3
@@ -31,9 +32,9 @@ tasks:
     loss:
       _target_: aics_im2im.utils.LossWrapper
       loss_fn:
-        _target_: monai.losses.DiceLoss
+        _target_: monai.losses.GeneralizedDiceLoss
         reduction: 'none'
-      channel_weight: [1,1.1,1.5,3]
+      channel_weight: [0.5,3,1.5,3]
       loss_scale: 1
 
 
@@ -46,7 +47,7 @@ optimizer:
 lr_scheduler:
   _partial_: True
   _target_: torch.optim.lr_scheduler.ExponentialLR
-  gamma: 0.97
+  gamma: 0.99
 
 
 
