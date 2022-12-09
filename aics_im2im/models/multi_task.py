@@ -113,7 +113,7 @@ class MultiTaskIm2Im(BaseModel):
                 )
         return iou_dict
 
-    def optimize_discriminator(self, targets, outs, stage):
+    def optimize_discriminator(self, targets, outs):
         if self.discriminator is None:
             return
         self.discriminator.set_requires_grad(True)
@@ -128,7 +128,7 @@ class MultiTaskIm2Im(BaseModel):
             loss_D += loss_D_partial
         loss_D *= 0.5
         self.discriminator.set_requires_grad(False)
-        self.log("loss_D", loss_D)
+        self.log("loss_D", loss_D, logger=True, on_step=False, on_epoch=True)
         return loss_D
 
     def optimize_generator(self, targets, outs, stage):
@@ -136,10 +136,11 @@ class MultiTaskIm2Im(BaseModel):
             f"{task}_loss": self.losses[task](task_out, targets[task])
             for task, task_out in outs.items()
         }
-        pred_fake = self.discriminator(
-            targets, targets[self.hparams.x_key], detach=False
-        )
-        losses["g_gan"] = self.gan_loss(pred_fake, True)
+        if self.discriminator is not None:
+            pred_fake = self.discriminator(
+                targets, targets[self.hparams.x_key], detach=False
+            )
+            losses["g_gan"] = self.gan_loss(pred_fake, True)
 
         summ = 0
         for k, v in losses.items():
@@ -150,6 +151,8 @@ class MultiTaskIm2Im(BaseModel):
             {f"{stage}_{k}": v for k, v in losses.items()},
             logger=True,
             sync_dist=True,
+            on_step=False,
+            on_epoch=True,
         )
 
         return losses
@@ -225,6 +228,7 @@ class MultiTaskIm2Im(BaseModel):
                 on_step=False,
                 on_epoch=True,
             )
+
         if optimizer_idx == 1:
             losses = self.optimize_discriminator(batch, outs, stage)
         elif optimizer_idx == 0:
