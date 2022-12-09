@@ -11,7 +11,6 @@ from monai.data.meta_tensor import MetaTensor
 from serotiny.models.base_model import BaseModel
 from serotiny.ml_ops.mlflow_utils import upload_artifacts
 from monai.inferers import sliding_window_inference
-from skimage.exposure import rescale_intensity
 
 
 class MultiTaskIm2Im(BaseModel):
@@ -28,13 +27,11 @@ class MultiTaskIm2Im(BaseModel):
         inference_heads=None,
         hr_skip=nn.Identity(),
         postprocessing=None,
+        discriminator=None,
+        gan_loss=lambda x: 0,
         **kwargs,
     ):
         super().__init__(
-            backbone=backbone,
-            tasks=tasks,
-            x_key=x_key,
-            automatic_optimization=automatic_optimization,
             **kwargs,
         )
         self.backbone = backbone
@@ -48,10 +45,30 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
         self.task_heads = torch.nn.ModuleDict(self.task_heads)
-
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
         self.postprocessing = {} if postprocessing is None else postprocessing
+        self.discriminator = discriminator
+        self.gan_loss = gan_loss
+
+    def configure_optimizers(self):
+        opts = []
+        scheds = []
+        for key in ["generator", "discriminator"]:
+            if key in self.hparams.optimizer.keys():
+                if key == "generator":
+                    opt = self.hparams.optimizer[key](
+                        list(self.backbone.parameters())
+                        + list(self.hr_skip.parameters())
+                        + list(self.task_heads.parameters())
+                    )
+                elif key == "generator":
+                    opt = self.haparams.optimizer[key](self.disciminator.parameters())
+                scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
+                opts.append(opt)
+                scheds.append(scheduler)
+
+        return (opts, scheds)
 
     def forward(self, x, test=False):
         run_heads = self.task_heads.keys()
@@ -96,7 +113,54 @@ class MultiTaskIm2Im(BaseModel):
                 )
         return iou_dict
 
-    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=None):
+    def optimize_discriminator(self, targets, outs, stage):
+        if self.discriminator is None:
+            return
+        self.discriminator.set_requires_grad(True)
+        loss_D = 0
+        x = targets[self.hparams.x_key]
+        for target_dict, target_type, d_target in zip(
+            [targets, outs], ["real", "fake"], [True, False]
+        ):
+            disc_out = self.discriminator(target_dict, x)
+            loss_D_partial = self.gan_loss(disc_out, d_target)
+            self.log(f"D_{target_type}", loss_D_partial)
+            loss_D += loss_D_partial
+        loss_D *= 0.5
+        self.discriminator.set_requires_grad(False)
+        self.log("loss_D", loss_D)
+        return loss_D
+
+    def optimize_generator(self, targets, outs, stage):
+        losses = {
+            f"{task}_loss": self.losses[task](task_out, targets[task])
+            for task, task_out in outs.items()
+        }
+        pred_fake = self.discriminator(
+            targets, targets[self.hparams.x_key], detach=False
+        )
+        losses["g_gan"] = self.gan_loss(pred_fake, True)
+
+        summ = 0
+        for k, v in losses.items():
+            summ += v
+        losses["loss"] = summ
+
+        self.log_dict(
+            {f"{stage}_{k}": v for k, v in losses.items()},
+            logger=True,
+            sync_dist=True,
+        )
+
+        return losses
+
+    def should_save_image(self, batch_idx):
+        return (
+            batch_idx == 0
+            and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
+        )
+
+    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
         # only need filename
         metadata = batch.get(f"{self.hparams.x_key}_meta_dict")
         # convert monai metatensors to tensors
@@ -109,11 +173,7 @@ class MultiTaskIm2Im(BaseModel):
 
         if stage in ["train", "val"]:
             outs = self(x)
-            if (
-                batch_idx == 0
-                and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
-                == 0
-            ):
+            if self.should_save_image(batch_idx):
                 for result, suffix, dict_type in zip(
                     [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
                 ):
@@ -128,6 +188,9 @@ class MultiTaskIm2Im(BaseModel):
                         )
 
         elif stage in ["predict", "test"]:
+            assert (
+                metadata is not None
+            ), "Metadata required for proper file saving during prediction! Please check your transforms"
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
@@ -162,22 +225,9 @@ class MultiTaskIm2Im(BaseModel):
                 on_step=False,
                 on_epoch=True,
             )
+        if optimizer_idx == 1:
+            losses = self.optimize_discriminator(batch, outs, stage)
+        elif optimizer_idx == 0:
+            losses = self.optimize_generator(batch, outs, stage)
 
-        losses = {
-            f"{task}_loss": self.losses[task](task_out, targets[task])
-            for task, task_out in outs.items()
-        }
-        summ = 0
-        for k, v in losses.items():
-            summ += v
-        losses["loss"] = summ
-
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in losses.items()},
-            logger=logger,
-            sync_dist=True,
-            on_step=stage == "train",
-            on_epoch=stage != "train",
-        )
-        if self.automatic_optimization or stage == "train":
-            return losses
+        return losses

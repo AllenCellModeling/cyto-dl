@@ -1,0 +1,81 @@
+_target_: aics_im2im.models.MultiTaskIm2Im
+
+save_images_every_n_epochs: 1
+x_key: lr_lamin
+patch_shape: [64, 384, 384]
+
+backbone:
+  _target_: monai.networks.nets.DynUNet
+  spatial_dims: 3
+  in_channels: 1
+  out_channels: 256
+  strides: [[1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2], [1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2]]
+  kernel_size: [[3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3]]
+  upsample_kernel_size:  [[1, 2, 2], [1, 1, 1], [2, 2, 2], [1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2]]
+  filters: [64, 128, 192, 256, 320, 384, 448, 512]
+  dropout: 0.3
+  res_block: True
+
+
+tasks:
+  hr_lamin:
+    head:
+      _target_: aics_im2im.networks.AuxHead
+      resolution: hr
+      in_channels: 256
+      out_channels: 1
+      final_act:
+        _target_: torch.nn.Tanh
+
+    loss:
+      _target_: torch.nn.MSELoss
+
+gan_loss:
+  _target_: aics_im2im.utils.gan_loss.GANLoss
+  gan_mode: 'vanilla'
+
+discriminator:
+  _target_: aics_im2im.networks.discriminator.NLayerDiscriminator
+  input_nc: 2 # add 1 for input channel
+  keys: ['hr_lamin']
+
+
+
+# automatic_optimization: False
+optimizer: 
+  generator:
+    _partial_: True
+    _target_: torch.optim.Adam
+    lr: 0.0003
+    weight_decay: 0.001
+  discriminator:
+    _partial_: True
+    _target_: torch.optim.Adam
+    lr: 0.0003
+    weight_decay: 0.001
+    
+
+lr_scheduler:
+  generator:
+    _partial_: True
+    _target_: torch.optim.lr_scheduler.ExponentialLR
+    gamma: 0.97
+  discriminator:
+    _partial_: True
+    _target_: torch.optim.lr_scheduler.ExponentialLR
+    gamma: 0.97
+
+postprocessing:
+  input:
+    lr_lamin:
+      _target_: aics_im2im.utils.embedseg_utils.rescale
+      _partial_: True
+    hr_lamin:
+      _target_: aics_im2im.utils.embedseg_utils.rescale
+      _partial_: True
+  prediction:
+    hr_lamin:
+      _target_: aics_im2im.utils.embedseg_utils.rescale
+      _partial_: True
+
+

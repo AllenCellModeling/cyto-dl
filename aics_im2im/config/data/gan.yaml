@@ -1,0 +1,108 @@
+_target_: aics_im2im.datamodules.PatchDatamodule
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/manifest_based_datamodule
+
+dataloader_kwargs:
+  num_workers: 8
+  batch_size: 1
+  pin_memory: True
+  persistent_workers: False
+
+cache_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/manifest_based_datamodule/cache"
+buffer_size: 
+  train: -1
+  valid: -1
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['hr_lamin', 'lr_lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['hr_lamin', 'lr_lamin']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['lr_lamin', 'hr_lamin']
+
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
+        keys: 'hr_lamin'
+        lower: 0.01
+        upper: 99.99
+        b_min: -1
+        b_max: 1
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['lr_lamin']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['hr_lamin', 'lr_lamin']
+        patch_shape: [64, 384, 384]
+        patch_per_image: 4
+        scales_dict:
+          1: ['hr_lamin']
+          2: ['lr_lamin']
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['hr_lamin', 'lr_lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['lr_lamin']
+        channel_wise: True
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['lr_lamin']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
+        keys: 'hr_lamin'
+        lower: 0.01
+        upper: 99.99
+        b_min: -1
+        b_max: 1
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['hr_lamin', 'lr_lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['lr_lamin', 'hr_lamin']
+        channel_wise: True
+
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
+        keys: 'hr_lamin'
+        lower: 0.01
+        upper: 99.99
+        b_min: -1
+        b_max: 1
+
+      - _target_: aics_im2im.utils.Resized
+        keys: ['lr_lamin']
+        scale_factor: [1.3067, 1.25025, 1.25025]   
+
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['hr_lamin', 'lr_lamin']
+        patch_shape: [64, 384, 384]
+        patch_per_image: 4
+        scales_dict:
+          1: ['hr_lamin']
+          2: ['lr_lamin']
+
+
