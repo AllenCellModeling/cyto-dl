@@ -96,9 +96,9 @@ class MultiTaskIm2Im(BaseModel):
                 )
         return iou_dict
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=None):
         # only need filename
-        metadata = batch[f"{self.hparams.x_key}_meta_dict"]
+        metadata = batch.get(f"{self.hparams.x_key}_meta_dict")
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -144,8 +144,11 @@ class MultiTaskIm2Im(BaseModel):
                     source_filename = (
                         str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
                     )
+                    # todo use postprocessing here
                     self.save_image(
-                        f"{k}_{source_filename}", v[im_idx], directory=f"{stage}_images"
+                        f"{k}_{source_filename}",
+                        v[im_idx].detach().cpu().numpy(),
+                        directory=f"{stage}_images",
                     )
 
             if stage == "predict":
@@ -154,8 +157,10 @@ class MultiTaskIm2Im(BaseModel):
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(
                 {f"{stage}_{k}_iou": v for k, v in iou_dict.items()},
-                logger=True,
+                logger=logger,
                 sync_dist=True,
+                on_step=False,
+                on_epoch=True,
             )
 
         losses = {
@@ -169,8 +174,10 @@ class MultiTaskIm2Im(BaseModel):
 
         self.log_dict(
             {f"{stage}_{k}": v for k, v in losses.items()},
-            logger=True,
+            logger=logger,
             sync_dist=True,
+            on_step=stage == "train",
+            on_epoch=stage != "train",
         )
         if self.automatic_optimization or stage == "train":
             return losses
