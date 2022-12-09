@@ -3,9 +3,9 @@ defaults:
 
 tracking_uri:  https://mlflow.a100.int.allencell.org/
 experiment_name: benji_im2im_serotiny_port
-#run_name:
-#autolog:
-  #log_every_n_epoch:
-  #log_models:
-  ## see more options here:
-  ## https://www.mlflow.org/docs/latest/python_api/mlflow.pytorch.html#mlflow.pytorch.autolog
+run_name: model_size_experiment_${model.size}
+autolog:
+  log_every_n_epoch: 1
+  log_models: True
+#   # see more options here:
+#   # https://www.mlflow.org/docs/latest/python_api/mlflow.pytorch.html#mlflow.pytorch.autolog

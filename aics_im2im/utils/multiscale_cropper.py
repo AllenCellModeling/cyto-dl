@@ -71,6 +71,8 @@ class RandomMultiScaleCropd(RandomizableTransform):
             }
             if self.selection_fn is None or self.selection_fn(patch_dict):
                 patches.append(patch_dict)
+                attempts = 0
+
             attempts += 1
 
         return patches

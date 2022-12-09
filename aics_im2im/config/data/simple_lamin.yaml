@@ -1,0 +1,82 @@
+_target_: aics_im2im.datamodules.PatchDatamodule
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin
+
+dataloader_kwargs:
+  num_workers: 4
+  batch_size: 1
+  pin_memory: True
+  persistent_workers: False
+
+cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin/cache
+buffer_size: 
+  train: 60
+  valid: -1
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['Brightfield', 'Lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['Brightfield', 'Lamin']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['Brightfield', 'Lamin']
+
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['Brightfield', 'Lamin']
+        patch_shape: [32,128,128]
+        patch_per_image: 32
+        scales_dict:
+          1: ['Brightfield', 'Lamin']
+        selection_fn:
+          _target_: aics_im2im.utils.BrightSampler
+          key: 'Lamin'
+          threshold: -0.38
+          base_prob: 0.1
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['Brightfield', 'Lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['Brightfield', 'Lamin']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['Brightfield', 'Lamin']
+
+
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['Brightfield', 'Lamin']
+        reader:
+        - _target_: aics_im2im.utils.monai_bio_reader
+          reader_args:
+            dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys: ['Brightfield', 'Lamin']
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['Brightfield', 'Lamin']
+
+      - _target_: aics_im2im.utils.RandomMultiScaleCropd
+        keys: ['Brightfield', 'Lamin']
+        patch_shape: [32,128,128]
+        patch_per_image: 2
+        scales_dict:
+          1: ['Brightfield', 'Lamin']
+
+

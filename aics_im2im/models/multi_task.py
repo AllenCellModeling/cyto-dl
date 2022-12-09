@@ -207,8 +207,11 @@ class MultiTaskIm2Im(BaseModel):
                     source_filename = (
                         str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
                     )
+                    # todo use postprocessing here
                     self.save_image(
-                        f"{k}_{source_filename}", v[im_idx], directory=f"{stage}_images"
+                        f"{k}_{source_filename}",
+                        v[im_idx].detach().cpu().numpy(),
+                        directory=f"{stage}_images",
                     )
 
             if stage == "predict":
@@ -217,8 +220,10 @@ class MultiTaskIm2Im(BaseModel):
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(
                 {f"{stage}_{k}_iou": v for k, v in iou_dict.items()},
-                logger=True,
+                logger=logger,
                 sync_dist=True,
+                on_step=False,
+                on_epoch=True,
             )
         if optimizer_idx == 1:
             losses = self.optimize_discriminator(batch, outs, stage)
