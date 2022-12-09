@@ -1,15 +1,15 @@
 _target_: aics_im2im.datamodules.PatchDatamodule
-manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/storage_version
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/find_melting_npm1_all_data/test_curriculum/im2im_train
 
 dataloader_kwargs:
-  num_workers: 4
-  batch_size: 4
+  num_workers: 8
+  batch_size: 1
   pin_memory: True
   persistent_workers: False
 
-cache_dir: "/storage/cellnucmorph_cache/"
+cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/find_melting_npm1_all_data/test_curriculum/im2im_train/cache
 buffer_size: 
-  train: 60
+  train: -1
   valid: -1
 
 transforms:
@@ -17,48 +17,47 @@ transforms:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']
         reader:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
+
       - _target_: monai.transforms.ToTensord
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']  
 
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf']
-        channel_wise: True
-
-      - _target_: aics_im2im.utils.Resized
-        keys: ['bf']
-        scale_factor: [1.3067, 1.25025, 1.25025]   
+        keys: ['raw']
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
-        keys: ['seg', 'bf']
-        patch_shape: [64, 384, 384]
-        patch_per_image: 1
+        keys: ['seg', 'raw']
+        patch_shape: [10, 512, 512]
+        patch_per_image: 4
         scales_dict:
-          1: ['seg']
-          2: ['bf']
-        selection_fn:
-          _target_: aics_im2im.utils.BrightSampler
-          key: 'seg'
-          threshold: 0
-          base_prob: 0.1
-          ch: 2
+          1: ['seg', 'raw']
 
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.3
-        keys: ['bf']
-        num_control_points: [80, 500]
+        keys: ['raw']
+        num_control_points: [10, 100]
+
+      - _target_: monai.transforms.RandStdShiftIntensityd
+        prob: 0.3
+        keys: ['raw']
+        factors: 1 
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        prob: 0.3
+        keys: ['raw']
+        gamma: [0.5, 2]
 
       - _target_: monai.transforms.RandFlipd
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']
         prob: 0.5
         spatial_axis: [1,2]
 
       - _target_: monai.transforms.RandRotate90d
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']
         prob: 0.5
         spatial_axes: [1,2]
 
@@ -66,44 +65,37 @@ transforms:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']
         reader:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
-
+      - _target_: monai.transforms.ToTensord
+        keys: ['seg', 'raw']    
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf']
-        channel_wise: True
-
-      - _target_: aics_im2im.utils.Resized
-        keys: ['bf']
-        scale_factor: [1.3067, 1.25025, 1.25025]   
+        keys: ['raw']
 
   valid:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['seg', 'bf']
+        keys: ['seg', 'raw']
         reader:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
 
+      - _target_: monai.transforms.ToTensord
+        keys: ['seg', 'raw']   
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['bf']
-        channel_wise: True
+        keys: ['raw']
 
-      - _target_: aics_im2im.utils.Resized
-        keys: ['bf']
-        scale_factor: [1.3067, 1.25025, 1.25025]   
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
-        keys: ['seg', 'bf']
-        patch_shape: [64, 384, 384]
+        keys: ['seg', 'raw']
+        patch_shape: [10, 512, 512]
         patch_per_image: 4
         scales_dict:
-          1: ['seg']
-          2: ['bf']
+          1: ['seg', 'raw']
 
 

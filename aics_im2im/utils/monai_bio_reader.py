@@ -11,7 +11,7 @@ from monai.config import PathLike
 from monai.data.image_reader import _stack_images
 import warnings
 
-warnings.filterwarnings("once")
+warnings.filterwarnings("ignore")
 
 
 @require_pkg(pkg_name="aicsimageio")
