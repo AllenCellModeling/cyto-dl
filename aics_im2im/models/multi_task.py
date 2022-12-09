@@ -45,11 +45,6 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
         self.task_heads = torch.nn.ModuleDict(self.task_heads)
-        # if discriminator is not None:
-        #     assert (
-        #         not automatic_optimization
-        #     ), "Automatic optimization must be off for GAN training. Please set this flag."
-
         self.automatic_optimization = automatic_optimization
         self.filenames = {}
         self.postprocessing = {} if postprocessing is None else postprocessing
@@ -119,13 +114,8 @@ class MultiTaskIm2Im(BaseModel):
         return iou_dict
 
     def optimize_discriminator(self, targets, outs, stage):
-        if self.discriminator is None:  # stage != "train" or
+        if self.discriminator is None:
             return
-        # assert (
-        #     not self.automatic_optimization
-        # ), "automatic optimization must be off for GAN Training"
-        # d_opt = self.optimizers()[1]
-        # d_opt.zero_grad()
         self.discriminator.set_requires_grad(True)
         loss_D = 0
         x = targets[self.hparams.x_key]
@@ -137,16 +127,11 @@ class MultiTaskIm2Im(BaseModel):
             self.log(f"D_{target_type}", loss_D_partial)
             loss_D += loss_D_partial
         loss_D *= 0.5
-        # self.manual_backward(loss_D)
-        # d_opt.step()
         self.discriminator.set_requires_grad(False)
         self.log("loss_D", loss_D)
         return loss_D
 
     def optimize_generator(self, targets, outs, stage):
-        # if stage == "train" and not self.automatic_optimization:
-        #     g_opt = self.optimizers()[0]
-        #     g_opt.zero_grad()
         losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
             for task, task_out in outs.items()
@@ -166,9 +151,6 @@ class MultiTaskIm2Im(BaseModel):
             logger=True,
             sync_dist=True,
         )
-        # if stage == "train" and not self.automatic_optimization:
-        #     self.manual_backward(losses["loss"])
-        #     g_opt.step()
 
         return losses
 
@@ -180,7 +162,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
         # only need filename
-        # metadata = batch[f"{self.hparams.x_key}_meta_dict"]
+        metadata = batch.get(f"{self.hparams.x_key}_meta_dict")
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -206,6 +188,9 @@ class MultiTaskIm2Im(BaseModel):
                         )
 
         elif stage in ["predict", "test"]:
+            assert (
+                metadata is not None
+            ), "Metadata required for proper file saving during prediction! Please check your transforms"
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
@@ -240,5 +225,4 @@ class MultiTaskIm2Im(BaseModel):
         elif optimizer_idx == 0:
             losses = self.optimize_generator(batch, outs, stage)
 
-        # if self.automatic_optimization or stage == "train":
         return losses
