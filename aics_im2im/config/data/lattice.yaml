@@ -1,13 +1,13 @@
 _target_: aics_im2im.datamodules.PatchDatamodule
-manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/pred_on_goldilocks/babybear_and_goldilocks_large_train_addition/gt/watershed_train
+manifest_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/lattice_segmentation
 
 dataloader_kwargs:
-  num_workers: 8
+  num_workers: 0
   batch_size: 1
   pin_memory: True
   persistent_workers: False
 
-cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/pred_on_goldilocks/babybear_and_goldilocks_large_train_addition/gt/watershed_train/cache
+cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/lattice_segmentation/cache
 buffer_size: 
   train: -1
   valid: -1
@@ -26,18 +26,15 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']  
 
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
+
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape: [48, 512, 512]
-        patch_per_image: 2
+        patch_shape: [128,128,128]
+        patch_per_image: 8
         scales_dict:
           1: ['seg', 'raw']
-        selection_fn:
-          _target_: aics_im2im.utils.BrightSampler
-          key: 'seg'
-          ch: 2
-          threshold: 0
-          base_prob: 0.2
 
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.3
@@ -57,11 +54,7 @@ transforms:
       - _target_: monai.transforms.RandFlipd
         keys: ['seg', 'raw']
         prob: 0.5
-        spatial_axis: [1]
-      - _target_: monai.transforms.RandFlipd
-        keys: ['seg', 'raw']
-        prob: 0.5
-        spatial_axis: [2]
+        spatial_axis: [1,2]
 
       - _target_: monai.transforms.RandRotate90d
         keys: ['seg', 'raw']
@@ -79,6 +72,8 @@ transforms:
             dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
 
   valid:
     _target_: monai.transforms.Compose
@@ -89,13 +84,17 @@ transforms:
         - _target_: aics_im2im.utils.monai_bio_reader
           reader_args:
             dimension_order_out: 'CZYX'
+
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']   
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['raw']
+
 
       - _target_: aics_im2im.utils.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape: [48, 512, 512]
-        patch_per_image: 1
+        patch_shape: [128,128,128]
+        patch_per_image: 8
         scales_dict:
           1: ['seg', 'raw']
 
