@@ -20,6 +20,7 @@ class MultiTaskIm2Im(BaseModel):
         backbone: nn.Module,
         tasks: Dict,
         x_key: str,
+        save_dir=None,
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
@@ -50,6 +51,7 @@ class MultiTaskIm2Im(BaseModel):
         self.postprocessing = {} if postprocessing is None else postprocessing
         self.discriminator = discriminator
         self.gan_loss = gan_loss
+        self.save_dir = save_dir
 
     def configure_optimizers(self):
         opts = []
@@ -83,12 +85,19 @@ class MultiTaskIm2Im(BaseModel):
         }
 
     def save_image(self, fn, img, directory):
-        with upload_artifacts(directory) as save_dir:
+        if self.save_dir is not None:
             OmeTiffWriter().save(
-                uri=Path(save_dir) / fn,
+                uri=Path(self.save_dir) / fn,
                 data=img.squeeze(),
                 dims_order="STCZYX"[-len(img.shape)],
             )
+        else:
+            with upload_artifacts(directory) as save_dir:
+                OmeTiffWriter().save(
+                    uri=Path(save_dir) / fn,
+                    data=img.squeeze(),
+                    dims_order="STCZYX"[-len(img.shape)],
+                )
 
     def _calculate_iou(self, target, pred):
         target = target.detach().cpu().numpy()
