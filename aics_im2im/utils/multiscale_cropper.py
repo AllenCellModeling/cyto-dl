@@ -20,6 +20,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         self.reversed_scale_dict = {}
         self.selection_fn = selection_fn
         self.max_attempts = max_attempts
+        self.spatial_dims = len(patch_shape)
         for k, v in scales_dict.items():
             for v_item in v:
                 self.reversed_scale_dict[v_item] = k
@@ -44,7 +45,9 @@ class RandomMultiScaleCropd(RandomizableTransform):
 
     def generate_slices(self, image_dict):
         # TODO this assumes all images are the same shape
-        max_shape = np.asarray(image_dict[self.scale_dict[1][0]].shape[-3:])
+        max_shape = np.asarray(
+            image_dict[self.scale_dict[1][0]].shape[-self.spatial_dims :]
+        )
         max_start_indices = max_shape - self.roi_size
         start_indices = np.asarray(
             [self.R.randint(max_start_indices) for _ in range(1)]
