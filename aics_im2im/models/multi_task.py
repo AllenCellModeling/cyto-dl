@@ -30,6 +30,7 @@ class MultiTaskIm2Im(BaseModel):
         postprocessing=None,
         discriminator=None,
         gan_loss=lambda x: 0,
+        costmap_key="cmap",
         **kwargs,
     ):
         super().__init__(
@@ -51,7 +52,6 @@ class MultiTaskIm2Im(BaseModel):
         self.postprocessing = {} if postprocessing is None else postprocessing
         self.discriminator = discriminator
         self.gan_loss = gan_loss
-        self.save_dir = save_dir
 
     def configure_optimizers(self):
         opts = []
@@ -64,7 +64,7 @@ class MultiTaskIm2Im(BaseModel):
                         + list(self.hr_skip.parameters())
                         + list(self.task_heads.parameters())
                     )
-                elif key == "generator":
+                elif key == "discriminator":
                     opt = self.haparams.optimizer[key](self.disciminator.parameters())
                 scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
                 opts.append(opt)
@@ -85,9 +85,9 @@ class MultiTaskIm2Im(BaseModel):
         }
 
     def save_image(self, fn, img, directory):
-        if self.save_dir is not None:
+        if self.hparams.save_dir is not None:
             OmeTiffWriter().save(
-                uri=Path(self.save_dir) / fn,
+                uri=Path(self.hparams.save_dir) / fn,
                 data=img.squeeze(),
                 dims_order="STCZYX"[-len(img.shape)],
             )
@@ -143,6 +143,10 @@ class MultiTaskIm2Im(BaseModel):
     def optimize_generator(self, targets, outs, stage):
         losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
+            if self.hparams.costmap_key not in targets.keys()
+            else self.losses[task](
+                task_out, targets[task], targets[self.hparams.costmap_key]
+            )
             for task, task_out in outs.items()
         }
         if self.discriminator is not None:
@@ -181,7 +185,6 @@ class MultiTaskIm2Im(BaseModel):
                 batch[k] = v.as_tensor()
 
         x = batch[self.hparams.x_key]
-        targets = {k: batch[k] for k in self.task_heads.keys()}
 
         if stage in ["train", "val"]:
             outs = self(x)
@@ -207,27 +210,27 @@ class MultiTaskIm2Im(BaseModel):
                 outs = sliding_window_inference(
                     inputs=x,
                     roi_size=self.hparams.patch_shape,
-                    sw_batch_size=4,
+                    sw_batch_size=16,
                     predictor=self.forward,
-                    overlap=0.1,
+                    overlap=0.5,
                     mode="gaussian",
                     test=True,
                 )
-            # go from dict to multichannel output here
             for k, v in outs.items():
                 for im_idx in range(v.shape[0]):
                     source_filename = (
                         str(Path(metadata["filename_or_obj"][im_idx]).stem) + ".ome.tif"
                     )
-                    # todo use postprocessing here
-                    self.save_image(
-                        f"{k}_{source_filename}",
-                        v[im_idx].detach().cpu().numpy(),
-                        directory=f"{stage}_images",
-                    )
+                    if k in self.postprocessing["prediction"]:
+                        self.save_image(
+                            f"{k}_{source_filename}",
+                            self.postprocessing["prediction"][k](v[im_idx]),
+                            directory=f"{stage}_images",
+                        )
 
             if stage == "predict":
                 return
+        targets = {k: batch[k] for k in self.task_heads.keys()}
         if stage in ["val", "test"]:
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(

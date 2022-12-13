@@ -24,3 +24,14 @@ class LossWrapper(nn.Module):
             ]
         ).mean()
         return loss * self.loss_scale
+
+
+class CMAP_loss(nn.Module):
+    def __init__(self, loss):
+        super().__init__()
+        self.loss = loss
+
+    def __call__(self, y_hat, y, cmap=None):
+        if cmap is None:
+            return torch.mean(self.loss(y_hat, y))
+        return torch.mean(torch.mul(self.loss(y_hat, y), cmap))
