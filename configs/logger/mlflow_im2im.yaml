@@ -1,0 +1,3 @@
+mlflow_im2im:
+  _target_: serotiny.loggers.MLFlowLogger
+  tracking_uri: https://mlflow.a100.int.allencell.org/
