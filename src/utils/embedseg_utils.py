@@ -522,12 +522,3 @@ def flatten_binary_scores(scores, labels, ignore=None):
     vscores = scores[valid]
     vlabels = labels[valid]
     return vscores, vlabels
-
-
-def concat_dict(input_dict, keys):
-    output_img = []
-    for key in keys:
-        im = input_dict[key].detach().cpu().numpy().astype(np.uint8)
-        output_img.append(im)
-    return np.stack(output_img)
-

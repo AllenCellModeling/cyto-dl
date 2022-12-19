@@ -1,7 +1,7 @@
 _target_: serotiny.datamodules.dataframe.DataframeDatamodule
 
-path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/add_real_images/goldilocks_test/max_projects/pred/gts
-cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/add_real_images/goldilocks_test/max_projects/pred/gts/cache
+path: 
+cache_dir:
 
 num_workers: 0
 batch_size: 1

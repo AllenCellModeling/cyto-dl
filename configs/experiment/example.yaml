@@ -27,3 +27,7 @@ callbacks:
     monitor: val_loss
   model_checkpoint:
     monitor: val_loss
+
+datamodule:
+  path:
+  cache_dir: 

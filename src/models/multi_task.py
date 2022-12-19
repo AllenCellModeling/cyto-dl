@@ -1,15 +1,14 @@
 from typing import Optional, Union, Callable, Dict
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.nn.modules.loss import _Loss as Loss
 from aicsimageio.writers import OmeTiffWriter
 from pathlib import Path
 import numpy as np
 from monai.data.meta_tensor import MetaTensor
 
 from serotiny.models.base_model import BaseModel
-from serotiny.ml_ops.mlflow_utils import upload_artifacts
+
+# from serotiny.ml_ops.mlflow_utils import upload_artifacts
 from monai.inferers import sliding_window_inference
 
 
@@ -85,12 +84,13 @@ class MultiTaskIm2Im(BaseModel):
         }
 
     def save_image(self, fn, img, directory):
-        with upload_artifacts(directory) as save_dir:
-            OmeTiffWriter().save(
-                uri=Path(save_dir) / fn,
-                data=img.squeeze(),
-                dims_order="STCZYX"[-len(img.shape)],
-            )
+        # with upload_artifacts(directory) as save_dir:
+        #     OmeTiffWriter().save(
+        #         uri=Path(save_dir) / fn,
+        #         data=img.squeeze(),
+        #         dims_order="STCZYX"[-len(img.shape)],
+        #     )
+        pass
 
     def _calculate_iou(self, target, pred):
         target = target.detach().cpu().numpy()
