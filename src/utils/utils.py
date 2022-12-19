@@ -42,8 +42,12 @@ def task_wrapper(task_func: Callable) -> Callable:
             raise ex
         finally:
             path = Path(cfg.paths.output_dir, "exec_time.log")
-            content = f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
-            save_file(path, content)  # save task execution time (even if exception occurs)
+            content = (
+                f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
+            )
+            save_file(
+                path, content
+            )  # save task execution time (even if exception occurs)
             close_loggers()  # close loggers (even if exception occurs so multirun won't fail)
 
         log.info(f"Output dir: {cfg.paths.output_dir}")
@@ -169,8 +173,9 @@ def log_hyperparameters(object_dict: dict) -> None:
     hparams["seed"] = cfg.get("seed")
 
     # send hparams to all loggers
+    mode = "train" if trainer.training else "test"
     for logger in trainer.loggers:
-        logger.log_hyperparams(hparams)
+        logger.log_hyperparams(hparams, mode=mode)
 
 
 def get_metric_value(metric_dict: dict, metric_name: str) -> float:
