@@ -4,15 +4,16 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: mnist.yaml
-  - override /model: mnist.yaml
+  - override /datamodule: patch.yaml
+  - override /model: multitask.yaml
   - override /callbacks: default.yaml
-  - override /trainer: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-tags: ["mnist", "simple_dense_net"]
+tags: ["dev"]
 
 seed: 12345
 
@@ -21,18 +22,3 @@ trainer:
   max_epochs: 10
   gradient_clip_val: 0.5
 
-model:
-  optimizer:
-    lr: 0.002
-  net:
-    lin1_size: 128
-    lin2_size: 256
-    lin3_size: 64
-
-datamodule:
-  batch_size: 64
-
-logger:
-  wandb:
-    tags: ${tags}
-    group: "mnist"
