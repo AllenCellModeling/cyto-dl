@@ -22,3 +22,8 @@ trainer:
   max_epochs: 10
   gradient_clip_val: 0.5
 
+callbacks:
+  early_stopping:
+    monitor: val_loss
+  model_checkpoint:
+    monitor: val_loss
