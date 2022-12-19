@@ -1,0 +1,70 @@
+_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+
+path: 
+cache_dir: 
+
+num_workers: 0
+batch_size: 1
+pin_memory: True
+persistent_workers: False
+columns: ['seg', 'raw']
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'ZCYX'
+
+       - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM']
+
+      - _target_: src.utils.EmbedSegConcatLabelsd
+        input_keys: ['GT', 'CE', 'CL']
+        output_key: seg
+
+
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'ZCYX'
+
+       - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM']
+
+      - _target_: src.utils.EmbedSegConcatLabelsd
+        input_keys: ['GT', 'CE', 'CL']
+        output_key: seg
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'ZCYX'
+
+       - _target_: monai.transforms.ToTensord
+        keys: ['IM', 'GT', 'CE', 'CL'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['IM']
+
+      - _target_: src.utils.EmbedSegConcatLabelsd
+        input_keys: ['GT', 'CE', 'CL']
+        output_key: seg
