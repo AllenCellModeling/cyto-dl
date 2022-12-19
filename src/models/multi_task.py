@@ -19,7 +19,7 @@ class MultiTaskIm2Im(BaseModel):
         backbone: nn.Module,
         tasks: Dict,
         x_key: str,
-        save_dir=None,
+        save_dir="./",
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
@@ -35,6 +35,7 @@ class MultiTaskIm2Im(BaseModel):
         super().__init__(
             **kwargs,
         )
+        Path(save_dir).mkdir(exist_ok=True)
         self.backbone = backbone
         self.hr_skip = hr_skip
         self.task_heads = {}
@@ -64,7 +65,7 @@ class MultiTaskIm2Im(BaseModel):
                         + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
-                    opt = self.haparams.optimizer[key](self.disciminator.parameters())
+                    opt = self.haparams.optimizer[key](self.discriminator.parameters())
                 scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
                 opts.append(opt)
                 scheds.append(scheduler)
@@ -84,13 +85,11 @@ class MultiTaskIm2Im(BaseModel):
         }
 
     def save_image(self, fn, img, directory):
-        # with upload_artifacts(directory) as save_dir:
-        #     OmeTiffWriter().save(
-        #         uri=Path(save_dir) / fn,
-        #         data=img.squeeze(),
-        #         dims_order="STCZYX"[-len(img.shape)],
-        #     )
-        pass
+        OmeTiffWriter().save(
+            uri=Path(self.hparams.save_dir) / directory / fn,
+            data=img.squeeze(),
+            dims_order="STCZYX"[-len(img.shape)],
+        )
 
     def _calculate_iou(self, target, pred):
         target = target.detach().cpu().numpy()
