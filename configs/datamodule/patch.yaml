@@ -3,7 +3,7 @@ _target_: serotiny.datamodules.dataframe.DataframeDatamodule
 path: 
 cache_dir:
 
-num_workers: 0
+num_workers: 8
 batch_size: 1
 pin_memory: True
 persistent_workers: False
@@ -17,7 +17,7 @@ transforms:
         keys: ['raw','seg']
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CYX'
+          dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']  
@@ -26,8 +26,8 @@ transforms:
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape: [512, 512]
-        patch_per_image: 16
+        patch_shape: [32,256,256]
+        patch_per_image: 8
         scales_dict:
           1: ['seg', 'raw']
         selection_fn:
@@ -58,12 +58,12 @@ transforms:
       - _target_: monai.transforms.RandFlipd
         keys: ['seg', 'raw']
         prob: 0.5
-        spatial_axis: [0]
+        spatial_axis: [2]
 
       - _target_: monai.transforms.RandRotate90d
         keys: ['seg', 'raw']
         prob: 0.5
-        spatial_axes: [0, 1]
+        spatial_axes: [1, 2]
 
   test:
     _target_: monai.transforms.Compose
@@ -72,7 +72,7 @@ transforms:
         keys: [ 'raw']
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CYX'
+          dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
         keys: ['raw']    
       - _target_: monai.transforms.NormalizeIntensityd
@@ -85,7 +85,7 @@ transforms:
         keys: ['raw', 'seg']
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CYX'
+          dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
         keys: ['seg', 'raw']   
       - _target_: monai.transforms.NormalizeIntensityd
@@ -93,7 +93,7 @@ transforms:
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ['seg', 'raw']
-        patch_shape:  [512, 512]
+        patch_shape:  [32,256,256]
         patch_per_image: 32
         scales_dict:
           1: ['seg', 'raw']
