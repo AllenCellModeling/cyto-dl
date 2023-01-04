@@ -38,5 +38,6 @@ datamodule:
     valid: 1
 
 logger:
-  experiment_name: benji_im2im_serotiny_port
-  run_name: mlflogger_test
+  mlflow_im2im:
+    experiment_name: benji_im2im_serotiny_port
+    run_name: mlflogger_test
