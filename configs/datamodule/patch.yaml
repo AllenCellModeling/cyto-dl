@@ -4,7 +4,7 @@ path:
 cache_dir:
 
 num_workers: 4
-batch_size: 4
+batch_size: 1
 pin_memory: True
 persistent_workers: False
 
@@ -24,21 +24,24 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
+        ## NOTE: target_col should not be normalized if it is a binary output
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${datamodule.columns}
+        keys: 
+          - ${source_col}
+          - ${target_col} 
         dtype: float16
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
-        patch_per_image: 32
+        patch_per_image: 8
         scales_dict:
           1:  ${datamodule.columns}
-        selection_fn:
-          _target_: serotiny.image.transforms.BrightSampler
-          key: ${target_col}
-          threshold: -0.38
-          base_prob: 0.15
+        # selection_fn:
+        #   _target_: serotiny.image.transforms.BrightSampler
+        #   key: ${target_col}
+        #   threshold: -0.38
+        #   base_prob: 0.15
 
       - _target_: monai.transforms.RandFlipd
         keys: ${datamodule.columns}
@@ -80,6 +83,7 @@ transforms:
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}  
+        ## NOTE: target_col should not be normalized if it is a binary output
       - _target_: monai.transforms.NormalizeIntensityd
         keys:   
           - ${source_col}
