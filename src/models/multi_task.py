@@ -8,7 +8,6 @@ from monai.data.meta_tensor import MetaTensor
 
 from serotiny.models.base_model import BaseModel
 
-# from serotiny.ml_ops.mlflow_utils import upload_artifacts
 from monai.inferers import sliding_window_inference
 
 
@@ -35,7 +34,8 @@ class MultiTaskIm2Im(BaseModel):
         super().__init__(
             **kwargs,
         )
-        Path(save_dir).mkdir(exist_ok=True)
+        for stage in ["train", "val", "test"]:
+            (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True)
         self.backbone = backbone
         self.hr_skip = hr_skip
         self.task_heads = {}
@@ -159,7 +159,6 @@ class MultiTaskIm2Im(BaseModel):
             on_step=False,
             on_epoch=True,
         )
-
         return losses
 
     def should_save_image(self, batch_idx):
