@@ -9,6 +9,10 @@ def rescale(img: torch.Tensor) -> np.ndarray:
     return rescale_intensity(img, out_range=np.uint8).astype(np.uint8)
 
 
+def detach(img: torch.Tensor) -> np.ndarray:
+    return img.detach().cpu().numpy().astype(float)
+
+
 def sigmoid_rescale(img: torch.Tensor) -> np.ndarray:
     img = torch.nn.Sigmoid()(img)
     img = img.detach().cpu().numpy()
