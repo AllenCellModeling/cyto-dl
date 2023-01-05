@@ -2,6 +2,16 @@ import torch
 from monai.networks.blocks import SubpixelUpsample, Convolution
 
 
+class ProjectionLayer(torch.nn.Module):
+    def __init__(self, dim, pool_size):
+        super().__init__()
+        self.dim = dim
+        self.projection = torch.nn.AvgPool3d(kernel_size=[pool_size, 1, 1])
+
+    def __call__(self, x):
+        return self.projection(x).squeeze(self.dim)
+
+
 class AuxHead(torch.nn.Module):
     def __init__(
         self,
@@ -13,11 +23,12 @@ class AuxHead(torch.nn.Module):
         dropout=0.1,
         hr_skip_channels=0,
         spatial_dims=3,
+        first_layer=torch.nn.Identity(),
     ):
         super().__init__()
         self.resolution = resolution
-        modules = []
         conv_input_channels = in_channels
+        modules = [first_layer]
         if resolution == "hr":
             conv_input_channels //= 2 ** spatial_dims
             self.upsample = SubpixelUpsample(
