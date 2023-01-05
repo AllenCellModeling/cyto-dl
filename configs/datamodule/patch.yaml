@@ -3,65 +3,54 @@ _target_: serotiny.datamodules.dataframe.DataframeDatamodule
 path: 
 cache_dir:
 
-num_workers: 8
-batch_size: 1
+num_workers: 4
+batch_size: 4
 pin_memory: True
 persistent_workers: False
-columns: ['seg', 'raw']
+
+columns: 
+  - ${source_col}
+  - ${target_col} 
 
 transforms:
   train:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['raw','seg']
+        keys: ${datamodule.columns}
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.ToTensord
-        keys: ['seg', 'raw']  
+        keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['raw']
+        keys: ${datamodule.columns}
+        dtype: float16
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['seg', 'raw']
-        patch_shape: [32,256,256]
-        patch_per_image: 8
+        keys: ${datamodule.columns}
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 32
         scales_dict:
-          1: ['seg', 'raw']
+          1:  ${datamodule.columns}
         selection_fn:
           _target_: serotiny.image.transforms.BrightSampler
-          key: 'seg'
-          threshold: 0
+          key: ${target_col}
+          threshold: -0.38
           base_prob: 0.15
 
-      - _target_: monai.transforms.RandHistogramShiftd
-        prob: 0.3
-        keys: ['raw']
-        num_control_points: [90, 500]
-
-      - _target_: monai.transforms.RandStdShiftIntensityd
-        prob: 0.3
-        keys: ['raw']
-        factors: 0.1 
-
-      - _target_: monai.transforms.RandAdjustContrastd
-        prob: 0.3
-        keys: ['raw']
-        gamma: [0.9, 1.1]
-
       - _target_: monai.transforms.RandFlipd
-        keys: ['seg', 'raw']
+        keys: ${datamodule.columns}
         prob: 0.5
         spatial_axis: [1]
       - _target_: monai.transforms.RandFlipd
-        keys: ['seg', 'raw']
+        keys: ${datamodule.columns}
         prob: 0.5
         spatial_axis: [2]
 
       - _target_: monai.transforms.RandRotate90d
-        keys: ['seg', 'raw']
+        keys: ${datamodule.columns}
         prob: 0.5
         spatial_axes: [1, 2]
 
@@ -69,32 +58,37 @@ transforms:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: [ 'raw']
+        keys:   
+          - ${source_col}
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
-        keys: ['raw']    
+        keys:   
+          - ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['raw']
+        keys:   
+          - ${source_col}
 
   valid:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['raw', 'seg']
+        keys: ${datamodule.columns}
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
-        keys: ['seg', 'raw']   
+        keys: ${datamodule.columns}  
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['raw']
+        keys:   
+          - ${source_col}
+          - ${target_col}
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['seg', 'raw']
-        patch_shape:  [32,256,256]
+        keys: ${datamodule.columns}
+        patch_shape:  ${model.patch_shape}
         patch_per_image: 32
         scales_dict:
-          1: ['seg', 'raw']
+          1:  ${datamodule.columns}
 
