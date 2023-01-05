@@ -20,6 +20,7 @@ class AuxHead(torch.nn.Module):
         out_channels,
         final_act,
         n_hr_convs=1,
+        n_lr_convs=1,
         dropout=0.1,
         hr_skip_channels=0,
         spatial_dims=3,
@@ -49,13 +50,23 @@ class AuxHead(torch.nn.Module):
                         dropout=dropout,
                     )
                 )
-        if spatial_dims == 3:
-            conv_fn = torch.nn.Conv3d
-        elif spatial_dims == 2:
-            conv_fn = torch.nn.Conv2d
-        modules.append(
-            conv_fn(conv_input_channels, out_channels, kernel_size=1, padding=0)
-        )
+        for i in range(n_lr_convs):
+            if i == n_lr_convs - 1:
+                act = ""  # empty string is identity activation for monai conv
+                out_ch = out_channels
+            else:
+                act = ("leakyrelu", {"inplace": True, "negative_slope": 0.2})
+                out_ch = conv_input_channels
+            modules.append(
+                Convolution(
+                    spatial_dims=spatial_dims,
+                    in_channels=conv_input_channels,
+                    out_channels=out_ch,
+                    act=act,
+                    norm="INSTANCE",
+                    dropout=dropout,
+                )
+            )
         modules.append(final_act)
         self.aux_head = torch.nn.Sequential(*modules)
 
