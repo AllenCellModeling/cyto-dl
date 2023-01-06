@@ -54,9 +54,11 @@ class AuxHead(torch.nn.Module):
             if i == n_lr_convs - 1:
                 act = ""  # empty string is identity activation for monai conv
                 out_ch = out_channels
+                kernel_size = 1
             else:
                 act = ("leakyrelu", {"inplace": True, "negative_slope": 0.2})
                 out_ch = conv_input_channels
+                kernel_size = 3
             modules.append(
                 Convolution(
                     spatial_dims=spatial_dims,
@@ -65,6 +67,7 @@ class AuxHead(torch.nn.Module):
                     act=act,
                     norm="INSTANCE",
                     dropout=dropout,
+                    kernel_size=kernel_size,
                 )
             )
         modules.append(final_act)
