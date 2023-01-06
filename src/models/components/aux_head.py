@@ -19,8 +19,7 @@ class AuxHead(torch.nn.Module):
         in_channels,
         out_channels,
         final_act,
-        n_hr_convs=1,
-        n_lr_convs=1,
+        n_convs=1,
         dropout=0.1,
         hr_skip_channels=0,
         spatial_dims=3,
@@ -38,41 +37,30 @@ class AuxHead(torch.nn.Module):
                 out_channels=conv_input_channels,
             )
 
-            for i in range(n_hr_convs):
-                # first convolution has to include skip connection from input
-                modules.append(
-                    UnetResBlock(
-                        spatial_dims=spatial_dims,
-                        in_channels=conv_input_channels + (hr_skip_channels) * (i == 0),
-                        out_channels=conv_input_channels,
-                        stride=1,
-                        kernel_size=3,
-                        norm_name="INSTANCE",
-                        dropout=dropout,
-                        act_name=act,
-                    )
-                )
-
-        for i in range(n_lr_convs):
-            if i == n_lr_convs - 1:
+        for i in range(n_convs):
+            in_channels = conv_input_channels
+            out_ch = conv_input_channels
+            act = "LEAKYRELU"
+            # first hr block
+            if i == 0 and resolution == "hr":
+                in_channels += hr_skip_channels
+            # last block
+            if i == n_convs - 1:
                 act = ""  # empty string is identity activation for monai conv
                 out_ch = out_channels
-            else:
-                act = ("leakyrelu", {"inplace": True, "negative_slope": 0.2})
-                out_ch = conv_input_channels
 
-                modules.append(
-                    UnetResBlock(
-                        spatial_dims=spatial_dims,
-                        in_channels=in_channels,
-                        out_channels=out_ch,
-                        stride=1,
-                        kernel_size=3,
-                        norm_name="INSTANCE",
-                        dropout=dropout,
-                        act_name=act,
-                    )
+            modules.append(
+                UnetResBlock(
+                    spatial_dims=spatial_dims,
+                    in_channels=in_channels,
+                    out_channels=out_ch,
+                    stride=1,
+                    kernel_size=3,
+                    norm_name="INSTANCE",
+                    dropout=dropout,
+                    act_name=act,
                 )
+            )
         modules.append(final_act)
         self.aux_head = torch.nn.Sequential(*modules)
 
