@@ -1,5 +1,5 @@
 import torch
-from monai.networks.blocks import SubpixelUpsample, Convolution
+from monai.networks.blocks import SubpixelUpsample, UnetResBlock
 
 
 class ProjectionLayer(torch.nn.Module):
@@ -41,35 +41,38 @@ class AuxHead(torch.nn.Module):
             for i in range(n_hr_convs):
                 # first convolution has to include skip connection from input
                 modules.append(
-                    Convolution(
+                    UnetResBlock(
                         spatial_dims=spatial_dims,
                         in_channels=conv_input_channels + (hr_skip_channels) * (i == 0),
                         out_channels=conv_input_channels,
-                        act=("leakyrelu", {"inplace": True, "negative_slope": 0.2}),
-                        norm="INSTANCE",
+                        stride=1,
+                        kernel_size=3,
+                        norm_name="INSTANCE",
                         dropout=dropout,
+                        act_name=act,
                     )
                 )
+
         for i in range(n_lr_convs):
             if i == n_lr_convs - 1:
                 act = ""  # empty string is identity activation for monai conv
                 out_ch = out_channels
-                kernel_size = 1
             else:
                 act = ("leakyrelu", {"inplace": True, "negative_slope": 0.2})
                 out_ch = conv_input_channels
-                kernel_size = 3
-            modules.append(
-                Convolution(
-                    spatial_dims=spatial_dims,
-                    in_channels=conv_input_channels,
-                    out_channels=out_ch,
-                    act=act,
-                    norm="INSTANCE",
-                    dropout=dropout,
-                    kernel_size=kernel_size,
+
+                modules.append(
+                    UnetResBlock(
+                        spatial_dims=spatial_dims,
+                        in_channels=in_channels,
+                        out_channels=out_ch,
+                        stride=1,
+                        kernel_size=3,
+                        norm_name="INSTANCE",
+                        dropout=dropout,
+                        act_name=act,
+                    )
                 )
-            )
         modules.append(final_act)
         self.aux_head = torch.nn.Sequential(*modules)
 
