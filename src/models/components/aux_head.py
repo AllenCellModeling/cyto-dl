@@ -6,6 +6,14 @@ from monai.networks.blocks import (
 )
 
 
+class IdentityAuxHead(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x, hr_skip):
+        return x
+
+
 class ProjectionLayer(torch.nn.Module):
     def __init__(self, dim, pool_size):
         super().__init__()
