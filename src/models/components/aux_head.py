@@ -1,14 +1,21 @@
 import torch
-from monai.networks.blocks import SubpixelUpsample, UnetResBlock
+from monai.networks.blocks import (
+    SubpixelUpsample,
+    UnetResBlock,
+    Convolution,
+    UnetOutBlock,
+)
+from torch.nn import LeakyReLU
 
 
 class ProjectionLayer(torch.nn.Module):
     def __init__(self, dim, pool_size):
         super().__init__()
         self.dim = dim
-        self.projection = torch.nn.AvgPool3d(kernel_size=[pool_size, 1, 1])
+        self.projection = torch.nn.MaxPool3d(kernel_size=[pool_size, 1, 1])
 
     def __call__(self, x):
+        # x = LeakyReLU()(x)
         return self.projection(x).squeeze(self.dim)
 
 
@@ -39,28 +46,29 @@ class AuxHead(torch.nn.Module):
 
         for i in range(n_convs):
             in_channels = conv_input_channels
-            out_ch = conv_input_channels
-            act = "LEAKYRELU"
             # first hr block
             if i == 0 and resolution == "hr":
                 in_channels += hr_skip_channels
-            # last block
-            if i == n_convs - 1:
-                act = ""  # empty string is identity activation for monai conv
-                out_ch = out_channels
 
             modules.append(
                 UnetResBlock(
                     spatial_dims=spatial_dims,
                     in_channels=in_channels,
-                    out_channels=out_ch,
+                    out_channels=conv_input_channels,
                     stride=1,
                     kernel_size=3,
                     norm_name="INSTANCE",
                     dropout=dropout,
-                    act_name=act,
                 )
             )
+        modules.append(
+            UnetOutBlock(
+                spatial_dims=spatial_dims,
+                in_channels=conv_input_channels,
+                out_channels=out_channels,
+                dropout=dropout,
+            )
+        )
         modules.append(final_act)
         self.aux_head = torch.nn.Sequential(*modules)
 
