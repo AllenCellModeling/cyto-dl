@@ -65,7 +65,7 @@ class MultiTaskIm2Im(BaseModel):
                         + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
-                    opt = self.haparams.optimizer[key](self.discriminator.parameters())
+                    opt = self.hparams.optimizer[key](self.discriminator.parameters())
                 scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
                 opts.append(opt)
                 scheds.append(scheduler)
@@ -130,7 +130,7 @@ class MultiTaskIm2Im(BaseModel):
         loss_D *= 0.5
         self.discriminator.set_requires_grad(False)
         self.log("loss_D", loss_D, logger=True, on_step=False, on_epoch=True)
-        return loss_D
+        return {"loss":loss_D}
 
     def optimize_generator(self, targets, outs, stage):
         losses = {
@@ -232,8 +232,8 @@ class MultiTaskIm2Im(BaseModel):
             )
 
         if optimizer_idx == 1:
-            losses = self.optimize_discriminator(batch, outs, stage)
-        elif optimizer_idx == 0:
+            losses = self.optimize_discriminator(batch, outs)
+        elif optimizer_idx in (0, None):
             losses = self.optimize_generator(batch, outs, stage)
 
         return losses
