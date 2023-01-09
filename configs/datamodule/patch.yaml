@@ -4,7 +4,7 @@ path:
 cache_dir:
 
 num_workers: 4
-batch_size: 1
+batch_size: 8
 pin_memory: True
 persistent_workers: False
 
@@ -28,13 +28,19 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: 
           - ${source_col}
-          - ${target_col} 
+          # - ${target_col} 
         dtype: float16
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys:
+          - ${target_col}
+        above: False
+        threshold: 0.1
+        cval: 1
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
-        patch_per_image: 8
+        patch_per_image: 1
         scales_dict:
           1:  ${datamodule.columns}
         # selection_fn:
@@ -42,6 +48,21 @@ transforms:
         #   key: ${target_col}
         #   threshold: -0.38
         #   base_prob: 0.15
+
+      - _target_: monai.transforms.RandHistogramShiftd
+        prob: 0.3
+        keys: ${source_col}
+        num_control_points: [90, 500]
+
+      - _target_: monai.transforms.RandStdShiftIntensityd
+        prob: 0.3
+        keys: ${source_col}
+        factors: 0.1 
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        prob: 0.3
+        keys: ${source_col}
+        gamma: [0.9, 1.1]
 
       - _target_: monai.transforms.RandFlipd
         keys: ${datamodule.columns}
@@ -87,12 +108,19 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys:   
           - ${source_col}
+          # - ${target_col}
+
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys:
           - ${target_col}
+        above: False
+        threshold: 0.1
+        cval: 1
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape:  ${model.patch_shape}
-        patch_per_image: 32
+        patch_per_image: 6
         scales_dict:
           1:  ${datamodule.columns}
 
