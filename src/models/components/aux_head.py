@@ -2,10 +2,8 @@ import torch
 from monai.networks.blocks import (
     SubpixelUpsample,
     UnetResBlock,
-    Convolution,
     UnetOutBlock,
 )
-from torch.nn import LeakyReLU
 
 
 class ProjectionLayer(torch.nn.Module):
@@ -15,7 +13,6 @@ class ProjectionLayer(torch.nn.Module):
         self.projection = torch.nn.MaxPool3d(kernel_size=[pool_size, 1, 1])
 
     def __call__(self, x):
-        # x = LeakyReLU()(x)
         return self.projection(x).squeeze(self.dim)
 
 
