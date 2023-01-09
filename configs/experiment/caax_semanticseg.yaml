@@ -29,23 +29,22 @@ callbacks:
     save_top_k: 2
     every_n_epochs: 1
 model:
-  patch_shape: [32, 128, 128]
+  patch_shape: [32, 256, 256]
 
 source_col: raw
 target_col: seg
 
 datamodule:
-  # path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin
-  # cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin/cache
-  path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/im2im_interphase"
-  cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/im2im_interphase/cache
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/retrain_caax_semseg
+  cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/retrain_caax_semseg/cache
   subsample: 
     train: -1
     test: 1
     valid: -1
+  batch_size: 4
 
 
 logger:
   mlflow_im2im:
-    experiment_name: benji_NPM1
-    run_name: interphase_big_train
+    experiment_name: benji_caax_semseg
+    run_name: pre_normalized_test
