@@ -13,21 +13,7 @@ from torch.autograd import Variable
 from itertools import filterfalse  # noqa F401
 import torch.nn.functional as F
 from monai.transforms import Transform
-
-
-class EmbedSegConcatLabelsd(Transform):
-    def __init__(self, input_keys, output_key):
-        super().__init__()
-        self.input_keys = input_keys
-        self.output_key = output_key
-
-    def __call__(self, image_dict):
-        print(image_dict.keys())
-        image_dict[self.output_key] = {}
-        for key in self.input_keys:
-            image_dict[self.output_key][key] = image_dict[key].as_tensor()
-            del image_dict[key]
-        return image_dict
+from monai.data.meta_tensor import MetaTensor
 
 
 @jit(nopython=True)
@@ -45,48 +31,83 @@ def pairwise_python(X):
     return D
 
 
+class EmbedSegPreprocess(Transform):
+    def __init__(
+        self,
+        input_key,
+        output_key,
+        anisotropy_factor=1,
+        centroid_name="centroid",
+        downsample=4,
+    ):
+        super().__init__()
+        self.input_key = input_key
+        self.output_key = output_key
+        self.anisotropy_factor = anisotropy_factor
+        self.centroid_name = centroid_name
+        self.downsample = downsample
 
-def generate_center_image_3d(instance, center, ids, anisotropy_factor, speed_up):
-    center_image = np.zeros(instance.shape, dtype=bool)
-    instance_downsampled = instance[
-        :, :: int(speed_up), :: int(speed_up)
-    ]  # down sample in x and y
-    for j, id in enumerate(ids):
-        z, y, x = np.where(instance_downsampled == id)
-        if len(y) != 0 and len(x) != 0:
-            if center == "centroid":
-                zm, ym, xm = np.mean(z), np.mean(y), np.mean(x)
-            elif center == "approximate-medoid":
-                zm_temp, ym_temp, xm_temp = np.median(z), np.median(y), np.median(x)
-                imin = np.argmin(
-                    (x - xm_temp) ** 2
-                    + (y - ym_temp) ** 2
-                    + (anisotropy_factor * (z - zm_temp)) ** 2
-                )
-                zm, ym, xm = z[imin], y[imin], x[imin]
-            elif center == "medoid":
-                dist_matrix = pairwise_python(
-                    np.vstack(
-                        (speed_up * x, speed_up * y, anisotropy_factor * z)
-                    ).transpose()
-                )
-                imin = np.argmin(np.sum(dist_matrix, axis=0))
-                zm, ym, xm = z[imin], y[imin], x[imin]
-            center_image[
-                int(np.round(zm)),
-                int(np.round(speed_up * ym)),
-                int(np.round(speed_up * xm)),
-            ] = True
-    return center_image
+    def _get_centroid(self, image):
+        ids = torch.unique(image)
+        center_image = np.zeros(image.shape, dtype=bool)
+        instance_downsampled = image[
+            :, :, :: int(self.downsample), :: int(self.downsample)
+        ]  # down sample in x and y
+        for id in ids:
+            c, z, y, x = np.where(instance_downsampled == id)
+            if len(y) != 0 and len(x) != 0:
+                if self.centroid_name == "centroid":
+                    zm, ym, xm = np.mean(z), np.mean(y), np.mean(x)
+                elif self.centroid_name == "approximate-medoid":
+                    zm_temp, ym_temp, xm_temp = np.median(z), np.median(y), np.median(x)
+                    imin = np.argmin(
+                        (x - xm_temp) ** 2
+                        + (y - ym_temp) ** 2
+                        + (self.anisotropy_factor * (z - zm_temp)) ** 2
+                    )
+                    zm, ym, xm = z[imin], y[imin], x[imin]
+                elif self.centroid_name == "medoid":
+                    dist_matrix = pairwise_python(
+                        np.vstack(
+                            (
+                                self.downsample * x,
+                                self.downsample * y,
+                                self.anisotropy_factor * z,
+                            )
+                        ).transpose()
+                    )
+                    imin = np.argmin(np.sum(dist_matrix, axis=0))
+                    zm, ym, xm = z[imin], y[imin], x[imin]
+                center_image[
+                    c,
+                    int(np.round(zm)),
+                    int(np.round(self.downsample * ym)),
+                    int(np.round(self.downsample * xm)),
+                ] = True
+        return torch.from_numpy(center_image)
 
-
-def generate_center_image(instance, center, ids, anisotropy_factor=1, speed_up=1):
-    if len(instance.shape) == 3:
-        return generate_center_image_3d(
-            instance, center, ids, anisotropy_factor, speed_up
+    def __call__(self, image_dict):
+        image_dict[self.output_key["class"]] = image_dict[self.input_key] > 0
+        image_dict[self.output_key["centroid"]] = self._get_centroid(
+            image_dict[self.input_key]
         )
-    else:
-        raise ValueError("instance image must be either 2D or 3D")
+        return image_dict
+
+
+class EmbedSegConcatLabelsd(Transform):
+    def __init__(self, input_keys, output_key):
+        super().__init__()
+        self.input_keys = input_keys
+        self.output_key = output_key
+
+    def __call__(self, image_dict):
+        image_dict[self.output_key] = {}
+        for key in self.input_keys:
+            im = image_dict[key]
+            im = im.as_tensor() if isinstance(im, MetaTensor) else im
+            image_dict[self.output_key][key] = im
+            del image_dict[key]
+        return image_dict
 
 
 class Cluster_3d:
@@ -123,7 +144,7 @@ class Cluster_3d:
     def cluster_with_gt(
         self,
         prediction,
-        instance,
+        image,
         n_sigma=1,
     ):
 
@@ -137,11 +158,11 @@ class Cluster_3d:
         sigma = prediction[3 : 3 + n_sigma]  # n_sigma x h x w
 
         instance_map = torch.zeros(depth, height, width).short().cuda()
-        unique_instances = instance.unique()
+        unique_instances = image.unique()
         unique_instances = unique_instances[unique_instances != 0]
 
         for id in unique_instances:
-            mask = instance.eq(id).view(1, depth, height, width)
+            mask = image.eq(id).view(1, depth, height, width)
             center = (
                 spatial_emb[mask.expand_as(spatial_emb)]
                 .view(3, -1)
@@ -233,6 +254,45 @@ class Cluster_3d:
             instance_map[mask.squeeze().cpu()] = instance_map_masked.cpu()
 
         return instance_map, instances
+
+
+def generate_instance_clusters(
+    pred: Union[np.ndarray, torch.Tensor],
+    grid_x: int = 768,
+    grid_y: int = 768,
+    pixel_x: int = 1,
+    pixel_y: int = 1,
+    n_sigma: int = 2,
+    seed_thresh: float = 0.5,
+    min_mask_sum: int = 10,
+    min_unclustered_sum: int = 10,
+    min_object_size: int = 10,
+    grid_z: int = 32,
+    pixel_z: int = 1,
+):
+    ##########################################################
+    # Warninging: Even passing in a mini-batch, only the first
+    # one will be used.
+    ##########################################################
+    if not torch.is_tensor(pred):
+        pred = torch.from_numpy(pred)
+
+    if len(pred.shape) == 5:  # B x C x Z x Y x X
+        cluster = Cluster_3d(
+            pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
+        )
+    else:
+        raise ValueError("prediction needs to be 4D or 5D in cluster")
+    instance_map, _ = cluster.cluster(
+        pred[0],  # get rid of batch dimension
+        n_sigma=n_sigma,
+        seed_thresh=seed_thresh,
+        min_mask_sum=min_mask_sum,
+        min_unclustered_sum=min_unclustered_sum,
+        min_object_size=min_object_size,
+    )
+
+    return instance_map.cpu().numpy()
 
 
 # adapted from https://github.com/juglab/EmbedSeg/tree/main/EmbedSeg/criterions
@@ -335,11 +395,11 @@ class SpatialEmbLoss_3d(nn.Module):
 
             if self.use_costmap:
                 costmap = costmaps[b]
-            instance = instances[b]  # without costmap adjustment
+            image = instances[b]  # without costmap adjustment
             label = labels[b]
             center_image = center_images[b]
 
-            # use adjusted instance to find all ids
+            # use adjusted image to find all ids
             instance_ids = instances_adjusted[b].unique()
             instance_ids = instance_ids[instance_ids != 0]
 
@@ -358,11 +418,11 @@ class SpatialEmbLoss_3d(nn.Module):
 
             for id in instance_ids:
 
-                # use the original instance without costmap adjustment to fetch
-                # instance mask, since the costmap may partial cut some instances
+                # use the original image without costmap adjustment to fetch
+                # image mask, since the costmap may partial cut some instances
                 # and alter the ground truth only use the costmap to adjust the
                 # loss values at the end
-                in_mask = instance.eq(id)  # 1 x d x h x w
+                in_mask = image.eq(id)  # 1 x d x h x w
                 center_mask = in_mask & center_image
 
                 if center_mask.sum().eq(1):
@@ -391,6 +451,7 @@ class SpatialEmbLoss_3d(nn.Module):
                     )
 
                 s = torch.exp(s * 10)
+                s = torch.nan_to_num(s)
                 dist = torch.exp(
                     -1
                     * torch.sum(torch.pow(spatial_emb - center, 2) * s, 0, keepdim=True)

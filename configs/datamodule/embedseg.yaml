@@ -3,68 +3,105 @@ _target_: serotiny.datamodules.dataframe.DataframeDatamodule
 path: 
 cache_dir: 
 
-num_workers: 0
+num_workers: 8
 batch_size: 1
 pin_memory: True
 persistent_workers: False
-columns: ['seg', 'raw']
+split_column: split
+columns: 
+  - raw
+  - seg 
+  - split
 
 transforms:
   train:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+        keys: ['raw', 'seg'] 
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'ZCYX'
+          dimension_order_out: 'CZYX'
 
-       - _target_: monai.transforms.ToTensord
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.ToTensord
+        keys: ['raw', 'seg'] 
     
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['IM']
+        keys: ['raw']
+      
+      #creates two new images - CL is a binary segmentation of 'seg'
+      # and CE is a boolean image of the object centroids
+      - _target_: src.utils.EmbedSegPreprocess
+        input_key: 'seg'
+        output_key:
+          class: CL
+          centroid: 'CE'
+
+      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+        keys: ['raw', 'seg', 'CL', 'CE']
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1: ['raw', 'seg', 'CL', 'CE']
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.AnySampler
+          key: CE
+          threshold: 1
+          base_prob: 0
 
       - _target_: src.utils.EmbedSegConcatLabelsd
-        input_keys: ['GT', 'CE', 'CL']
-        output_key: seg
-
-
+        input_keys: ['seg', 'CE', 'CL']
+        output_key: GT
 
   test:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+        keys: ['raw'] 
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'ZCYX'
+          dimension_order_out: 'CZYX'
 
-       - _target_: monai.transforms.ToTensord
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.ToTensord
+        keys: ['raw'] 
     
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['IM']
-
-      - _target_: src.utils.EmbedSegConcatLabelsd
-        input_keys: ['GT', 'CE', 'CL']
-        output_key: seg
+        keys: ['raw']
 
   valid:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+        keys: ['raw', 'seg'] 
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'ZCYX'
+          dimension_order_out: 'CZYX'
 
-       - _target_: monai.transforms.ToTensord
-        keys: ['IM', 'GT', 'CE', 'CL'] 
+      - _target_: monai.transforms.ToTensord
+        keys: ['raw', 'seg'] 
     
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ['IM']
+        keys: ['raw']
+      
+      - _target_: src.utils.EmbedSegPreprocess
+        input_key: 'seg'
+        output_key:
+          class: CL
+          centroid: 'CE'
+
+      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+        keys: ['raw', 'seg', 'CL', 'CE']
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1: ['raw', 'seg', 'CL', 'CE']
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.AnySampler
+          key: CE
+          threshold: 1
+          base_prob: 0
 
       - _target_: src.utils.EmbedSegConcatLabelsd
-        input_keys: ['GT', 'CE', 'CL']
-        output_key: seg
+        input_keys: ['seg', 'CE', 'CL']
+        output_key: GT
+        
