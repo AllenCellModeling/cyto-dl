@@ -20,7 +20,7 @@ pyrootutils     # standardizing the project root setup
 pre-commit      # hooks for applying linters on commit
 rich            # beautiful text formatting in terminal
 pytest          # tests
-monai
+monai>=1.1.0
 pandas
 numba
 scikit-image
