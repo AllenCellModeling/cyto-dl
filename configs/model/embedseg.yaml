@@ -3,6 +3,7 @@ _target_: src.models.MultiTaskIm2Im
 save_images_every_n_epochs: 1
 x_key: raw
 patch_shape: [32, 512, 512]
+save_dir: ${paths.output_dir}
 
 backbone:
   _target_: monai.networks.nets.DynUNet
@@ -40,7 +41,7 @@ optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.AdamW
-    lr: 0.000001
+    lr: 0.0001
     weight_decay: 0.001
 
 lr_scheduler:
