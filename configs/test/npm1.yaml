@@ -1,0 +1,41 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: patch.yaml
+  - override /model: multitask.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+mode: 'predict'
+
+
+ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/find_melting_npm1_all_data/test_curriculum/template_im2im_interphase_model/epoch_019.ckpt"
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+  # checkpoint_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/find_melting_npm1_all_data/test_curriculum/template_im2im_interphase_model/epoch_019.ckpt"
+
+model:
+  patch_shape: [32, 128, 128]
+  save_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/retrain_caax_semseg/pred_on_cellnucmorph
+
+source_col: raw
+target_col: seg
+
+datamodule:
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/retrain_caax_semseg/pred_on_cellnucmorph
+  batch_size: 1
+
+
+logger:
+  mlflow_im2im:
+    experiment_name: benji_NPM1
+    run_name: interphase_big_train
