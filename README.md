@@ -1,6 +1,3 @@
-
-______________________________________________________________________
-
 <div align="center">
 
 # AICS im2im
@@ -15,8 +12,17 @@ ______________________________________________________________________
 </div>
 
 ## Description
+In an effort to spend more work on methods development, simplify maintenance, and acreate a unified framework for all of AICS's image-to-image deep learning tools, we have created `aics_im2im`. We base it on the [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) model.
 
-Unify image-to-image deep learning training and inference code into a single repo
+### Supported im2im model types
+1. Segmentation
+2. Transfer Function
+3. Labelfree
+4. EmbedSeg
+    Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the (MMV-Lab's implementation)[https://github.com/MMV-Lab/mmv_im2im]. 
+    [Docs](docs/embedseg.md)
+
+
 
 ## How to run
 
@@ -24,7 +30,7 @@ Install dependencies
 
 ```bash
 # clone project
-git clone https://github.com/YourGithubName/your-repo-name
+git clone https://github.com/AllenCellModeling/aics-im2im
 cd your-repo-name
 
 # [OPTIONAL] create conda environment
@@ -59,3 +65,7 @@ You can override any parameter from command line like this
 ```bash
 python src/train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```
+
+
+
+

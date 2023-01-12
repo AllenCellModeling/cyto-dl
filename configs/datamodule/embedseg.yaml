@@ -44,9 +44,9 @@ transforms:
         scales_dict:
           1: ['raw', 'seg', 'CL', 'CE']
         selection_fn:
-          _target_: serotiny.image.transforms.bright_sampler.AnySampler
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
           key: CE
-          threshold: 1
+          threshold: 0
           base_prob: 0
 
       - _target_: src.utils.EmbedSegConcatLabelsd
@@ -96,9 +96,9 @@ transforms:
         scales_dict:
           1: ['raw', 'seg', 'CL', 'CE']
         selection_fn:
-          _target_: serotiny.image.transforms.bright_sampler.AnySampler
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
           key: CE
-          threshold: 1
+          threshold: 0
           base_prob: 0
 
       - _target_: src.utils.EmbedSegConcatLabelsd
