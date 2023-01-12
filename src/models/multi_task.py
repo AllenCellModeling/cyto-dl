@@ -19,6 +19,27 @@ def sum_losses(losses):
     return losses
 
 
+def dummy_fn(seg_prob_tuple, window_data, importance_map_):
+    new_3d_tensor = torch.zeros_like(seg_prob_tuple[1]).type_as(seg_prob_tuple[1])
+    new_3d_tensor[:, :] = seg_prob_tuple[0].unsqueeze(2)
+    seg_prob_tuple = tuple((new_3d_tensor, seg_prob_tuple[1]))
+    return seg_prob_tuple, importance_map_
+
+
+def postprocessing(targets, outs):
+    ref_key = "seg"
+    key = "mitotic_mask"
+    ch = 0
+    best_z_seg = torch.argmax(torch.sum(targets[ref_key][ch], dim=(2, 3)), dim=1)
+    new_values = []
+
+    for i in range(outs[key].shape[0]):
+        new_values.append(outs[key][i, :, best_z_seg[i]])
+    outs[key] = torch.stack(new_values)
+
+    return outs
+
+
 class MultiTaskIm2Im(BaseModel):
     def __init__(
         self,
@@ -160,45 +181,24 @@ class MultiTaskIm2Im(BaseModel):
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
 
-    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
-        # only need filename
-        metadata = batch.get(f"{self.hparams.x_key}_meta_dict")
-        # convert monai metatensors to tensors
-        for k, v in batch.items():
-            if isinstance(v, MetaTensor):
-                batch[k] = v.as_tensor()
+    def save_batch(self, batch_idx, stage, batch, outs, metadata):
+        if stage in ["train", "val"] and self.should_save_image(batch_idx):
+            for result, suffix, dict_type in zip(
+                [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
+            ):
+                for key in self.postprocessing[dict_type]:
+                    if key not in result:
+                        continue
 
-        x = batch[self.hparams.x_key]
-        if stage in ["train", "val"]:
-            outs = self(x)
-            if self.should_save_image(batch_idx):
-                for result, suffix, dict_type in zip(
-                    [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
-                ):
-                    for key in self.postprocessing[dict_type]:
-                        if key not in result:
-                            continue
-
-                        self.save_image(
-                            f"{self.global_step}_{key}{suffix}",
-                            self.postprocessing[dict_type][key](result[key]),
-                            directory=f"{stage}_images",
-                        )
-
+                    self.save_image(
+                        f"{self.global_step}_{key}{suffix}",
+                        self.postprocessing[dict_type][key](result[key]),
+                        directory=f"{stage}_images",
+                    )
         elif stage in ["predict", "test"]:
             assert (
                 metadata is not None
             ), "Metadata required for proper file saving during prediction! Please check your transforms"
-            with torch.no_grad():
-                outs = sliding_window_inference(
-                    inputs=x,
-                    roi_size=self.hparams.patch_shape,
-                    sw_batch_size=16,
-                    predictor=self.forward,
-                    overlap=0.5,
-                    mode="gaussian",
-                    test=True,
-                )
             for k, v in outs.items():
                 for im_idx in range(v.shape[0]):
                     source_filename = (
@@ -211,8 +211,37 @@ class MultiTaskIm2Im(BaseModel):
                             directory=f"{stage}_images",
                         )
 
-            if stage == "predict":
-                return
+    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
+        # convert monai metatensors to tensors
+        for k, v in batch.items():
+            if isinstance(v, MetaTensor):
+                batch[k] = v.as_tensor()
+
+        x = batch[self.hparams.x_key]
+        if stage in ["train", "val"]:
+            outs = self(x)
+        elif stage in ["predict", "test"]:
+            with torch.no_grad():
+                outs = sliding_window_inference(
+                    inputs=x,
+                    roi_size=self.hparams.patch_shape,
+                    sw_batch_size=16,
+                    predictor=self.forward,
+                    overlap=0.5,
+                    mode="gaussian",
+                    test=True,
+                    process_fn=dummy_fn,
+                )
+            outs = postprocessing(batch, outs)
+        self.save_batch(
+            batch_idx,
+            stage,
+            batch,
+            outs,
+            metadata=batch.get(f"{self.hparams.x_key}_meta_dict"),
+        )
+        if stage == "predict":
+            return
         targets = {k: batch[k] for k in self.task_heads.keys()}
         if stage in ["val", "test"]:
             iou_dict = self.calculate_channelwise_iou(targets, outs)
