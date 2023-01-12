@@ -14,6 +14,7 @@ from src.utils.embedseg_utils import (
     SpatialEmbLoss_3d,
     Cluster_3d,
     EmbedSegConcatLabelsd,
+    EmbedSegPreprocess,
 )
 from src.utils.gan_loss import GANLoss
 from src.utils.loss_wrapper import LossWrapper, CMAP_loss
