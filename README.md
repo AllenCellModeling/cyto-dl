@@ -19,7 +19,7 @@ In an effort to spend more work on methods development, simplify maintenance, an
 2. Transfer Function
 3. Labelfree
 4. EmbedSeg
-    Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the (MMV-Lab's implementation)[https://github.com/MMV-Lab/mmv_im2im]. 
+    Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the [MMV-Lab's implementation](https://github.com/MMV-Lab/mmv_im2im). 
     [Docs](docs/embedseg.md)
 
 
