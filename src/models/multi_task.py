@@ -19,27 +19,6 @@ def sum_losses(losses):
     return losses
 
 
-def dummy_fn(seg_prob_tuple, window_data, importance_map_):
-    new_3d_tensor = torch.zeros_like(seg_prob_tuple[1]).type_as(seg_prob_tuple[1])
-    new_3d_tensor[:, :] = seg_prob_tuple[0].unsqueeze(2)
-    seg_prob_tuple = tuple((new_3d_tensor, seg_prob_tuple[1]))
-    return seg_prob_tuple, importance_map_
-
-
-def postprocessing(targets, outs):
-    ref_key = "seg"
-    key = "mitotic_mask"
-    ch = 0
-    best_z_seg = torch.argmax(torch.sum(targets[ref_key][ch], dim=(2, 3)), dim=1)
-    new_values = []
-
-    for i in range(outs[key].shape[0]):
-        new_values.append(outs[key][i, :, best_z_seg[i]])
-    outs[key] = torch.stack(new_values)
-
-    return outs
-
-
 class MultiTaskIm2Im(BaseModel):
     def __init__(
         self,
@@ -58,6 +37,7 @@ class MultiTaskIm2Im(BaseModel):
         discriminator=None,
         gan_loss=lambda x: 0,
         costmap_key="cmap",
+        sliding_window_fns={},
         **kwargs,
     ):
         super().__init__(
@@ -230,9 +210,15 @@ class MultiTaskIm2Im(BaseModel):
                     overlap=0.5,
                     mode="gaussian",
                     test=True,
-                    process_fn=dummy_fn,
+                    # function to process model predictions before compilation into single image
+                    # useful e.g. to transform 2d predictions into 3d so sliding window can run
+                    process_fn=self.hparams.sliding_window_fns.get("process_fn"),
                 )
-            outs = postprocessing(batch, outs)
+            # function to reverse sliding window processing e.g. transform 3d image prediction
+            # back into 2d
+            postprocess_fn = self.hparams.sliding_window_fns.get("postprocess_fn")
+            if postprocess_fn is not None:
+                outs = postprocess_fn(batch, outs)
         self.save_batch(
             batch_idx,
             stage,
