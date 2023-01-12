@@ -85,10 +85,11 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
         utils.log_hyperparameters(object_dict)
 
     log.info("Starting testing!")
-    trainer.test(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
-
-    # for predictions use trainer.predict(...)
-    # predictions = trainer.predict(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
+    if cfg.get('mode', 'predict') == 'test':
+        trainer.test(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
+    else:
+        # for predictions use trainer.predict(...)
+        trainer.predict(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
 
     metric_dict = trainer.callback_metrics
 
