@@ -27,3 +27,11 @@ logger:
   mlflow_im2im:
     experiment_name: benji_2ch_lamin
     run_name: mixed_3d_2d_debug_overfit
+
+sliding_window_fns:
+  process_fn:
+    _target_: src.utils.expand_2d_to_3d
+    _partial_: True
+  postprocess_fn:
+    _target_: src.utils.extract_best_z
+    _partial_: True
