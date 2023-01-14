@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback
 from pytorch_lightning.loggers import LightningLoggerBase
 from pytorch_lightning.utilities import rank_zero_only
@@ -132,6 +132,13 @@ def instantiate_loggers(logger_cfg: DictConfig) -> List[LightningLoggerBase]:
     return logger
 
 
+def get(cfg, key):
+    val = cfg.get(key)
+    if isinstance(val, DictConfig):
+        val = OmegaConf.to_container(val, resolve=True)
+    return val
+
+
 @rank_zero_only
 def log_hyperparameters(object_dict: dict) -> None:
     """Controls which config parts are saved by lightning loggers.
@@ -139,7 +146,6 @@ def log_hyperparameters(object_dict: dict) -> None:
     Additionally saves:
     - Number of model parameters
     """
-
     hparams = {}
 
     cfg = object_dict["cfg"]
@@ -150,7 +156,7 @@ def log_hyperparameters(object_dict: dict) -> None:
         log.warning("Logger not found! Skipping hyperparameter logging...")
         return
 
-    hparams["model"] = cfg["model"]
+    hparams["model"] = get(cfg, "model")
 
     # save number of model parameters
     hparams["model/params/total"] = sum(p.numel() for p in model.parameters())
@@ -161,16 +167,16 @@ def log_hyperparameters(object_dict: dict) -> None:
         p.numel() for p in model.parameters() if not p.requires_grad
     )
 
-    hparams["datamodule"] = cfg["datamodule"]
-    hparams["trainer"] = cfg["trainer"]
+    hparams["datamodule"] = get(cfg, "datamodule")
+    hparams["trainer"] = get(cfg, "trainer")
 
-    hparams["callbacks"] = cfg.get("callbacks")
-    hparams["extras"] = cfg.get("extras")
+    hparams["callbacks"] = get(cfg, "callbacks")
+    hparams["extras"] = get(cfg, "extras")
 
-    hparams["task_name"] = cfg.get("task_name")
-    hparams["tags"] = cfg.get("tags")
-    hparams["ckpt_path"] = cfg.get("ckpt_path")
-    hparams["seed"] = cfg.get("seed")
+    hparams["task_name"] = get(cfg, "task_name")
+    hparams["tags"] = get(cfg, "tags")
+    hparams["ckpt_path"] = get(cfg, "ckpt_path")
+    hparams["seed"] = get(cfg, "seed")
 
     # send hparams to all loggers
     mode = "train" if trainer.training else "test"
