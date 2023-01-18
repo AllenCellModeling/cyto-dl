@@ -14,24 +14,31 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
+experiment_name: benji_2ch_lamin
+run_name: test_comb_3d_2d_train
+mode: predict
+ckpt_path: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_2ch_lamin/comb_2d_3d_train/2023-01-13_14-50-51/ckpts/epoch_329.ckpt
 
 model:
-  patch_shape: [32, 256, 256]
-  save_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask
+  patch_shape: [64, 256, 256]
+  save_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/goldilocks_pred
+  sliding_window_fns:
+    process_fn:
+      _target_: src.utils.expand_2d_to_3d
+      _partial_: True
+    postprocess_fn:
+      _target_: src.utils.extract_best_z
+      _partial_: True
 
-ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/epoch_049.ckpt"
+
 datamodule:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/manifest_with_mitotic.csv
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/goldilocks_pred
   batch_size: 1
+  columns: ['raw']
+  num_workers: 4
+
 logger:
   mlflow_im2im:
-    experiment_name: benji_2ch_lamin
-    run_name: mixed_3d_2d_debug_overfit
+    experiment_name: ${experiment_name}
+    run_name: ${run_name}
 
-sliding_window_fns:
-  process_fn:
-    _target_: src.utils.expand_2d_to_3d
-    _partial_: True
-  postprocess_fn:
-    _target_: src.utils.extract_best_z
-    _partial_: True

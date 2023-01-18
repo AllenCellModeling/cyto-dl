@@ -8,11 +8,11 @@ def expand_2d_to_3d(seg_prob_tuple, window_data, importance_map_):
     return seg_prob_tuple, importance_map_
 
 
-def extract_best_z(targets, outs):
+def extract_best_z(outs):
     ref_key = "seg"
     key = "mitotic_mask"
     ch = 0
-    best_z_seg = torch.argmax(torch.sum(targets[ref_key][ch], dim=(2, 3)), dim=1)
+    best_z_seg = torch.argmax(torch.sum(outs[ref_key][ch], dim=(2, 3)), dim=1)
     new_values = []
 
     for i in range(outs[key].shape[0]):
