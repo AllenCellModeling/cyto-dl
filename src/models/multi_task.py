@@ -43,7 +43,7 @@ class MultiTaskIm2Im(BaseModel):
         super().__init__(
             **kwargs,
         )
-        for stage in ["train", "val", "test"]:
+        for stage in ["train", "val", "test", "predict"]:
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = backbone
         self.hr_skip = hr_skip
@@ -56,11 +56,10 @@ class MultiTaskIm2Im(BaseModel):
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
         self.task_heads = torch.nn.ModuleDict(self.task_heads)
-        self.automatic_optimization = automatic_optimization
-        self.filenames = {}
         self.postprocessing = {} if postprocessing is None else postprocessing
         self.discriminator = discriminator
         self.gan_loss = gan_loss
+        self.sliding_window_fns = sliding_window_fns
 
     def configure_optimizers(self):
         opts = []
@@ -205,20 +204,21 @@ class MultiTaskIm2Im(BaseModel):
                 outs = sliding_window_inference(
                     inputs=x,
                     roi_size=self.hparams.patch_shape,
-                    sw_batch_size=16,
+                    sw_batch_size=4,
                     predictor=self.forward,
-                    overlap=0.5,
+                    overlap=0.125,
                     mode="gaussian",
+                    device="cpu" if stage == "predict" else None,
                     test=True,
                     # function to process model predictions before compilation into single image
                     # useful e.g. to transform 2d predictions into 3d so sliding window can run
-                    process_fn=self.hparams.sliding_window_fns.get("process_fn"),
+                    process_fn=self.sliding_window_fns.get("process_fn"),
                 )
             # function to reverse sliding window processing e.g. transform 3d image prediction
             # back into 2d
-            postprocess_fn = self.hparams.sliding_window_fns.get("postprocess_fn")
+            postprocess_fn = self.sliding_window_fns.get("postprocess_fn")
             if postprocess_fn is not None:
-                outs = postprocess_fn(batch, outs)
+                outs = postprocess_fn(outs)
         self.save_batch(
             batch_idx,
             stage,
