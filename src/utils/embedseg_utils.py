@@ -252,7 +252,7 @@ class Cluster_3d:
                         count += 1
                 unclustered[proposal] = 0
 
-            instance_map[mask.squeeze().cpu()] = instance_map_masked.cpu()
+            instance_map[mask.squeeze().cpu()] = instance_map_masked.short().cpu()
 
         return instance_map, instances
 
@@ -283,9 +283,7 @@ def generate_instance_clusters(
         )
     else:
         raise ValueError("prediction needs to be 4D in cluster")
-    import pdb
 
-    pdb.set_trace()
     instance_map, _ = cluster.cluster(
         pred,
         n_sigma=n_sigma,
