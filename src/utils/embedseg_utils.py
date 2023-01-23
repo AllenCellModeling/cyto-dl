@@ -132,7 +132,7 @@ class Cluster_3d:
         )
         xyzm = torch.cat((xm, ym, zm), 0)
 
-        self.xyzm = xyzm.cuda()
+        self.xyzm = xyzm
         self.one_hot = one_hot
         self.grid_x = grid_x
         self.grid_y = grid_y
@@ -147,7 +147,7 @@ class Cluster_3d:
         image,
         n_sigma=1,
     ):
-
+        self.xyzm = self.xyzm.type_as(prediction)
         depth, height, width = (
             prediction.size(1),
             prediction.size(2),
@@ -157,7 +157,7 @@ class Cluster_3d:
         spatial_emb = torch.tanh(prediction[0:3]) + xyzm_s  # 3 x d x h x w
         sigma = prediction[3 : 3 + n_sigma]  # n_sigma x h x w
 
-        instance_map = torch.zeros(depth, height, width).short().cuda()
+        instance_map = torch.zeros(depth, height, width).short().type_as(prediction)
         unique_instances = image.unique()
         unique_instances = unique_instances[unique_instances != 0]
 
@@ -192,6 +192,7 @@ class Cluster_3d:
         min_unclustered_sum=0,
         min_object_size=36,
     ):
+        self.xyzm = self.xyzm.type_as(prediction)
 
         depth, height, width = (
             prediction.size(1),
@@ -221,8 +222,8 @@ class Cluster_3d:
             sigma_masked = sigma[mask.expand_as(sigma)].view(n_sigma, -1)
             seed_map_masked = seed_map[mask].view(1, -1)
 
-            unclustered = torch.ones(mask.sum()).short().cuda()
-            instance_map_masked = torch.zeros(mask.sum()).short().cuda()
+            unclustered = torch.ones(mask.sum()).short().type_as(prediction)
+            instance_map_masked = torch.zeros(mask.sum()).short().type_as(prediction)
 
             while (
                 unclustered.sum() > min_unclustered_sum
@@ -251,15 +252,13 @@ class Cluster_3d:
                         count += 1
                 unclustered[proposal] = 0
 
-            instance_map[mask.squeeze().cpu()] = instance_map_masked.cpu()
+            instance_map[mask.squeeze().cpu()] = instance_map_masked.short().cpu()
 
         return instance_map, instances
 
 
 def generate_instance_clusters(
     pred: Union[np.ndarray, torch.Tensor],
-    grid_x: int = 768,
-    grid_y: int = 768,
     pixel_x: int = 1,
     pixel_y: int = 1,
     n_sigma: int = 2,
@@ -267,7 +266,6 @@ def generate_instance_clusters(
     min_mask_sum: int = 10,
     min_unclustered_sum: int = 10,
     min_object_size: int = 10,
-    grid_z: int = 32,
     pixel_z: int = 1,
 ):
     ##########################################################
@@ -277,14 +275,17 @@ def generate_instance_clusters(
     if not torch.is_tensor(pred):
         pred = torch.from_numpy(pred)
 
-    if len(pred.shape) == 5:  # B x C x Z x Y x X
+    if len(pred.shape) == 5:
+        pred = pred[0]  # save time during training, only save 1st example in batch
+    if len(pred.shape) == 4:  # C x Z x Y x X
         cluster = Cluster_3d(
             pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
         )
     else:
-        raise ValueError("prediction needs to be 4D or 5D in cluster")
+        raise ValueError("prediction needs to be 4D in cluster")
+
     instance_map, _ = cluster.cluster(
-        pred[0],  # get rid of batch dimension
+        pred,
         n_sigma=n_sigma,
         seed_thresh=seed_thresh,
         min_mask_sum=min_mask_sum,
