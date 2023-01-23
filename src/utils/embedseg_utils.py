@@ -276,15 +276,21 @@ def generate_instance_clusters(
     ##########################################################
     if not torch.is_tensor(pred):
         pred = torch.from_numpy(pred)
+    import pdb
 
-    if len(pred.shape) == 5:  # B x C x Z x Y x X
+    pdb.set_trace()
+
+    if len(pred.shape) == 5:
+        pred = pred[0]  # save time during training, only save 1st example in batch
+    if len(pred.shape) == 4:  # C x Z x Y x X
         cluster = Cluster_3d(
             pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
         )
     else:
-        raise ValueError("prediction needs to be 4D or 5D in cluster")
+        raise ValueError("prediction needs to be 4D in cluster")
+
     instance_map, _ = cluster.cluster(
-        pred[0],  # get rid of batch dimension
+        pred,  # get rid of batch dimension
         n_sigma=n_sigma,
         seed_thresh=seed_thresh,
         min_mask_sum=min_mask_sum,
