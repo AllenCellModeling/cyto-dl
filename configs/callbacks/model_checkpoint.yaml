@@ -4,7 +4,7 @@
 # Look at the above link for more detailed information.
 model_checkpoint:
   _target_: pytorch_lightning.callbacks.ModelCheckpoint
-  dirpath: null # directory to save the model file
+  dirpath: ${paths.output_dir}/ckpts # directory to save the model file
   filename: null # checkpoint filename
   monitor: null # name of the logged metric which determines when model is improving
   verbose: False # verbosity mode
