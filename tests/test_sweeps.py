@@ -3,7 +3,7 @@ import pytest
 from tests.helpers.run_if import RunIf
 from tests.helpers.run_sh_command import run_sh_command
 
-startfile = "src/train.py"
+startfile = "aics_im2im/train.py"
 overrides = ["logger=[]"]
 
 

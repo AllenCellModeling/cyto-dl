@@ -1,4 +1,4 @@
-_target_: src.models.MultiTaskIm2Im
+_target_: aics_im2im.models.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 x_key: raw
@@ -20,10 +20,10 @@ backbone:
 tasks:
   GT:
     head:
-      _target_: src.models.components.IdentityAuxHead
+      _target_: aics_im2im.models.components.IdentityAuxHead
 
     loss:
-      _target_: src.utils.embedseg_utils.SpatialEmbLoss_3d
+      _target_: aics_im2im.utils.embedseg_utils.SpatialEmbLoss_3d
       grid_y: 512
       grid_x: 512
       grid_z: 32
@@ -53,19 +53,16 @@ lr_scheduler:
 postprocessing:
   input:
     GT:
-      _target_: src.utils.postprocessing.concat_dict
+      _target_: aics_im2im.utils.postprocessing.concat_dict
       _partial_: True
       keys: ['seg', CE]
     raw:
-      _target_: src.utils.postprocessing.rescale
+      _target_: aics_im2im.utils.postprocessing.rescale
       _partial_: True
   prediction:
     GT:
-      _target_: src.utils.embedseg_utils.generate_instance_clusters
+      _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
       _partial_: True
-      grid_y: 512
-      grid_x: 512
-      grid_z: 32
       pixel_y: 1
       pixel_x: 1
       pixel_z: 2.6
