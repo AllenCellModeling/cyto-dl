@@ -204,11 +204,10 @@ class MultiTaskIm2Im(BaseModel):
                 outs = sliding_window_inference(
                     inputs=x,
                     roi_size=self.hparams.patch_shape,
-                    sw_batch_size=4,
+                    sw_batch_size=1,
                     predictor=self.forward,
                     overlap=0.125,
                     mode="gaussian",
-                    device="cpu" if stage == "predict" else None,
                     test=True,
                     # function to process model predictions before compilation into single image
                     # useful e.g. to transform 2d predictions into 3d so sliding window can run

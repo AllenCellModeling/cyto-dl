@@ -32,6 +32,11 @@ class CMAP_loss(nn.Module):
         self.loss = loss
 
     def __call__(self, y_hat, y, cmap=None):
+        self.loss = self.loss.to(y_hat.device)
         if cmap is None:
-            return torch.mean(self.loss(y_hat, y))
-        return torch.mean(torch.mul(self.loss(y_hat, y), cmap))
+            return torch.mean(self.loss(y_hat, y.half()))
+
+        # 2d head
+        if len(y_hat.shape) == 4 and len(cmap.shape) == 5:
+            cmap, _ = torch.max(cmap, dim=2)
+        return torch.mean(torch.mul(self.loss(y_hat, y.half()), cmap))

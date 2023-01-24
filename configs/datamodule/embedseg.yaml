@@ -31,7 +31,7 @@ transforms:
       
       #creates two new images - CL is a binary segmentation of 'seg'
       # and CE is a boolean image of the object centroids
-      - _target_: src.utils.EmbedSegPreprocess
+      - _target_: aics_im2im.utils.EmbedSegPreprocess
         input_key: 'seg'
         output_key:
           class: CL
@@ -49,7 +49,7 @@ transforms:
           threshold: 0
           base_prob: 0
 
-      - _target_: src.utils.EmbedSegConcatLabelsd
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
         input_keys: ['seg', 'CE', 'CL']
         output_key: GT
 
@@ -83,7 +83,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ['raw']
       
-      - _target_: src.utils.EmbedSegPreprocess
+      - _target_: aics_im2im.utils.EmbedSegPreprocess
         input_key: 'seg'
         output_key:
           class: CL
@@ -101,7 +101,7 @@ transforms:
           threshold: 0
           base_prob: 0
 
-      - _target_: src.utils.EmbedSegConcatLabelsd
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
         input_keys: ['seg', 'CE', 'CL']
         output_key: GT
         
