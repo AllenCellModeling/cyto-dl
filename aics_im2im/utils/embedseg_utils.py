@@ -259,6 +259,7 @@ class Cluster_3d:
 
 def generate_instance_clusters(
     pred: Union[np.ndarray, torch.Tensor],
+    grid_size,
     pixel_x: int = 1,
     pixel_y: int = 1,
     n_sigma: int = 2,
@@ -275,11 +276,23 @@ def generate_instance_clusters(
     if not torch.is_tensor(pred):
         pred = torch.from_numpy(pred)
 
+    target_img_shape = pred.shape[-3:]
+    # this resizes the grid for clustering to allow for inference on
+    # images larger than the grid size used for training
+    if np.any(np.subtract(target_img_shape, grid_size)) > 0:
+        pixel_y = target_img_shape[1] / grid_size[1]
+        pixel_x = target_img_shape[2] / grid_size[2]
+
     if len(pred.shape) == 5:
         pred = pred[0]  # save time during training, only save 1st example in batch
     if len(pred.shape) == 4:  # C x Z x Y x X
         cluster = Cluster_3d(
-            pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
+            target_img_shape[0],
+            target_img_shape[1],
+            target_img_shape[2],
+            pixel_z=pixel_z,
+            pixel_y=pixel_y,
+            pixel_x=pixel_x,
         )
     else:
         raise ValueError("prediction needs to be 4D in cluster")

@@ -1,7 +1,7 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
-x_key: raw
+x_key: ${source_col}
 patch_shape: [32, 512, 512]
 save_dir: ${paths.output_dir}
 
@@ -67,6 +67,9 @@ postprocessing:
       pixel_x: 1
       pixel_z: 2.6
       n_sigma: 3
+      grid_size: [32, 256, 256]
+
+
 
 
 
