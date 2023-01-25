@@ -64,9 +64,13 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ['source'] 
-    
-      - _target_: monai.transforms.NormalizeIntensityd
+
+      - _target_: src.utils.MeanNormalizeIntensity
         keys: ['source']
+        lower_bound: 5.0
+        upper_bound: 12.5
+    
+      
 
   valid:
     _target_: monai.transforms.Compose
@@ -79,9 +83,11 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ['source', 'target'] 
-    
-      - _target_: monai.transforms.NormalizeIntensityd
+
+      - _target_: src.utils.MeanNormalizeIntensity
         keys: ['source']
+        lower_bound: 5.0
+        upper_bound: 12.5
       
       - _target_: src.utils.EmbedSegPreprocess
         input_key: 'target'
@@ -116,6 +122,10 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ['source'] 
-    
-      - _target_: monai.transforms.NormalizeIntensityd
+
+      - _target_: src.utils.MeanNormalizeIntensity
         keys: ['source']
+        lower_bound: 5.0
+        upper_bound: 12.5
+    
+      
