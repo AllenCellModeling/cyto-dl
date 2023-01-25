@@ -1,0 +1,121 @@
+_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+
+path: 
+cache_dir: 
+
+num_workers: 8
+batch_size: 1
+pin_memory: True
+persistent_workers: False
+columns: 
+  - source
+  - target
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['source', 'target'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.ToTensord
+        keys: ['source', 'target'] 
+    
+      - _target_: src.utils.MeanNormalizeIntensity
+        keys: ['source']
+        lower_bound: 5.0
+        upper_bound: 12.5
+      
+      #creates two new images - CL is a binary segmentation of 'target'
+      # and CE is a boolean image of the object centroids
+      - _target_: src.utils.EmbedSegPreprocess
+        input_key: 'target'
+        output_key:
+          class: 'CL'
+          centroid: 'CE'
+
+      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+        keys: ['source', 'target', 'CL', 'CE']
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1: ['source', 'target', 'CL', 'CE']
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
+          key: CE
+          threshold: 0
+          base_prob: 0
+
+      - _target_: src.utils.EmbedSegConcatLabelsd
+        input_keys: ['target', 'CE', 'CL']
+        output_key: GT
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['source'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.ToTensord
+        keys: ['source'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['source']
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['source', 'target'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.ToTensord
+        keys: ['source', 'target'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['source']
+      
+      - _target_: src.utils.EmbedSegPreprocess
+        input_key: 'target'
+        output_key:
+          class: CL
+          centroid: 'CE'
+
+      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+        keys: ['source', 'target', 'CL', 'CE']
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1: ['source', 'target', 'CL', 'CE']
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
+          key: CE
+          threshold: 0
+          base_prob: 0
+
+      - _target_: src.utils.EmbedSegConcatLabelsd
+        input_keys: ['target', 'CE', 'CL']
+        output_key: GT
+        
+  predict:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ['source'] 
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'CZYX'
+
+      - _target_: monai.transforms.ToTensord
+        keys: ['source'] 
+    
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ['source']

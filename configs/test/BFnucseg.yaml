@@ -1,0 +1,38 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: BF_nucseg.yaml
+  - override /model: embedseg.yaml
+  - override /trainer: gpu.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+source_col: 'source'
+target_col: 'target'
+seed: 12345
+
+model:
+  patch_shape: [32, 256, 256]
+  save_dir: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/predict
+
+ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/2023-01-24_11-37-05/ckpts/last.ckpt
+datamodule:
+  path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/manifests/
+  batch_size: 1
+logger:
+  mlflow_im2im:
+    experiment_name: bf_nucseg
+    run_name: bf_nucseg_eval
+
+sliding_window_fns:
+  process_fn:
+    _target_: src.utils.expand_2d_to_3d
+    _partial_: True
+  postprocess_fn:
+    _target_: src.utils.extract_best_z
+    _partial_: True

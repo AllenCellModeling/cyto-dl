@@ -31,7 +31,7 @@ tasks:
       n_sigma: 3
       foreground_weight: 4.5
       use_costmap: False
-      instance_key: seg
+      instance_key: target
       label_key: CL
       center_key: CE
 

@@ -132,7 +132,7 @@ class Cluster_3d:
         )
         xyzm = torch.cat((xm, ym, zm), 0)
 
-        self.xyzm = xyzm
+        self.xyzm = xyzm.cuda()
         self.one_hot = one_hot
         self.grid_x = grid_x
         self.grid_y = grid_y
@@ -147,7 +147,7 @@ class Cluster_3d:
         image,
         n_sigma=1,
     ):
-        self.xyzm = self.xyzm.type_as(prediction)
+
         depth, height, width = (
             prediction.size(1),
             prediction.size(2),
@@ -157,7 +157,7 @@ class Cluster_3d:
         spatial_emb = torch.tanh(prediction[0:3]) + xyzm_s  # 3 x d x h x w
         sigma = prediction[3 : 3 + n_sigma]  # n_sigma x h x w
 
-        instance_map = torch.zeros(depth, height, width).short().type_as(prediction)
+        instance_map = torch.zeros(depth, height, width).short().cuda()
         unique_instances = image.unique()
         unique_instances = unique_instances[unique_instances != 0]
 
@@ -192,7 +192,6 @@ class Cluster_3d:
         min_unclustered_sum=0,
         min_object_size=36,
     ):
-        self.xyzm = self.xyzm.type_as(prediction)
 
         depth, height, width = (
             prediction.size(1),
@@ -222,8 +221,8 @@ class Cluster_3d:
             sigma_masked = sigma[mask.expand_as(sigma)].view(n_sigma, -1)
             seed_map_masked = seed_map[mask].view(1, -1)
 
-            unclustered = torch.ones(mask.sum()).short().type_as(prediction)
-            instance_map_masked = torch.zeros(mask.sum()).short().type_as(prediction)
+            unclustered = torch.ones(mask.sum()).short().cuda()
+            instance_map_masked = torch.zeros(mask.sum()).short().cuda()
 
             while (
                 unclustered.sum() > min_unclustered_sum
@@ -252,14 +251,15 @@ class Cluster_3d:
                         count += 1
                 unclustered[proposal] = 0
 
-            instance_map[mask.squeeze().cpu()] = instance_map_masked.short().cpu()
+            instance_map[mask.squeeze().cpu()] = instance_map_masked.cpu()
 
         return instance_map, instances
 
 
 def generate_instance_clusters(
     pred: Union[np.ndarray, torch.Tensor],
-    grid_size,
+    grid_x: int = 768,
+    grid_y: int = 768,
     pixel_x: int = 1,
     pixel_y: int = 1,
     n_sigma: int = 2,
@@ -267,6 +267,7 @@ def generate_instance_clusters(
     min_mask_sum: int = 10,
     min_unclustered_sum: int = 10,
     min_object_size: int = 10,
+    grid_z: int = 32,
     pixel_z: int = 1,
 ):
     ##########################################################
@@ -276,29 +277,19 @@ def generate_instance_clusters(
     if not torch.is_tensor(pred):
         pred = torch.from_numpy(pred)
 
-    target_img_shape = pred.shape[-3:]
-    # this resizes the grid for clustering to allow for inference on
-    # images larger than the grid size used for training
-    if np.any(np.subtract(target_img_shape, grid_size)) > 0:
-        pixel_y = target_img_shape[1] / grid_size[1]
-        pixel_x = target_img_shape[2] / grid_size[2]
-
-    if len(pred.shape) == 5:
-        pred = pred[0]  # save time during training, only save 1st example in batch
-    if len(pred.shape) == 4:  # C x Z x Y x X
+    if len(pred.shape) == 4:
+        if type(pred) is np.ndarray:
+            pred = pred[np.newaxis, ...]
+        elif type(pred) is torch.Tensor:
+            pred = pred[None,:]
+    if len(pred.shape) == 5:  # B x C x Z x Y x X
         cluster = Cluster_3d(
-            target_img_shape[0],
-            target_img_shape[1],
-            target_img_shape[2],
-            pixel_z=pixel_z,
-            pixel_y=pixel_y,
-            pixel_x=pixel_x,
+            pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
         )
     else:
-        raise ValueError("prediction needs to be 4D in cluster")
-
+        raise ValueError("prediction needs to be 4D or 5D in cluster")
     instance_map, _ = cluster.cluster(
-        pred,
+        pred[0],  # get rid of batch dimension
         n_sigma=n_sigma,
         seed_thresh=seed_thresh,
         min_mask_sum=min_mask_sum,
@@ -315,7 +306,9 @@ def generate_instance_clusters(
 class SpatialEmbLoss_3d(nn.Module):
     def __init__(
         self,
-        grid_size=[32, 1024, 1024],
+        grid_z=32,
+        grid_y=1024,
+        grid_x=1024,
         pixel_z=1,
         pixel_y=1,
         pixel_x=1,
@@ -336,7 +329,7 @@ class SpatialEmbLoss_3d(nn.Module):
         print("*************************")
         self.n_sigma = n_sigma
         self.foreground_weight = foreground_weight
-        grid_z, grid_y, grid_x = grid_size
+
         xm = (
             torch.linspace(0, pixel_x, grid_x)
             .view(1, 1, 1, -1)
