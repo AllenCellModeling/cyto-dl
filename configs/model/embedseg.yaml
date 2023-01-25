@@ -24,9 +24,7 @@ tasks:
 
     loss:
       _target_: aics_im2im.utils.embedseg_utils.SpatialEmbLoss_3d
-      grid_y: 512
-      grid_x: 512
-      grid_z: 32
+      grid_size: ${model.patch_shape}
       pixel_y: 1
       pixel_x: 1
       pixel_z: 2.6
@@ -67,7 +65,7 @@ postprocessing:
       pixel_x: 1
       pixel_z: 2.6
       n_sigma: 3
-      grid_size: [32, 256, 256]
+      grid_size: ${model.patch_shape}
 
 
 
