@@ -315,9 +315,7 @@ def generate_instance_clusters(
 class SpatialEmbLoss_3d(nn.Module):
     def __init__(
         self,
-        grid_z=32,
-        grid_y=1024,
-        grid_x=1024,
+        grid_size=[32, 1024, 1024],
         pixel_z=1,
         pixel_y=1,
         pixel_x=1,
@@ -338,7 +336,7 @@ class SpatialEmbLoss_3d(nn.Module):
         print("*************************")
         self.n_sigma = n_sigma
         self.foreground_weight = foreground_weight
-
+        grid_z, grid_y, grid_x = grid_size
         xm = (
             torch.linspace(0, pixel_x, grid_x)
             .view(1, 1, 1, -1)
