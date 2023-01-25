@@ -6,6 +6,7 @@ from monai.config.type_definitions import NdarrayOrTensor
 from scipy.stats import norm
 import torch
 from typing import List, Dict
+from monai.data.meta_tensor import MetaTensor
 
 
 
@@ -18,15 +19,14 @@ class MeanNormalizeIntensity(Transform):
         self.lbound = lower_bound
         self.ubound = upper_bound
         
-<<<<<<< HEAD
     def normalize(self, img: NdarrayOrTensor):
         
         is_tensor = not isinstance(img, np.ndarray)
-        # is_metatensor = not isinstance(img, MetaTensor)
+        is_metatensor = not isinstance(img, MetaTensor)
         if is_tensor:
             im = np.array(img)
-        # elif is_metatensor:
-        #     im = np.array(img.get_array(out_type=np.ndarray))
+        elif is_metatensor:
+            im = np.array(img.get_array(out_type=np.ndarray))
             
         m, s = norm.fit(im.flat)
         strech_min = max(m - self.lbound * s, im.min())
@@ -37,25 +37,9 @@ class MeanNormalizeIntensity(Transform):
         
         if is_tensor:
             img = torch.from_numpy(im)
-        # elif is_metatensor:
-        #     img.set_array(torch.from_numpy(im))
+        elif is_metatensor:
+            img.set_array(torch.from_numpy(im))
         return img
-=======
-    def normalize(self, img):
-        is_tensor = not isinstance(img, np.ndarray)
-        if is_tensor:
-            img = np.array()
-            
-        m, s = norm(img.flat)
-        strech_min = max(m - self.lbound * s, img.min())
-        strech_max = min(m + self.ubound * s, img.max())
-        img[img > strech_max] = strech_max
-        img[img < strech_min] = strech_min
-        img = (img - strech_min + 1e-8)/(strech_max - strech_min + 1e-8)
-        
-        if is_tensor:
-            img = torch.from_numpy(img)
->>>>>>> 35526ea (config files for BF nucseg model)
         
     def __call__(self, img_dict: Dict[str, NdarrayOrTensor]) -> NdarrayOrTensor:
         

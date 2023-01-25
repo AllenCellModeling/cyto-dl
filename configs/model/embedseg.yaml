@@ -29,7 +29,12 @@ tasks:
       n_sigma: ${model._aux._sigma}
       foreground_weight: 4.5
       use_costmap: False
+<<<<<<< HEAD
       instance_key: ${target_col}
+=======
+      instance_key: target
+      label_key: CL
+>>>>>>> dae1d7f (config files for BF nucseg model)
       center_key: CE
 
 optimizer: 
