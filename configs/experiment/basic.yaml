@@ -1,0 +1,36 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: patch.yaml
+  - override /model: interpolate_single_task.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+source_col: raw
+target_col: seg
+experiment_name: benji_test
+run_name: omegaconf
+
+trainer:
+  max_epochs: 1000
+
+model:
+  patch_shape: [32, 256, 256]
+
+datamodule:
+  path: ${paths.data_dir}/NPM1/combine_classic_and_curated_pred/
+  cache_dir: ${paths.data_dir}/NPM1/combine_classic_and_curated_pred/cache
+  subsample: 
+    train: 1
+    test: 1
+    valid: 1
+  batch_size: 2
