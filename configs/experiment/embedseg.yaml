@@ -32,4 +32,8 @@ model:
 datamodule:
   path: ${paths.data_dir}/EmbedSeg
   cache_dir: ${paths.data_dir}/EmbedSeg/cache
+  subsample: 
+    train: -1
+    test: -1
+    valid: -1
   batch_size: 1
