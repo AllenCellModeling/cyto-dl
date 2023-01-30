@@ -32,17 +32,35 @@ root = pyrootutils.setup_root(
 # https://github.com/ashleve/pyrootutils
 # ------------------------------------------------------------------------------------ #
 
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple,Union
 
 import hydra
 import pytorch_lightning as pl
-from omegaconf import DictConfig
+from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
-
 from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
+
+
+def kv_to_dict(kv: Union[DictConfig, ListConfig]) -> DictConfig:
+    if isinstance(kv, DictConfig):
+        # postprocessing
+        for k, v in kv.items():
+            kv[k] = dict(v)
+    elif isinstance(kv, ListConfig):
+        # task heads
+        ret = {}
+        for item in kv:
+            assert len(item) == 2, f"Expected ListConfig to have len 2, got {len(item)}"
+            ret[item[0]] = item[1]
+        kv = ret
+    else:
+        raise TypeError(
+            "Config resolved with kv_to_dict must be ListConfig or DictConfig"
+        )
+    return OmegaConf.create(kv)
 
 
 @utils.task_wrapper
@@ -119,6 +137,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
+    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 
     # train the model
     metric_dict, _ = train(cfg)
