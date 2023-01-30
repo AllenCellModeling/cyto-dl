@@ -32,7 +32,7 @@ root = pyrootutils.setup_root(
 # https://github.com/ashleve/pyrootutils
 # ------------------------------------------------------------------------------------ #
 
-from typing import List, Optional, Tuple,Union
+from typing import List, Optional, Tuple, Union
 
 import hydra
 import pytorch_lightning as pl
@@ -48,13 +48,13 @@ def kv_to_dict(kv: Union[DictConfig, ListConfig]) -> DictConfig:
     if isinstance(kv, DictConfig):
         # postprocessing
         for k, v in kv.items():
-            kv[k] = dict(v)
+            kv[k] = OmegaConf.to_container(v, resolve=True)
     elif isinstance(kv, ListConfig):
         # task heads
         ret = {}
         for item in kv:
             assert len(item) == 2, f"Expected ListConfig to have len 2, got {len(item)}"
-            ret[item[0]] = item[1]
+            ret[item[0]] = OmegaConf.to_container(item[1], resolve=True)
         kv = ret
     else:
         raise TypeError(
