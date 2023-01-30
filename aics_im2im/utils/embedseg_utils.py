@@ -31,7 +31,7 @@ def pairwise_python(X):
     return D
 
 
-class EmbedSegPreprocess(Transform):
+class ExtractCentroidd(Transform):
     def __init__(
         self,
         input_key,
@@ -87,10 +87,7 @@ class EmbedSegPreprocess(Transform):
         return torch.from_numpy(center_image)
 
     def __call__(self, image_dict):
-        image_dict[self.output_key["class"]] = image_dict[self.input_key] > 0
-        image_dict[self.output_key["centroid"]] = self._get_centroid(
-            image_dict[self.input_key]
-        )
+        image_dict[self.output_key] = self._get_centroid(image_dict[self.input_key])
         return image_dict
 
 
@@ -111,10 +108,9 @@ class EmbedSegConcatLabelsd(Transform):
 
 
 class Cluster_3d:
-    def __init__(
-        self, grid_z, grid_y, grid_x, pixel_z, pixel_y, pixel_x, one_hot=False
-    ):
-
+    def __init__(self, grid, pixel, one_hot=False):
+        grid_z, grid_y, grid_x = grid
+        pixel_z, pixel_y, pixel_x = pixel
         xm = (
             torch.linspace(0, pixel_x, grid_x)
             .view(1, 1, 1, -1)
@@ -259,14 +255,12 @@ class Cluster_3d:
 
 def generate_instance_clusters(
     pred: Union[np.ndarray, torch.Tensor],
-    pixel_x: int = 1,
-    pixel_y: int = 1,
+    pixel: Tuple[int] = {1, 1, 1},
     n_sigma: int = 2,
     seed_thresh: float = 0.5,
     min_mask_sum: int = 10,
     min_unclustered_sum: int = 10,
     min_object_size: int = 10,
-    pixel_z: int = 1,
 ):
     ##########################################################
     # Warninging: Even passing in a mini-batch, only the first
@@ -278,9 +272,7 @@ def generate_instance_clusters(
     if len(pred.shape) == 5:
         pred = pred[0]  # save time during training, only save 1st example in batch
     if len(pred.shape) == 4:  # C x Z x Y x X
-        cluster = Cluster_3d(
-            pred.shape[-3], pred.shape[-2], pred.shape[-1], pixel_z, pixel_y, pixel_x
-        )
+        cluster = Cluster_3d(pred.shape[-3:], pixel)
     else:
         raise ValueError("prediction needs to be 4D in cluster")
 
@@ -302,18 +294,13 @@ def generate_instance_clusters(
 class SpatialEmbLoss_3d(nn.Module):
     def __init__(
         self,
-        grid_z=32,
-        grid_y=1024,
-        grid_x=1024,
-        pixel_z=1,
-        pixel_y=1,
-        pixel_x=1,
+        grid: Tuple[int] = [32, 1024, 1024],
+        pixel: Tuple[int] = [1, 1, 1],
         n_sigma=3,
         foreground_weight=10,
         use_costmap=False,
         instance_key="GT",
         costmap_key="CM",
-        label_key="CL",
         center_key="CE",
     ):
         super().__init__()
@@ -325,6 +312,8 @@ class SpatialEmbLoss_3d(nn.Module):
         print("*************************")
         self.n_sigma = n_sigma
         self.foreground_weight = foreground_weight
+        pixel_z, pixel_y, pixel_x = pixel
+        grid_z, grid_y, grid_x = grid
 
         xm = (
             torch.linspace(0, pixel_x, grid_x)
@@ -347,7 +336,6 @@ class SpatialEmbLoss_3d(nn.Module):
         self.use_costmap = use_costmap
         self.instance_key = instance_key
         self.costmap_key = costmap_key
-        self.label_key = label_key
         self.center_key = center_key
 
     def forward(
@@ -368,7 +356,7 @@ class SpatialEmbLoss_3d(nn.Module):
         )
         instances = target[self.instance_key].short()
         costmaps = target.get(self.costmap_key)
-        labels = target[self.label_key].bool()
+        labels = (instances > 0).bool()
         center_images = target[self.center_key].bool()
         # weighted loss
         if self.use_costmap:
