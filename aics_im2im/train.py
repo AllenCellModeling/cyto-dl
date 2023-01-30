@@ -138,6 +138,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
     OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
 
     # train the model
     metric_dict, _ = train(cfg)
