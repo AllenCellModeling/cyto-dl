@@ -30,10 +30,6 @@ model:
 
 
 datamodule:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
-  cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/try_embedseg/im2im_rethink/cache
-  subsample: 
-    train: 10
-    test: -1
-    valid: 5
-  batch_size: 3
+  path: ${paths.data_dir}/EmbedSeg
+  cache_dir: ${paths.data_dir}/EmbedSeg/cache
+  batch_size: 1
