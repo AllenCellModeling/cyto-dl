@@ -6,7 +6,7 @@ model_checkpoint:
   _target_: pytorch_lightning.callbacks.ModelCheckpoint
   dirpath: ${paths.output_dir}/ckpts # directory to save the model file
   filename: null # checkpoint filename
-  monitor: null # name of the logged metric which determines when model is improving
+  monitor: val_loss # name of the logged metric which determines when model is improving
   verbose: False # verbosity mode
   save_last: True # additionally always save an exact copy of the last checkpoint to a file last.ckpt
   save_top_k: 1 # save k best models (determined by above metric)
