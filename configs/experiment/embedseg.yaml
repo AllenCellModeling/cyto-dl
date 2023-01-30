@@ -16,34 +16,24 @@ defaults:
 tags: ["dev"]
 seed: 12345
 
+experiment_name: benji_im2im_serotiny_port
+run_name: embedseg
+source_col: raw
+target_col: seg
+
 trainer:
   max_epochs: 1000
   check_val_every_n_epoch: 10
-  detect_anomaly: True
-  gradient_clip_val: 0.1
 
-callbacks:
-  early_stopping:
-    monitor: val_loss
-  model_checkpoint:
-    dirpath: ${paths.output_dir}/ckpts
-    monitor: val_loss
-    save_top_k: 2
-    every_n_epochs: 1
 model:
   patch_shape: [32, 256, 256]
 
 
 datamodule:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/manifest.csv
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
   cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/try_embedseg/im2im_rethink/cache
   subsample: 
     train: 10
     test: -1
     valid: 5
   batch_size: 3
-
-logger:
-  mlflow_im2im:
-    experiment_name: benji_im2im_serotiny_port
-    run_name: embedseg
