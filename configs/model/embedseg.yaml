@@ -2,7 +2,7 @@ _target_: aics_im2im.models.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 x_key: ${source_col}
-patch_shape: [32, 512, 512]
+patch_shape: [32, 256, 256]
 save_dir: ${paths.output_dir}
 
 backbone:
@@ -53,7 +53,7 @@ postprocessing:
     GT:
       _target_: aics_im2im.utils.postprocessing.concat_dict
       _partial_: True
-      keys: ['seg', CE]
+      keys: ['target', CE]
     raw:
       _target_: aics_im2im.utils.postprocessing.rescale
       _partial_: True

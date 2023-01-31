@@ -39,7 +39,7 @@ from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 
-from aics_im2ims_im2im import utils
+from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
 

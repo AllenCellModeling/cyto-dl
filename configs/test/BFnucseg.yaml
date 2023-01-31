@@ -20,7 +20,7 @@ model:
   patch_shape: [32, 256, 256]
   save_dir: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/predict
 
-ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/2023-01-24_11-37-05/ckpts/last.ckpt
+ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/2023-01-30_09-20-34/ckpts/last.ckpt
 datamodule:
   path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/manifests/
   batch_size: 1
