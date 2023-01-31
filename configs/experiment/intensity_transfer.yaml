@@ -15,35 +15,20 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
+source_col: SOURCE_COLUMN_NAME
+target_col: BRIGHT_COLUMN_NAME
 
 trainer:
   max_epochs: 100
-  check_val_every_n_epoch: 5
   precision: 32 # THIS IS CURRENTLY NECESSARY FOR GANS
 
-callbacks:
-  early_stopping:
-    monitor: val_bright_caax_loss
-  model_checkpoint:
-    dirpath: ${paths.output_dir}/ckpts
-    monitor: val_bright_caax_loss
-    save_top_k: 5
-    every_n_epochs: 1
 model:
   patch_shape: [12, 256, 256]
 
-source_col: dim_caax
-target_col: bright_caax
-
 datamodule:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/CAAX_20x_intensity_transfer/dataset_1
-  cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/CAAX_20x_intensity_transfer/dataset_1/cache
+  path: ${paths.data_dir}/DATAPATH/
+  cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample: 
     train: -1
     test: 1
     valid: -1
-
-logger:
-  mlflow_im2im:
-    experiment_name: benji_im2im_serotiny_port
-    run_name: intensity_transfer_test
