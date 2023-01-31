@@ -4,14 +4,12 @@ save_images_every_n_epochs: 1
 x_key: ${source_col}
 patch_shape: [32, 512, 512]
 save_dir: ${paths.output_dir}
-_pixel: [2.6, 1, 1]
-_sigma: 3
 
 backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: 3
   in_channels: 1
-  out_channels: ${eval:"${model._sigma}*2+1"}
+  out_channels: ${eval:"${model._aux._sigma}*2+1"}
   strides: [[1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2]]
   kernel_size: [[3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3]]
   upsample_kernel_size:  [[1, 2, 2], [1, 1, 1], [2, 2, 2]]
@@ -24,12 +22,11 @@ tasks:
   GT:
     head:
       _target_: aics_im2im.models.components.IdentityAuxHead
-
     loss:
       _target_: aics_im2im.utils.embedseg_utils.SpatialEmbLoss_3d
       grid: ${model.patch_shape}
-      pixel: ${model._pixel}
-      n_sigma: ${model._sigma}
+      pixel: ${model._aux._pixel}
+      n_sigma: ${model._aux._sigma}
       foreground_weight: 4.5
       use_costmap: False
       instance_key: ${target_col}
@@ -48,27 +45,31 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.998
 
-_postprocessing:
-  input:
-    - - GT
-      - _target_: aics_im2im.utils.postprocessing.concat_dict
-        _partial_: True
-        keys: 
-          - ${target_col}
-          - CE
-    - - ${source_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
-        _partial_: True
-  prediction:
-    - - GT
-      - _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
-        _partial_: True
-        pixel: ${model._pixel}
-        n_sigma: ${model._sigma}
 
-postprocessing: ${kv_to_dict:${model._postprocessing}}
+postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
 
 
-
+# the _aux section is used to store values used only for interpolation. Do not change 
+# unless you are making a custom config
+_aux:
+  _pixel: [2.6, 1, 1]
+  _sigma: 3
+  _postprocessing:
+    input:
+      - - GT
+        - _target_: aics_im2im.utils.postprocessing.concat_dict
+          _partial_: True
+          keys: 
+            - ${target_col}
+            - CE
+      - - ${source_col}
+        - _target_: aics_im2im.utils.postprocessing.rescale
+          _partial_: True
+    prediction:
+      - - GT
+        - _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
+          _partial_: True
+          pixel: ${model._aux._pixel}
+          n_sigma: ${model._aux._sigma}
 
 

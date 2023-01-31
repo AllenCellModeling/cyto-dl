@@ -1,0 +1,34 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: embedseg.yaml
+  - override /model: embedseg.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: benji_im2im_serotiny_port
+run_name: embedseg
+source_col: YOUR_RAW_COLUMN_NAME
+target_col: YOUR_INSTANCE_SEGMENTATION_COLUMN_NAME
+
+trainer:
+  max_epochs: 1000
+
+model:
+  patch_shape: [32, 256, 256]
+
+
+datamodule:
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
+  cache_dir: ${paths.data_dir}/EmbedSeg/cache
+  batch_size: 1

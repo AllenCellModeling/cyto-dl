@@ -5,7 +5,7 @@
 
 defaults:
   - override /datamodule: intensity_transfer.yaml
-  - override /model: gan.yaml
+  - override /model: intensity_transfer_gan.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow_im2im.yaml

@@ -18,15 +18,7 @@ backbone:
   dropout: 0.1
   res_block: True
 
-
-_tasks:
-  - - ${target_col}
-    - head:
-        _target_: aics_im2im.models.components.IdentityAuxHead
-      loss:
-        _target_: monai.losses.DiceCELoss
-        sigmoid: True
-tasks: ${kv_to_dict:${._tasks}}
+tasks: ${kv_to_dict:${model._aux._tasks}}
 
 optimizer: 
   generator:
@@ -41,20 +33,28 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.995
 
-_postprocessing:
-  input:
-    - - ${source_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
-        _partial_: True
-    - - ${target_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
-        _partial_: True
-  prediction:
-    - - ${target_col}
-      - _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
-        _partial_: True
+postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
 
-postprocessing: ${kv_to_dict:${._postprocessing}}
+_aux:
+  _postprocessing:
+    input:
+      - - ${source_col}
+        - _target_: aics_im2im.utils.postprocessing.rescale
+          _partial_: True
+      - - ${target_col}
+        - _target_: aics_im2im.utils.postprocessing.rescale
+          _partial_: True
+    prediction:
+      - - ${target_col}
+        - _target_: aics_im2im.utils.postprocessing.rescale
+          _partial_: True
+
+  _tasks:
+  - - ${target_col}
+    - head:
+        _target_: aics_im2im.models.components.IdentityAuxHead
+      loss:
+        _target_: torch.nn.MSELoss
 
 
 

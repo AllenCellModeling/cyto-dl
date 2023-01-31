@@ -3,11 +3,10 @@ _target_: serotiny.datamodules.dataframe.DataframeDatamodule
 path: 
 cache_dir:
 
-num_workers: 4
+num_workers: 8
 batch_size: 8
 pin_memory: True
-persistent_workers: False
-
+persistent_workers: True
 columns: 
   - ${source_col}
   - ${target_col} 
@@ -18,52 +17,20 @@ transforms:
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
+        dtype: float16
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
-
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
-        ## NOTE: target_col should not be normalized if it is a binary output
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
-          - ${source_col}
-          # - ${target_col} 
-        dtype: float16
-      - _target_: monai.transforms.ThresholdIntensityd
-        keys:
-          - ${target_col}
-        above: False
-        threshold: 0.1
-        cval: 1
-
+        keys: ${datamodule.columns}
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
           1:  ${datamodule.columns}
-        # selection_fn:
-        #   _target_: serotiny.image.transforms.BrightSampler
-        #   key: ${target_col}
-        #   threshold: -0.38
-        #   base_prob: 0.15
-
-      - _target_: monai.transforms.RandHistogramShiftd
-        prob: 0.3
-        keys: ${source_col}
-        num_control_points: [90, 500]
-
-      - _target_: monai.transforms.RandStdShiftIntensityd
-        prob: 0.3
-        keys: ${source_col}
-        factors: 0.1 
-
-      - _target_: monai.transforms.RandAdjustContrastd
-        prob: 0.3
-        keys: ${source_col}
-        gamma: [0.9, 1.1]
-
       - _target_: monai.transforms.RandFlipd
         keys: ${datamodule.columns}
         prob: 0.5
@@ -72,7 +39,6 @@ transforms:
         keys: ${datamodule.columns}
         prob: 0.5
         spatial_axis: [2]
-
       - _target_: monai.transforms.RandRotate90d
         keys: ${datamodule.columns}
         prob: 0.5
@@ -82,14 +48,26 @@ transforms:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys:   
-          - ${source_col}
+        keys: ${datamodule.columns}
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
+        keys:  ${datamodule.columns}
+      - _target_: monai.transforms.NormalizeIntensityd
         keys:   
           - ${source_col}
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms: 
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+        - _target_: serotiny.image.io.MonaiBioReader
+          dimension_order_out: 'CZYX'
+      - _target_: monai.transforms.ToTensord
+        keys:  ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
         keys:   
           - ${source_col}
@@ -99,28 +77,18 @@ transforms:
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
+        dtype: float16
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}  
-        ## NOTE: target_col should not be normalized if it is a binary output
+        keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
-          - ${source_col}
-          # - ${target_col}
-
-      - _target_: monai.transforms.ThresholdIntensityd
-        keys:
-          - ${target_col}
-        above: False
-        threshold: 0.1
-        cval: 1
-
+        keys: ${datamodule.columns}
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
-        patch_shape:  ${model.patch_shape}
-        patch_per_image: 6
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
         scales_dict:
           1:  ${datamodule.columns}
 
