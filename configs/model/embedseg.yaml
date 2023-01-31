@@ -50,10 +50,23 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.998
 
+<<<<<<< HEAD
 
 postprocessing: 
   input: ${kv_to_dict:${model._aux._input_postprocessing}}
   prediction: 
+=======
+postprocessing:
+  input:
+    GT:
+      _target_: aics_im2im.utils.postprocessing.concat_dict
+      _partial_: True
+      keys: ['target', CE]
+    raw:
+      _target_: aics_im2im.utils.postprocessing.rescale
+      _partial_: True
+  prediction:
+>>>>>>> 68f23b5 (current state for bugfix tests)
     GT:
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
         _partial_: True
