@@ -36,31 +36,12 @@ from typing import List, Optional, Tuple, Union
 
 import hydra
 import pytorch_lightning as pl
-from omegaconf import DictConfig, ListConfig, OmegaConf
+from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
-
-
-def kv_to_dict(kv: Union[DictConfig, ListConfig]) -> DictConfig:
-    if isinstance(kv, DictConfig):
-        # postprocessing
-        for k, v in kv.items():
-            kv[k] = OmegaConf.to_container(v, resolve=True)
-    elif isinstance(kv, ListConfig):
-        # task heads
-        ret = {}
-        for item in kv:
-            assert len(item) == 2, f"Expected ListConfig to have len 2, got {len(item)}"
-            ret[item[0]] = OmegaConf.to_container(item[1], resolve=True)
-        kv = ret
-    else:
-        raise TypeError(
-            "Config resolved with kv_to_dict must be ListConfig or DictConfig"
-        )
-    return OmegaConf.create(kv)
 
 
 @utils.task_wrapper
@@ -81,6 +62,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
+
+    OmegaConf.resolve(cfg)
+    cfg = utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
@@ -137,7 +121,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
     # train the model
