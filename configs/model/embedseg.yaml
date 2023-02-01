@@ -30,11 +30,15 @@ tasks:
       foreground_weight: 4.5
       use_costmap: False
 <<<<<<< HEAD
+<<<<<<< HEAD
       instance_key: ${target_col}
 =======
       instance_key: target
       label_key: CL
 >>>>>>> dae1d7f (config files for BF nucseg model)
+=======
+      instance_key: ${target_col}
+>>>>>>> fc33788 (add configs)
       center_key: CE
 
 optimizer: 
@@ -51,10 +55,14 @@ lr_scheduler:
     gamma: 0.998
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fc33788 (add configs)
 
 postprocessing: 
   input: ${kv_to_dict:${model._aux._input_postprocessing}}
   prediction: 
+<<<<<<< HEAD
 =======
 postprocessing:
   input:
@@ -67,11 +75,16 @@ postprocessing:
       _partial_: True
   prediction:
 >>>>>>> 68f23b5 (current state for bugfix tests)
+=======
+>>>>>>> fc33788 (add configs)
     GT:
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
         _partial_: True
         pixel: ${model._aux._pixel}
+<<<<<<< HEAD
         grid_size: ${model.patch_shape}
+=======
+>>>>>>> fc33788 (add configs)
         n_sigma: ${model._aux._sigma}
 
 
