@@ -32,15 +32,15 @@ root = pyrootutils.setup_root(
 # https://github.com/ashleve/pyrootutils
 # ------------------------------------------------------------------------------------ #
 
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 
 import hydra
 import pytorch_lightning as pl
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
-
 from aics_im2im import utils
+from serotiny.utils import kv_to_dict
 
 log = utils.get_pylogger(__name__)
 
@@ -63,6 +63,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
+
+    OmegaConf.resolve(cfg)
+    cfg = utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
     datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
@@ -119,6 +122,8 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
+    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
 
     # train the model
     metric_dict, _ = train(cfg)
