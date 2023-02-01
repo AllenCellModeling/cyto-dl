@@ -35,7 +35,7 @@ root = pyrootutils.setup_root(
 from typing import List, Tuple
 
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 from serotiny.utils import kv_to_dict
