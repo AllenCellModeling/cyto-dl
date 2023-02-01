@@ -16,8 +16,9 @@ defaults:
 tags: ["dev"]
 seed: 12345
 
-experiment_name: benji_im2im_serotiny_port
-run_name: embedseg
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+
 source_col: YOUR_RAW_COLUMN_NAME
 target_col: YOUR_INSTANCE_SEGMENTATION_COLUMN_NAME
 
