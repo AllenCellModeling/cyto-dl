@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: embedseg.yaml
-  - override /model: embedseg.yaml
+  - override /datamodule: patch_labelfree.yaml
+  - override /model: simple_labelfree.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow_im2im.yaml
@@ -15,12 +15,10 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-
+source_col: YOUR_BRIGHTFIELD_COLUMN_NAME
+target_col: YOUR_SIGNAL_COLUMN_NAME
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
-
-source_col: YOUR_RAW_COLUMN_NAME
-target_col: YOUR_INSTANCE_SEGMENTATION_COLUMN_NAME
 
 trainer:
   max_epochs: 1000
@@ -28,8 +26,11 @@ trainer:
 model:
   patch_shape: [32, 256, 256]
 
-
 datamodule:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
-  cache_dir: ${paths.data_dir}/EmbedSeg/cache
-  batch_size: 1
+  path: ${paths.data_dir}/DATAPATH/
+  cache_dir: ${paths.data_dir}/DATAPATH/cache
+  subsample: 
+    train: -1
+    test: -1
+    valid: -1
+  batch_size: 2
