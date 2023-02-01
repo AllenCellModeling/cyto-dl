@@ -79,6 +79,7 @@ postprocessing:
 >>>>>>> fc33788 (add configs)
     GT:
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
+<<<<<<< HEAD
         _partial_: True
         pixel: ${model._aux._pixel}
 <<<<<<< HEAD
@@ -86,6 +87,11 @@ postprocessing:
 =======
 >>>>>>> fc33788 (add configs)
         n_sigma: ${model._aux._sigma}
+=======
+      _partial_: True
+      pixel: ${model._aux._pixel}
+      n_sigma: ${model._aux._sigma}
+>>>>>>> 7428346 (add omegaconf resolver for keys)
 
 
 
