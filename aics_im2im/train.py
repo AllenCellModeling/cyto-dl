@@ -41,6 +41,8 @@ from pytorch_lightning import Callback, LightningDataModule, LightningModule, Tr
 from pytorch_lightning.loggers import LightningLoggerBase
 from aics_im2im import utils
 from serotiny.utils import kv_to_dict
+from tempfile import TemporaryDirectory
+from pathlib import Path
 
 log = utils.get_pylogger(__name__)
 
@@ -125,8 +127,13 @@ def main(cfg: DictConfig) -> Optional[float]:
     OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
-    # train the model
-    metric_dict, _ = train(cfg)
+    if cfg.get("persist_cache", False):
+        metric_dict, _ = train(cfg)
+    else:
+        Path(cfg.datamodule.cache_dir).mkdir(exist_ok=True, parents=True)
+        with TemporaryDirectory(dir=cfg.datamodule.cache_dir) as temp_dir:
+            cfg.datamodule.cache_dir = temp_dir
+            metric_dict, _ = train(cfg)
 
     # safely retrieve metric value for hydra-based hyperparameter optimization
     metric_value = utils.get_metric_value(
