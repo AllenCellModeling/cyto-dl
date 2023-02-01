@@ -40,7 +40,6 @@ from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 from aics_im2im import utils
-from serotiny.utils import kv_to_dict
 from tempfile import TemporaryDirectory
 from pathlib import Path
 
