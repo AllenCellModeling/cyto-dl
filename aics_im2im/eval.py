@@ -38,6 +38,7 @@ import hydra
 from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
+from serotiny.utils import kv_to_dict
 
 from aics_im2im import utils
 
@@ -98,6 +99,8 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
+    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
     evaluate(cfg)
 
 

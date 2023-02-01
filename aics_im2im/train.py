@@ -36,10 +36,11 @@ from typing import List, Optional, Tuple, Union
 
 import hydra
 import pytorch_lightning as pl
-from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 from aics_im2im import utils
+from serotiny.utils import kv_to_dict
 
 log = utils.get_pylogger(__name__)
 
@@ -121,7 +122,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
     # train the model
