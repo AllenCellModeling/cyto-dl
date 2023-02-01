@@ -33,29 +33,31 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.995
 
-postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
+postprocessing: 
+  input: ${kv_to_dict:${model._aux._input_postprocessing}}
+  prediction: ${kv_to_dict:${model._aux._prediction_postprocessing}}
+
 
 _aux:
-  _postprocessing:
-    input:
-      - - ${source_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
-      - - ${target_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
-    prediction:
-      - - ${target_col}
-        - _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
-          _partial_: True
+  _input_postprocessing:
+    - - ${source_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
+    - - ${target_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
+  _prediction_postprocessing:
+    - - ${target_col}
+      - _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
+        _partial_: True
 
   _tasks:
-  - - ${target_col}
-    - head:
-        _target_: aics_im2im.models.components.IdentityAuxHead
-      loss:
-        _target_: monai.losses.DiceCELoss
-        sigmoid: True
+    - - ${target_col}
+      - head:
+          _target_: aics_im2im.models.components.IdentityAuxHead
+        loss:
+          _target_: monai.losses.DiceCELoss
+          sigmoid: True
 
 
 

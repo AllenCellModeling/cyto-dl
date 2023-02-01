@@ -22,7 +22,8 @@ tasks: ${kv_to_dict:${model._aux._tasks}}
 discriminator:
   _target_: aics_im2im.models.components.NLayerDiscriminator
   input_nc: 2
-  keys: ${target_col}
+  keys: 
+    - ${target_col}
   n_layers: 2
 
 
@@ -53,21 +54,22 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.97
 
-postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
+postprocessing: 
+  input: ${kv_to_dict:${model._aux._input_postprocessing}}
+  prediction: ${kv_to_dict:${model._aux._prediction_postprocessing}}
 
 _aux:
-  _postprocessing:
-    input:
-      - - ${source_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
-      - - ${target_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
-    prediction:
-      - - ${target_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
+  _input_postprocessing:
+    - - ${source_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
+    - - ${target_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
+  _prediction_postprocessing:
+    - - ${target_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
 
   _tasks:
     - - ${target_col}

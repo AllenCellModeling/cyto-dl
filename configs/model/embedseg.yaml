@@ -46,7 +46,15 @@ lr_scheduler:
     gamma: 0.998
 
 
-postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
+postprocessing: 
+  input: ${kv_to_dict:${model._aux._input_postprocessing}}
+  prediction: 
+    GT:
+      _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
+        _partial_: True
+        pixel: ${model._aux._pixel}
+        n_sigma: ${model._aux._sigma}
+
 
 
 # the _aux section is used to store values used only for interpolation. Do not change 
@@ -54,22 +62,16 @@ postprocessing: ${kv_to_dict:${model._aux._postprocessing}}
 _aux:
   _pixel: [2.6, 1, 1]
   _sigma: 3
-  _postprocessing:
-    input:
-      - - GT
-        - _target_: aics_im2im.utils.postprocessing.concat_dict
-          _partial_: True
-          keys: 
-            - ${target_col}
-            - CE
-      - - ${source_col}
-        - _target_: aics_im2im.utils.postprocessing.rescale
-          _partial_: True
-    prediction:
-      - - GT
-        - _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
-          _partial_: True
-          pixel: ${model._aux._pixel}
-          n_sigma: ${model._aux._sigma}
+  _input_postprocessing:
+    - - GT
+      - _target_: aics_im2im.utils.postprocessing.concat_dict
+        _partial_: True
+        keys: 
+          - ${target_col}
+          - CE
+    - - ${source_col}
+      - _target_: aics_im2im.utils.postprocessing.rescale
+        _partial_: True
+
 
 
