@@ -15,8 +15,12 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-source_col: SOURCE_COLUMN_NAME
-target_col: BRIGHT_COLUMN_NAME
+source_col: raw
+target_col: seg
+split_column: train
+
+experiment_name: benji_omegaconf_test
+run_name: test1
 
 trainer:
   max_epochs: 100
@@ -26,8 +30,8 @@ model:
   patch_shape: [12, 256, 256]
 
 datamodule:
-  path: ${paths.data_dir}/DATAPATH/
-  cache_dir: ${paths.data_dir}/DATAPATH/cache
+  path: ${paths.data_dir}/gt_to_im/
+  cache_dir: ${paths.data_dir}/gt_to_im/cache
   subsample: 
     train: -1
     test: 1
