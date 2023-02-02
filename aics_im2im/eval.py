@@ -38,7 +38,6 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
-from serotiny.utils import kv_to_dict
 
 from aics_im2im import utils
 
