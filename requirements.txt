@@ -27,6 +27,6 @@ scikit-image
 scipy
 pathlib
 aicsimageio
-git+https://github.com/AllenCell/serotiny.git@v1#egg=serotiny
+git+https://github.com/AllenCell/serotiny.git@dev#egg=serotiny
 
 # sh            # for running bash commands in some tests (linux/macos only)
