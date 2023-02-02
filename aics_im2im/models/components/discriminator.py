@@ -4,11 +4,18 @@ import torch
 import functools
 import numpy as np
 
-
 class NLayerDiscriminator(nn.Module):
     """Defines a PatchGAN discriminator"""
 
-    def __init__(self, input_nc, keys, ndf=64, n_layers=3, norm_layer=nn.BatchNorm3d):
+    def __init__(
+        self,
+        input_nc,
+        keys,
+        ndf=64,
+        n_layers=3,
+        norm_layer=nn.BatchNorm3d,
+        noise_annealer=None,
+    ):
         """Construct a PatchGAN discriminator
 
         Parameters:
@@ -67,6 +74,7 @@ class NLayerDiscriminator(nn.Module):
         ]  # output 1 channel prediction map
         self.model = nn.Sequential(*sequence)
         self.keys = keys
+        self.noise_annealer = noise_annealer
 
     def set_requires_grad(self, requires_grad=False):
         for param in self.model.parameters():
@@ -78,6 +86,8 @@ class NLayerDiscriminator(nn.Module):
         largest_shape = None
         for key in self.keys:
             im = input[key].detach() if detach else input[key]
+            if self.noise_annealer is not None:
+                im = self.noise_annealer(im)
             output_im.append(im)
             im_shape = im.shape[-3:]
             largest_shape = (
