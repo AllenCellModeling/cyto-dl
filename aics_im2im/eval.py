@@ -2,11 +2,16 @@ from collections.abc import MutableMapping
 from typing import List, Tuple
 
 import hydra
+<<<<<<< HEAD
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import LightningLoggerBase
 from pytorch_lightning.loggers import Logger
 from torch.utils.data import DataLoader
+=======
+from pytorch_lightning import LightningDataModule, LightningModule, Trainer
+from pytorch_lightning.loggers import LightningLoggerBase
+>>>>>>> e8799fd (remove serotony dependency)
 
 from aics_im2im import utils
 
