@@ -255,7 +255,8 @@ class Cluster_3d:
 
 def generate_instance_clusters(
     pred: Union[np.ndarray, torch.Tensor],
-    pixel: Tuple[int] = {1, 1, 1},
+    grid_size: Tuple[int] = [32, 1024, 1024],
+    pixel: Tuple[int] = [1, 1, 1],
     n_sigma: int = 2,
     seed_thresh: float = 0.5,
     min_mask_sum: int = 10,
@@ -268,6 +269,14 @@ def generate_instance_clusters(
     ##########################################################
     if not torch.is_tensor(pred):
         pred = torch.from_numpy(pred)
+
+    target_img_shape = pred.shape[-3:]
+    # this resizes the grid for clustering to allow for inference on
+    # images larger than the grid size used for training
+    if np.any(np.subtract(target_img_shape, grid_size)) > 0:
+        pixel_xy = np.maximum(target_img_shape[1:]) / grid_size[1]
+        pixel_z = target_img_shape[0] * pixel[0] / grid_size[0]
+        pixel = [pixel_z, pixel_xy, pixel_xy]
 
     if len(pred.shape) == 5:
         pred = pred[0]  # save time during training, only save 1st example in batch
