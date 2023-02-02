@@ -51,10 +51,10 @@ postprocessing:
   prediction: 
     GT:
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
-        _partial_: True
-        pixel: ${model._aux._pixel}
-        grid_size: ${model.patch_shape}
-        n_sigma: ${model._aux._sigma}
+      _partial_: True
+      pixel: ${model._aux._pixel}
+      grid_size: ${model.patch_shape}
+      n_sigma: ${model._aux._sigma}
 
 
 

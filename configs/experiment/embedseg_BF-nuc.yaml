@@ -1,0 +1,51 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: BF_nucseg.yaml
+  - override /model: embedseg.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: embedseg_BF-nuc
+run_name: embedseg
+
+tags: ["dev"]
+source_col: 'source'
+target_col: 'target'
+seed: 12345
+
+trainer:
+  max_epochs: 500
+  check_val_every_n_epoch: 10
+  detect_anomaly: True
+  gradient_clip_val: 0.1
+
+callbacks:
+  early_stopping:
+    monitor: val_loss
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val_loss
+    save_top_k: 2
+    every_n_epochs: 1
+model:
+  patch_shape: [32, 256, 256]
+
+
+datamodule:
+  path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/manifests/
+  cache_dir: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/cache
+  subsample: 
+    train: 300
+    test: -1
+    valid: 5
+  batch_size: 3
+
+    
