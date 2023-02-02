@@ -31,18 +31,16 @@ transforms:
       
       #creates two new images - CL is a binary segmentation of 'target'
       # and CE is a boolean image of the object centroids
-      - _target_: aics_im2im.utils.EmbedSegPreprocess
+      - _target_: aics_im2im.utils.ExtractCentroidd
         input_key: 'target'
-        output_key:
-          class: 'CL'
-          centroid: 'CE'
+        output_key: 'CE'
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['source', 'target', 'CL', 'CE']
+        keys: ['source', 'target', 'CE']
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1: ['source', 'target', 'CL', 'CE']
+          1: ['source', 'target', 'CE']
         selection_fn:
           _target_: serotiny.image.transforms.bright_sampler.BrightSampler
           key: CE
@@ -50,7 +48,7 @@ transforms:
           base_prob: 0
 
       - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
-        input_keys: ['target', 'CE', 'CL']
+        input_keys: ['target', 'CE']
         output_key: GT
 
   test:
@@ -89,18 +87,16 @@ transforms:
         lower_bound: 5.0
         upper_bound: 12.5
       
-      - _target_: aics_im2im.utils.EmbedSegPreprocess
+      - _target_: aics_im2im.utils.ExtractCentroidd
         input_key: 'target'
-        output_key:
-          class: CL
-          centroid: 'CE'
+        output_key: 'CE'
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['source', 'target', 'CL', 'CE']
+        keys: ['source', 'target', 'CE']
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1: ['source', 'target', 'CL', 'CE']
+          1: ['source', 'target', 'CE']
         selection_fn:
           _target_: serotiny.image.transforms.bright_sampler.BrightSampler
           key: CE
@@ -108,7 +104,7 @@ transforms:
           base_prob: 0
 
       - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
-        input_keys: ['target', 'CE', 'CL']
+        input_keys: ['target', 'CE']
         output_key: GT
         
   predict:

@@ -81,6 +81,7 @@ postprocessing:
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         _partial_: True
         pixel: ${model._aux._pixel}
 <<<<<<< HEAD
@@ -94,6 +95,8 @@ postprocessing:
       n_sigma: ${model._aux._sigma}
 >>>>>>> 7428346 (add omegaconf resolver for keys)
 =======
+=======
+>>>>>>> 681f5d8 (fixes)
       _partial_: True
       pixel: ${model._aux._pixel}
       n_sigma: ${model._aux._sigma}
@@ -102,7 +105,15 @@ postprocessing:
         pixel: ${model._aux._pixel}
         n_sigma: ${model._aux._sigma}
 >>>>>>> 8d48355 (add configs)
+<<<<<<< HEAD
 >>>>>>> cce9e05 (add configs)
+=======
+=======
+      _partial_: True
+      pixel: ${model._aux._pixel}
+      n_sigma: ${model._aux._sigma}
+>>>>>>> 45626a3 (fixes)
+>>>>>>> 681f5d8 (fixes)
 
 
 

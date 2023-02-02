@@ -13,6 +13,9 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+experiment_name: embedseg_BF-nuc
+run_name: embedseg
+
 tags: ["dev"]
 source_col: 'source'
 target_col: 'target'
@@ -38,14 +41,11 @@ model:
 
 datamodule:
   path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/manifests/
-  cache_dir: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/models/cache
+  cache_dir: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/cache
   subsample: 
     train: 300
     test: -1
     valid: 5
   batch_size: 3
 
-logger:
-  mlflow_im2im:
-    experiment_name: embedseg_BF-nuc
-    run_name: embedseg
+    

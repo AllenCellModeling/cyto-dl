@@ -11,6 +11,9 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+experiment_name: embedseg_BF-nuc
+run_name: embedseg
+
 tags: ["dev"]
 source_col: 'source'
 target_col: 'target'
@@ -20,14 +23,10 @@ model:
   patch_shape: [32, 256, 256]
   save_dir: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/predict
 
-ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/2023-01-30_09-20-34/ckpts/last.ckpt
+ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/embedseg_BF-nuc/embedseg/2023-02-01_16-16-50/ckpts/last.ckpt
 datamodule:
   path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b/manifests/
   batch_size: 1
-logger:
-  mlflow_im2im:
-    experiment_name: bf_nucseg
-    run_name: bf_nucseg_eval
 
 sliding_window_fns:
   process_fn:
