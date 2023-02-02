@@ -1,5 +1,6 @@
 import torch
 
+
 class NoiseAnnealer:
     """
     Anneals variance of gaussian noise of real and fake examples passed to discriminator, called instance noise.
@@ -10,19 +11,24 @@ class NoiseAnnealer:
 
     def __init__(self, annealing_steps=5000, init_variance=0.3):
         self.init_variance = init_variance
-        self.noise = 0
+        self.noise = init_variance
+        self.step_size = init_variance / annealing_steps
         self.annealing_steps = annealing_steps
+        self._done = False
+        self.steps = 0
 
-    def update_noise(self, step):
-        if step > self.annealing_steps:
-            self.noise = 0
+    def update_noise(self):
+        if self.steps > self.annealing_steps:
+            self._done = True
         else:
-            self.noise = self.init_variance * (1 - (step / self.annealing_steps))
+            self.noise -= self.step_size
+            self.steps += 1
 
-    def add_noise(self, img):
-        if self.noise > 0:
+    def __call__(self, img):
+        self.update_noise()
+        if self._done:
+            return img
+        else:
             noise_tensor = torch.randn(img.shape) * self.noise
             noise_tensor = noise_tensor.type_as(img)
             return torch.add(img, noise_tensor)
-        else:
-            return img
