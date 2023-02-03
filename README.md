@@ -10,6 +10,7 @@
 [![Conference](http://img.shields.io/badge/AnyConference-year-4b44ce.svg)](https://papers.nips.cc/paper/2020)
 
 </div>
+![project overview](docs/overview.png)
 
 ## Description
 In an effort to spend more work on methods development, simplify maintenance, and acreate a unified framework for all of AICS's image-to-image deep learning tools, we have created `aics_im2im`. We base it on the [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) model.
