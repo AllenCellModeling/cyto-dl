@@ -27,7 +27,7 @@ scikit-image
 scipy
 pathlib
 aicsimageio
-numpy<1.2.4
+numpy<1.24
 git+https://github.com/AllenCell/serotiny.git@dev#egg=serotiny
 
 # sh            # for running bash commands in some tests (linux/macos only)
