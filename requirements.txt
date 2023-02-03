@@ -12,7 +12,7 @@ hydra-optuna-sweeper==1.2.0
 # --------- loggers --------- #
 # wandb
 # neptune-client
-# mlflow
+mlflow>=1.0.0
 # comet-ml
 
 # --------- others --------- #
