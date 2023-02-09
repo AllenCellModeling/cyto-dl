@@ -27,7 +27,7 @@ scikit-image
 scipy
 pathlib
 aicsimageio
-numpy<1.24
+numpy<1.25
 packaging<23
 git+https://github.com/AllenCell/serotiny.git@dev#egg=serotiny
 git+https://github.com/kevinjohncutler/omnipose.git#egg=omnipose
