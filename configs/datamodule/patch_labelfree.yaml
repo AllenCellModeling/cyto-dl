@@ -49,14 +49,14 @@ transforms:
     transforms: 
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
+        dtype: float16
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
       - _target_: monai.transforms.ToTensord
-        keys:  ${datamodule.columns}
+        keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
-          - ${source_col}
+        keys: ${datamodule.columns}
 
   predict:
     _target_: monai.transforms.Compose
