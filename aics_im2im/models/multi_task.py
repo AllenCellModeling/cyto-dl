@@ -115,6 +115,8 @@ class MultiTaskIm2Im(BaseModel):
         for key in target.keys():
             if not isinstance(target[key], torch.Tensor):
                 continue
+            if target[key].shape != pred[key].shape:
+                continue
             for ch in range(target[key].shape[1]):
                 iou_dict[f"{key}_{ch}"] = self._calculate_iou(
                     target[key][:, ch], pred[key][:, ch] > 0.5
@@ -139,6 +141,7 @@ class MultiTaskIm2Im(BaseModel):
         return {"loss_D": loss_D}
 
     def optimize_generator(self, targets, outs):
+        # self.losses = {k: v.to(self.device) for k, v in self.losses.items()}
         losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
             if self.hparams.costmap_key not in targets.keys()
@@ -252,5 +255,4 @@ class MultiTaskIm2Im(BaseModel):
             on_step=False,
             on_epoch=True,
         )
-
         return losses

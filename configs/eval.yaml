@@ -5,11 +5,13 @@ defaults:
   - datamodule: null # choose datamodule with `test_dataloader()` for evaluation
   - model: null
   - logger: null
+  - optional callbacks: null
   - trainer: default.yaml
   - paths: default.yaml
   - extras: default.yaml
   - hydra: default.yaml
   - optional local: default.yaml
+  - optional experiment: null
 
 task_name: "eval"
 
