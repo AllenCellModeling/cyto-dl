@@ -1,0 +1,52 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: omnipose.yaml
+  - override /model: omnipose.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: benji_omnipose
+run_name: test
+source_col: raw
+target_col: seg
+persist_cache: True
+# mode: predict
+
+# ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/checkpoints/epoch_079.ckpt"
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+  gpus: [2]
+
+
+model:
+  # save_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/"
+  patch_shape: [32, 256, 256]
+
+
+datamodule:
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
+  cache_dir: ${paths.data_dir}/omnipose/cache
+  batch_size: 10
+  subsample:
+    train: 5000
+    valid: -1
+    test: 0
+
+
+##### ONLY USE WITH A100s
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium
