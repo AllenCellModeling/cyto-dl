@@ -43,10 +43,12 @@ conda activate myenv
 # install pytorch according to instructions
 # https://pytorch.org/get-started/
 
+# install omnipose without GUI
+export NO_GUI=True
+
 # install requirements
 pip install -r requirements.txt
 ```
-
 Train model with default configuration
 
 ```bash
