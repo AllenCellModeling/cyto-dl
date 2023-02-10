@@ -1,9 +1,9 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
 save_images_every_n_epochs: 10
-save_dir : ${paths.output_dir}
+save_dir: ${paths.output_dir}
 x_key: ${source_col}
-patch_shape: 
+patch_shape:
 costmap_key: ${cmap_col}
 
 backbone:
@@ -11,10 +11,10 @@ backbone:
   spatial_dims: 3
   in_channels: 1
   out_channels: 256
-  strides: [1,2,2,2, 2, 2]
-  kernel_size: [3,3,3,3, 3,3]
-  upsample_kernel_size:  [2,2,2, 2,2]
-  filters: [64,128, 256, 512, 768, 1024]
+  strides: [1, 2, 2, 2, 2, 2]
+  kernel_size: [3, 3, 3, 3, 3, 3]
+  upsample_kernel_size: [2, 2, 2, 2, 2]
+  filters: [64, 128, 256, 512, 768, 1024]
   dropout: 0.0
   res_block: True
 
@@ -27,7 +27,7 @@ hr_skip:
   out_channels: ${model._aux._hr_skip_channels}
   scale_factor: 2
 
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.Adam
@@ -40,10 +40,10 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.995
 
-postprocessing: 
+postprocessing:
   input: ${kv_to_dict:${model._aux._input_postprocessing}}
   prediction: ${kv_to_dict:${model._aux._prediction_postprocessing}}
-  
+
 _aux:
   _hr_skip_channels: 64
   _input_postprocessing:
@@ -61,7 +61,7 @@ _aux:
   _tasks:
     - - ${target_col}
       - head:
-          _target_: aics_im2im.models.components.AuxHead
+          _target_: aics_im2im.nn.AuxHead
           resolution: hr
           in_channels: 256
           out_channels: 1
@@ -75,5 +75,3 @@ _aux:
             _target_: torch.nn.Identity
         loss:
           _target_: torch.nn.MSELoss
-
-

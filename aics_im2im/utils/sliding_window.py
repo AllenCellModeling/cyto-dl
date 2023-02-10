@@ -1,10 +1,10 @@
 import torch
 
 
-def expand_2d_to_3d(seg_prob_tuple, window_data, importance_map_):
+def expand_2d_to_3d(seg_prob_tuple, importance_map_):
     new_3d_tensor = torch.zeros_like(seg_prob_tuple[1]).type_as(seg_prob_tuple[1])
     new_3d_tensor[:, :] = seg_prob_tuple[0].unsqueeze(2)
-    seg_prob_tuple = tuple((new_3d_tensor, seg_prob_tuple[1]))
+    seg_prob_tuple = (new_3d_tensor, seg_prob_tuple[1])
     return seg_prob_tuple, importance_map_
 
 

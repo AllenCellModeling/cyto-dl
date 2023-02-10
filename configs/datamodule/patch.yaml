@@ -1,6 +1,6 @@
-_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
+path:
 cache_dir:
 
 num_workers: 4
@@ -8,27 +8,27 @@ batch_size: 8
 pin_memory: True
 persistent_workers: False
 
-columns: 
+columns:
   - ${source_col}
-  - ${target_col} 
+  - ${target_col}
 
 transforms:
   train:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
         ## NOTE: target_col should not be normalized if it is a binary output
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - ${source_col}
-          # - ${target_col} 
+          # - ${target_col}
         dtype: float16
       - _target_: monai.transforms.ThresholdIntensityd
         keys:
@@ -37,14 +37,14 @@ transforms:
         threshold: 0.1
         cval: 1
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  ${datamodule.columns}
+          1: ${datamodule.columns}
         # selection_fn:
-        #   _target_: serotiny.image.transforms.BrightSampler
+        #   _target_: aics_im2im.image.transforms.BrightSampler
         #   key: ${target_col}
         #   threshold: -0.38
         #   base_prob: 0.15
@@ -57,7 +57,7 @@ transforms:
       - _target_: monai.transforms.RandStdShiftIntensityd
         prob: 0.3
         keys: ${source_col}
-        factors: 0.1 
+        factors: 0.1
 
       - _target_: monai.transforms.RandAdjustContrastd
         prob: 0.3
@@ -80,33 +80,33 @@ transforms:
 
   test:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
-        keys:   
+        keys:
           - ${source_col}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys:   
+        keys:
           - ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
+        keys:
           - ${source_col}
 
   valid:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}  
+        keys: ${datamodule.columns}
         ## NOTE: target_col should not be normalized if it is a binary output
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
+        keys:
           - ${source_col}
           # - ${target_col}
 
@@ -117,10 +117,9 @@ transforms:
         threshold: 0.1
         cval: 1
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
-        patch_shape:  ${model.patch_shape}
+        patch_shape: ${model.patch_shape}
         patch_per_image: 6
         scales_dict:
-          1:  ${datamodule.columns}
-
+          1: ${datamodule.columns}

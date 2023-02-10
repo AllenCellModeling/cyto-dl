@@ -1,13 +1,12 @@
-from typing import Optional, Union, Callable, Dict
+from pathlib import Path
+from typing import Callable, Dict, Optional, Union
+
+import numpy as np
 import torch
 import torch.nn as nn
+from aics_im2im.models.base_model import BaseModel
 from aicsimageio.writers import OmeTiffWriter
-from pathlib import Path
-import numpy as np
 from monai.data.meta_tensor import MetaTensor
-
-from serotiny.models.base_model import BaseModel
-
 from monai.inferers import sliding_window_inference
 
 
@@ -43,15 +42,13 @@ class MultiTaskIm2Im(BaseModel):
         super().__init__(
             **kwargs,
         )
-        for stage in ["train", "val", "test", "predict"]:
+        for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = backbone
         self.hr_skip = hr_skip
         self.task_heads = {}
         self.losses = {}
-        self.inference_heads = (
-            tasks.keys() if inference_heads is None else inference_heads
-        )
+        self.inference_heads = tasks.keys() if inference_heads is None else inference_heads
         for task, task_dict in tasks.items():
             self.task_heads[task] = task_dict.head
             self.losses[task] = task_dict.loss
@@ -64,7 +61,7 @@ class MultiTaskIm2Im(BaseModel):
     def configure_optimizers(self):
         opts = []
         scheds = []
-        for key in ["generator", "discriminator"]:
+        for key in ("generator", "discriminator"):
             if key in self.hparams.optimizer.keys():
                 if key == "generator":
                     opt = self.hparams.optimizer[key](
@@ -86,9 +83,7 @@ class MultiTaskIm2Im(BaseModel):
         z = self.backbone(x)
         hr_skip = self.hr_skip(x)
         return {
-            task: head(z, hr_skip)
-            for task, head in self.task_heads.items()
-            if task in run_heads
+            task: head(z, hr_skip) for task, head in self.task_heads.items() if task in run_heads
         }
 
     def save_image(self, fn, img, directory):
@@ -107,8 +102,7 @@ class MultiTaskIm2Im(BaseModel):
             return (np.sum(np.logical_and(target, pred)) + 1e-8) / (
                 np.sum(np.logical_or(target, pred)) + 1e-8
             )
-        else:
-            return np.nan
+        return np.nan
 
     def calculate_channelwise_iou(self, target, pred):
         iou_dict = {}
@@ -145,28 +139,24 @@ class MultiTaskIm2Im(BaseModel):
         losses = {
             f"{task}_loss": self.losses[task](task_out, targets[task])
             if self.hparams.costmap_key not in targets.keys()
-            else self.losses[task](
-                task_out, targets[task], targets[self.hparams.costmap_key]
-            )
+            else self.losses[task](task_out, targets[task], targets[self.hparams.costmap_key])
             for task, task_out in outs.items()
         }
         if self.discriminator is not None:
-            pred_fake = self.discriminator(
-                targets, targets[self.hparams.x_key], detach=False
-            )
+            pred_fake = self.discriminator(targets, targets[self.hparams.x_key], detach=False)
             losses["g_gan"] = self.gan_loss(pred_fake, True)
         return losses
 
     def should_save_image(self, batch_idx):
         return (
-            batch_idx == 0
+            batch_idx == 0  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
 
     def save_batch(self, batch_idx, stage, batch, outs, metadata):
-        if stage in ["train", "val"] and self.should_save_image(batch_idx):
+        if stage in ("train", "val") and self.should_save_image(batch_idx):
             for result, suffix, dict_type in zip(
-                [batch, outs], [".tif", "_pred.tif"], ["input", "prediction"]
+                (batch, outs), (".tif", "_pred.tif"), ("input", "prediction")
             ):
                 for key in self.postprocessing[dict_type]:
                     if key not in result:
@@ -177,7 +167,7 @@ class MultiTaskIm2Im(BaseModel):
                         self.postprocessing[dict_type][key](result[key]),
                         directory=f"{stage}_images",
                     )
-        elif stage in ["predict", "test"]:
+        elif stage in ("predict", "test"):
             assert (
                 metadata is not None
             ), "Metadata required for proper file saving during prediction! Please check your transforms"
@@ -200,9 +190,9 @@ class MultiTaskIm2Im(BaseModel):
                 batch[k] = v.as_tensor()
 
         x = batch[self.hparams.x_key]
-        if stage in ["train", "val"]:
+        if stage in ("train", "val"):
             outs = self(x)
-        elif stage in ["predict", "test"]:
+        elif stage in ("predict", "test"):
             with torch.no_grad():
                 outs = sliding_window_inference(
                     inputs=x,
@@ -231,7 +221,7 @@ class MultiTaskIm2Im(BaseModel):
         if stage == "predict":
             return
         targets = {k: batch[k] for k in self.task_heads.keys()}
-        if stage in ["val", "test"]:
+        if stage in ("val", "test"):
             iou_dict = self.calculate_channelwise_iou(targets, outs)
             self.log_dict(
                 {f"{stage}_{k}_iou": v for k, v in iou_dict.items()},

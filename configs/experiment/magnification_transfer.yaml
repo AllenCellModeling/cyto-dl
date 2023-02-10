@@ -28,7 +28,7 @@ model:
 datamodule:
   path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
-  subsample: 
+  subsample:
     train: -1
     test: 1
     valid: -1

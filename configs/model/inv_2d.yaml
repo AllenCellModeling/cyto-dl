@@ -1,0 +1,4 @@
+_target_: giae.so2.trainer.Trainer
+
+hparams:
+  { "emb_dim": 32, "hidden_dim": 128, "use_classical": False, "lr": 0.001 }

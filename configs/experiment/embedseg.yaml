@@ -28,7 +28,6 @@ trainer:
 model:
   patch_shape: [32, 256, 256]
 
-
 datamodule:
   path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
   cache_dir: ${paths.data_dir}/EmbedSeg/cache

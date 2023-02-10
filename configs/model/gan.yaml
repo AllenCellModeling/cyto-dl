@@ -1,7 +1,7 @@
 _target_: aics_im2im.models.MultiTaskIm2Im
 
 save_images_every_n_epochs: 10
-save_dir : ${paths.output_dir}/gan
+save_dir: ${paths.output_dir}/gan
 x_key: dim_caax
 patch_shape: [12, 128, 128]
 
@@ -10,15 +10,15 @@ backbone:
   spatial_dims: 3
   in_channels: 1
   out_channels: 32
-  strides: [1,1,2,1,2]
-  kernel_size: [3,3,3,3,3]
-  upsample_kernel_size:  [1,2,1,2]
-  filters: [ 32, 64, 128, 256, 512]
+  strides: [1, 1, 2, 1, 2]
+  kernel_size: [3, 3, 3, 3, 3]
+  upsample_kernel_size: [1, 2, 1, 2]
+  filters: [32, 64, 128, 256, 512]
   dropout: 0.0
   res_block: True
 
 discriminator:
-  _target_: aics_im2im.models.components.NLayerDiscriminator
+  _target_: aics_im2im.nn.NLayerDiscriminator
   input_nc: 2
   keys: [bright_caax]
   n_layers: 2
@@ -26,7 +26,7 @@ discriminator:
 tasks:
   bright_caax:
     head:
-      _target_: aics_im2im.models.components.AuxHead
+      _target_: aics_im2im.nn.AuxHead
       resolution: lr
       in_channels: 32
       out_channels: 1
@@ -40,9 +40,9 @@ tasks:
 
 gan_loss:
   _target_: aics_im2im.utils.gan_loss.GANLoss
-  gan_mode: 'vanilla'
+  gan_mode: "vanilla"
 
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.Adam
@@ -53,7 +53,6 @@ optimizer:
     _target_: torch.optim.Adam
     lr: 0.0003
     weight_decay: 0.001
-    
 
 lr_scheduler:
   generator:
@@ -77,5 +76,3 @@ postprocessing:
     bright_caax:
       _target_: aics_im2im.utils.postprocessing.rescale
       _partial_: True
-
-

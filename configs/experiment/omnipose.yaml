@@ -29,11 +29,9 @@ trainer:
   check_val_every_n_epoch: 10
   gpus: [2]
 
-
 model:
   # save_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/"
   patch_shape: [32, 256, 256]
-
 
 datamodule:
   path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
@@ -43,7 +41,6 @@ datamodule:
     train: 5000
     valid: -1
     test: 0
-
 
 ##### ONLY USE WITH A100s
 extras:

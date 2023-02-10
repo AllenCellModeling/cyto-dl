@@ -2,11 +2,13 @@ import torch
 
 
 class NoiseAnnealer:
-    """
-    Anneals variance of gaussian noise of real and fake examples passed to discriminator, called instance noise.
-    This makes the generator's task harder and increases support of the real and fake distributions so they overlap, which
-    has nice theoretical implications for the quality of the discriminator.
-    Also can be used as a curriculum learning technique by iteratively unblurring the target to make segmentation harder over time.
+    """Anneals variance of gaussian noise of real and fake examples passed to discriminator, called
+    instance noise.
+
+    This makes the generator's task harder and increases support of the real and fake distributions
+    so they overlap, which has nice theoretical implications for the quality of the discriminator.
+    Also can be used as a curriculum learning technique by iteratively unblurring the target to
+    make segmentation harder over time.
     """
 
     def __init__(self, annealing_steps=5000, init_variance=0.3):

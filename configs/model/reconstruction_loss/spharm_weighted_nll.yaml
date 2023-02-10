@@ -1,0 +1,3 @@
+shcoeff:
+  _target_: aics_im2im.utils.WeightedGaussianNLLLoss
+  weights: ${model._aux_.mem_mse_weights}

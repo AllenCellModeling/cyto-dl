@@ -145,8 +145,12 @@ dmypy.json
 *.tar.gz
 
 # Lightning-Hydra-Template
-configs/local/*
+configs/local/default.yaml
 data/
 logs/
 .env
 .autoenv
+
+# PDM
+
+.pdm.toml

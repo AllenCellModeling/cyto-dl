@@ -1,36 +1,36 @@
-_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
+path:
 cache_dir:
 
 num_workers: 8
 batch_size: 8
 pin_memory: True
 persistent_workers: True
-columns: 
+columns:
   - ${source_col}
-  - ${target_col} 
+  - ${target_col}
 
 transforms:
   train:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         dtype: float16
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${datamodule.columns}
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  ${datamodule.columns}
+          1: ${datamodule.columns}
       - _target_: monai.transforms.RandFlipd
         keys: ${datamodule.columns}
         prob: 0.5
@@ -46,13 +46,13 @@ transforms:
 
   test:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         dtype: float16
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -60,35 +60,34 @@ transforms:
 
   predict:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys:  ${source_col}
+        keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
+        keys:
           - ${source_col}
 
   valid:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         dtype: float16
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${datamodule.columns}
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  ${datamodule.columns}
-
+          1: ${datamodule.columns}

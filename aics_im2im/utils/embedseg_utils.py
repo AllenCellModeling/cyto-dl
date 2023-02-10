@@ -1,19 +1,20 @@
 # MODIFIED FROM https://github.com/MMV-Lab/mmv_im2im/blob/main
 
 
+from itertools import filterfalse  # noqa F401
+from pathlib import Path
+from typing import List, Tuple, Union
+
 import numpy as np
-from typing import Union, Tuple, List
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from monai.data.meta_tensor import MetaTensor
+from monai.transforms import Transform
 from numba import jit
 from scipy.ndimage.measurements import find_objects
 from scipy.ndimage.morphology import binary_fill_holes
-from pathlib import Path
-import torch
-import torch.nn as nn
 from torch.autograd import Variable
-from itertools import filterfalse  # noqa F401
-import torch.nn.functional as F
-from monai.transforms import Transform
-from monai.data.meta_tensor import MetaTensor
 
 
 @jit(nopython=True)
@@ -111,21 +112,9 @@ class Cluster_3d:
     def __init__(self, grid, pixel, one_hot=False):
         grid_z, grid_y, grid_x = grid
         pixel_z, pixel_y, pixel_x = pixel
-        xm = (
-            torch.linspace(0, pixel_x, grid_x)
-            .view(1, 1, 1, -1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
-        ym = (
-            torch.linspace(0, pixel_y, grid_y)
-            .view(1, 1, -1, 1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
-        zm = (
-            torch.linspace(0, pixel_z, grid_z)
-            .view(1, -1, 1, 1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
+        xm = torch.linspace(0, pixel_x, grid_x).view(1, 1, 1, -1).expand(1, grid_z, grid_y, grid_x)
+        ym = torch.linspace(0, pixel_y, grid_y).view(1, 1, -1, 1).expand(1, grid_z, grid_y, grid_x)
+        zm = torch.linspace(0, pixel_z, grid_z).view(1, -1, 1, 1).expand(1, grid_z, grid_y, grid_x)
         xyzm = torch.cat((xm, ym, zm), 0)
 
         self.xyzm = xyzm
@@ -160,17 +149,9 @@ class Cluster_3d:
         for id in unique_instances:
             mask = image.eq(id).view(1, depth, height, width)
             center = (
-                spatial_emb[mask.expand_as(spatial_emb)]
-                .view(3, -1)
-                .mean(1)
-                .view(3, 1, 1, 1)
+                spatial_emb[mask.expand_as(spatial_emb)].view(3, -1).mean(1).view(3, 1, 1, 1)
             )  # 3 x 1 x 1 x 1
-            s = (
-                sigma[mask.expand_as(sigma)]
-                .view(n_sigma, -1)
-                .mean(1)
-                .view(n_sigma, 1, 1, 1)
-            )
+            s = sigma[mask.expand_as(sigma)].view(n_sigma, -1).mean(1).view(n_sigma, 1, 1, 1)
 
             s = torch.exp(s * 10)  # n_sigma x 1 x 1
             dist = torch.exp(-1 * torch.sum(torch.pow(spatial_emb - center, 2) * s, 0))
@@ -200,21 +181,17 @@ class Cluster_3d:
         spatial_emb = torch.tanh(prediction[0:3]) + xyzm_s  # 3 x d x h x w
 
         sigma = prediction[3 : 3 + n_sigma]  # n_sigma x d x h x w
-        seed_map = torch.sigmoid(
-            prediction[3 + n_sigma : 3 + n_sigma + 1]
-        )  # 1 x d x h x w
+        seed_map = torch.sigmoid(prediction[3 + n_sigma : 3 + n_sigma + 1])  # 1 x d x h x w
         instance_map = torch.zeros(depth, height, width).short()
         instances = []  # list
 
         count = 1
         mask = seed_map > 0.5
         if mask.sum() > min_mask_sum:
-            # top level decision: only start creating instances, if there are atleast
+            # top level decision: only start creating instances, if there are at least
             # 128 pixels in foreground!
 
-            spatial_emb_masked = spatial_emb[mask.expand_as(spatial_emb)].view(
-                n_sigma, -1
-            )
+            spatial_emb_masked = spatial_emb[mask.expand_as(spatial_emb)].view(n_sigma, -1)
             sigma_masked = sigma[mask.expand_as(sigma)].view(n_sigma, -1)
             seed_map_masked = seed_map[mask].view(1, -1)
 
@@ -232,16 +209,11 @@ class Cluster_3d:
                 unclustered[seed] = 0
 
                 s = torch.exp(sigma_masked[:, seed : seed + 1] * 10)
-                dist = torch.exp(
-                    -1 * torch.sum(torch.pow(spatial_emb_masked - center, 2) * s, 0)
-                )
+                dist = torch.exp(-1 * torch.sum(torch.pow(spatial_emb_masked - center, 2) * s, 0))
 
                 proposal = (dist > 0.5).squeeze()
                 if proposal.sum() > min_object_size:
-                    if (
-                        unclustered[proposal].sum().float() / proposal.sum().float()
-                        > 0.5
-                    ):
+                    if unclustered[proposal].sum().float() / proposal.sum().float() > 0.5:
                         instance_map_masked[proposal.squeeze()] = count
                         instance_mask = torch.zeros(depth, height, width).short()
                         instance_mask[mask.squeeze().cpu()] = proposal.short().cpu()
@@ -324,21 +296,9 @@ class SpatialEmbLoss_3d(nn.Module):
         pixel_z, pixel_y, pixel_x = pixel
         grid_z, grid_y, grid_x = grid
 
-        xm = (
-            torch.linspace(0, pixel_x, grid_x)
-            .view(1, 1, 1, -1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
-        ym = (
-            torch.linspace(0, pixel_y, grid_y)
-            .view(1, 1, -1, 1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
-        zm = (
-            torch.linspace(0, pixel_z, grid_z)
-            .view(1, -1, 1, 1)
-            .expand(1, grid_z, grid_y, grid_x)
-        )
+        xm = torch.linspace(0, pixel_x, grid_x).view(1, 1, 1, -1).expand(1, grid_z, grid_y, grid_x)
+        ym = torch.linspace(0, pixel_y, grid_y).view(1, 1, -1, 1).expand(1, grid_z, grid_y, grid_x)
+        zm = torch.linspace(0, pixel_z, grid_z).view(1, -1, 1, 1).expand(1, grid_z, grid_y, grid_x)
         xyzm = torch.cat((xm, ym, zm), 0)
 
         self.register_buffer("xyzm", xyzm)
@@ -408,9 +368,7 @@ class SpatialEmbLoss_3d(nn.Module):
                 if self.use_costmap:
                     # adjust the cost here, because some of the background pixels might
                     # have zero weight
-                    seed_loss += torch.sum(
-                        costmap * torch.pow(seed_map[bg_mask] - 0, 2)
-                    )
+                    seed_loss += torch.sum(costmap * torch.pow(seed_map[bg_mask] - 0, 2))
                 else:
                     seed_loss += torch.sum(torch.pow(seed_map[bg_mask] - 0, 2))
 
@@ -424,17 +382,13 @@ class SpatialEmbLoss_3d(nn.Module):
                 center_mask = in_mask & center_image
 
                 if center_mask.sum().eq(1):
-                    center = xyzm_s.masked_select(center_mask.expand_as(xyzm_s)).view(
-                        3, 1, 1, 1
-                    )
+                    center = xyzm_s.masked_select(center_mask.expand_as(xyzm_s)).view(3, 1, 1, 1)
                 else:
                     xyz_in = xyzm_s.masked_select(in_mask.expand_as(xyzm_s)).view(3, -1)
                     center = xyz_in.mean(1).view(3, 1, 1, 1)  # 3 x 1 x 1 x 1
 
                 # calculate sigma
-                sigma_in = sigma[in_mask.expand_as(sigma)].view(
-                    self.n_sigma, -1
-                )  # 3 x N
+                sigma_in = sigma[in_mask.expand_as(sigma)].view(self.n_sigma, -1)  # 3 x N
 
                 s = sigma_in.mean(1).view(self.n_sigma, 1, 1, 1)  # n_sigma x 1 x 1 x 1
 
@@ -451,8 +405,7 @@ class SpatialEmbLoss_3d(nn.Module):
                 s = torch.exp(s * 10)
                 s = torch.nan_to_num(s)
                 dist = torch.exp(
-                    -1
-                    * torch.sum(torch.pow(spatial_emb - center, 2) * s, 0, keepdim=True)
+                    -1 * torch.sum(torch.pow(spatial_emb - center, 2) * s, 0, keepdim=True)
                 )
 
                 # apply lovasz-hinge loss
@@ -464,8 +417,7 @@ class SpatialEmbLoss_3d(nn.Module):
                 # seed loss
                 if self.use_costmap:
                     seed_loss += self.foreground_weight * torch.sum(
-                        costmap
-                        * torch.pow(seed_map[in_mask] - dist[in_mask].detach(), 2)
+                        costmap * torch.pow(seed_map[in_mask] - dist[in_mask].detach(), 2)
                     )
                 else:
                     seed_loss += self.foreground_weight * torch.sum(
@@ -491,9 +443,7 @@ class SpatialEmbLoss_3d(nn.Module):
 
 
 def mean(l, ignore_nan=False, empty=0):  # noqa E741
-    """
-    nanmean compatible with generators.
-    """
+    """nanmean compatible with generators."""
     l = iter(l)  # noqa E741
     if ignore_nan:
         l = filterfalse(np.isnan, l)  # noqa E741
@@ -513,7 +463,7 @@ def mean(l, ignore_nan=False, empty=0):  # noqa E741
 
 
 def lovasz_hinge(logits, labels, per_image=True, ignore=None):
-    """
+    r"""
     Binary Lovasz hinge loss
       logits: [B, H, W] Variable, logits at each pixel (between -\infty and +\infty)  # noqa W605
       labels: [B, H, W] Tensor, binary ground truth masks (0 or 1)
@@ -522,9 +472,7 @@ def lovasz_hinge(logits, labels, per_image=True, ignore=None):
     """
     if per_image:
         loss = mean(
-            lovasz_hinge_flat(
-                *flatten_binary_scores(log.unsqueeze(0), lab.unsqueeze(0), ignore)
-            )
+            lovasz_hinge_flat(*flatten_binary_scores(log.unsqueeze(0), lab.unsqueeze(0), ignore))
             for log, lab in zip(logits, labels)
         )
     else:
@@ -533,9 +481,9 @@ def lovasz_hinge(logits, labels, per_image=True, ignore=None):
 
 
 def lovasz_grad(gt_sorted):
-    """
-    Computes gradient of the Lovasz extension w.r.t sorted errors
-    See Alg. 1 in paper
+    """Computes gradient of the Lovasz extension w.r.t sorted errors See Alg.
+
+    1 in paper
     """
     p = len(gt_sorted)
     gts = gt_sorted.sum()
@@ -549,7 +497,7 @@ def lovasz_grad(gt_sorted):
 
 
 def lovasz_hinge_flat(logits, labels):
-    """
+    r"""
     Binary Lovasz hinge loss
       logits: [P] Variable, logits at each prediction (between -\infty and +\infty)  # noqa W605
       labels: [P] Tensor, binary ground truth labels (0 or 1)
@@ -569,10 +517,7 @@ def lovasz_hinge_flat(logits, labels):
 
 
 def flatten_binary_scores(scores, labels, ignore=None):
-    """
-    Flattens predictions in the batch (binary case)
-    Remove labels equal to 'ignore'
-    """
+    """Flattens predictions in the batch (binary case) Remove labels equal to 'ignore'."""
     scores = scores.view(-1)
     labels = labels.view(-1)
     if ignore is None:

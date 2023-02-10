@@ -5,12 +5,11 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import hydra
+from aics_im2im.utils import pylogger, rich_utils
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback
 from pytorch_lightning.loggers import Logger
 from pytorch_lightning.utilities import rank_zero_only
-
-from aics_im2im.utils import pylogger, rich_utils
 
 log = pylogger.get_pylogger(__name__)
 
@@ -42,12 +41,8 @@ def task_wrapper(task_func: Callable) -> Callable:
             raise ex
         finally:
             path = Path(cfg.paths.output_dir, "exec_time.log")
-            content = (
-                f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
-            )
-            save_file(
-                path, content
-            )  # save task execution time (even if exception occurs)
+            content = f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
+            save_file(path, content)  # save task execution time (even if exception occurs)
             close_loggers()  # close loggers (even if exception occurs so multirun won't fail)
 
         log.info(f"Output dir: {cfg.paths.output_dir}")
@@ -93,7 +88,7 @@ def extras(cfg: DictConfig) -> None:
 @rank_zero_only
 def save_file(path: str, content: str) -> None:
     """Save file in rank zero mode (only on one process in multi-GPU setup)."""
-    with open(path, "w+") as file:
+    with open(path, "w+") as file:  # noqa: FURB103
         file.write(content)
 
 

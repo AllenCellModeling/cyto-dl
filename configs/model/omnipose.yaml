@@ -10,23 +10,22 @@ backbone:
   spatial_dims: 3
   in_channels: 1
   out_channels: 5
-  strides: [1,2,2,2,2]
-  kernel_size: [3,3,3,3,3]
-  upsample_kernel_size:  [2,2,2,2]
+  strides: [1, 2, 2, 2, 2]
+  kernel_size: [3, 3, 3, 3, 3]
+  upsample_kernel_size: [2, 2, 2, 2]
   filters: [64, 128, 256, 512, 768]
   dropout: 0.1
   res_block: True
 
-
 tasks:
   seg:
     head:
-      _target_: aics_im2im.models.components.IdentityAuxHead
+      _target_: aics_im2im.nn.IdentityAuxHead
     loss:
       _target_: aics_im2im.utils.omnipose_utils.OmniposeLoss
       dim: 3
 
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.AdamW
@@ -39,22 +38,18 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.998
 
-
-postprocessing: 
-  input: 
+postprocessing:
+  input:
     seg:
       _target_: aics_im2im.utils.postprocessing.detach
       _partial_: True
     raw:
       _target_: aics_im2im.utils.postprocessing.detach
       _partial_: True
-  prediction: 
+  prediction:
     seg:
       _target_: aics_im2im.utils.postprocessing.detach
       _partial_: True
     # seg:
     #   _target_: aics_im2im.utils.omnipose_utils.OmniposeClustering
     #   _partial_: True
-
-
-

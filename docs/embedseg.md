@@ -18,7 +18,7 @@ This section denotes the transforms performed during training
 - _target_: monai.transforms.LoadImaged
         keys: ['raw', 'seg'] 
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
+        - _target_: aics_im2im.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
 ```
 Here, we load the images pointed to by the `raw` and `seg` columns in CZYX order. 
@@ -44,14 +44,14 @@ This z-score whitens the `raw` image
 The `ExtractCentroidd` transform takes the instance segmentation and creates an additional image, `CE`, which is an image with the centroid positions of `seg`. 
 
 ```
-- _target_: serotiny.image.transforms.RandomMultiScaleCropd
+- _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ['raw', 'seg',  'CE']
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
           1: ['raw', 'seg',  'CE']
         selection_fn:
-          _target_: serotiny.image.transforms.bright_sampler.AnySampler
+          _target_: aics_im2im.image.transforms.bright_sampler.AnySampler
           key: CE
           threshold: 1
           base_prob: 0

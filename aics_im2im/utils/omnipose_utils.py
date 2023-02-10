@@ -1,27 +1,25 @@
 # all code modified from https://github.com/kevinjohncutler/omnipose/blob/main/omnipose/core.py
-from monai.data import MetaTensor
-from monai.transforms import Transform
-from omnipose.core import labels_to_flows, compute_masks
-from omnipose.utils import get_boundary
+import edt
+import numpy as np
+import torch
 from cellpose_omni.core import (
-    WeightedLoss,
     ArcCosDotLoss,
     DerivativeLoss,
-    NormLoss,
     DivergenceLoss,
+    NormLoss,
+    WeightedLoss,
 )
-import torch
-import numpy as np
-import edt
-from skimage.filters import gaussian
+from monai.data import MetaTensor
+from monai.transforms import Transform
+from omnipose.core import compute_masks, labels_to_flows
+from omnipose.utils import get_boundary
 from scipy.ndimage import laplace
+from skimage.filters import gaussian
 
 
 def get_boundary_laplace(mask):
-    """
-    this gets an exterior boundary, instead of interior boundary like from omnipose
-    however, it maintains boundaries between touching objects.
-    """
+    """this gets an exterior boundary, instead of interior boundary like from omnipose however, it
+    maintains boundaries between touching objects."""
     return laplace(mask) > 0
 
 
@@ -38,16 +36,12 @@ class OmniposePreprocessd(Transform):
         # no boundary between merged nuclei, definitely change this
         boundary = get_boundary_laplace(numpy_im)
         bg_edt = edt.edt(numpy_im.squeeze() < 0.5, black_border=True)
-        ## ARBITRARY, avoids complication from diameter calculation in omnipose
+        # ARBITRARY, avoids complication from diameter calculation in omnipose
         cutoff = 20
-        boundary_weighted_mask = (
-            gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
-        )
+        boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
         # back to CZYX
         boundary_weighted_mask = np.expand_dims(boundary_weighted_mask, 0)
-        image_dict[self.label_key] = np.concatenate(
-            [boundary, boundary_weighted_mask, flows], 0
-        )
+        image_dict[self.label_key] = np.concatenate([boundary, boundary_weighted_mask, flows], 0)
         return image_dict
 
 

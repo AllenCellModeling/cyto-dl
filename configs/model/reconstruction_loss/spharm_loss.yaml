@@ -1,0 +1,4 @@
+shcoeff:
+  _target_: aics_im2im.utils.spharm.SpharmLoss
+  max_band: 16
+  columns:
