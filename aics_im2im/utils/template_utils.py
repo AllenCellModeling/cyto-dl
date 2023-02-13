@@ -10,8 +10,8 @@ from pytorch_lightning import Callback
 from pytorch_lightning.loggers import Logger
 from pytorch_lightning.utilities import rank_zero_only
 
-import .pylogger
-import .rich_utils
+from . import pylogger
+from . import rich_utils
 
 log = pylogger.get_pylogger(__name__)
 
