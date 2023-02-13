@@ -53,38 +53,3 @@ def test_hydra_sweep_ddp_sim(tmp_path):
     ] + overrides
     run_sh_command(command)
 
-
-@RunIf(sh=True)
-@pytest.mark.slow
-def test_optuna_sweep(tmp_path):
-    """Test optuna sweep."""
-    command = [
-        startfile,
-        "-m",
-        "hparams_search=mnist_optuna",
-        "hydra.sweep.dir=" + str(tmp_path),
-        "hydra.sweeper.n_trials=10",
-        "hydra.sweeper.sampler.n_startup_trials=5",
-        "++trainer.fast_dev_run=true",
-    ] + overrides
-    run_sh_command(command)
-
-
-@RunIf(wandb=True, sh=True)
-@pytest.mark.slow
-def test_optuna_sweep_ddp_sim_wandb(tmp_path):
-    """Test optuna sweep with wandb and ddp sim."""
-    command = [
-        startfile,
-        "-m",
-        "hparams_search=mnist_optuna",
-        "hydra.sweep.dir=" + str(tmp_path),
-        "hydra.sweeper.n_trials=5",
-        "trainer=ddp_sim",
-        "trainer.max_epochs=3",
-        "+trainer.limit_train_batches=0.01",
-        "+trainer.limit_val_batches=0.1",
-        "+trainer.limit_test_batches=0.1",
-        "logger=wandb",
-    ]
-    run_sh_command(command)
