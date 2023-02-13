@@ -3,11 +3,12 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from aics_im2im.models.base_vae import BaseVAE
-from aics_im2im.nn import MLP
-from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
-from aics_im2im.utils.spharm import flip_spharm, get_indices, rotate_spharm
 from torch.nn.modules.loss import _Loss as Loss
+
+from aics_im2im.models.base_vae import BaseVAE
+from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
+from aics_im2im.nn import MLP
+from aics_im2im.utils.spharm import flip_spharm, get_indices, rotate_spharm
 
 from .o2_spharm_encoder import O2SpharmEncoder
 

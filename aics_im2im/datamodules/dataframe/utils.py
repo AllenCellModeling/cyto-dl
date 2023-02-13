@@ -9,10 +9,11 @@ try:
 except ModuleNotFoundError:
     import pandas as pd
 
-from aics_im2im.dataframe import read_dataframe
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import DictConfig, ListConfig
+
+from aics_im2im.dataframe import read_dataframe
 
 
 def get_canonical_split_name(split):

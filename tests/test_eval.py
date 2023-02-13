@@ -1,10 +1,11 @@
 import os
 
 import pytest
-from aics_im2im.eval import evaluate
-from aics_im2im.train import train
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import open_dict
+
+from aics_im2im.eval import evaluate
+from aics_im2im.train import train
 
 
 @pytest.mark.slow

@@ -1,3 +1,4 @@
+from .config import kv_to_dict, remove_aux_key
 from .pylogger import get_pylogger
 from .rich_utils import enforce_tags, print_config_tree
 from .template_utils import (
@@ -10,5 +11,3 @@ from .template_utils import (
     save_file,
     task_wrapper,
 )
-
-from .config import kv_to_dict, remove_aux_key

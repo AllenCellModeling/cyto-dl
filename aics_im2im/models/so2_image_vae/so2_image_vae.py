@@ -4,9 +4,6 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from aics_im2im.models.base_vae import BaseVAE
-from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
-from aics_im2im.utils import O2Mask
 from monai.networks.blocks import SubpixelUpsample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
@@ -14,6 +11,10 @@ from monai.networks.layers.simplelayers import Flatten, Reshape
 from monai.networks.nets import AutoEncoder
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
+
+from aics_im2im.models.base_vae import BaseVAE
+from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
+from aics_im2im.utils import O2Mask
 
 from .so2_encoder import SO2ImageEncoder
 from .utils import get_rotation_matrix, rotate_img

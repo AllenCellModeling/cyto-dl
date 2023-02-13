@@ -4,10 +4,11 @@ from typing import Callable, Dict, Optional, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from aics_im2im.models.base_model import BaseModel
 from aicsimageio.writers import OmeTiffWriter
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
+
+from aics_im2im.models.base_model import BaseModel
 
 
 def sum_losses(losses):

@@ -1,6 +1,6 @@
-from typing import List, Optional, Tuple
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import List, Optional, Tuple
 
 import hydra
 import pytorch_lightning as pl
@@ -37,8 +37,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     # remove aux section after resolving and before instantiating
     cfg = utils.remove_aux_key(cfg)
-
-
 
     if cfg.get("datamodule"):
         log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
@@ -83,8 +81,12 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         if datamodule:
             trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
         else:
-            trainer.fit(model=model, train_dataloaders=train_dataloaders,
-                        val_dataloaders=val_dataloaders, ckpt_path=cfg.get("ckpt_path"))
+            trainer.fit(
+                model=model,
+                train_dataloaders=train_dataloaders,
+                val_dataloaders=val_dataloaders,
+                ckpt_path=cfg.get("ckpt_path"),
+            )
 
     train_metrics = trainer.callback_metrics
 

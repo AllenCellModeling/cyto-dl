@@ -11,11 +11,12 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import torch
-from aics_im2im.dataframe.transforms import filter_columns
-from aics_im2im.utils.spharm import get_image_from_shcoeffs
 from pytorch_lightning import Callback, LightningModule, Trainer
 from skimage import measure as skmeasure
 from skimage import morphology as skmorpho
+
+from aics_im2im.dataframe.transforms import filter_columns
+from aics_im2im.utils.spharm import get_image_from_shcoeffs
 
 
 def get_ranked_dims(

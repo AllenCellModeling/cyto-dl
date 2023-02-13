@@ -1,10 +1,11 @@
 from typing import Callable, Optional, Sequence, Union
 
-from aics_im2im.dataframe.transforms.filter import _filter_columns as filter_filenames
 from monai.data import DataLoader, Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import ListConfig
 from upath import UPath as Path
+
+from aics_im2im.dataframe.transforms.filter import _filter_columns as filter_filenames
 
 
 def make_folder_dataloader(

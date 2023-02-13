@@ -5,8 +5,9 @@ import pandas as pd
 import pyrootutils
 import torch
 import yaml
-from aics_im2im.transforms.dataframe import split_dataframe
 from fire import Fire
+
+from aics_im2im.transforms.dataframe import split_dataframe
 
 root = pyrootutils.setup_root(
     search_from=__file__,

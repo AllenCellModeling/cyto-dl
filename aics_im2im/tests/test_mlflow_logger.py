@@ -4,11 +4,12 @@ from unittest import mock
 
 import pytest
 import torch
-from aics_im2im.loggers import MLFlowLogger
-from aics_im2im.models.utils.mlflow import get_config
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.demos.boring_classes import BoringModel
+
+from aics_im2im.loggers import MLFlowLogger
+from aics_im2im.models.utils.mlflow import get_config
 
 
 @mock.patch("pytorch_lightning.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)

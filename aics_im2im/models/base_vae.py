@@ -2,10 +2,11 @@ from typing import Optional, Sequence
 
 import torch
 import torch.nn as nn
-from aics_im2im.models.base_model import BaseModel
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
 from torch.optim.lr_scheduler import _LRScheduler as LRScheduler
+
+from aics_im2im.models.base_model import BaseModel
 
 from .priors import IsotropicGaussianPrior, Prior
 

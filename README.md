@@ -9,6 +9,7 @@
 
 <!--[![Paper](http://img.shields.io/badge/paper-arxiv.1001.2234-B31B1B.svg)](https://www.nature.com/articles/nature14539)
 [![Conference](http://img.shields.io/badge/AnyConference-year-4b44ce.svg)](https://papers.nips.cc/paper/2020) -->
+
 </div>
 
 <p align="center">
@@ -16,18 +17,19 @@
 </p>
 
 ## Description
+
 In an effort to spend more work on methods development, simplify maintenance,
 and create a unified framework for all of AICS's deep learning tools, we have
 created `aics-im2im`. We based it on [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template).
 
 ### Supported im2im model types
+
 1. Segmentation
 2. Transfer Function
 3. Labelfree
 4. EmbedSeg
-    - Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the [MMV-Lab's implementation](https://github.com/MMV-Lab/mmv_im2im). 
-    - [Docs](docs/embedseg.md)
-
+   - Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the [MMV-Lab's implementation](https://github.com/MMV-Lab/mmv_im2im).
+   - [Docs](docs/embedseg.md)
 
 ## How to run
 
