@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest"]
+        os: ["ubuntu-20.04"]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     timeout-minutes: 20
@@ -113,7 +113,7 @@ jobs:
 
   # upload code coverage report
   code-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout
