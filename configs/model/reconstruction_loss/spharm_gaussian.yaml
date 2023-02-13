@@ -1,4 +1,4 @@
 shcoeff:
-  _target_: aics_im2im.utils.GaussianNLLLossFixedVar
+  _target_: aics_im2im.nn.losses.GaussianNLLLoss
   var: [0.1]
   reduction: none
