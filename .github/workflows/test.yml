@@ -16,7 +16,7 @@ jobs:
         os: ["ubuntu-latest"]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install .
           pip install pytest
           pip install sh
 
@@ -51,7 +51,7 @@ jobs:
         os: ["macos-latest"]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -86,7 +86,7 @@ jobs:
         os: ["windows-latest"]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
 
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -127,13 +127,13 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install .
           pip install pytest
           pip install pytest-cov[toml]
           pip install sh
 
       - name: Run tests and collect coverage
-        run: pytest --cov aics_im2im # NEEDS TO BE UPDATED WHEN CHANGING THE NAME OF "aics_im2im" FOLDER
+        run: pytest --cov aics_im2im
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
