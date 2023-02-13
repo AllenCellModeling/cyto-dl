@@ -10,16 +10,21 @@ from pytorch_lightning import Callback
 from pytorch_lightning.loggers import Logger
 from pytorch_lightning.utilities import rank_zero_only
 
-from . import pylogger
-from . import rich_utils
+from . import pylogger, rich_utils
 
 log = pylogger.get_pylogger(__name__)
 
 __all__ = [
-    "task_wrapper", "extras", "save_file", "instantiate_callbacks",
-    "instantiate_loggers", "log_hyperparameters", "get_metric_value",
-    "close_loggers"
+    "task_wrapper",
+    "extras",
+    "save_file",
+    "instantiate_callbacks",
+    "instantiate_loggers",
+    "log_hyperparameters",
+    "get_metric_value",
+    "close_loggers",
 ]
+
 
 def task_wrapper(task_func: Callable) -> Callable:
     """Optional decorator that wraps the task function in extra utilities.
@@ -154,7 +159,7 @@ def log_hyperparameters(object_dict: dict) -> None:
         log.warning("Logger not found! Skipping hyperparameter logging...")
         return
 
-    hparams["model"] = get(cfg, "model")
+    hparams["model"] = cfg.get("model")
 
     # save number of model parameters
     hparams["model/params/total"] = sum(p.numel() for p in model.parameters())
