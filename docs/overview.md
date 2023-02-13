@@ -35,14 +35,14 @@ The `generator` `optimizer` and `lr_scheduler` must always be passed, and GANs r
 postprocessing:
   input:
     raw:
-      _target_: aics_im2im.utils.postprocessing.rescale
+      _target_: aics_im2im.model.utils.postprocessing.rescale
       _partial_: True
     seg:
-      _target_: aics_im2im.utils.postprocessing.rescale
+      _target_: aics_im2im.model.utils.postprocessing.rescale
       _partial_: True
   prediction:
     seg:
-      _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
+      _target_: aics_im2im.model.utils.postprocessing.sigmoid_rescale
       _partial_: True
 ```
 This tells the model to save out the `raw` and `seg` images passed in by rescaling them to 8-bit range, as well as applying `sigmoid` to the segmentation prediction and rescaling it to 8-bit. Custom postprocessing code is encouraged for your use case, but a few defaults can be found [here](https://github.com/AllenCellModeling/aics-im2im/blob/b19dd56da4adfbaca658dd7ad6128a1bfe42b721/aics_im2im/utils/postprocessing.py)

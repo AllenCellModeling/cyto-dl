@@ -5,11 +5,13 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import hydra
-from aics_im2im.utils import pylogger, rich_utils
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning import Callback
 from pytorch_lightning.loggers import Logger
 from pytorch_lightning.utilities import rank_zero_only
+
+import .pylogger
+import .rich_utils
 
 log = pylogger.get_pylogger(__name__)
 

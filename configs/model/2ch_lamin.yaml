@@ -80,19 +80,19 @@ lr_scheduler:
 postprocessing:
   input:
     raw:
-      _target_: aics_im2im.utils.postprocessing.rescale
+      _target_: aics_im2im.model.utils.postprocessing.rescale
       _partial_: True
     seg:
-      _target_: aics_im2im.utils.postprocessing.rescale
+      _target_: aics_im2im.model.utils.postprocessing.rescale
       _partial_: True
     mitotic_mask:
-      _target_: aics_im2im.utils.postprocessing.rescale
+      _target_: aics_im2im.model.utils.postprocessing.rescale
       _partial_: True
 
   prediction:
     seg:
-      _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
+      _target_: aics_im2im.model.utils.postprocessing.sigmoid_rescale
       _partial_: True
     mitotic_mask:
-      _target_: aics_im2im.utils.postprocessing.sigmoid_rescale
+      _target_: aics_im2im.model.utils.postprocessing.sigmoid_rescale
       _partial_: True

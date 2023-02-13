@@ -48,14 +48,14 @@ _aux:
   _hr_skip_channels: 64
   _input_postprocessing:
     - - ${source_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
+      - _target_: aics_im2im.model.utils.postprocessing.rescale
         _partial_: True
     - - ${target_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
+      - _target_: aics_im2im.model.utils.postprocessing.rescale
         _partial_: True
   _prediction_postprocessing:
     - - ${target_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
+      - _target_: aics_im2im.model.utils.postprocessing.rescale
         _partial_: True
 
   _tasks:
