@@ -39,7 +39,7 @@ tasks:
       _target_: torch.nn.MSELoss
 
 gan_loss:
-  _target_: aics_im2im.utils.gan_loss.GANLoss
+  _target_: aics_im2im.nn.losses.GANLoss
   gan_mode: "vanilla"
 
 optimizer:

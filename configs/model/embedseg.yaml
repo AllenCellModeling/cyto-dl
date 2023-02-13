@@ -22,7 +22,7 @@ tasks:
     head:
       _target_: aics_im2im.nn.IdentityAuxHead
     loss:
-      _target_: aics_im2im.models.utils.embedseg.SpatialEmbLoss_3d
+      _target_: aics_im2im.nn.losses.SpatialEmbLoss_3d
       grid: ${model.patch_shape}
       pixel: ${model._aux._pixel}
       n_sigma: ${model._aux._sigma}
