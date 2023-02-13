@@ -64,10 +64,11 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
         utils.log_hyperparameters(object_dict)
 
     log.info("Starting testing!")
+    method = trainer.test if cfg.get("test", False) else trainer.predict
     if datamodule:
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
+        method(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
     else:
-        trainer.test(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
+        method(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
 
     # for predictions use trainer.predict(...)
     # predictions = trainer.predict(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
