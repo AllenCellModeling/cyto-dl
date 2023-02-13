@@ -1,6 +1,6 @@
 from .pylogger import get_pylogger
-from .config import kv_to_dict, remove_aux_key
-from .utils import (
+from .rich_utils import enforce_tags, print_config_tree
+from .template_utils import (
     close_loggers,
     extras,
     get_metric_value,
@@ -10,3 +10,5 @@ from .utils import (
     save_file,
     task_wrapper,
 )
+
+from .config import kv_to_dict, remove_aux_key
