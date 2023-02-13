@@ -1,4 +1,6 @@
 from typing import List, Optional, Tuple
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import hydra
 import pytorch_lightning as pl
@@ -107,6 +109,14 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 def main(cfg: DictConfig) -> Optional[float]:
     OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
+
+    if cfg.get("persist_cache", False) and cfg.datamodule.cache_dir:
+        metric_dict, _ = train(cfg)
+    else:
+        Path(cfg.datamodule.cache_dir).mkdir(exist_ok=True, parents=True)
+        with TemporaryDirectory(dir=cfg.datamodule.cache_dir) as temp_dir:
+            cfg.datamodule.cache_dir = temp_dir
+            metric_dict, _ = train(cfg)
 
     # train the model
     metric_dict, _ = train(cfg)
