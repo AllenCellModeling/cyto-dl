@@ -13,6 +13,11 @@ from pytorch_lightning.utilities import rank_zero_only
 
 log = pylogger.get_pylogger(__name__)
 
+__all__ = [
+    "task_wrapper", "extras", "save_file", "instantiate_callbacks",
+    "instantiate_loggers", "log_hyperparameters", "get_metric_value",
+    "close_loggers"
+]
 
 def task_wrapper(task_func: Callable) -> Callable:
     """Optional decorator that wraps the task function in extra utilities.
@@ -130,13 +135,6 @@ def instantiate_loggers(logger_cfg: DictConfig) -> List[Logger]:
     return logger
 
 
-def get(cfg, key):
-    val = cfg.get(key)
-    if isinstance(val, DictConfig):
-        val = OmegaConf.to_container(val, resolve=True)
-    return val
-
-
 @rank_zero_only
 def log_hyperparameters(object_dict: dict) -> None:
     """Controls which config parts are saved by lightning loggers.
@@ -165,16 +163,16 @@ def log_hyperparameters(object_dict: dict) -> None:
         p.numel() for p in model.parameters() if not p.requires_grad
     )
 
-    hparams["datamodule"] = get(cfg, "datamodule")
-    hparams["trainer"] = get(cfg, "trainer")
+    hparams["datamodule"] = cfg["datamodule"]
+    hparams["trainer"] = cfg["trainer"]
 
-    hparams["callbacks"] = get(cfg, "callbacks")
-    hparams["extras"] = get(cfg, "extras")
+    hparams["callbacks"] = cfg.get("callbacks")
+    hparams["extras"] = cfg.get("extras")
 
-    hparams["task_name"] = get(cfg, "task_name")
-    hparams["tags"] = get(cfg, "tags")
-    hparams["ckpt_path"] = get(cfg, "ckpt_path")
-    hparams["seed"] = get(cfg, "seed")
+    hparams["task_name"] = cfg.get("task_name")
+    hparams["tags"] = cfg.get("tags")
+    hparams["ckpt_path"] = cfg.get("ckpt_path")
+    hparams["seed"] = cfg.get("seed")
 
     # send hparams to all loggers
     mode = "train" if trainer.training else "test"

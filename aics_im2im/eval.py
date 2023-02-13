@@ -30,6 +30,9 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
 
+    # remove aux section after resolving and before instantiating
+    cfg = utils.remove_aux_key(cfg)
+
     if cfg.get("datamodule"):
         log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
         datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
@@ -76,6 +79,8 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
     evaluate(cfg)
 
 
