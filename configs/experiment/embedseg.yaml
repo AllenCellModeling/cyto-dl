@@ -8,7 +8,7 @@ defaults:
   - override /model: embedseg.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow_im2im.yaml
+  - override /logger: mlflow.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
