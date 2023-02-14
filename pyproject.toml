@@ -17,6 +17,7 @@ authors = [
 ]
 dependencies = [
   "rich",
+  "pyrootutils",
   "hydra-core",
   "hydra-colorlog",
   "hydra-optuna-sweeper",
