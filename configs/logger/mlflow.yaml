@@ -1,12 +1,5 @@
-# https://mlflow.org
-
 mlflow:
-  _target_: pytorch_lightning.loggers.mlflow.MLFlowLogger
-  # experiment_name: ""
-  # run_name: ""
-  tracking_uri: ${paths.log_dir}/mlflow/mlruns # run `mlflow ui` command inside the `logs/mlflow/` dir to open the UI
-  tags: null
-  # save_dir: "./mlruns"
-  prefix: ""
-  artifact_location: null
-  # run_id: ""
+  _target_: aics_im2im.loggers.MLFlowLogger
+  tracking_uri: https://mlflow.a100.int.allencell.org/
+  experiment_name: ${experiment_name}
+  run_name: ${run_name}

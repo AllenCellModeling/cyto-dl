@@ -1,5 +1,11 @@
 default_language_version:
-  python: python3
+  python: python3.10
+
+ci:
+  autofix_prs: true
+  autoupdate_commit_msg: "[pre-commit.ci] pre-commit suggestions"
+  autoupdate_schedule: quarterly
+  # submodules: true
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -8,6 +14,7 @@ repos:
       # list of supported hooks: https://pre-commit.com/hooks.html
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: ".bumpversion.cfg"
       - id: check-docstring-first
       - id: check-yaml
       - id: debug-statements
@@ -26,7 +33,7 @@ repos:
 
   # python import sorting
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    rev: 5.12.0
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
@@ -97,7 +104,7 @@ repos:
     hooks:
       - id: codespell
         args:
-          - --skip=logs/**,data/**,*.ipynb
+          - --skip=logs/**,data/**,*.ipynb,pdm.lock
           # - --ignore-words-list=abc,def
 
   # jupyter notebook cell output clearing
@@ -120,3 +127,19 @@ repos:
             "--extend-ignore=E203,E402,E501,F401,F841",
             "--exclude=logs/*,data/*",
           ]
+
+  - repo: https://github.com/dosisod/refurb
+    rev: v1.3.0
+    hooks:
+      - id: refurb
+        language_version: python3.10
+        args:
+          - --ignore
+          - FURB120
+
+  - repo: https://github.com/asottile/blacken-docs
+    rev: v1.12.1
+    hooks:
+      - id: blacken-docs
+        args: [--line-length=120]
+        additional_dependencies: [black==21.12b0]

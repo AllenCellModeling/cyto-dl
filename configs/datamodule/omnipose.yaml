@@ -1,43 +1,42 @@
-_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
-cache_dir: 
+path:
+cache_dir:
 
 num_workers: 8
 batch_size: 1
 pin_memory: True
 persistent_workers: False
-split_column: 
-columns: 
+split_column:
+columns:
   - ${source_col}
   - ${target_col}
-
 
 transforms:
   train:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-      - _target_: serotiny.image.transforms.Resized
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: aics_im2im.image.transforms.Resized
         keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+        scale_factor: [0.5, 0.5, 0.5]
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  ${datamodule.columns}
-          
+          1: ${datamodule.columns}
+
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
         keys: ${source_col}
@@ -46,7 +45,7 @@ transforms:
       - _target_: monai.transforms.RandStdShiftIntensityd
         prob: 0.1
         keys: ${source_col}
-        factors: 0.1 
+        factors: 0.1
 
       - _target_: monai.transforms.RandAdjustContrastd
         prob: 0.1
@@ -69,33 +68,33 @@ transforms:
 
   test:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-      - _target_: serotiny.image.transforms.Resized
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: aics_im2im.image.transforms.Resized
         keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+        scale_factor: [0.5, 0.5, 0.5]
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-  
+
   predict:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-      - _target_: serotiny.image.transforms.Resized
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: aics_im2im.image.transforms.Resized
         keys: ${source_col}
-        scale_factor: [0.5, 0.5, 0.5] 
+        scale_factor: [0.5, 0.5, 0.5]
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -103,26 +102,24 @@ transforms:
 
   valid:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-      - _target_: serotiny.image.transforms.Resized
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: aics_im2im.image.transforms.Resized
         keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+        scale_factor: [0.5, 0.5, 0.5]
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${datamodule.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  ${datamodule.columns}
-            
-        
+          1: ${datamodule.columns}

@@ -12,18 +12,17 @@ backbone:
   out_channels: ${eval:"${model._aux._sigma}*2+1"}
   strides: [[1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2]]
   kernel_size: [[3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3]]
-  upsample_kernel_size:  [[1, 2, 2], [1, 1, 1], [2, 2, 2]]
+  upsample_kernel_size: [[1, 2, 2], [1, 1, 1], [2, 2, 2]]
   filters: [64, 128, 192, 256]
   dropout: 0.0
   res_block: True
 
-
 tasks:
   GT:
     head:
-      _target_: aics_im2im.models.components.IdentityAuxHead
+      _target_: aics_im2im.nn.IdentityAuxHead
     loss:
-      _target_: aics_im2im.utils.embedseg_utils.SpatialEmbLoss_3d
+      _target_: aics_im2im.nn.losses.SpatialEmbLoss_3d
       grid: ${model.patch_shape}
       pixel: ${model._aux._pixel}
       n_sigma: ${model._aux._sigma}
@@ -32,7 +31,7 @@ tasks:
       instance_key: ${target_col}
       center_key: CE
 
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.AdamW
@@ -45,34 +44,28 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.998
 
-
-postprocessing: 
+postprocessing:
   input: ${kv_to_dict:${model._aux._input_postprocessing}}
-  prediction: 
+  prediction:
     GT:
-      _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
-        _partial_: True
-        pixel: ${model._aux._pixel}
-        grid_size: ${model.patch_shape}
-        n_sigma: ${model._aux._sigma}
+      _target_: aics_im2im.models.utils.embedseg.generate_instance_clusters
+      _partial_: True
+      pixel: ${model._aux._pixel}
+      grid_size: ${model.patch_shape}
+      n_sigma: ${model._aux._sigma}
 
-
-
-# the _aux section is used to store values used only for interpolation. Do not change 
+# the _aux section is used to store values used only for interpolation. Do not change
 # unless you are making a custom config
 _aux:
   _pixel: [2.6, 1, 1]
   _sigma: 3
   _input_postprocessing:
     - - GT
-      - _target_: aics_im2im.utils.postprocessing.concat_dict
+      - _target_: aics_im2im.model.utils.postprocessing.concat_dict
         _partial_: True
-        keys: 
+        keys:
           - ${target_col}
           - CE
     - - ${source_col}
-      - _target_: aics_im2im.utils.postprocessing.rescale
+      - _target_: aics_im2im.model.utils.postprocessing.rescale
         _partial_: True
-
-
-
