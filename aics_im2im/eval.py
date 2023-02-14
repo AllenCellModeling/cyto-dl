@@ -1,7 +1,9 @@
+from collections import MutableMapping
 from typing import List, Tuple
 
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, OmegaConf, ListConfig
+from torch.utils.data import DataLoader
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import Logger
 
@@ -33,14 +35,23 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
     # remove aux section after resolving and before instantiating
     cfg = utils.remove_aux_key(cfg)
 
-    if cfg.get("datamodule"):
-        log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
-        datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
-    elif cfg.get("dataloaders"):
-        datamodule = None
-        dataloaders = hydra.utils.instantiate(cfg.dataloaders)
-    else:
-        raise ValueError("You must either specify either `datamodule` or `dataloaders`")
+    data = hydra.utils.instantiate(cfg.data)
+    if not isinstance(data, (LightningDataModule, DataLoader)):
+        if isinstance(data, MutableMapping) and not data.dataloaders:
+            raise ValueError(
+                "If the `data` config for eval/prediction is a dict it must have a "
+                "key `dataloaders` with the corresponding value being a DataLoader "
+                "(or list thereof)."
+            )
+        elif not isinstance(data, (list, ListConfig)):
+            raise ValueError(
+                "`data` config for eval/prediction must be either:\n"
+                " - a LightningDataModule\n"
+                " - a DataLoader (or list thereof)\n"
+                " - a dict with key `dataloaders`, with the corresponding value "
+                "being a DataLoader (or list thereof)"
+            )
+
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
@@ -53,7 +64,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
     object_dict = {
         "cfg": cfg,
-        "datamodule": datamodule,
+        "data": data,
         "model": model,
         "logger": logger,
         "trainer": trainer,
@@ -65,13 +76,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
     log.info("Starting testing!")
     method = trainer.test if cfg.get("test", False) else trainer.predict
-    if datamodule:
-        method(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
-    else:
-        method(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
-
-    # for predictions use trainer.predict(...)
-    # predictions = trainer.predict(model=model, dataloaders=dataloaders, ckpt_path=cfg.ckpt_path)
+    method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
 
     metric_dict = trainer.callback_metrics
 

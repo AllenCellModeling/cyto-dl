@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: patch.yaml
+  - override /data patch.yaml
   - override /model: multitask.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -34,7 +34,7 @@ model:
 source_col: raw
 target_col: seg
 
-datamodule:
+data:
   # path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin
   # cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin/cache
   path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/im2im_interphase"

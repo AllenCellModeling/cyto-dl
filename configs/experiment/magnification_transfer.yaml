@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: superresolution.yaml
+  - override /data superresolution.yaml
   - override /model: superres_gan.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -25,7 +25,7 @@ trainer:
 model:
   patch_shape: [12, 256, 256]
 
-datamodule:
+data:
   path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample:
