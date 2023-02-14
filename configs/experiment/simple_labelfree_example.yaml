@@ -8,7 +8,7 @@ defaults:
   - override /model: multitask.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow_im2im.yaml
+  - override /logger: mlflow.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -39,13 +39,12 @@ datamodule:
   # cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/CELLMORPH/20xBF_to_100x_laminseg_rnd/50ms_bf_to_200ms_lamin/serotiny_version/simple_lamin/cache
   path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/im2im_interphase"
   cache_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/NPM1_iterative_ml/im2im_interphase/cache
-  subsample: 
+  subsample:
     train: -1
     test: 1
     valid: -1
 
-
 logger:
-  mlflow_im2im:
+  mlflow:
     experiment_name: benji_NPM1
     run_name: interphase_big_train

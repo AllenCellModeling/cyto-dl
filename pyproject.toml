@@ -1,17 +1,105 @@
+[build-system]
+requires = ["pdm-pep517>=1.0.0", "numpy"]
+build-backend = "pdm.pep517.api"
+
+[project]
+name = "aics-im2im"
+version = "0.0.0"
+description = """\
+  Collection of representation learning models, techniques, callbacks, utils, \
+  used to create latent variable models of cell shape, morphology and \
+  intracellular organization.\
+  """
+readme = "README.md"
+authors = [
+    { name = "Guilherme Pires", email = "guilherme.pires@alleninstitute.org" },
+    { name = "Ritvik Vasan", email = "ritvik.vasan@alleninstitute.org" },
+]
+dependencies = [
+  "rich",
+  "hydra-core",
+  "hydra-colorlog",
+  "hydra-optuna-sweeper",
+  "pytorch-lightning",
+  "torch",
+  "numpy",
+  "matplotlib",
+  "seaborn",
+  "pandas",
+  "fire",
+  "joblib",
+  "mlflow",
+  "nbformat",
+  "omegaconf",
+  "pyarrow",
+  "PyYAML",
+  "scikit-learn",
+  "aicsimageio",
+  "universal-pathlib",
+  "s3fs",
+  "fsspec",
+  "pycryptodome",
+  "frozendict",
+  "ome-zarr",
+  "protobuf",
+  "jupyter-core",
+  "grpcio",
+  "anndata",
+  "monai @ git+https://github.com/Project-MONAI/MONAI@dev",
+  "bfio>=2.3.0",
+]
+requires-python = ">=3.8,<4.0"
+
+[project.optional-dependencies]
+equiv = [
+  "escnn>=1.0.4",
+  "e3nn"
+]
+spharm = [
+  "vtk",
+  "aicscytoparam",
+  "aicsshparam"
+]
+test = [
+    "pyrootutils",
+    "pytest",
+    "pytest-cov[toml]>=4.0.0",
+    "sh>=1.14.3",
+]
+scripts = [
+  "pyrootutils"
+]
+
+[project.urls]
+Homepage = "https://github.com/AllenCellModeling/aics-im2im"
+
+[tool.pdm.build]
+includes = ["aics_im2im", "README.md", "LICENSE", "**/*.yaml" ]
+excludes = ["**/*.pyc", "**/__pycache__"]
+
+[tool.flake8]
+ignore = [
+    "E203",
+    "E402",
+    "W291",
+    "W503",
+]
+max-line-length = 88
+
 [tool.pytest.ini_options]
 addopts = [
-  "--color=yes",
-  "--durations=0",
-  "--strict-markers",
-  "--doctest-modules",
+    "--color=yes",
+    "--durations=0",
+    "--strict-markers",
+    "--doctest-modules",
 ]
 filterwarnings = [
-  "ignore::DeprecationWarning",
-  "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
 ]
 log_cli = "True"
 markers = [
-  "slow: slow tests",
+    "slow: slow tests",
 ]
 minversion = "6.0"
 testpaths = "tests/"

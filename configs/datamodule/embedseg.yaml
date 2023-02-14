@@ -1,103 +1,40 @@
-_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
-cache_dir: 
+path:
+cache_dir:
 
 num_workers: 8
 batch_size: 1
 pin_memory: True
 persistent_workers: False
-split_column: 
-columns: 
+split_column:
+columns:
   - ${source_col}
   - ${target_col}
-
 
 transforms:
   train:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${datamodule.columns}
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.ToTensord
         keys: ${datamodule.columns}
-    
+
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-      
+
       #creates new center image, CE, a boolean image of the object centroids
       - _target_: aics_im2im.utils.ExtractCentroidd
-        input_key: 'seg'
+        input_key: "seg"
         output_key: CE
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: 
-          - ${source_col}
-          - ${target_col}
-          - CE
-        patch_shape: ${model.patch_shape}
-        patch_per_image: 1
-        scales_dict:
-          1: 
-            - ${source_col}
-            - ${target_col}
-            - CE
-
-      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
-        input_keys:
-          - ${target_col}
-          - CE
-        output_key: GT
-
-  test:
-    _target_: monai.transforms.Compose
-    transforms: 
-      - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
-        reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-
-      - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
-    
-      - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${source_col}
-      
-      - _target_: aics_im2im.utils.ExtractCentroidd
-        input_key: ${target_col}
-        output_key: CE
-      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
-        input_keys: 
-          - ${target_col}
-          - CE
-        output_key: GT
-
-  valid:
-    _target_: monai.transforms.Compose
-    transforms: 
-      - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
-        reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-
-      - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
-    
-      - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${source_col}
-      
-      - _target_: aics_im2im.utils.ExtractCentroidd
-        input_key: ${target_col}
-        output_key: CE
-
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: 
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+        keys:
           - ${source_col}
           - ${target_col}
           - CE
@@ -110,8 +47,69 @@ transforms:
             - CE
 
       - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
-        input_keys: 
+        input_keys:
           - ${target_col}
           - CE
         output_key: GT
-        
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${datamodule.columns}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+
+      - _target_: monai.transforms.ToTensord
+        keys: ${datamodule.columns}
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+
+      - _target_: aics_im2im.utils.ExtractCentroidd
+        input_key: ${target_col}
+        output_key: CE
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
+        input_keys:
+          - ${target_col}
+          - CE
+        output_key: GT
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${datamodule.columns}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+
+      - _target_: monai.transforms.ToTensord
+        keys: ${datamodule.columns}
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+
+      - _target_: aics_im2im.utils.ExtractCentroidd
+        input_key: ${target_col}
+        output_key: CE
+
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+          - ${target_col}
+          - CE
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1:
+            - ${source_col}
+            - ${target_col}
+            - CE
+
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
+        input_keys:
+          - ${target_col}
+          - CE
+        output_key: GT

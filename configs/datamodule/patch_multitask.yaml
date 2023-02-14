@@ -1,6 +1,6 @@
-_target_: serotiny.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
+path:
 cache_dir:
 
 num_workers: 8
@@ -8,40 +8,40 @@ batch_size: 3
 pin_memory: True
 persistent_workers: False
 split_column: split
-columns: 
+columns:
   - raw
-  - seg 
+  - seg
   - mitotic_mask
   - split
 
 transforms:
   train:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: [raw]
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
-          
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+
       - _target_: monai.transforms.LoadImaged
         keys: [seg]
         dtype: short
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.LoadImaged
         keys: [mitotic_mask]
         dtype: short
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CYX"
 
       - _target_: monai.transforms.ToTensord
         keys: [raw, seg, mitotic_mask]
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - raw
         dtype: float16
       - _target_: monai.transforms.ThresholdIntensityd
@@ -50,66 +50,63 @@ transforms:
         above: False
         cval: 1
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: [raw, seg, mitotic_mask]
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  [raw, seg, mitotic_mask]
-       
+          1: [raw, seg, mitotic_mask]
 
   test:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
-        keys:   
+        keys:
           - raw
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys:   
+        keys:
           - raw
       - _target_: monai.transforms.NormalizeIntensityd
-        keys:   
+        keys:
           - raw
 
   valid:
     _target_: monai.transforms.Compose
-    transforms: 
+    transforms:
       - _target_: monai.transforms.LoadImaged
         keys: [raw, seg]
         dtype: short
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CZYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.LoadImaged
         keys: [mitotic_mask]
         dtype: short
         reader:
-        - _target_: serotiny.image.io.MonaiBioReader
-          dimension_order_out: 'CYX'
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CYX"
 
       - _target_: monai.transforms.ToTensord
         keys: [raw, seg, mitotic_mask]
 
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - raw
         dtype: float16
-        
+
       - _target_: monai.transforms.ThresholdIntensityd
         keys: [seg, mitotic_mask]
         threshold: 0.1
         above: False
         cval: 1
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: [raw, seg, mitotic_mask]
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1:  [raw, seg, mitotic_mask]
-       
-
+          1: [raw, seg, mitotic_mask]

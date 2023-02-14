@@ -1,46 +1,13 @@
-import pyrootutils
-
-root = pyrootutils.setup_root(
-    search_from=__file__,
-    indicator=[".git", "pyproject.toml"],
-    pythonpath=True,
-    dotenv=True,
-)
-
-# ------------------------------------------------------------------------------------ #
-# `pyrootutils.setup_root(...)` above is optional line to make environment more convenient
-# should be placed at the top of each entry file
-#
-# main advantages:
-# - allows you to keep all entry files in "aics_im2im/" without installing project as a package
-# - launching python file works no matter where is your current work dir
-# - automatically loads environment variables from ".env" if exists
-#
-# how it works:
-# - `setup_root()` above recursively searches for either ".git" or "pyproject.toml" in present
-#   and parent dirs, to determine the project root dir
-# - adds root dir to the PYTHONPATH (if `pythonpath=True`), so this file can be run from
-#   any place without installing project as a package
-# - sets PROJECT_ROOT environment variable which is used in "configs/paths/default.yaml"
-#   to make all paths always relative to project root
-# - loads environment variables from ".env" in root dir (if `dotenv=True`)
-#
-# you can remove `pyrootutils.setup_root(...)` if you:
-# 1. either install project as a package or move each entry file to the project root dir
-# 2. remove PROJECT_ROOT variable from paths in "configs/paths/default.yaml"
-#
-# https://github.com/ashleve/pyrootutils
-# ------------------------------------------------------------------------------------ #
-
-from typing import List, Optional, Tuple, Union
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from typing import List, Optional, Tuple
 
 import hydra
 import pytorch_lightning as pl
 from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers import Logger
+from pytorch_lightning.loggers.logger import Logger
+
 from aics_im2im import utils
-from tempfile import TemporaryDirectory
-from pathlib import Path
 
 log = utils.get_pylogger(__name__)
 
@@ -88,11 +55,24 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("seed"):
         pl.seed_everything(cfg.seed, workers=True)
 
+    # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
+
+    # remove aux section after resolving and before instantiating
     cfg = utils.remove_aux_key(cfg)
 
-    log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
-    datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
+    if cfg.get("datamodule"):
+        log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
+        datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
+    elif cfg.get("train_dataloaders"):
+        datamodule = None
+        train_dataloaders = hydra.utils.instantiate(cfg.train_dataloaders)
+        if cfg.get("val_dataloaders"):
+            val_dataloaders = hydra.utils.instantiate(cfg.val_dataloaders)
+        else:
+            val_dataloaders = None
+    else:
+        raise ValueError("You must either specify either `datamodule` or `train_dataloaders`")
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
@@ -104,9 +84,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
 
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer: Trainer = hydra.utils.instantiate(
-        cfg.trainer, callbacks=callbacks, logger=logger
-    )
+    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, callbacks=callbacks, logger=logger)
 
     object_dict = {
         "cfg": cfg,
@@ -123,7 +101,15 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        if datamodule:
+            trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        else:
+            trainer.fit(
+                model=model,
+                train_dataloaders=train_dataloaders,
+                val_dataloaders=val_dataloaders,
+                ckpt_path=cfg.get("ckpt_path"),
+            )
 
     train_metrics = trainer.callback_metrics
 
@@ -146,16 +132,19 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
-    if cfg.get("persist_cache", False):
+    if cfg.get("persist_cache", False) and cfg.datamodule.cache_dir:
         metric_dict, _ = train(cfg)
     else:
         Path(cfg.datamodule.cache_dir).mkdir(exist_ok=True, parents=True)
         with TemporaryDirectory(dir=cfg.datamodule.cache_dir) as temp_dir:
             cfg.datamodule.cache_dir = temp_dir
             metric_dict, _ = train(cfg)
+
+    # train the model
+    metric_dict, _ = train(cfg)
 
     # safely retrieve metric value for hydra-based hyperparameter optimization
     metric_value = utils.get_metric_value(

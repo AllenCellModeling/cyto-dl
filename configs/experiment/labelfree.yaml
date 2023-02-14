@@ -8,7 +8,7 @@ defaults:
   - override /model: simple_labelfree.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow_im2im.yaml
+  - override /logger: mlflow.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -29,7 +29,7 @@ model:
 datamodule:
   path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
-  subsample: 
+  subsample:
     train: -1
     test: -1
     valid: -1
