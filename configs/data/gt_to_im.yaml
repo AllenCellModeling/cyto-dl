@@ -1,0 +1,74 @@
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 4
+batch_size: 1
+pin_memory: True
+persistent_workers: False
+columns:
+  - ${source_col}
+  - ${target_col}
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${datamodule.columns}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: monai.transforms.ToTensord
+        keys: ${datamodule.columns}
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
+        keys: ${target_col}
+        lower: 0.01
+        upper: 99.99
+        b_min: -1
+        b_max: 1
+        clip: True
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+        keys: ${datamodule.columns}
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 4
+        scales_dict:
+          1: ${datamodule.columns}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${datamodule.columns}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: monai.transforms.ToTensord
+        keys: ${datamodule.columns}
+      - _target_: monai.transforms.ScaleIntensityRangePercentilesd
+        keys: ${target_col}
+        lower: 0.01
+        upper: 99.99
+        b_min: -1
+        b_max: 1
+        clip: True
+      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+        keys: ${datamodule.columns}
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 4
+        scales_dict:
+          1: ${datamodule.columns}
