@@ -8,8 +8,8 @@ on:
 
 # Cancel actions when new commits are pushed to PR
 concurrency:
-    group: ${{ github.head_ref }}
-    cancel-in-progress: true
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -17,12 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9, '3.10']
-        os: [
-          ubuntu-20.04,
-          windows-latest,
-          macos-11,
-        ]
+        python-version: [3.8, 3.9, "3.10"]
+        os: [ubuntu-20.04, windows-latest, macos-11]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
