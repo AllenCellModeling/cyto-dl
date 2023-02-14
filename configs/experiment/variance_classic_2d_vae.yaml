@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: aics_centerslice_resize.yaml
+  - override /data aics_centerslice_resize.yaml
   - override /model: classical_2d_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml

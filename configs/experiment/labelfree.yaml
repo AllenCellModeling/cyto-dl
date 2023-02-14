@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: patch_labelfree.yaml
+  - override /data patch_labelfree.yaml
   - override /model: simple_labelfree.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -26,7 +26,7 @@ trainer:
 model:
   patch_shape: [32, 256, 256]
 
-datamodule:
+data:
   path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample:

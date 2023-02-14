@@ -2,11 +2,11 @@
 
 Embedseg is a an instance segmentation method described [here](https://juglab.github.io/EmbedSeg/). Here we will go over the parts of the config that are uniquely important for EmbedSeg.
 
-#### Datamodule Config
+#### Data Config
 
 The inputs to the datamodule is a csv with columns of filepaths to an unnormalized 3D microscopy image (called `raw` in the example config) and its corresponding instance segmentation (called `seg` in the example) and a `split` column that marks whether each row is used for `train`, `test`, or `val`.
 
-The datamodule config details the preprocessing to transform this csv into images usable for EmbedSeg training.
+The data config details the preprocessing to transform this csv into images usable for EmbedSeg training.
 
 ```
 transforms:
