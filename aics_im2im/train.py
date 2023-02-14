@@ -1,3 +1,4 @@
+from collections import MutableMapping
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
@@ -61,18 +62,16 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # remove aux section after resolving and before instantiating
     cfg = utils.remove_aux_key(cfg)
 
-    if cfg.get("datamodule"):
-        log.info(f"Instantiating datamodule <{cfg.datamodule._target_}>")
-        datamodule: LightningDataModule = hydra.utils.instantiate(cfg.datamodule)
-    elif cfg.get("train_dataloaders"):
-        datamodule = None
-        train_dataloaders = hydra.utils.instantiate(cfg.train_dataloaders)
-        if cfg.get("val_dataloaders"):
-            val_dataloaders = hydra.utils.instantiate(cfg.val_dataloaders)
-        else:
-            val_dataloaders = None
-    else:
-        raise ValueError("You must either specify either `datamodule` or `train_dataloaders`")
+    log.info(f"Instantiating data <{cfg.data._target_}>")
+    data = hydra.utils.instantiate(cfg.data)
+    if not isinstance(data, LightningDataModule):
+        if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
+            raise ValueError(
+                "`data` config for training must be either a LightningDataModule "
+                "or a dict with keys `train_dataloaders` and (optionally) "
+                "`val_dataloaders`, specifying train and validation DataLoaders "
+                "(or lists thereof)."
+            )
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
@@ -88,7 +87,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     object_dict = {
         "cfg": cfg,
-        "datamodule": datamodule,
+        "data": data,
         "model": model,
         "callbacks": callbacks,
         "logger": logger,
@@ -101,26 +100,31 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-        if datamodule:
-            trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
+        if isinstance(data, LightningDataModule):
+            trainer.fit(model=model, datamodule=data, ckpt_path=cfg.get("ckpt_path"))
         else:
             trainer.fit(
                 model=model,
-                train_dataloaders=train_dataloaders,
-                val_dataloaders=val_dataloaders,
+                train_dataloaders=data.train_dataloaders,
+                val_dataloaders=data.val_dataloaders,
                 ckpt_path=cfg.get("ckpt_path"),
             )
 
     train_metrics = trainer.callback_metrics
 
     if cfg.get("test"):
-        log.info("Starting testing!")
-        ckpt_path = trainer.checkpoint_callback.best_model_path
-        if ckpt_path == "":
-            log.warning("Best ckpt not found! Using current weights for testing...")
-            ckpt_path = None
-        trainer.test(model=model, datamodule=datamodule, ckpt_path=ckpt_path)
-        log.info(f"Best ckpt path: {ckpt_path}")
+        if not isinstance(data, LightningDataModule):
+            log.warning(
+                "To test after training, `data` must be a LightningDataModule. Skipping testing."
+            )
+        else:
+            log.info("Starting testing!")
+            ckpt_path = trainer.checkpoint_callback.best_model_path
+            if ckpt_path == "":
+                log.warning("Best ckpt not found! Using current weights for testing...")
+                ckpt_path = None
+            trainer.test(model=model, datamodule=data, ckpt_path=ckpt_path)
+            log.info(f"Best ckpt path: {ckpt_path}")
 
     test_metrics = trainer.callback_metrics
 
@@ -135,12 +139,12 @@ def main(cfg: DictConfig) -> Optional[float]:
     OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
-    if cfg.get("persist_cache", False) and cfg.datamodule.cache_dir:
+    if cfg.get("persist_cache", False) and cfg.data.cache_dir:
         metric_dict, _ = train(cfg)
     else:
-        Path(cfg.datamodule.cache_dir).mkdir(exist_ok=True, parents=True)
-        with TemporaryDirectory(dir=cfg.datamodule.cache_dir) as temp_dir:
-            cfg.datamodule.cache_dir = temp_dir
+        Path(cfg.data.cache_dir).mkdir(exist_ok=True, parents=True)
+        with TemporaryDirectory(dir=cfg.data.cache_dir) as temp_dir:
+            cfg.data.cache_dir = temp_dir
             metric_dict, _ = train(cfg)
 
     # train the model

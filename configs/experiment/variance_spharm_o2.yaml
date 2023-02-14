@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: variance_spharm.yaml
+  - override /data variance_spharm.yaml
   - override /model: spharm_so2.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
@@ -35,7 +35,7 @@ callbacks:
 model:
   columns: ${mem_cols}
 
-datamodule:
+data:
   path: /allen/aics/modeling/gui.pires/data/ascb_2022_spharm/${manifest_name}
   batch_size: 64
   transforms:

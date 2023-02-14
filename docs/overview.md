@@ -4,10 +4,10 @@
 We provide simple example configs to help users get started. These configs rely heavily on OmegaConf's [variable interpolation](https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#variable-interpolation) to keep parameters consistent across configs and limit the complexity exposed to new users.
 An `_aux` section can be provided in any config. This can be used to store reference values for interpolation. Any parameters in this section will not be instantiated.
 
-## datamodule
+## data
 
 The provided datamodule is the serotiny [DataFrame Datamodule](https://github.com/AllenCell/serotiny/blob/32b3811fc1ef013a191e34181b0add1ca145663d/serotiny/datamodules/dataframe/dataframe_datamodule.py) wraps MONAI's [persistent dataset](https://docs.monai.io/en/stable/data.html#persistentdataset).
-The datamodule config specifies how to construct `train`, `valid`, `test`, and `predict` dataloaders.
+The data config specifies how to construct `train`, `valid`, `test`, and `predict` dataloaders.
 Some important arguments are :
 
 - `path`: references a folder with `train.csv`, `test.csv`, and `valid.csv` or to a single `.csv` file with a `split` column
@@ -18,7 +18,7 @@ Some important arguments are :
 
 ## experiment
 
-This is the workhorse of `aics_im2im` training. These files compile and override defaults for the `datamodule`, `model`, `callbacks`, `trainer`, and `logger` configs.
+This is the workhorse of `aics_im2im` training. These files compile and override defaults for the `data`, `model`, `callbacks`, `trainer`, and `logger` configs.
 If you are using the example configs, `source_col` and `target_col` are expected to refer to the column names of your input and ground truth images in the provided `.csv` files. `experiment_name` and `run_name` are used to organize the saved log files and log to mlflow. `path` and `cache_dir` arguments passed to the `datamodule` config are also required.
 
 ## model
