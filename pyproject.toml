@@ -61,8 +61,10 @@ spharm = [
   "aicsshparam"
 ]
 test = [
-  "pyrootutils",
-  "pytest"
+    "pyrootutils",
+    "pytest",
+    "pytest-cov[toml]>=4.0.0",
+    "sh>=1.14.3",
 ]
 scripts = [
   "pyrootutils"
