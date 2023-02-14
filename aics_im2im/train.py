@@ -91,7 +91,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("test"):
         if not isinstance(data, LightningDataModule):
-            log.warning("To test after training, `data` must be a LightningDataModule. Skipping testing.")
+            log.warning(
+                "To test after training, `data` must be a LightningDataModule. Skipping testing."
+            )
         else:
             log.info("Starting testing!")
             ckpt_path = trainer.checkpoint_callback.best_model_path

@@ -2,10 +2,10 @@ from collections import MutableMapping
 from typing import List, Tuple
 
 import hydra
-from omegaconf import DictConfig, OmegaConf, ListConfig
-from torch.utils.data import DataLoader
+from omegaconf import DictConfig, ListConfig, OmegaConf
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.loggers import Logger
+from torch.utils.data import DataLoader
 
 from aics_im2im import utils
 
@@ -51,7 +51,6 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
                 " - a dict with key `dataloaders`, with the corresponding value "
                 "being a DataLoader (or list thereof)"
             )
-
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
     model: LightningModule = hydra.utils.instantiate(cfg.model)
