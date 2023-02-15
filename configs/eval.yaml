@@ -13,6 +13,8 @@ defaults:
   - optional local: default.yaml
   - optional experiment: null
 
+experiment_name: "catchall_experiment"
+run_name: "catchall_run"
 task_name: "eval"
 
 tags: ["dev"]
