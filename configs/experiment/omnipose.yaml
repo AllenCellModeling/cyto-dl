@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data omnipose.yaml
+  - override /data: omnipose.yaml
   - override /model: omnipose.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml

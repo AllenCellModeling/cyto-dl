@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data variance_3d.yaml
+  - override /data: variance_3d.yaml
   - override /model: classical_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
