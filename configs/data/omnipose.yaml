@@ -36,6 +36,12 @@ transforms:
         patch_per_image: 1
         scales_dict:
           1: ${datamodule.columns}
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
+          key: ${target_col}
+          threshold: 0.0001
+          base_prob: 0
+          ch: 0
 
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
@@ -123,3 +129,9 @@ transforms:
         patch_per_image: 1
         scales_dict:
           1: ${datamodule.columns}
+        selection_fn:
+          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
+          key: ${target_col}
+          threshold: 0.0001
+          base_prob: 0
+          ch: 0
