@@ -116,7 +116,7 @@ def main(cfg: DictConfig) -> Optional[float]:
     OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
-    if cfg.get("persist_cache", False) and cfg.data.cache_dir:
+    if cfg.get("persist_cache", False) or cfg.data.get("cache_dir") is None:
         metric_dict, _ = train(cfg)
     else:
         Path(cfg.data.cache_dir).mkdir(exist_ok=True, parents=True)
