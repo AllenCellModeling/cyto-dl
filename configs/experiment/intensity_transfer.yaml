@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data intensity_transfer.yaml
+  - override /data: intensity_transfer.yaml
   - override /model: intensity_transfer_gan.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml

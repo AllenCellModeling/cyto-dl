@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data patch_segmentation.yaml
+  - override /data: patch_segmentation.yaml
   - override /model: simple_segmentation.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
