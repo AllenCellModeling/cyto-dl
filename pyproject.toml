@@ -69,6 +69,9 @@ test = [
 scripts = [
   "pyrootutils"
 ]
+all = [
+  "aics-im2im[equiv,spharm,test,scripts]"
+]
 
 [project.urls]
 Homepage = "https://github.com/AllenCellModeling/aics-im2im"
