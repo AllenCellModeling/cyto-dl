@@ -13,6 +13,7 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+experiment_name: variance_spharm
 tags: ["equivariance", "variance-dataset", "spherical-harmonics"]
 
 seed: 42

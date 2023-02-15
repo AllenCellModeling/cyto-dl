@@ -28,6 +28,8 @@ defaults:
   - debug: null
 
 # task name, determines output directory path
+experiment_name: "catchall_experiment"
+run_name: "catchall_run"
 task_name: "train"
 
 # tags to help you identify your experiments
