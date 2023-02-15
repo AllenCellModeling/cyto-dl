@@ -1,4 +1,4 @@
-from collections import MutableMapping
+from collections.abc import MutableMapping
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
