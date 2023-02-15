@@ -13,6 +13,8 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+experiment_name: variance_so2_3d_vae_profiling
+
 tags: ["so2-equiv", "variance-dataset", "3d"]
 
 seed: 42
