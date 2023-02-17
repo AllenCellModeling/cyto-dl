@@ -17,32 +17,22 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.image.transforms.Resized
-        keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5]
       - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1: ${datamodule.columns}
-        selection_fn:
-          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
-          key: ${target_col}
-          threshold: 0.0001
-          base_prob: 0
-          ch: 0
-
+          1: ${data.columns}
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
         keys: ${source_col}
@@ -58,17 +48,8 @@ transforms:
         keys: ${source_col}
         gamma: [0.9, 1.1]
 
-      - _target_: monai.transforms.RandFlipd
-        keys: ${datamodule.columns}
-        prob: 0.5
-        spatial_axis: [1]
-      - _target_: monai.transforms.RandFlipd
-        keys: ${datamodule.columns}
-        prob: 0.5
-        spatial_axis: [2]
-
       - _target_: monai.transforms.RandRotate90d
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         prob: 0.5
         spatial_axes: [1, 2]
 
@@ -76,17 +57,14 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.image.transforms.Resized
-        keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5]
       - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
 
@@ -98,9 +76,6 @@ transforms:
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.image.transforms.Resized
-        keys: ${source_col}
-        scale_factor: [0.5, 0.5, 0.5]
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -110,28 +85,19 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.image.transforms.Resized
-        keys: ${datamodule.columns}
-        scale_factor: [0.5, 0.5, 0.5]
       - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1: ${datamodule.columns}
-        selection_fn:
-          _target_: serotiny.image.transforms.bright_sampler.BrightSampler
-          key: ${target_col}
-          threshold: 0.0001
-          base_prob: 0
-          ch: 0
+          1: ${data.columns}
