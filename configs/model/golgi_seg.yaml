@@ -21,7 +21,7 @@ backbone:
 tasks:
   seg:
     head:
-      _target_: aics_im2im.models.components.IdentityAuxHead
+      _target_: aics_im2im.nn.IdentityAuxHead
     loss:
       _target_: aics_im2im.utils.loss_wrapper.DistanceSegLoss
 
@@ -43,14 +43,14 @@ lr_scheduler:
 postprocessing: 
   input: 
     seg:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
     raw:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
   prediction: 
     seg:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
 
 

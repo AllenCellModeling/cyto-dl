@@ -21,9 +21,9 @@ backbone:
 tasks:
   seg:
     head:
-      _target_: aics_im2im.models.components.IdentityAuxHead
+      _target_: aics_im2im.nn.IdentityAuxHead
     loss:
-      _target_: aics_im2im.utils.omnipose_utils.OmniposeLoss
+      _target_: aics_im2im.models.utils.omnipose.OmniposeLoss
       dim: 3
 
 optimizer: 
@@ -44,17 +44,17 @@ lr_scheduler:
 postprocessing: 
   input: 
     seg:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
     raw:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
   prediction: 
     seg:
-      _target_: aics_im2im.utils.postprocessing.detach
+      _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
     # seg:
-    #   _target_: aics_im2im.utils.omnipose_utils.OmniposeClustering
+    #   _target_: aics_im2im.models.utils.omnipose.OmniposeClustering
     #   _partial_: True
     #   mask_threshold: -11
 
