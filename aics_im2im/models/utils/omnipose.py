@@ -1,7 +1,10 @@
 # all code modified from https://github.com/kevinjohncutler/omnipose/blob/main/omnipose/core.py
+import warnings
+
 import edt
 import numpy as np
 import torch
+import tqdm
 from cellpose_omni.core import (
     ArcCosDotLoss,
     DerivativeLoss,
@@ -11,37 +14,47 @@ from cellpose_omni.core import (
 )
 from monai.data import MetaTensor
 from monai.transforms import Transform
-from omnipose.core import compute_masks, labels_to_flows
-from omnipose.utils import get_boundary
-from scipy.ndimage import laplace
+from omnipose.core import compute_masks, diameters, masks_to_flows
 from skimage.filters import gaussian
-
-
-def get_boundary_laplace(mask):
-    """this gets an exterior boundary, instead of interior boundary like from omnipose however, it
-    maintains boundaries between touching objects."""
-    return laplace(mask) > 0
+from skimage.segmentation import expand_labels
+from skimage.transform import rescale, resize
 
 
 class OmniposePreprocessd(Transform):
-    def __init__(self, label_key):
+    def __init__(self, label_key, dim):
         super().__init__()
         self.label_key = label_key
+        self.dim = dim
 
     def __call__(self, image_dict):
-        im = image_dict[self.label_key]
-        numpy_im = im.numpy()
-        im = im.as_tensor() if isinstance(im, MetaTensor) else im
-        flows = labels_to_flows(numpy_im, use_gpu=True, device=im.device, dim=3)[0]
-        # no boundary between merged nuclei, definitely change this
-        boundary = get_boundary_laplace(numpy_im)
-        bg_edt = edt.edt(numpy_im.squeeze() < 0.5, black_border=True)
-        # ARBITRARY, avoids complication from diameter calculation in omnipose
-        cutoff = 20
-        boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
-        # back to CZYX
-        boundary_weighted_mask = np.expand_dims(boundary_weighted_mask, 0)
-        image_dict[self.label_key] = np.concatenate([boundary, boundary_weighted_mask, flows], 0)
+        warnings.warn(
+            "OmniPose preprocessing is slow, consider setting `persist_cache: True` in your experiment config"
+        )
+        for _ in tqdm.tqdm(range(1)):
+            im = image_dict[self.label_key]
+            im = im.as_tensor() if isinstance(im, MetaTensor) else im
+            numpy_im = im.numpy().squeeze()
+
+            out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
+            (
+                instance_seg,
+                rough_distance,
+                boundaries,
+                smooth_distance,
+                flows,
+            ) = masks_to_flows(numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device)
+            cutoff = diameters(instance_seg, rough_distance) / 2
+            smooth_distance[rough_distance <= 0] = -cutoff
+
+            bg_edt = edt.edt(numpy_im < 0.5, black_border=True)
+            boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
+            out_im[0] = boundaries
+            out_im[1] = boundary_weighted_mask
+            out_im[2] = instance_seg
+            out_im[3] = rough_distance
+            out_im[4 : 4 + self.dim] = flows * 5.0  # weighted for loss function?
+            out_im[4 + self.dim] = smooth_distance
+            image_dict[self.label_key] = out_im
         return image_dict
 
 
@@ -81,6 +94,12 @@ class OmniposeLoss:
         boundary = lbl[:, 0]
         w = lbl[:, 1]
         cellmask = (lbl[:, 2] > 0).bool()  # acts as a mask now, not output
+
+        # calculat loss on entire patch if no cells present - this helps
+        # remove background artifacts
+        for img_id in range(cellmask.shape[0]):
+            if torch.sum(cellmask[img_id]) == 0:
+                cellmask[img_id] = True
         veci = lbl[:, -(self.dim + 1) : -1]
         dist = lbl[:, -1]  # now distance transform replaces probability
 
@@ -113,20 +132,53 @@ class OmniposeLoss:
             / a
         )
         loss8 = self.criterion16(flow, veci, cellmask)  # divergence loss
+        loss = loss1 + loss2 + loss3 + loss4 + loss5 + loss6 + loss7 + loss8
+        return loss
 
-        return loss1 + loss2 + loss3 + loss4 + loss5 + loss6 + loss7 + loss8
+
+def rescale_instance(im, seg):
+    seg = resize(seg, im.shape, order=0, anti_aliasing=False, preserve_range=True)
+    seg = expand_labels(seg, distance=3)
+    seg[im == 0] = 0
+    return seg
 
 
-def OmniposeClustering(im):
+# setting a high flow threshold avoids erroneous removal of masks that are fine.
+# debugging whether this is a training issue...
+def OmniposeClustering(
+    im,
+    mask_threshold=0,
+    rescale_factor=0.25,
+    min_object_size=100,
+    flow_threshold=1e8,
+    spatial_dim=3,
+):
+    """Run clustering on downsampled version of flows, then use original resolution distance field
+    to mask instance segmentations."""
+    device = im.device
     im = im.detach().cpu().numpy()
-    flow = im[:3]
-    dist = im[3]
-    bd = im[4]
+    flow = im[:spatial_dim]
+    dist = im[spatial_dim]
+    # bd = im[spatial_dim+1]
+
     mask, p, tr, bounds = compute_masks(
-        flow,
-        dist,
-        bd,
+        rescale(
+            flow,
+            [1] + [rescale_factor] * spatial_dim,
+            order=3,
+            preserve_range=True,
+            anti_aliasing=False,
+        ),
+        rescale(dist, rescale_factor, order=3, preserve_range=True, anti_aliasing=False),
+        # bd,
         nclasses=4,
-        dim=3,
+        dim=spatial_dim,
+        use_gpu=True,
+        device=device,
+        min_size=min_object_size,
+        flow_threshold=flow_threshold,
+        boundary_seg=True,
+        mask_threshold=mask_threshold,
     )
+    mask = rescale_instance(dist > mask_threshold, mask)
     return mask
