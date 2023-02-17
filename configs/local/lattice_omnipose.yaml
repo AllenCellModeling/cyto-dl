@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: omnipose.yaml
+  - override /data: omnipose.yaml
   - override /model: omnipose_lattice.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -36,14 +36,14 @@ model:
   save_images_every_n_epochs: 10
 
 
-datamodule:
+data:
   path: ${paths.data_dir}/lattice_omnipose/
   cache_dir: ${paths.data_dir}/lattice_omnipose/cache
-  batch_size: 1
+  batch_size: 2
   subsample:
-    train: 1 #60
+    train: 120
     test: 0
-    valid: 1 #10
+    valid: 10
   # columns: ['raw']
 
 

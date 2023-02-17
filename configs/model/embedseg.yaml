@@ -61,11 +61,11 @@ _aux:
   _sigma: 3
   _input_postprocessing:
     - - GT
-      - _target_: aics_im2im.model.utils.postprocessing.concat_dict
+      - _target_: aics_im2im.models.utils.postprocessing.concat_dict
         _partial_: True
         keys:
           - ${target_col}
           - CE
     - - ${source_col}
-      - _target_: aics_im2im.model.utils.postprocessing.rescale
+      - _target_: aics_im2im.models.utils.postprocessing.rescale
         _partial_: True
