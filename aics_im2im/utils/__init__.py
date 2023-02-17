@@ -31,4 +31,4 @@ from .o2_mask_transform import O2Mask
 
 
 from aics_im2im.utils.omegaconf_utils import remove_aux_key
-from aics_im2im.utils.aics_utils import MeanNormalizeIntensity
+from aics_im2im.utils.aics_utils import MeanNormalizeIntensity, MatchHistogramToReference

@@ -246,7 +246,11 @@ def generate_instance_clusters(
     # this resizes the grid for clustering to allow for inference on
     # images larger than the grid size used for training
     if np.any(np.subtract(target_img_shape, grid_size)) > 0:
+<<<<<<< HEAD:aics_im2im/models/utils/embedseg.py
         pixel_xy = np.max(target_img_shape[1:]) / grid_size[1]
+=======
+        pixel_xy = max(target_img_shape[1:]) / grid_size[1]
+>>>>>>> ebf5857 (embedseg nucseg configs and normalization methods):aics_im2im/utils/embedseg_utils.py
         pixel_z = target_img_shape[0] * pixel[0] / grid_size[0]
         pixel = [pixel_z, pixel_xy, pixel_xy]
 
