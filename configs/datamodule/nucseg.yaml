@@ -23,11 +23,16 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ['source', 'target'] 
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 1
+        gamma: 0.75
     
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
         lower_bound: 2.5
-        upper_bound: 5.0
+        upper_bound: 12.0
       
       #creates two new images - CL is a binary segmentation of 'target'
       # and CE is a boolean image of the object centroids
@@ -46,24 +51,37 @@ transforms:
         input_keys: ['target', 'CE']
         output_key: GT
 
+
   test:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['source'] 
+        keys: ['source', 'target'] 
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.ToTensord
-        keys: ['source'] 
+        keys: ['source', 'target'] 
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 0.2
+        gamma: 0.75
 
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
         lower_bound: 2.5
-        upper_bound: 5.0
-    
+        upper_bound: 12.0
       
+      - _target_: aics_im2im.utils.ExtractCentroidd
+        input_key: 'target'
+        output_key: 'CE'
+
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
+        input_keys: ['target', 'CE']
+        output_key: GT
+
 
   valid:
     _target_: monai.transforms.Compose
@@ -77,10 +95,15 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: ['source', 'target'] 
 
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 0.2
+        gamma: 0.75
+
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
         lower_bound: 2.5
-        upper_bound: 5.0
+        upper_bound: 12.0
       
       - _target_: aics_im2im.utils.ExtractCentroidd
         input_key: 'target'
@@ -97,6 +120,7 @@ transforms:
         input_keys: ['target', 'CE']
         output_key: GT
         
+
   predict:
     _target_: monai.transforms.Compose
     transforms: 
@@ -112,6 +136,6 @@ transforms:
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
         lower_bound: 2.5
-        upper_bound: 12
+        upper_bound: 12.0
     
       

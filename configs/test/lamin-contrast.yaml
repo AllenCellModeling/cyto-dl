@@ -4,15 +4,18 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: BF_nucseg.yaml
+  - override /datamodule: nucseg.yaml
   - override /model: embedseg.yaml
   - override /trainer: gpu.yaml
+
+# datamodule.columns:
+#   - source
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
 experiment_name: embedseg_BF-nuc
-run_name: embedseg
+run_name: lamin-predict
 mode: predict
 
 tags: ["dev"]
@@ -22,11 +25,11 @@ seed: 12345
 
 model:
   patch_shape: [30, 512, 512]
-  save_dir: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b_perturb/prediction
+  save_dir: /allen/aics/assay-dev/computational/data/nucleus_tracking/lamin/predict_contrast
 
-ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/embedseg_BF-nuc/mistogram_match/2023-02-10_16-31-56/ckpts/last.ckpt
+ckpt_path: /allen/aics/assay-dev/users/Filip/Projects/aics_im2im/aics-im2im/logs/train/runs/embedseg_BF-nuc/norm_contrast/2023-02-10_16-10-48/ckpts/last.ckpt
 datamodule:
-  path: /allen/aics/assay-dev/computational/data/nucleus_tracking/h2b_perturb/manifests
+  path: /allen/aics/assay-dev/computational/data/nucleus_tracking/lamin/manifest/
   batch_size: 1
 
 sliding_window_fns:

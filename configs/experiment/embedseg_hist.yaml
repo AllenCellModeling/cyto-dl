@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: nucseg.yaml
+  - override /datamodule: nucseg-hist.yaml
   - override /model: embedseg.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -14,7 +14,7 @@ defaults:
 # this allows you to overwrite only specified parameters
 
 experiment_name: embedseg_BF-nuc
-run_name: norm_contrast
+run_name: histogram_match_v2
 
 tags: ["dev"]
 source_col: 'source'
@@ -22,7 +22,7 @@ target_col: 'target'
 seed: 12345
 
 trainer:
-  max_epochs: 200
+  max_epochs: 500
   check_val_every_n_epoch: 5
   detect_anomaly: False
   gradient_clip_val: 0.1

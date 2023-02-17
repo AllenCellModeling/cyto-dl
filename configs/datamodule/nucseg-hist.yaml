@@ -23,47 +23,73 @@ transforms:
 
       - _target_: monai.transforms.ToTensord
         keys: ['source', 'target'] 
+
+      - _target_: aics_im2im.utils.MatchHistogramToReference
+        keys: ['source']
+        reference: '/allen/aics/assay-dev/computational/data/nucleus_tracking/lamin/bf'
+        sample_size: 10
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 0.25
+        gamma: 0.75
     
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
-        lower_bound: 2.5
-        upper_bound: 5.0
-      
-      #creates two new images - CL is a binary segmentation of 'target'
-      # and CE is a boolean image of the object centroids
-      - _target_: aics_im2im.utils.ExtractCentroidd
-        input_key: 'target'
-        output_key: 'CE'
+        lower_bound: 5
+        upper_bound: 12.0
 
       - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['source', 'target', 'CE']
+        keys: ['source', 'target']
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
         scales_dict:
-          1: ['source', 'target', 'CE']
+          1: ['source', 'target']
+      
+      - _target_: aics_im2im.utils.ExtractCentroidd
+        input_key: 'target'
+        output_key: 'CE'
 
       - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
         input_keys: ['target', 'CE']
         output_key: GT
 
+
   test:
     _target_: monai.transforms.Compose
     transforms: 
       - _target_: monai.transforms.LoadImaged
-        keys: ['source'] 
+        keys: ['source', 'target'] 
         reader:
         - _target_: serotiny.image.io.MonaiBioReader
           dimension_order_out: 'CZYX'
 
       - _target_: monai.transforms.ToTensord
-        keys: ['source'] 
+        keys: ['source', 'target'] 
+
+      - _target_: aics_im2im.utils.MatchHistogramToReference
+        keys: ['source']
+        reference: '/allen/aics/assay-dev/computational/data/nucleus_tracking/lamin/bf'
+        sample_size: 10
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 0.25
+        gamma: 0.75
 
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
-        lower_bound: 2.5
-        upper_bound: 5.0
-    
+        lower_bound: 5
+        upper_bound: 12.0
       
+      - _target_: aics_im2im.utils.ExtractCentroidd
+        input_key: 'target'
+        output_key: 'CE'
+
+      - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
+        input_keys: ['target', 'CE']
+        output_key: GT
+
 
   valid:
     _target_: monai.transforms.Compose
@@ -77,26 +103,37 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: ['source', 'target'] 
 
+      - _target_: aics_im2im.utils.MatchHistogramToReference
+        keys: ['source']
+        reference: '/allen/aics/assay-dev/computational/data/nucleus_tracking/lamin/bf'
+        sample_size: 10
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: ['source']
+        prob: 0.25
+        gamma: 0.75
+
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
-        lower_bound: 2.5
-        upper_bound: 5.0
+        lower_bound: 5
+        upper_bound: 12.0
+
+      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
+        keys: ['source', 'target']
+        patch_shape: ${model.patch_shape}
+        patch_per_image: 1
+        scales_dict:
+          1: ['source', 'target']
       
       - _target_: aics_im2im.utils.ExtractCentroidd
         input_key: 'target'
         output_key: 'CE'
 
-      - _target_: serotiny.image.transforms.RandomMultiScaleCropd
-        keys: ['source', 'target', 'CE']
-        patch_shape: ${model.patch_shape}
-        patch_per_image: 1
-        scales_dict:
-          1: ['source', 'target', 'CE']
-
       - _target_: aics_im2im.utils.EmbedSegConcatLabelsd
         input_keys: ['target', 'CE']
         output_key: GT
         
+
   predict:
     _target_: monai.transforms.Compose
     transforms: 
@@ -111,7 +148,7 @@ transforms:
 
       - _target_: aics_im2im.utils.MeanNormalizeIntensity
         keys: ['source']
-        lower_bound: 2.5
-        upper_bound: 12
+        lower_bound: 5
+        upper_bound: 12.0
     
       
