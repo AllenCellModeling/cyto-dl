@@ -20,7 +20,7 @@ backbone:
 tasks:
   seg:
     head:
-      _target_: aics_im2im.models.components.AuxHead
+      _target_: aics_im2im.nn.AuxHead
       resolution: lr
       in_channels: 128
       out_channels: 5
@@ -30,12 +30,12 @@ tasks:
       final_act:
         _target_: torch.nn.Identity
     loss:
-      _target_: aics_im2im.utils.omnipose_utils.OmniposeLoss
+      _target_: aics_im2im.models.utils.omnipose.OmniposeLoss
       dim: 3
 
   mitotic_mask:
     head:
-      _target_: aics_im2im.models.components.AuxHead
+      _target_: aics_im2im.nn.AuxHead
       resolution: lr
       in_channels: 128
       out_channels: 5
@@ -45,7 +45,7 @@ tasks:
       final_act:
         _target_: torch.nn.Identity
     loss:
-      _target_: aics_im2im.utils.omnipose_utils.OmniposeLoss
+      _target_: aics_im2im.models.utils.omnipose.OmniposeLoss
       dim: 3
 
 
@@ -83,7 +83,7 @@ postprocessing:
       _target_: aics_im2im.utils.postprocessing.detach
       _partial_: True
     # seg:
-    #   _target_: aics_im2im.utils.omnipose_utils.OmniposeClustering
+    #   _target_: aics_im2im.models.utils.omnipose.OmniposeClustering
     #   _partial_: True
 
 

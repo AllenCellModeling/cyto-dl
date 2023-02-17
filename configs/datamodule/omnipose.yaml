@@ -24,7 +24,7 @@ transforms:
       # - _target_: serotiny.image.transforms.Resized
       #   keys: ${data.columns}
       #   scale_factor: [1.0, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
@@ -82,7 +82,7 @@ transforms:
       # - _target_: serotiny.image.transforms.Resized
       #   keys: ${data.columns}
       #   scale_factor: [1.0, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
@@ -116,7 +116,7 @@ transforms:
       # - _target_: serotiny.image.transforms.Resized
       #   keys: ${data.columns}
       #   scale_factor: [1.0, 0.5, 0.5] 
-      - _target_: aics_im2im.utils.omnipose_utils.OmniposePreprocessd
+      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
