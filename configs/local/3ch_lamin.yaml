@@ -1,0 +1,56 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: patch_multitask.yaml
+  - override /model: 2ch_lamin.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow_im2im.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+experiment_name: benji_2ch_lamin
+run_name: add_debris_class
+mode: 'predict'
+
+
+ckpt_path: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_2ch_lamin/add_debris_class/2023-02-07_09-03-43/checkpoints/epoch_729.ckpt
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+
+model:
+  patch_shape: [64, 256, 256]
+  save_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_2ch_lamin/early_mamabear_scratch/2023-01-30_15-58-58/pred_on_goldilocks
+  sliding_window_fns:
+    process_fn:
+      _target_: aics_im2im.utils.expand_2d_to_3d
+      _partial_: True
+    postprocess_fn:
+      _target_: aics_im2im.utils.extract_best_z
+      _partial_: True
+
+datamodule:
+  # path: ${paths.data_dir}/2ch_lamin/with_mitotic_debris/manifest.csv
+  path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/pred_on_goldilocks/babybear_and_goldilocks_large_train_addition/data.csv"
+  cache_dir: ${paths.data_dir}/2ch_lamin/with_mitotic_debris/cache
+  # subsample: 
+  #   train: 200
+  #   test: 0
+  #   valid: 100
+  columns: [raw,split]
+  just_inference: True
+  split_column: split
+
+
+##### ONLY USE WITH A100s
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

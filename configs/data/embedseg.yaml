@@ -17,13 +17,13 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
@@ -56,13 +56,13 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
@@ -80,13 +80,13 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
 
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
 
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
