@@ -21,7 +21,7 @@ backbone:
 tasks:
   seg:
     head:
-      _target_: aics_im2im.models.components.IdentityAuxHead
+      _target_: aics_im2im.nn.IdentityAuxHead
     loss:
       _target_: aics_im2im.utils.loss_wrapper.DistanceSegLoss
 
