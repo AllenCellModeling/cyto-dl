@@ -1,29 +1,30 @@
 # all code modified from https://github.com/kevinjohncutler/omnipose/blob/main/omnipose/core.py
-from monai.data import MetaTensor
-from monai.transforms import Transform
-from omnipose.core import compute_masks, masks_to_flows, diameters
+import warnings
+
+import edt
+import numpy as np
+import torch
+import tqdm
 from cellpose_omni.core import (
-    WeightedLoss,
     ArcCosDotLoss,
     DerivativeLoss,
-    NormLoss,
     DivergenceLoss,
+    NormLoss,
+    WeightedLoss,
 )
-import torch
-import numpy as np
-import edt
+from monai.data import MetaTensor
+from monai.transforms import Transform
+from omnipose.core import compute_masks, diameters, masks_to_flows
 from skimage.filters import gaussian
-from scipy.ndimage import laplace
-import warnings
-import tqdm
-from skimage.transform import resize, rescale
 from skimage.segmentation import expand_labels
+from skimage.transform import rescale, resize
 
 
 class OmniposePreprocessd(Transform):
-    def __init__(self, label_key):
+    def __init__(self, label_key, dim):
         super().__init__()
         self.label_key = label_key
+        self.dim = dim
 
     def __call__(self, image_dict):
         warnings.warn(
@@ -34,29 +35,25 @@ class OmniposePreprocessd(Transform):
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
             numpy_im = im.numpy().squeeze()
 
-            out_im = np.zeros([8] + list(numpy_im.shape))
+            out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
             (
                 instance_seg,
                 rough_distance,
                 boundaries,
                 smooth_distance,
                 flows,
-            ) = masks_to_flows(
-                numpy_im, omni=True, dim=3, use_gpu=True, device=im.device
-            )
+            ) = masks_to_flows(numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device)
             cutoff = diameters(instance_seg, rough_distance) / 2
             smooth_distance[rough_distance <= 0] = -cutoff
 
             bg_edt = edt.edt(numpy_im < 0.5, black_border=True)
-            boundary_weighted_mask = (
-                gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
-            )
+            boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
             out_im[0] = boundaries
             out_im[1] = boundary_weighted_mask
             out_im[2] = instance_seg
             out_im[3] = rough_distance
-            out_im[4:7] = flows * 5.0  # weighted for loss function?
-            out_im[7] = smooth_distance
+            out_im[4 : 4 + self.dim] = flows * 5.0  # weighted for loss function?
+            out_im[4 + self.dim] = smooth_distance
             image_dict[self.label_key] = out_im
         return image_dict
 
@@ -143,32 +140,33 @@ def rescale_instance(im, seg):
 # setting a high flow threshold avoids erroneous removal of masks that are fine.
 # debugging whether this is a training issue...
 def OmniposeClustering(
-    im, mask_threshold=0, rescale_factor=0.25, min_object_size=100, flow_threshold=1e8
+    im,
+    mask_threshold=0,
+    rescale_factor=0.25,
+    min_object_size=100,
+    flow_threshold=1e8,
+    spatial_dim=3,
 ):
-    """
-    Run clustering on downsampled version of flows, then use original resolution distance
-    field to mask instance segmentations
-    """
+    """Run clustering on downsampled version of flows, then use original resolution distance field
+    to mask instance segmentations."""
     device = im.device
     im = im.detach().cpu().numpy()
-    flow = im[:3]
-    dist = im[3]
-    # bd = im[4]
+    flow = im[:spatial_dim]
+    dist = im[spatial_dim]
+    # bd = im[spatial_dim+1]
 
     mask, p, tr, bounds = compute_masks(
         rescale(
             flow,
-            [1, rescale_factor, rescale_factor, rescale_factor],
+            [1] + [rescale_factor] * spatial_dim,
             order=3,
             preserve_range=True,
             anti_aliasing=False,
         ),
-        rescale(
-            dist, rescale_factor, order=3, preserve_range=True, anti_aliasing=False
-        ),
+        rescale(dist, rescale_factor, order=3, preserve_range=True, anti_aliasing=False),
         # bd,
         nclasses=4,
-        dim=3,
+        dim=spatial_dim,
         use_gpu=True,
         device=device,
         min_size=min_object_size,
