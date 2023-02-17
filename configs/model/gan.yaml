@@ -67,12 +67,12 @@ lr_scheduler:
 postprocessing:
   input:
     dim_caax:
-      _target_: aics_im2im.model.utils.postprocessing.rescale
+      _target_: aics_im2im.models.utils.postprocessing.rescale
       _partial_: True
     bright_caax:
-      _target_: aics_im2im.model.utils.postprocessing.rescale
+      _target_: aics_im2im.models.utils.postprocessing.rescale
       _partial_: True
   prediction:
     bright_caax:
-      _target_: aics_im2im.model.utils.postprocessing.rescale
+      _target_: aics_im2im.models.utils.postprocessing.rescale
       _partial_: True
