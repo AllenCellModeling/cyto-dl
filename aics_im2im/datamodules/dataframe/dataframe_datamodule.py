@@ -103,7 +103,7 @@ class DataframeDatamodule(pl.LightningDataModule):
             self.datasets = make_multiple_dataframe_splits(
                 path, transforms, columns, just_inference, cache_dir
             )
-        else:
+        elif path.is_file():
             if split_column is None and not just_inference:
                 raise MisconfigurationException(
                     "When using a single dataframe file, it must have a "
@@ -119,6 +119,8 @@ class DataframeDatamodule(pl.LightningDataModule):
                 split_map,
                 cache_dir,
             )
+        else:
+            raise FileNotFoundError(f'Could not find specified dataframe path {path}')
 
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
