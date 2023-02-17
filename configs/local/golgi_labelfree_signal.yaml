@@ -1,0 +1,39 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /datamodule: multich_with_source_and_gt.yaml
+  - override /model: simple_labelfree.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+experiment_name: benji_golgi_labelfree
+run_name: labelfree
+source_col: bf
+target_col: golgi
+
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+
+model:
+  patch_shape: [32, 256, 256]
+
+datamodule:
+  path: ${paths.data_dir}/golgi_lf/
+  cache_dir: ${paths.data_dir}/golgi_lf/cache
+  subsample: 
+    train: -1
+    test: 1
+    valid: -1
+  batch_size: 2
+
+    

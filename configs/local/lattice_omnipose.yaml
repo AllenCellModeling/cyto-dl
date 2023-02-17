@@ -1,0 +1,50 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: omnipose.yaml
+  - override /model: omnipose_lattice.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: benji_omnipose
+run_name: lattice
+source_col: raw
+target_col: seg
+persist_cache: True
+# mode: predict
+
+# ckpt_path:  "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/lattice/2023-02-14_16-44-01/checkpoints/epoch_749.ckpt"
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+
+
+model:
+  # save_dir:  //allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/lattice/ #2023-02-14_16-44-01
+  # save_dir: //allen/aics/assay-dev/users/Benji/CurrentProjects/lattice_segmentation/omnipose/late_movie_evaluation/pred
+  patch_shape: [48, 192,192]
+  save_images_every_n_epochs: 10
+
+
+data:
+  path: ${paths.data_dir}/lattice_omnipose/
+  cache_dir: ${paths.data_dir}/lattice_omnipose/cache
+  batch_size: 2
+  subsample:
+    train: 120
+    test: 0
+    valid: 10
+  # columns: ['raw']
+
+
+

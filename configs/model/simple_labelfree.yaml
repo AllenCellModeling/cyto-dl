@@ -39,14 +39,14 @@ postprocessing:
 _aux:
   _input_postprocessing:
     - - ${source_col}
-      - _target_: aics_im2im.model.utils.postprocessing.rescale
+      - _target_: aics_im2im.models.utils.postprocessing.rescale
         _partial_: True
     - - ${target_col}
-      - _target_: aics_im2im.model.utils.postprocessing.rescale
+      - _target_: aics_im2im.models.utils.postprocessing.rescale
         _partial_: True
   _prediction_postprocessing:
     - - ${target_col}
-      - _target_: aics_im2im.model.utils.postprocessing.rescale
+      - _target_: aics_im2im.models.utils.postprocessing.rescale
         _partial_: True
 
   _tasks:
