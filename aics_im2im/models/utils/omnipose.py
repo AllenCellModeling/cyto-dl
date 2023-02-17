@@ -94,6 +94,12 @@ class OmniposeLoss:
         boundary = lbl[:, 0]
         w = lbl[:, 1]
         cellmask = (lbl[:, 2] > 0).bool()  # acts as a mask now, not output
+
+        # calculat loss on entire patch if no cells present - this helps
+        # remove background artifacts
+        for img_id in range(cellmask.shape[0]):
+            if torch.sum(cellmask[img_id]) == 0:
+                cellmask[img_id] = True
         veci = lbl[:, -(self.dim + 1) : -1]
         dist = lbl[:, -1]  # now distance transform replaces probability
 
