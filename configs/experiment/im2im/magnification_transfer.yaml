@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: patch_segmentation.yaml
-  - override /model: simple_segmentation.yaml
+  - override /data: im2im/superresolution.yaml
+  - override /model: im2im/superres_gan.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
@@ -15,22 +15,20 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-source_col: YOUR_RAW_COLUMN_NAME
-target_col: YOUR_SEGMENTATION_COLUMN_NAME
-experiment_name: YOUR_EXP_NAME
-run_name: YOUR_RUN_NAME
+source_col: LOW_RESOLUTION_COLUMN_NAME
+target_col: HIGH_RESOLUTION_COLUMN_NAME
 
 trainer:
-  max_epochs: 1000
+  max_epochs: 100
+  precision: 32 # THIS IS CURRENTLY NECESSARY FOR GANS
 
 model:
-  patch_shape: [32, 256, 256]
+  patch_shape: [12, 256, 256]
 
 data:
   path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample:
     train: -1
-    test: -1
+    test: 1
     valid: -1
-  batch_size: 2

@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: null
-  - override /model: so2_equiv_image_vae.yaml
+  - override /model: vae/so2_equiv_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml

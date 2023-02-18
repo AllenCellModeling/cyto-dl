@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: embedseg.yaml
-  - override /model: embedseg.yaml
+  - override /datamodule: im2im/embedseg.yaml
+  - override /model: im2im/embedseg.yaml
   - override /trainer: gpu.yaml
 
 # all parameters below will be merged with parameters from default configurations set above

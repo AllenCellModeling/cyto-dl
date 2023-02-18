@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: variance_spharm.yaml
-  - override /model: spharm_so2.yaml
+  - override /data: vae/variance_spharm.yaml
+  - override /model: vae/spharm_so2.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
