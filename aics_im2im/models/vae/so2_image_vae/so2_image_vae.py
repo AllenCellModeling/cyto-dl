@@ -12,8 +12,8 @@ from monai.networks.nets import AutoEncoder
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
 
-from aics_im2im.models.base_vae import BaseVAE
-from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
+from aics_im2im.models.vae.base_vae import BaseVAE
+from aics_im2im.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from aics_im2im.utils import O2Mask
 
 from .so2_encoder import SO2ImageEncoder

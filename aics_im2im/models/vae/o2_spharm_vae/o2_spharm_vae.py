@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 from torch.nn.modules.loss import _Loss as Loss
 
-from aics_im2im.models.base_vae import BaseVAE
-from aics_im2im.models.priors import IdentityPrior, IsotropicGaussianPrior
+from aics_im2im.models.vae.base_vae import BaseVAE
+from aics_im2im.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from aics_im2im.nn import MLP
 from aics_im2im.utils.spharm import flip_spharm, get_indices, rotate_spharm
 
