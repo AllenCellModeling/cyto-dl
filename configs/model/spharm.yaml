@@ -1,7 +1,7 @@
 defaults:
   - reconstruction_loss: spharm_gaussian
 
-_target_: aics_im2im.models.BaseVAE
+_target_: aics_im2im.models.vae.BaseVase
 x_dim: 289
 beta: 1.0
 x_label: shcoeff
@@ -30,4 +30,4 @@ optimizer:
 
 prior:
   shcoeff:
-    _target_: aics_im2im.models.priors.IsotropicGaussianPrior
+    _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior

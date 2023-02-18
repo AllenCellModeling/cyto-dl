@@ -21,8 +21,9 @@ transforms:
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
+      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
+        dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -61,8 +62,9 @@ transforms:
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
+      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
+        dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -89,8 +91,9 @@ transforms:
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
-      - _target_: aics_im2im.models.utils.omnipose.OmniposePreprocessd
+      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_key: ${target_col}
+        dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd

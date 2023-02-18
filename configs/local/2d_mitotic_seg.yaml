@@ -1,5 +1,5 @@
 model:
-  _target_: aics_im2im.models.MultiTaskIm2Im
+  _target_: aics_im2im.models.im2im.MultiTaskim2im
   save_images_every_n_epochs: 10
   x_key: raw
   patch_shape:
@@ -92,14 +92,14 @@ model:
   postprocessing:
     input:
       raw:
-        _target_: aics_im2im.models.utils.postprocessing.rescale
+        _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
         _partial_: true
       seg:
-        _target_: aics_im2im.models.utils.postprocessing.rescale
+        _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
         _partial_: true
     prediction:
       seg:
-        _target_: aics_im2im.models.utils.postprocessing.rescale
+        _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
         _partial_: true
 data:
   _target_: aics_im2im.datamodules.PatchDatamodule

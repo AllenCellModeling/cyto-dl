@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.MultiTaskIm2Im
+_target_: aics_im2im.models.im2im.MultiTaskim2im
 
 save_images_every_n_epochs: 1
 x_key: ${source_col}
@@ -43,14 +43,14 @@ lr_scheduler:
 postprocessing: 
   input: 
     seg:
-      _target_: aics_im2im.models.utils.postprocessing.detach
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
     raw:
-      _target_: aics_im2im.models.utils.postprocessing.detach
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
   prediction: 
     seg:
-      _target_: aics_im2im.models.utils.postprocessing.detach
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
 
 

@@ -1,7 +1,7 @@
 defaults:
   - reconstruction_loss: spharm_gaussian
 
-_target_: aics_im2im.models.O2SpharmVAE
+_target_: aics_im2im.models.vae.O2SpharmVAE
 
 x_dim: 289
 latent_dim: 16

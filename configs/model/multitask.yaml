@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.MultiTaskIm2Im
+_target_: aics_im2im.models.im2im.MultiTaskim2im
 
 save_images_every_n_epochs: 10
 save_dir: ${paths.output_dir}
@@ -53,12 +53,12 @@ lr_scheduler:
 postprocessing:
   input:
     raw:
-      _target_: aics_im2im.models.utils.postprocessing.rescale
+      _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
       _partial_: True
     seg:
-      _target_: aics_im2im.models.utils.postprocessing.rescale
+      _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
       _partial_: True
   prediction:
     seg:
-      _target_: aics_im2im.models.utils.postprocessing.sigmoid_rescale
+      _target_: aics_im2im.models.im2im.utils.postprocessing.sigmoid_rescale
       _partial_: True
