@@ -16,12 +16,12 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
       - _target_: monai.transforms.ScaleIntensityRangePercentilesd
         keys: ${target_col}
         lower: 0.01
@@ -30,11 +30,11 @@ transforms:
         b_max: 1
         clip: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 4
         scales_dict:
-          1: ${datamodule.columns}
+          1: ${data.columns}
 
   test:
     _target_: monai.transforms.Compose
@@ -53,12 +53,12 @@ transforms:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: monai.transforms.LoadImaged
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
       - _target_: monai.transforms.ToTensord
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
       - _target_: monai.transforms.ScaleIntensityRangePercentilesd
         keys: ${target_col}
         lower: 0.01
@@ -67,8 +67,8 @@ transforms:
         b_max: 1
         clip: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
-        keys: ${datamodule.columns}
+        keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 4
         scales_dict:
-          1: ${datamodule.columns}
+          1: ${data.columns}
