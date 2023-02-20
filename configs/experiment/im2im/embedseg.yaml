@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: multich_with_source_and_gt.yaml
-  - override /model: im2im/simple_labelfree.yaml
+  - override /data: im2im/embedseg.yaml
+  - override /model: im2im/embedseg.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
@@ -15,25 +15,20 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-experiment_name: benji_golgi_labelfree
-run_name: labelfree
-source_col: bf
-target_col: golgi
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+
+source_col: YOUR_RAW_COLUMN_NAME
+target_col: YOUR_INSTANCE_SEGMENTATION_COLUMN_NAME
 
 trainer:
   max_epochs: 1000
-  check_val_every_n_epoch: 10
 
 model:
   patch_shape: [32, 256, 256]
 
-datamodule:
-  path: ${paths.data_dir}/golgi_lf/
-  cache_dir: ${paths.data_dir}/golgi_lf/cache
-  subsample: 
-    train: -1
-    test: 1
-    valid: -1
-  batch_size: 2
-
-    
+data:
+  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
+  cache_dir: ${paths.data_dir}/EmbedSeg/cache
+  batch_size: 1

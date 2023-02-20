@@ -1,7 +1,7 @@
 import torch
 from monai.transforms import Transform
 
-from aics_im2im.models.so2_image_vae.utils import get_rotation_matrix, rotate_img
+from aics_im2im.models.vae.so2_image_vae.utils import get_rotation_matrix, rotate_img
 
 
 class SO2RandomRotate(Transform):

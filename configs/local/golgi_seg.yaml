@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: patch_segmentation.yaml
+  - override /datamodule: im2im/patch_segmentation.yaml
   - override /model: golgi_seg.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml

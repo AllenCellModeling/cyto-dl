@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: omnipose.yaml
-  - override /model: omnipose.yaml
+  - override /data: im2im/omnipose.yaml
+  - override /model: im2im/omnipose.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
@@ -21,9 +21,9 @@ run_name: cell_omnipose
 source_col: raw
 target_col: seg
 persist_cache: True
-# mode: predict
+mode: predict
 
-# ckpt_path:  /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-10_10-29-08/checkpoints/epoch_103.ckpt
+ckpt_path:  /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/cell_omnipose/2023-02-16_09-47-06/checkpoints/epoch_809.ckpt
 trainer:
   max_epochs: 1000
   check_val_every_n_epoch: 5
@@ -31,18 +31,18 @@ trainer:
 
 
 model:
-  # save_dir:  /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-10_10-29-08/
+  save_dir:  /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/cell_omnipose/2023-02-16_09-47-06
   patch_shape: [32, 256, 256]
 
 
-datamodule:
+data:
   path: ${paths.data_dir}/cell_omnipose_20x/data/
   cache_dir: ${paths.data_dir}/cell_omnipose_20x/cache
   batch_size: 2
-  subsample:
-    train: 100
-    valid: 10
-    test: 0
+  # subsample:
+  #   train: 100
+  #   valid: 10
+  #   test: 0
 
 
 ##### ONLY USE WITH A100s

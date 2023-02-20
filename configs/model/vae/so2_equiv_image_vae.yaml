@@ -1,0 +1,34 @@
+_target_: aics_im2im.models.vae.SO2ImageVAE
+
+latent_dim: 32
+spatial_dims:
+in_shape:
+out_channels: 1
+channels: [8, 16, 32, 64]
+strides: [2, 2, 2, 2]
+
+x_label: image
+id_label: null
+
+kernel_size: 3
+up_kernel_size: 3
+num_res_units: 0
+act: relu
+norm: batch
+dropout: null
+bias: false
+beta: 1.0
+
+reconstruction_loss:
+  _target_: torch.nn.modules.loss.MSELoss
+  reduction: none
+
+encoder_out_size: 64
+embedding_prior: gaussian
+
+use_sigmoid: true
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.001

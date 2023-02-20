@@ -9,5 +9,4 @@ from .losses import (
     WeibullLogLoss,
 )
 from .mlp import MLP
-from .simple_dense_net import SimpleDenseNet
 from .spatial_transformer import STN

@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /datamodule: patch.yaml
-  - override /model: multitask.yaml
+  - override /datamodule: im2im/patch.yaml
+  - override /model: im2im/multitask.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
