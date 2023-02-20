@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.im2im.MultiTaskim2im
+_target_: aics_im2im.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 10
 save_dir: ${paths.output_dir}/gan

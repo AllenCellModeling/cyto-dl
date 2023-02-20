@@ -1,5 +1,5 @@
 model:
-  _target_: aics_im2im.models.im2im.MultiTaskim2im
+  _target_: aics_im2im.models.im2im.MultiTaskIm2Im
   save_images_every_n_epochs: 10
   x_key: raw
   patch_shape:
