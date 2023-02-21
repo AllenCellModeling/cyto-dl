@@ -918,7 +918,9 @@ mdurl==0.1.2 \
 mlflow==2.1.1 \
     --hash=sha256:42cfb0c4c316398217237cc08f2b08604fb29f21057c83d6705157d18b47565c \
     --hash=sha256:a116b3cd45bbfb509a1723bfd4388bdb566a3e5045e3cde5390e667f591498a6
-monai @ git+https://github.com/Project-MONAI/MONAI@dev
+monai-weekly==1.2.dev2308 \
+    --hash=sha256:8edb6201ffcc99cd9c267bbf83041436bb3ccb90a7e7d495a2a21dd99069b544 \
+    --hash=sha256:efd3d1b759c6ce14bc468b7e25bea1d8b030aa06c344d718269ad305425e9a34
 multidict==6.0.4 \
     --hash=sha256:01a3a55bd90018c9c080fbb0b9f4891db37d148a0a18722b42f94694f8b6d4c9 \
     --hash=sha256:0b1a97283e0c85772d613878028fec909f003993e1007eafa715b24b377cb9b8 \
