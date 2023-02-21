@@ -836,6 +836,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "monai-weekly"
+version = "1.2.dev2308"
+requires_python = ">=3.7"
+summary = "AI Toolkit for Healthcare Imaging"
+dependencies = [
+    "numpy>=1.20",
+    "torch>=1.8",
+]
+
+[[package]]
 name = "mpmath"
 version = "1.2.1"
 summary = "Python library for arbitrary-precision floating-point arithmetic"
@@ -1690,7 +1700,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:ab7cfe9a9c8bc57faddab95fd00f5b7a2ed1b1bbcc9650e34ae1de6d9a46c829"
+content_hash = "sha256:7b53225df043e93d61433a6ae3a97aec6916173a7e59c8acf64a37938e19dfc4"
 
 [metadata.files]
 "aicscytoparam 0.1.6" = [
@@ -2819,6 +2829,10 @@ content_hash = "sha256:ab7cfe9a9c8bc57faddab95fd00f5b7a2ed1b1bbcc9650e34ae1de6d9
 "mlflow 2.1.1" = [
     {url = "https://files.pythonhosted.org/packages/82/21/554d28051202125013f64d5e74df5504a57ae8263d73e6fc6f75db6113db/mlflow-2.1.1.tar.gz", hash = "sha256:a116b3cd45bbfb509a1723bfd4388bdb566a3e5045e3cde5390e667f591498a6"},
     {url = "https://files.pythonhosted.org/packages/88/65/ced1cf877d4c1da733d8fde4e3afa352374284110025bfccfb5314021a52/mlflow-2.1.1-py3-none-any.whl", hash = "sha256:42cfb0c4c316398217237cc08f2b08604fb29f21057c83d6705157d18b47565c"},
+]
+"monai-weekly 1.2.dev2308" = [
+    {url = "https://files.pythonhosted.org/packages/8f/7c/2b8dcf387f84f05aa017b449e6f03a716eb16b62d60ce3cb8ebf277329b3/monai-weekly-1.2.dev2308.tar.gz", hash = "sha256:efd3d1b759c6ce14bc468b7e25bea1d8b030aa06c344d718269ad305425e9a34"},
+    {url = "https://files.pythonhosted.org/packages/d7/fb/b744e073fa8c3d58f6b60d4c327785eb5f8ab8b1a82e0e0e3717727d11c5/monai_weekly-1.2.dev2308-py3-none-any.whl", hash = "sha256:8edb6201ffcc99cd9c267bbf83041436bb3ccb90a7e7d495a2a21dd99069b544"},
 ]
 "mpmath 1.2.1" = [
     {url = "https://files.pythonhosted.org/packages/95/ba/7384cb4db4ed474d4582944053549e02ec25da630810e4a23454bc9fa617/mpmath-1.2.1.tar.gz", hash = "sha256:79ffb45cf9f4b101a807595bcb3e72e0396202e0b1d25d689134b48c4216a81a"},
