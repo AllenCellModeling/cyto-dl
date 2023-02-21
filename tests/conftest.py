@@ -2,13 +2,22 @@ import pyrootutils
 import pytest
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
-from omegaconf import DictConfig, open_dict
+from omegaconf import DictConfig, OmegaConf, open_dict
+
+from aics_im2im.utils.config import kv_to_dict
+
+OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+OmegaConf.register_new_resolver("eval", eval)
 
 
 @pytest.fixture(scope="package")
 def cfg_train_global() -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
-        cfg = compose(config_name="train.yaml", return_hydra_config=True, overrides=[])
+        cfg = compose(
+            config_name="experiment/im2im/segmentation.yaml",
+            return_hydra_config=True,
+            overrides=[],
+        )
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -24,14 +33,15 @@ def cfg_train_global() -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-
     return cfg
 
 
 @pytest.fixture(scope="package")
 def cfg_eval_global() -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
-        cfg = compose(config_name="eval.yaml", return_hydra_config=True, overrides=["ckpt_path=."])
+        cfg = compose(
+            config_name="eval.yaml", return_hydra_config=True, overrides=["ckpt_path=."]
+        )
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -45,7 +55,7 @@ def cfg_eval_global() -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-
+    print(cfg)
     return cfg
 
 

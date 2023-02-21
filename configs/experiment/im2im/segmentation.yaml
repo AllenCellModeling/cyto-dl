@@ -1,22 +1,22 @@
 # @package _global_
-
 # to execute this experiment run:
 # python train.py experiment=example
-
 defaults:
-  - override /data: im2im/patch_segmentation.yaml
-  - override /model: im2im/simple_segmentation.yaml
-  - override /callbacks: default.yaml
-  - override /trainer: gpu.yaml
-  - override /logger: mlflow.yaml
-
+  - /model: im2im/omnipose.yaml
+  - /callbacks: default.yaml
+  - /trainer: gpu.yaml
+  - /logger: mlflow.yaml
+  - /data: im2im/patch_segmentation.yaml
+  - /paths: default.yaml
+  - /extras: default.yaml
+  - /hydra: default.yaml
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
 tags: ["dev"]
 seed: 12345
-source_col: YOUR_RAW_COLUMN_NAME
-target_col: YOUR_SEGMENTATION_COLUMN_NAME
+source_col: raw # YOUR_RAW_COLUMN_NAME
+target_col: seg # YOUR_SEGMENTATION_COLUMN_NAME
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 
@@ -27,10 +27,10 @@ model:
   patch_shape: [32, 256, 256]
 
 data:
-  path: ${paths.data_dir}/DATAPATH/
+  path: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/data/gt_to_im #${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample:
-    train: -1
-    test: -1
-    valid: -1
-  batch_size: 2
+    train: 1
+    test: 1
+    valid: 1
+  batch_size: 2 
