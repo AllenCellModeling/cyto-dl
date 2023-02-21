@@ -21,3 +21,11 @@ test: ## Run not slow tests
 
 test-full: ## Run all tests
 	pytest
+
+sync-reqs-files:
+	pdm lock
+	pdm export -f requirements -o requirements/requirements.txt
+	pdm export -f requirements -G equiv --no-default -o requirements/equiv-requirements.txt
+	pdm export -f requirements -G spharm --no-default -o requirements/spharm-requirements.txt
+	pdm export -f requirements -G test --no-default -o requirements/test-requirements.txt
+	pdm export -f requirements -G all -o requirements/all-requirements.txt
