@@ -22,7 +22,7 @@ transforms:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_key: ${target_col}
+        label_keys: ${target_col}
         dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
@@ -63,7 +63,7 @@ transforms:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_key: ${target_col}
+        label_keys: ${target_col}
         dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
@@ -92,7 +92,7 @@ transforms:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "CZYX"
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_key: ${target_col}
+        label_keys: ${target_col}
         dim: 3
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
