@@ -14,9 +14,9 @@ OmegaConf.register_new_resolver("eval", eval)
 def cfg_train_global() -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
-            config_name="experiment/im2im/segmentation.yaml",
+            config_name="train.yaml",
             return_hydra_config=True,
-            overrides=[],
+            overrides=["experiment=im2im/segmentation.yaml"],
         )
 
         # set defaults for all tests
@@ -40,7 +40,9 @@ def cfg_train_global() -> DictConfig:
 def cfg_eval_global() -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
-            config_name="eval.yaml", return_hydra_config=True, overrides=["ckpt_path=."]
+            config_name="eval.yaml",
+            return_hydra_config=True,
+            overrides=["ckpt_path=.", "experiment=im2im/segmentation.yaml"],
         )
 
         # set defaults for all tests
