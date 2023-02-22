@@ -1,3 +1,5 @@
+from typing import Generator
+
 import pyrootutils
 import pytest
 from hydra import compose, initialize
@@ -64,7 +66,7 @@ def cfg_eval_global() -> DictConfig:
 # this is called by each test which uses `cfg_train` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_train(cfg_train_global, tmp_path) -> DictConfig:
+def cfg_train(cfg_train_global, tmp_path) -> Generator[DictConfig, None, None]:
     cfg = cfg_train_global.copy()
 
     with open_dict(cfg):
@@ -79,7 +81,7 @@ def cfg_train(cfg_train_global, tmp_path) -> DictConfig:
 # this is called by each test which uses `cfg_eval` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_eval(cfg_eval_global, tmp_path) -> DictConfig:
+def cfg_eval(cfg_eval_global, tmp_path) -> Generator[DictConfig, None, None]:
     cfg = cfg_eval_global.copy()
 
     with open_dict(cfg):
