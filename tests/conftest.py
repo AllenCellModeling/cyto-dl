@@ -59,7 +59,6 @@ def cfg_eval_global() -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-    print(cfg)
     return cfg
 
 
