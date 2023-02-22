@@ -17,7 +17,7 @@ autograd==1.5
 autopage==0.5.1
 bfio==2.3.0
 botocore==1.27.59
-cellpose-omni==0.7.3
+cellpose-omni @ git+https://github.com/kevinjohncutler/cellpose-omni@v0.8.2
 certifi==2022.12.7
 charset-normalizer==3.0.1
 click==8.1.3
@@ -75,7 +75,7 @@ lxml==4.9.2
 mahotas==1.4.13
 mako==1.2.4
 markdown==3.4.1
-markdown-it-py==2.1.0
+markdown-it-py==2.2.0
 MarkupSafe==2.1.2
 matplotlib==3.7.0
 mdurl==0.1.2
@@ -98,8 +98,8 @@ oauthlib==3.2.2
 ome-types==0.3.3
 ome-zarr==0.6.1
 omegaconf==2.3.0
-omnipose @ git+https://github.com/kevinjohncutler/omnipose@v0.3.4
-opencv-python-headless==4.7.0.68
+omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@v0.3.4
+opencv-python-headless==4.7.0.72
 opt-einsum==3.3.0
 opt-einsum-fx==0.1.4
 optuna==2.10.1

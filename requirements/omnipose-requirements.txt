@@ -1,4 +1,4 @@
-cellpose-omni==0.7.3
+cellpose-omni @ git+https://github.com/kevinjohncutler/cellpose-omni@v0.8.2
 edt==2.3.0
 fastremap==1.13.4
 imagecodecs==2023.1.23
@@ -18,8 +18,8 @@ nvidia-cublas-cu11==11.10.3.66
 nvidia-cuda-nvrtc-cu11==11.7.99
 nvidia-cuda-runtime-cu11==11.7.99
 nvidia-cudnn-cu11==8.5.0.96
-omnipose @ git+https://github.com/kevinjohncutler/omnipose@v0.3.4
-opencv-python-headless==4.7.0.68
+omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@v0.3.4
+opencv-python-headless==4.7.0.72
 packaging==22.0
 pbr==5.11.1
 pillow==9.4.0

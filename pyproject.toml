@@ -1,5 +1,5 @@
 [build-system]
-requires = ["pdm-pep517>=1.0.0", "numpy"]
+requires = ["pdm-pep517>=1.0.0", "numpy>=1.23.5"]
 build-backend = "pdm.pep517.api"
 
 [project]
@@ -56,8 +56,8 @@ spharm = [
 test = [
     "pyrootutils>=1.0.4",
     "pytest>=7.2.1",
-    "pytest-cov[toml]>=4.0.0",
     "sh>=1.14.3",
+    "pytest-cov[toml]>=4.0.0",
 ]
 scripts = [
     "pyrootutils>=1.0.4",
@@ -71,9 +71,9 @@ omnipose = [
     "networkx>=3.0",
     "opencv-python-headless>=4.7.0.68",
     "torch-optimizer>=0.3.0",
-    "cellpose-omni>=0.7.3",
     "mako>=1.2.4",
-    "omnipose @ git+https://github.com/kevinjohncutler/omnipose@v0.3.4",
+    "cellpose-omni[omni] @ git+https://github.com/kevinjohncutler/cellpose-omni@v0.8.2",
+    "omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@v0.3.4",
 ]
 s3 = [
     "s3fs>=2023.1.0"
