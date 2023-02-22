@@ -1,0 +1,56 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: omnipose.yaml
+  - override /model: omnipose_lattice.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: nucseg_omnipose
+run_name: lamin-test
+source_col: 'source'
+target_col: 'target'
+persist_cache: False
+# mode: predict
+
+# ckpt_path:  "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/lattice/2023-02-14_16-44-01/checkpoints/epoch_749.ckpt"
+# ckpt_path: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/lattice/2023-02-17_15-02-00/checkpoints/epoch_739-v1.ckpt
+
+trainer:
+  max_epochs: 300
+  check_val_every_n_epoch: 10
+
+
+model:
+  # save_dir: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/lattice/2023-02-17_15-02-00/
+  patch_shape: [48, 192,192]
+  save_images_every_n_epochs: 10
+
+
+data:
+  path: /allen/aics/assay-dev/computational/data/nucleus_tracking/lattice
+  cache_dir: ${paths.data_dir}/omnipose/cache
+  batch_size: 1
+  subsample:
+    train: 10
+    valid: -1
+    test: 0
+  num_workers: 8
+  # subsample:
+  #   train: 120
+  #   test: 0
+  #   valid: 10
+  # columns: ['raw']
+
+
+

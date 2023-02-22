@@ -48,11 +48,7 @@ postprocessing:
   input: ${kv_to_dict:${model._aux._input_postprocessing}}
   prediction:
     GT:
-<<<<<<< HEAD
-      _target_: aics_im2im.models.utils.embedseg.generate_instance_clusters
-=======
       _target_: aics_im2im.utils.embedseg_utils.generate_instance_clusters
->>>>>>> 1997905 (project files)
       _partial_: True
       pixel: ${model._aux._pixel}
       grid_size: ${model.patch_shape}

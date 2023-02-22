@@ -40,14 +40,14 @@ lr_scheduler:
 
 postprocessing:
   input:
-    seg:
-      _target_: aics_im2im.models.utils.postprocessing.detach
-      _partial_: True
     raw:
       _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
-  prediction:
     seg:
+      _target_: aics_im2im.models.utils.postprocessing.detach
+      _partial_: True
+  prediction:
+    raw:
       _target_: aics_im2im.models.utils.postprocessing.detach
       _partial_: True
     # seg:

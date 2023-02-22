@@ -9,11 +9,8 @@ from pytorch_lightning import Callback, LightningDataModule, LightningModule, Tr
 from pytorch_lightning.loggers.logger import Logger
 
 from aics_im2im import utils
-<<<<<<< HEAD
-=======
 from tempfile import TemporaryDirectory
 from pathlib import Path
->>>>>>> e8799fd (remove serotony dependency)
 
 log = utils.get_pylogger(__name__)
 
