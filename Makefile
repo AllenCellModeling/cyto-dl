@@ -23,9 +23,9 @@ test-full: ## Run all tests
 	pytest
 
 sync-reqs-files:
-	pdm lock
-	pdm export -f requirements -o requirements/requirements.txt
-	pdm export -f requirements -G equiv --no-default -o requirements/equiv-requirements.txt
-	pdm export -f requirements -G spharm --no-default -o requirements/spharm-requirements.txt
-	pdm export -f requirements -G test --no-default -o requirements/test-requirements.txt
-	pdm export -f requirements -G all -o requirements/all-requirements.txt
+	pdm export -f requirements --without-hashes -o requirements/requirements.txt
+	pdm export -f requirements -G equiv --no-default --without-hashes -o requirements/equiv-requirements.txt
+	pdm export -f requirements -G spharm --no-default --without-hashes -o requirements/spharm-requirements.txt
+	pdm export -f requirements -G omnipose --no-default --without-hashes -o requirements/omnipose-requirements.txt
+	pdm export -f requirements -G test --no-default --without-hashes -o requirements/test-requirements.txt
+	pdm export -f requirements -G all --without-hashes -o requirements/all-requirements.txt
