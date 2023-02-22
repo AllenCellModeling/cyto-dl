@@ -53,7 +53,7 @@ _aux:
   _tasks:
     - - ${target_col}
       - head:
-          _target_: aics_im2im.nn.aux_head.IdentityAuxHead
+          _target_: aics_im2im.nn.IdentityAuxHead
         loss:
           _target_: monai.losses.DiceCELoss
           sigmoid: True
