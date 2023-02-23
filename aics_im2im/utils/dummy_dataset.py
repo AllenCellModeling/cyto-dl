@@ -1,5 +1,25 @@
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
+from pytorch_lightning import LightningDataModule
+
+class DummyDatamodule(LightningDataModule):
+    def __init__(self, num_samples, batch_size, **shapes):
+        super().__init__()
+        self.shapes = shapes
+        self.num_samples = num_samples
+        self.batch_size=batch_size
+
+    def get_dataloader(self):
+        return DataLoader(DummyDataset(self.num_samples, self.shapes), batch_size=self.batch_size)
+
+    def train_dataloader(self):
+        return self.get_dataloader()
+
+    def val_dataloader(self):
+        return self.get_dataloader()
+
+    def test_dataloader(self):
+        return self.get_dataloader()
 
 
 class DummyDataset(Dataset):
@@ -18,8 +38,13 @@ class DummyDataset(Dataset):
 
         self.num_samples = num_samples
 
-    def __len__(self):
-        return self.num_samples
+    def generate_img(self, k):
+        if 'seg' in k:
+            im = torch.zeros(*self.shapes[k])
+            slicee = [slice(s//2-s//4, s//2+s//4, None) for s in self.shape[k]]
+            im[slicee] = 1
+            return im
+        return torch.randn(*self.shapes[k])
 
     def __getitem__(self, idx: int):
-        return {k: torch.randn(*shape) for k, shape in self.shapes.items()}
+        return {k: self.generate_img(k) for k in self.shapes.keys()}
