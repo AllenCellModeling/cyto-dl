@@ -11,14 +11,19 @@ from aics_im2im.utils.config import kv_to_dict
 OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
+experiments = [
+    "im2im/segmentation.yaml",
+    # 'im2im/omipose.yaml',
+]
 
-@pytest.fixture(scope="package")
-def cfg_train_global() -> DictConfig:
+
+@pytest.fixture(scope="package", params=experiments)
+def cfg_train_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
             config_name="train.yaml",
             return_hydra_config=True,
-            overrides=["experiment=im2im/segmentation.yaml"],
+            overrides=[f"experiment={request.param}"],
         )
 
         # set defaults for all tests
@@ -38,13 +43,13 @@ def cfg_train_global() -> DictConfig:
     return cfg
 
 
-@pytest.fixture(scope="package")
-def cfg_eval_global() -> DictConfig:
+@pytest.fixture(scope="package", params=experiments)
+def cfg_eval_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
             config_name="eval.yaml",
             return_hydra_config=True,
-            overrides=["ckpt_path=.", "experiment=im2im/segmentation.yaml"],
+            overrides=["ckpt_path=.", f"experiment={request.param}"],
         )
 
         # set defaults for all tests
