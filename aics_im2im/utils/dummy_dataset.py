@@ -1,5 +1,25 @@
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
+from pytorch_lightning import LightningDataModule
+
+class DummyDatamodule(LightningDataModule):
+    def __init__(self, num_samples, batch_size, **shapes):
+        super().__init__()
+        self.shapes = shapes
+        self.num_samples = num_samples
+        self.batch_size=batch_size
+
+    def get_dataloader(self):
+        return DataLoader(DummyDataset(self.num_samples, self.shapes), batch_size=self.batch_size)
+
+    def train_dataloader(self):
+        return self.get_dataloader()
+
+    def val_dataloader(self):
+        return self.get_dataloader()
+
+    def test_dataloader(self):
+        return self.get_dataloader()
 
 
 class DummyDataset(Dataset):
