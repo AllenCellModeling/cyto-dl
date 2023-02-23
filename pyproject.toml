@@ -40,8 +40,9 @@ dependencies = [
     "monai-weekly>=1.2.dev2308",
     "tifffile>=2023.2.3",
     "tqdm>=4.64.1",
+    "pyrootutils>=1.0.4",
 ]
-requires-python = ">=3.8,<3.12"
+requires-python = ">=3.8,<3.11"
 
 [project.optional-dependencies]
 equiv = [
@@ -52,15 +53,6 @@ spharm = [
     "vtk>=9.2.6",
     "aicscytoparam>=0.1.6",
     "aicsshparam>=0.1.1"
-]
-test = [
-    "pyrootutils>=1.0.4",
-    "pytest>=7.2.1",
-    "sh>=1.14.3",
-    "pytest-cov[toml]>=4.0.0",
-]
-scripts = [
-    "pyrootutils>=1.0.4",
 ]
 omnipose = [
     "scipy>=1.10.1",
@@ -79,7 +71,13 @@ s3 = [
     "s3fs>=2023.1.0"
 ]
 all = [
-  "aics-im2im[equiv,spharm,omnipose,test,scripts,s3,all]"
+  "aics-im2im[equiv,spharm,omnipose,s3]"
+]
+test = [
+    "pytest>=7.2.1",
+    "sh>=1.14.3",
+    "pytest-cov[toml]>=4.0.0",
+    "aics-im2im[all]"
 ]
 
 [project.urls]
