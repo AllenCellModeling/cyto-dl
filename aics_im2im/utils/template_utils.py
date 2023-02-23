@@ -182,9 +182,8 @@ def log_hyperparameters(object_dict: dict) -> None:
     hparams["seed"] = cfg.get("seed")
 
     # send hparams to all loggers
-    mode = "train" if trainer.training else "test"
     for logger in trainer.loggers:
-        logger.log_hyperparams(hparams, mode=mode)
+        logger.log_hyperparams(hparams, mode=cfg.task_name)
 
 
 def get_metric_value(metric_dict: dict, metric_name: str) -> float:
