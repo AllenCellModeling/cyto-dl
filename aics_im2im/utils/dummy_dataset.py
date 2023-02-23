@@ -18,8 +18,13 @@ class DummyDataset(Dataset):
 
         self.num_samples = num_samples
 
-    def __len__(self):
-        return self.num_samples
+    def generate_img(self, k):
+        if 'seg' in k:
+            im = torch.zeros(*self.shapes[k])
+            slicee = [slice(s//2-s//4, s//2+s//4, None) for s in self.shape[k]]
+            im[slicee] = 1
+            return im
+        return torch.randn(*self.shapes[k])
 
     def __getitem__(self, idx: int):
-        return {k: torch.randn(*shape) for k, shape in self.shapes.items()}
+        return {k: self.generate_img(k) for k in self.shapes.keys()}
