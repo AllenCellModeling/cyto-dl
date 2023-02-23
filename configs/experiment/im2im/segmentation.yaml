@@ -6,9 +6,6 @@ defaults:
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /data: im2im/patch_segmentation.yaml
-  - override /paths: default.yaml
-  - override /extras: default.yaml
-  - override /hydra: default.yaml
   - override /logger: mlflow.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
