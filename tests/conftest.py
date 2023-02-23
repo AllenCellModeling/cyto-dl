@@ -11,9 +11,13 @@ from aics_im2im.utils.config import kv_to_dict
 OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
+# Experiment configs to test
 experiments = [
-    "im2im/segmentation.yaml",
-    # 'im2im/omipose.yaml',
+    {
+        "exp_path": "im2im/segmentation.yaml",
+        "data_path": "test/segmentation.yaml",
+    },  # Segmentation
+    {"exp_path": "im2im/omnipose.yaml", "data_path": "test/omnipose.yaml"},  # Omnipose
 ]
 
 
@@ -23,7 +27,11 @@ def cfg_train_global(request) -> DictConfig:
         cfg = compose(
             config_name="train.yaml",
             return_hydra_config=True,
-            overrides=[f"experiment={request.param}"],
+            overrides=[
+                f"experiment={request.param['exp_path']}",
+                f"data={request.param['data_path']}",
+                "trainer=cpu.yaml",
+            ],
         )
 
         # set defaults for all tests
@@ -49,7 +57,12 @@ def cfg_eval_global(request) -> DictConfig:
         cfg = compose(
             config_name="eval.yaml",
             return_hydra_config=True,
-            overrides=["ckpt_path=.", f"experiment={request.param}"],
+            overrides=[
+                "ckpt_path=.",
+                f"experiment={request.param['exp_path']}",
+                f"data={request.param['data_path']}",
+                "trainer=cpu.yaml",
+            ],
         )
 
         # set defaults for all tests
