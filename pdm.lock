@@ -1735,7 +1735,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:e80ebac70384d30f9c996cfd6f7fd9a0524114c90da12b67c0292b823b62f981"
+content_hash = "sha256:6a8f530804f4b2bef0eb44d936a2ed55868c5a85310a64a90448a2190abe133c"
 
 [metadata.files]
 "aicscytoparam 0.1.6" = [
