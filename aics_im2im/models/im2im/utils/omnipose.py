@@ -23,12 +23,13 @@ from skimage.measure import label
 from skimage.morphology import binary_dilation, remove_small_holes
 from skimage.segmentation import expand_labels
 from skimage.transform import rescale, resize
+from omegaconf import ListConfig
 
 
 class OmniposePreprocessd(Transform):
     def __init__(self, label_keys, dim):
         super().__init__()
-        self.label_keys = label_keys if isinstance(label_keys, list) else [label_keys]
+        self.label_keys = label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
         self.dim = dim
 
     def __call__(self, image_dict):
@@ -250,7 +251,7 @@ class OmniposeClustering:
                     flow[tuple(padded_crop)],
                     naive_labeling[tuple(padded_crop[1:])] == val,
                     dist[tuple(padded_crop[1:])],
-                    1.3,
+                    1.2,
                     device,
                     padded_crop,
                 )
