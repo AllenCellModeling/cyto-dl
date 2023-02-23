@@ -87,6 +87,8 @@ class RandomMultiScaleCropd(RandomizableTransform):
         """Generate dictionary of slices at all scales starting at random point."""
         max_shape = np.asarray(image_dict[self.scale_dict[1][0]].shape[-self.spatial_dims :])
         max_start_indices = max_shape - self.roi_size + 1
+        if np.any(max_start_indices < 0):
+            raise ValueError(f"Crop size {self.roi_size} is too large for image size {max_shape}")
         start_indices = self.R.randint(max_start_indices)
         scaled_start_indices = {
             s: (start_indices // s).astype(int) for s in self.scale_dict.keys()
