@@ -15,6 +15,7 @@ from cellpose_omni.core import (
 )
 from monai.data import MetaTensor
 from monai.transforms import Transform
+from omegaconf import ListConfig
 from omnipose.core import compute_masks, diameters, masks_to_flows
 from scipy.ndimage import find_objects
 from scipy.spatial import ConvexHull
@@ -23,13 +24,14 @@ from skimage.measure import label
 from skimage.morphology import binary_dilation, remove_small_holes
 from skimage.segmentation import expand_labels
 from skimage.transform import rescale, resize
-from omegaconf import ListConfig
 
 
 class OmniposePreprocessd(Transform):
     def __init__(self, label_keys, dim):
         super().__init__()
-        self.label_keys = label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
+        self.label_keys = (
+            label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
+        )
         self.dim = dim
 
     def __call__(self, image_dict):
