@@ -346,7 +346,7 @@ summary = "Composable style cycles"
 
 [[package]]
 name = "dask"
-version = "2023.2.0"
+version = "2023.2.1"
 requires_python = ">=3.8"
 summary = "Parallel PyData with Task Scheduling"
 dependencies = [
@@ -354,20 +354,20 @@ dependencies = [
     "cloudpickle>=1.1.1",
     "fsspec>=0.6.0",
     "packaging>=20.0",
-    "partd>=0.3.10",
+    "partd>=1.2.0",
     "pyyaml>=5.3.1",
     "toolz>=0.8.2",
 ]
 
 [[package]]
 name = "dask"
-version = "2023.2.0"
+version = "2023.2.1"
 extras = ["array"]
 requires_python = ">=3.8"
 summary = "Parallel PyData with Task Scheduling"
 dependencies = [
-    "dask==2023.2.0",
-    "numpy>=1.18",
+    "dask==2023.2.1",
+    "numpy>=1.21",
 ]
 
 [[package]]
@@ -1311,8 +1311,8 @@ dependencies = [
 
 [[package]]
 name = "python-dotenv"
-version = "0.21.1"
-requires_python = ">=3.7"
+version = "1.0.0"
+requires_python = ">=3.8"
 summary = "Read key-value pairs from a .env file and set them as environment variables"
 
 [[package]]
@@ -1715,7 +1715,7 @@ dependencies = [
 
 [[package]]
 name = "zarr"
-version = "2.14.1"
+version = "2.14.2"
 requires_python = ">=3.8"
 summary = "An implementation of chunked, compressed, N-dimensional arrays for Python"
 dependencies = [
@@ -1733,7 +1733,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:06046b6951205eba616d4e5cfc739a2566a29b6e3b214b8675c12749429492fc"
+content_hash = "sha256:cf3f82a505227b3b19e8d4b19e3853de7954ffab9dd2ad0b16aeaaff30b2e3e3"
 
 [metadata.files]
 "aicscytoparam 0.1.6" = [
@@ -2160,9 +2160,9 @@ content_hash = "sha256:06046b6951205eba616d4e5cfc739a2566a29b6e3b214b8675c127494
     {url = "https://files.pythonhosted.org/packages/34/45/a7caaacbfc2fa60bee42effc4bcc7d7c6dbe9c349500e04f65a861c15eb9/cycler-0.11.0.tar.gz", hash = "sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f"},
     {url = "https://files.pythonhosted.org/packages/5c/f9/695d6bedebd747e5eb0fe8fad57b72fdf25411273a39791cde838d5a8f51/cycler-0.11.0-py3-none-any.whl", hash = "sha256:3a27e95f763a428a739d2add979fa7494c912a32c17c4c38c4d5f082cad165a3"},
 ]
-"dask 2023.2.0" = [
-    {url = "https://files.pythonhosted.org/packages/58/e4/6d816a3d3f75068eefb9341d042e6731d3973719b77c8f2f6f2f3dd1f269/dask-2023.2.0.tar.gz", hash = "sha256:c0716193e0e197bc541199e41770b4f2f7df6c137bb94e5b4812cfdc6cbe0a84"},
-    {url = "https://files.pythonhosted.org/packages/dc/03/0334ab094ceaf8c27e83f183ca661cd1fc76ed401d1dd3a054e268c87601/dask-2023.2.0-py3-none-any.whl", hash = "sha256:14dedb3ae0be51116365a52e9f39db6e6c866f5ea2244aaae62bd83a0dbaaa92"},
+"dask 2023.2.1" = [
+    {url = "https://files.pythonhosted.org/packages/42/da/ef0659c3501def402604f4f2b3e8af56d67254d5e0b560d896f5c325dea1/dask-2023.2.1-py3-none-any.whl", hash = "sha256:283e810ef5772a845fb970c26aefc3694d2ed2fbf56dca381d9bcca44e0212dd"},
+    {url = "https://files.pythonhosted.org/packages/cd/99/acdb71e823249faf9481cc87b200b031eed831a76b441475b1b42fcd8bff/dask-2023.2.1.tar.gz", hash = "sha256:a943b4ac17ba821385ea7bf146cdf71e982201267fa73905a600fd13c48a8c61"},
 ]
 "databricks-cli 0.17.4" = [
     {url = "https://files.pythonhosted.org/packages/58/7d/4bd6e5dc4420fb5dbb5ae895c1d9934fc0c9e77d9c5dc010725195f093a7/databricks_cli-0.17.4-py2-none-any.whl", hash = "sha256:bbd57bc21c88ac6d1f8f0b250db986e500490c4d3cb69664229384632eaeed81"},
@@ -3412,9 +3412,9 @@ content_hash = "sha256:06046b6951205eba616d4e5cfc739a2566a29b6e3b214b8675c127494
     {url = "https://files.pythonhosted.org/packages/36/7a/87837f39d0296e723bb9b62bbb257d0355c7f6128853c78955f57342a56d/python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
     {url = "https://files.pythonhosted.org/packages/4c/c4/13b4776ea2d76c115c1d1b84579f3764ee6d57204f6be27119f13a61d0a9/python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
 ]
-"python-dotenv 0.21.1" = [
-    {url = "https://files.pythonhosted.org/packages/64/62/f19d1e9023aacb47241de3ab5a5d5fedf32c78a71a9e365bb2153378c141/python_dotenv-0.21.1-py3-none-any.whl", hash = "sha256:41e12e0318bebc859fcc4d97d4db8d20ad21721a6aa5047dd59f090391cb549a"},
-    {url = "https://files.pythonhosted.org/packages/f5/d7/d548e0d5a68b328a8d69af833a861be415a17cb15ce3d8f0cd850073d2e1/python-dotenv-0.21.1.tar.gz", hash = "sha256:1c93de8f636cde3ce377292818d0e440b6e45a82f215c3744979151fa8151c49"},
+"python-dotenv 1.0.0" = [
+    {url = "https://files.pythonhosted.org/packages/31/06/1ef763af20d0572c032fa22882cfbfb005fba6e7300715a37840858c919e/python-dotenv-1.0.0.tar.gz", hash = "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba"},
+    {url = "https://files.pythonhosted.org/packages/44/2f/62ea1c8b593f4e093cc1a7768f0d46112107e790c3e478532329e434f00b/python_dotenv-1.0.0-py3-none-any.whl", hash = "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"},
 ]
 "pytorch-lightning 1.9.3" = [
     {url = "https://files.pythonhosted.org/packages/bf/9d/ba77d6d9fd7ca5ff7260ae5033c2355e6f920d3dad764ef107d8c2b54a27/pytorch_lightning-1.9.3-py3-none-any.whl", hash = "sha256:cd642fbbe763968269637835efe68833dd5019801359c950c04898e355b74fea"},
@@ -3973,9 +3973,9 @@ content_hash = "sha256:06046b6951205eba616d4e5cfc739a2566a29b6e3b214b8675c127494
     {url = "https://files.pythonhosted.org/packages/f1/e1/e76a76353444f895a1f0b52e71c28d27a25c4657e51ed30666ef7bb7ff74/yarl-1.8.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:009a028127e0a1755c38b03244c0bea9d5565630db9c4cf9572496e947137a87"},
     {url = "https://files.pythonhosted.org/packages/f9/fa/9c746d29462714663d04cf9e34cc44a86efa17705a811c77556643b80f1b/yarl-1.8.2-cp38-cp38-win_amd64.whl", hash = "sha256:326dd1d3caf910cd26a26ccbfb84c03b608ba32499b5d6eeb09252c920bcbe4f"},
 ]
-"zarr 2.14.1" = [
-    {url = "https://files.pythonhosted.org/packages/cb/ce/39a479ddeb178503e9eadb70139d87a915b24dee1be36b492190ea739bf7/zarr-2.14.1.tar.gz", hash = "sha256:1d2b6cd4460f1741deca17df1e9f071b917380cb2a27b6e2e949f067a2054a64"},
-    {url = "https://files.pythonhosted.org/packages/ef/fd/9ba7c4c574b376f7f8e0a62a6913507c4b2aca94b1dfac16a5639b7d2d53/zarr-2.14.1-py3-none-any.whl", hash = "sha256:652cab30d13b837faf12dcaa7e3061c539eb186f6ccf9526e8909ed6b6f5d333"},
+"zarr 2.14.2" = [
+    {url = "https://files.pythonhosted.org/packages/7f/32/fd3560c7a721c4ff64ad482f75f759fd506431fb20e8f25a481175d908f9/zarr-2.14.2-py3-none-any.whl", hash = "sha256:feb72d6ccc43c447661861020dbf2e685a8367e80d890b6f5905954400394ed2"},
+    {url = "https://files.pythonhosted.org/packages/bd/12/cf2edf7da7a9bcd3c204d2723ec615dc3dc7ef1533bd4c84a165d20f0980/zarr-2.14.2.tar.gz", hash = "sha256:68ec59b8ebdfc4fee5e32bd6c0ce273f72f7d4ed017454b45327c673c60907bc"},
 ]
 "zipp 3.14.0" = [
     {url = "https://files.pythonhosted.org/packages/a8/7d/90189265f0a9bcdf79b1143b77b0ef6dca0a5f13783f1e1efa4d7d7eafca/zipp-3.14.0-py3-none-any.whl", hash = "sha256:188834565033387710d046e3fe96acfc9b5e86cbca7f39ff69cf21a4128198b7"},

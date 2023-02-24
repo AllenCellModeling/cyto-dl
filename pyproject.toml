@@ -40,7 +40,6 @@ dependencies = [
     "monai-weekly>=1.2.dev2308",
     "tifffile>=2023.2.3",
     "tqdm>=4.64.1",
-    "pyrootutils>=1.0.4",
 ]
 requires-python = ">=3.8,<3.11"
 
@@ -74,6 +73,7 @@ all = [
   "aics-im2im[equiv,spharm,omnipose,s3]"
 ]
 test = [
+    "pyrootutils>=1.0.4",
     "pytest>=7.2.1",
     "sh>=1.14.3",
     "pytest-cov[toml]>=4.0.0",
