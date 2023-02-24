@@ -146,7 +146,7 @@ shap==0.41.0
 six==1.16.0
 slicer==0.0.7
 smmap==5.0.0
-sqlalchemy==1.4.46
+sqlalchemy==2.0.4
 sqlparse==0.4.3
 stevedore==5.0.0
 sympy==1.11.1
