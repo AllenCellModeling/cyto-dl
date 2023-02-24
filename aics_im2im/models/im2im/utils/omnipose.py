@@ -66,10 +66,6 @@ class OmniposePreprocessd(Transform):
             out_im[4 : 4 + self.dim] = flows * 5.0  # weighted for loss function?
             out_im[4 + self.dim] = smooth_distance
             image_dict[key] = out_im
-            if np.any(np.isnan(out_im)):
-                destdir = "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/2ch_lamin/"
-                from skimage.io import imsave
-                imsave(destdir + f'bad_{np.max(numpy_im)}.tif', numpy_im)
         return image_dict
 
 
