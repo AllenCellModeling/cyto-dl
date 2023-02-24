@@ -1,3 +1,5 @@
+import subprocess  # nosec: B404
+import sys
 import time
 import warnings
 from importlib.util import find_spec
@@ -180,6 +182,9 @@ def log_hyperparameters(object_dict: dict) -> None:
     hparams["tags"] = cfg.get("tags")
     hparams["ckpt_path"] = cfg.get("ckpt_path")
     hparams["seed"] = cfg.get("seed")
+
+    reqs = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])  # nosec: B603
+    hparams["requirements"] = reqs.split("\n")
 
     # send hparams to all loggers
     for logger in trainer.loggers:
