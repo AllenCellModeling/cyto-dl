@@ -42,6 +42,9 @@ class OmniposePreprocessd(Transform):
             im = image_dict[key]
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
             numpy_im = im.numpy().squeeze()
+            
+            if np.max(numpy_im) <= 0:
+                raise ValueError("Ground truth images for Omnipose must have at least 1 label")
 
             out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
             (
@@ -63,6 +66,10 @@ class OmniposePreprocessd(Transform):
             out_im[4 : 4 + self.dim] = flows * 5.0  # weighted for loss function?
             out_im[4 + self.dim] = smooth_distance
             image_dict[key] = out_im
+            if np.any(np.isnan(out_im)):
+                destdir = "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/2ch_lamin/"
+                from skimage.io import imsave
+                imsave(destdir + f'bad_{np.max(numpy_im)}.tif', numpy_im)
         return image_dict
 
 
@@ -275,4 +282,7 @@ class OmniposeClustering:
         flow = im[: self.spatial_dim]
         dist = im[self.spatial_dim]
         mask = self.clustering_function(flow, dist, device)
-        return mask
+        mask2 = self.get_mask(flow, dist, device)
+        import pdb;
+        pdb.set_trace()
+        return np.stack([mask, mask2])
