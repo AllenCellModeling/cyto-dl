@@ -28,7 +28,7 @@ cmd2==2.4.3
 colorlog==6.7.0
 contourpy==1.0.7
 cycler==0.11.0
-dask==2023.2.0
+dask==2023.2.1
 databricks-cli==0.17.4
 dnspython==2.3.0
 docker==6.0.1
@@ -117,10 +117,8 @@ pyjwt==2.6.0
 pymanopt==2.1.1
 pyparsing==3.0.9
 pyperclip==1.8.2
-pyrootutils==1.0.4
 pyshtools==4.10.1
 python-dateutil==2.8.2
-python-dotenv==0.21.1
 pytorch-lightning==1.9.3
 pytorch-ranger==0.1.1
 pytz==2022.7.1
@@ -164,5 +162,5 @@ wrapt==1.14.1
 xarray==2023.1.0
 xmlschema==2.2.1
 yarl==1.8.2
-zarr==2.14.1
+zarr==2.14.2
 zipp==3.14.0
