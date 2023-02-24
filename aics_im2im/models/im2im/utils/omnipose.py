@@ -43,6 +43,9 @@ class OmniposePreprocessd(Transform):
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
             numpy_im = im.numpy().squeeze()
 
+            if np.max(numpy_im) <= 0:
+                raise ValueError("Ground truth images for Omnipose must have at least 1 label")
+
             out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
             (
                 instance_seg,
@@ -160,8 +163,39 @@ class OmniposeClustering:
         spatial_dim=3,
         boundary_seg=True,
         naive_label=False,
+        fine_threshold=True,
+        convex_ratio_threshold=1.1,
     ):
+        """
+        Parameters
+        --------------
+            mask_threshold: float
+                Threshold to binarize distance transform
+            rescale_factor: float
+                Rescaling before omnipose clustering
+            min_object_size: int
+                Minimum object size to include in final segmentation
+            hole_size: int
+                Maximum hole size to include in final segmentation
+            flow_threshold: float
+                Remove masks with anomalous flows below threshold. NOTE, currently must be set high
+                to avoid removal of most masks
+            spatial_dim: int
+                Spatial dimensions of input data
+            boundary_seg: bool
+                whether to use omnipose's boundary_seg clustering. If False, uses standard euler integration
+            naive_label: bool
+                Whether to attempt to label objects and only cluster objects that look like merged segmentations
+                based on `convex_ratio_threshold`. Much faster, but can lead to worse segmentations.
+            fine_threshold: bool
+                Whether to use hysteresis threshold for finer detail in thin segmentation structures
+            convex_ratio_threshold: float
+                Anomaly threshold for running omnipose clustering if `naive_label==True`.
+        """
 
+        assert (
+            0 < rescale_factor <= 1.0
+        ), f"Rescale factor must be in range [0,1], got {rescale_factor}"
         self.mask_threshold = mask_threshold
         self.rescale_factor = rescale_factor
         self.min_object_size = min_object_size
@@ -171,6 +205,8 @@ class OmniposeClustering:
         self.boundary_seg = boundary_seg
         self.naive_label = naive_label
         self.clustering_function = self.do_naive_labeling if naive_label else self.get_mask
+        self.fine_threshold = fine_threshold
+        self.convex_ratio_threshold = convex_ratio_threshold
 
     def rescale_instance(self, im, seg):
         seg = resize(seg, im.shape, order=0, anti_aliasing=False, preserve_range=True)
@@ -212,20 +248,27 @@ class OmniposeClustering:
             new_slice.append(slice(start, stop, None))
         return new_slice
 
+    def is_merged_segmentation(self, mask_crop, area):
+        mask_points = np.asarray(list(zip(*np.where(mask_crop))))
+        # look for <spatial dim dimension data, can't calculate convex hull
+        if np.any(np.unique(mask_points, axis=1) == 1):
+            return False
+        c_hull = ConvexHull(mask_points).volume
+        mask_crop = binary_dilation(mask_crop)
+
+        return c_hull / area > self.convex_ratio_threshold
+
     @dask.delayed
-    def get_separated_masks(self, flow_crop, mask_crop, dist_crop, ratio_threshold, device, crop):
-        if np.any(np.asarray(mask_crop.shape) < self.spatial_dim + 2):
-            return
+    def get_separated_masks(self, flow_crop, mask_crop, dist_crop, device, crop):
         area = np.sum(mask_crop)
         if area < self.min_object_size:
             return
-        c_hull = ConvexHull(np.asarray(list(zip(*np.where(mask_crop))))).volume
-        mask_crop = binary_dilation(mask_crop)
-        if c_hull / area > ratio_threshold:
+        if self.is_merged_segmentation(mask_crop, area):
             flow_crop[:, ~mask_crop] = 0
             dist_crop[~mask_crop] = dist_crop.min()
             mask = self.get_mask(flow_crop, dist_crop, device)
             return {"slice": tuple(crop[1:]), "mask": mask}
+
         return {
             "slice": tuple(crop[1:]),
             "mask": remove_small_holes(
@@ -239,9 +282,12 @@ class OmniposeClustering:
 
         Useful for well-separated, round objects like nuclei
         """
-        cellmask = apply_hysteresis_threshold(
-            dist, low=self.mask_threshold - 1, high=self.mask_threshold
-        )
+        if self.fine_threshold:
+            cellmask = apply_hysteresis_threshold(
+                dist, low=self.mask_threshold - 1, high=self.mask_threshold
+            )
+        else:
+            cellmask = dist > self.mask_threshold
         naive_labeling = label(cellmask)
         out_image = np.zeros_like(naive_labeling, dtype=np.uint16)
         regions = find_objects(naive_labeling)
@@ -250,10 +296,9 @@ class OmniposeClustering:
             padded_crop = self.pad_slice(region, 5, naive_labeling.shape)
             results.append(
                 self.get_separated_masks(
-                    flow[tuple(padded_crop)],
+                    flow[tuple(padded_crop)].copy(),
                     naive_labeling[tuple(padded_crop[1:])] == val,
-                    dist[tuple(padded_crop[1:])],
-                    1.2,
+                    dist[tuple(padded_crop[1:])].copy(),
                     device,
                     padded_crop,
                 )
