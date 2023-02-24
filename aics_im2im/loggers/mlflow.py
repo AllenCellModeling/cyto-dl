@@ -44,13 +44,21 @@ class MLFlowLogger(_MLFlowLogger):
 
     @rank_zero_only
     def log_hyperparams(self, params: Union[Dict[str, Any], Namespace], mode="train") -> None:
+        requirements = params.pop("requirements", [])
+
         with tempfile.TemporaryDirectory() as tmp_dir:
             conf_path = Path(tmp_dir) / f"{mode}.yaml"
             with open(conf_path, "w") as f:
                 config = OmegaConf.create(params)
                 OmegaConf.save(config=config, f=f)
 
+            reqs_path = Path(tmp_dir) / f"{mode}-requirements.txt"
+            reqs_path.write_text("\n".join(requirements))
+
             self.experiment.log_artifact(self.run_id, local_path=conf_path, artifact_path="config")
+            self.experiment.log_artifact(
+                self.run_id, local_path=reqs_path, artifact_path="requirements"
+            )
 
     def after_save_checkpoint(self, ckpt_callback: ModelCheckpoint) -> None:
         """Called after model checkpoint callback saves a new checkpoint."""
