@@ -152,6 +152,7 @@ class OmniposeLoss:
 class OmniposeClustering:
     """Run clustering on downsampled version of flows, then use original resolution distance field
     to mask instance segmentations."""
+
     def __init__(
         self,
         mask_threshold=0,
@@ -163,27 +164,33 @@ class OmniposeClustering:
         boundary_seg=True,
         naive_label=False,
         fine_threshold=True,
-        convex_ratio_threshold= 1.1
+        convex_ratio_threshold=1.1,
     ):
         """
         Parameters
         --------------
-        lbl: ND-array, float
-            transformed labels in array [nimg x nchan x xy[0] x xy[1]]
-            lbl[:,0] boundary field
-            lbl[:,1] boundary-emphasized weights
-            lbl[:,2] cell masks
-            lbl[:,3] distance field
-            lbl[:,4:6] flow components
-            lbl[:,7] smooth distance field
-
-
-        y:  ND-tensor, float
-            network predictions, with dimension D, these are:
-            y[:,:D] flow field components at 0,1,...,D-1
-            y[:,D] distance fields at D
-            y[:,D+1] boundary fields at D+1
-
+            mask_threshold: float
+                Threshold to binarize distance transform
+            rescale_factor: float
+                Rescaling before omnipose clustering
+            min_object_size: int
+                Minimum object size to include in final segmentation
+            hole_size: int
+                Maximum hole size to include in final segmentation
+            flow_threshold: float
+                Remove masks with anomalous flows below threshold. NOTE, currently must be set high
+                to avoid removal of most masks
+            spatial_dim: int
+                Spatial dimensions of input data
+            boundary_seg: bool
+                whether to use omnipose's boundary_seg clustering. If False, uses standard euler integration
+            naive_label: bool
+                Whether to attempt to label objects and only cluster objects that look like merged segmentations
+                based on `convex_ratio_threshold`. Much faster, but can lead to worse segmentations.
+            fine_threshold: bool
+                Whether to use hysteresis threshold for finer detail in thin segmentation structures
+            convex_ratio_threshold: float
+                Anomaly threshold for running omnipose clustering if `naive_label==True`.
         """
 
         assert (
@@ -199,7 +206,7 @@ class OmniposeClustering:
         self.naive_label = naive_label
         self.clustering_function = self.do_naive_labeling if naive_label else self.get_mask
         self.fine_threshold = fine_threshold
-        self.convex_ratio_threshold=convex_ratio_threshold
+        self.convex_ratio_threshold = convex_ratio_threshold
 
     def rescale_instance(self, im, seg):
         seg = resize(seg, im.shape, order=0, anti_aliasing=False, preserve_range=True)
@@ -252,7 +259,7 @@ class OmniposeClustering:
         return c_hull / area > self.convex_ratio_threshold
 
     @dask.delayed
-    def get_separated_masks(self, flow_crop, mask_crop, dist_crop,  device, crop):
+    def get_separated_masks(self, flow_crop, mask_crop, dist_crop, device, crop):
         area = np.sum(mask_crop)
         if area < self.min_object_size:
             return
