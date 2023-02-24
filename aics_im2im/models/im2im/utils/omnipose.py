@@ -42,7 +42,7 @@ class OmniposePreprocessd(Transform):
             im = image_dict[key]
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
             numpy_im = im.numpy().squeeze()
-            
+
             if np.max(numpy_im) <= 0:
                 raise ValueError("Ground truth images for Omnipose must have at least 1 label")
 
@@ -279,6 +279,7 @@ class OmniposeClustering:
         dist = im[self.spatial_dim]
         mask = self.clustering_function(flow, dist, device)
         mask2 = self.get_mask(flow, dist, device)
-        import pdb;
+        import pdb
+
         pdb.set_trace()
         return np.stack([mask, mask2])
