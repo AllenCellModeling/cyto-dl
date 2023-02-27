@@ -5,7 +5,8 @@ import torch
 import torch.nn as nn
 from torch.nn.modules.loss import _Loss as Loss
 
-from ..nn import MLP
+from aics_im2im.nn import MLP
+
 from .base_vae import BaseVAE
 from .priors import Prior
 

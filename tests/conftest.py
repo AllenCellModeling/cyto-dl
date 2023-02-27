@@ -1,14 +1,38 @@
+from typing import Generator
+
 import pyrootutils
 import pytest
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
-from omegaconf import DictConfig, open_dict
+from omegaconf import DictConfig, OmegaConf, open_dict
+
+from aics_im2im.utils.config import kv_to_dict
+
+OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
+OmegaConf.register_new_resolver("eval", eval)
+
+# Experiment configs to test
+experiments = [
+    {
+        "exp_path": "im2im/segmentation.yaml",
+        "data_path": "test/segmentation.yaml",
+    },  # Segmentation
+    {"exp_path": "im2im/omnipose.yaml", "data_path": "test/omnipose.yaml"},  # Omnipose
+]
 
 
-@pytest.fixture(scope="package")
-def cfg_train_global() -> DictConfig:
+@pytest.fixture(scope="package", params=experiments)
+def cfg_train_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
-        cfg = compose(config_name="train.yaml", return_hydra_config=True, overrides=[])
+        cfg = compose(
+            config_name="train.yaml",
+            return_hydra_config=True,
+            overrides=[
+                f"experiment={request.param['exp_path']}",
+                f"data={request.param['data_path']}",
+                "trainer=cpu.yaml",
+            ],
+        )
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -24,14 +48,22 @@ def cfg_train_global() -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-
     return cfg
 
 
-@pytest.fixture(scope="package")
-def cfg_eval_global() -> DictConfig:
+@pytest.fixture(scope="package", params=experiments)
+def cfg_eval_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
-        cfg = compose(config_name="eval.yaml", return_hydra_config=True, overrides=["ckpt_path=."])
+        cfg = compose(
+            config_name="eval.yaml",
+            return_hydra_config=True,
+            overrides=[
+                "ckpt_path=.",
+                f"experiment={request.param['exp_path']}",
+                f"data={request.param['data_path']}",
+                "trainer=cpu.yaml",
+            ],
+        )
 
         # set defaults for all tests
         with open_dict(cfg):
@@ -45,14 +77,13 @@ def cfg_eval_global() -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-
     return cfg
 
 
 # this is called by each test which uses `cfg_train` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_train(cfg_train_global, tmp_path) -> DictConfig:
+def cfg_train(cfg_train_global, tmp_path) -> Generator[DictConfig, None, None]:
     cfg = cfg_train_global.copy()
 
     with open_dict(cfg):
@@ -67,7 +98,7 @@ def cfg_train(cfg_train_global, tmp_path) -> DictConfig:
 # this is called by each test which uses `cfg_eval` arg
 # each test generates its own temporary logging path
 @pytest.fixture(scope="function")
-def cfg_eval(cfg_eval_global, tmp_path) -> DictConfig:
+def cfg_eval(cfg_eval_global, tmp_path) -> Generator[DictConfig, None, None]:
     cfg = cfg_eval_global.copy()
 
     with open_dict(cfg):

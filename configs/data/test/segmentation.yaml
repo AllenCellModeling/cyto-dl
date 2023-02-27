@@ -1,0 +1,5 @@
+_target_: aics_im2im.utils.dummy_dataset.DummyDatamodule
+num_samples: 10
+batch_size: 5
+source: [1, 32, 32, 32]
+seg: [1, 32, 32, 32]
