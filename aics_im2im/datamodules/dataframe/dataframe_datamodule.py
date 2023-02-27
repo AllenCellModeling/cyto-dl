@@ -120,7 +120,7 @@ class DataframeDatamodule(pl.LightningDataModule):
                 cache_dir,
             )
         else:
-            raise FileNotFoundError(f'Could not find specified dataframe path {path}')
+            raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs

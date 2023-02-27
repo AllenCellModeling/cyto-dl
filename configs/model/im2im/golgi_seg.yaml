@@ -10,13 +10,12 @@ backbone:
   spatial_dims: 3
   in_channels: 1
   out_channels: 2
-  strides: [[1,1,1],[1,2,2],[1,1,1],[1,2,2]]
-  kernel_size: [3,3,3,3]
-  upsample_kernel_size:  [[1,2,2],[1,1,1],[1,2,2]]
+  strides: [[1, 1, 1], [1, 2, 2], [1, 1, 1], [1, 2, 2]]
+  kernel_size: [3, 3, 3, 3]
+  upsample_kernel_size: [[1, 2, 2], [1, 1, 1], [1, 2, 2]]
   filters: [128, 192, 256, 512]
   dropout: 0.0
   res_block: True
-
 
 tasks:
   seg:
@@ -25,7 +24,7 @@ tasks:
     loss:
       _target_: aics_im2im.utils.loss_wrapper.DistanceSegLoss
 
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.AdamW
@@ -39,20 +38,15 @@ lr_scheduler:
     T_max: 1000
     eta_min: 0.000001
 
-
-postprocessing: 
-  input: 
+postprocessing:
+  input:
     seg:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
     raw:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
-  prediction: 
+  prediction:
     seg:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
-
-
-
-

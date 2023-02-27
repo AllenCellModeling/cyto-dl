@@ -12,7 +12,7 @@ backbone:
   out_channels: 128
   strides: [[1, 1, 1], [1, 2, 2], [1, 1, 1], [2, 2, 2]]
   kernel_size: [[3, 3, 3], [3, 3, 3], [3, 3, 3], [3, 3, 3]]
-  upsample_kernel_size:  [[1, 2, 2], [1, 1, 1], [2, 2, 2]]
+  upsample_kernel_size: [[1, 2, 2], [1, 1, 1], [2, 2, 2]]
   filters: [128, 192, 256, 512]
   dropout: 0.1
   res_block: True
@@ -48,8 +48,7 @@ tasks:
       _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
       dim: 3
 
-
-optimizer: 
+optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.AdamW
@@ -63,9 +62,8 @@ lr_scheduler:
     T_max: 1000
     eta_min: 0.000001
 
-
-postprocessing: 
-  input: 
+postprocessing:
+  input:
     seg:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
@@ -75,7 +73,7 @@ postprocessing:
     raw:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
-  prediction: 
+  prediction:
     seg:
       _target_: aics_im2im.models.im2im.utils.postprocessing.detach
       _partial_: True
@@ -85,6 +83,3 @@ postprocessing:
     # seg:
     #   _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeClustering
     #   _partial_: True
-
-
-
