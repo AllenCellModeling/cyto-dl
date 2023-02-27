@@ -250,8 +250,9 @@ class OmniposeClustering:
 
     def is_merged_segmentation(self, mask_crop, area):
         mask_points = np.asarray(list(zip(*np.where(mask_crop))))
+
         # look for <spatial dim dimension data, can't calculate convex hull
-        if np.any(np.unique(mask_points, axis=1) == 1):
+        if np.any([len(np.unique(mask_points[:, i])) == 1 for i in range(mask_points.shape[1])]):
             return False
         c_hull = ConvexHull(mask_points).volume
         mask_crop = binary_dilation(mask_crop)
