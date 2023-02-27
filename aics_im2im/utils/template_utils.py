@@ -184,7 +184,7 @@ def log_hyperparameters(object_dict: dict) -> None:
     hparams["seed"] = cfg.get("seed")
 
     reqs = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])  # nosec: B603
-    hparams["requirements"] = reqs.split("\n")
+    hparams["requirements"] = str(reqs).split("\\n")
 
     # send hparams to all loggers
     for logger in trainer.loggers:
