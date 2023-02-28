@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from contextlib import suppress
 from typing import List, Tuple
 
 import hydra
@@ -84,8 +85,9 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
-    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-    OmegaConf.register_new_resolver("eval", eval)
+    with suppress(ValueError):
+        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+        OmegaConf.register_new_resolver("eval", eval)
     evaluate(cfg)
 
 

@@ -1,4 +1,5 @@
 from collections.abc import MutableMapping
+from contextlib import suppress
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
@@ -113,8 +114,9 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-    OmegaConf.register_new_resolver("eval", eval)
+    with suppress(ValueError):
+        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+        OmegaConf.register_new_resolver("eval", eval)
 
     if cfg.get("persist_cache", False) or cfg.data.get("cache_dir") is None:
         metric_dict, _ = train(cfg)
