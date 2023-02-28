@@ -35,7 +35,7 @@ class MultiTaskIm2Im(BaseModel):
         hr_skip=nn.Identity(),
         postprocessing=None,
         discriminator=None,
-        gan_loss=lambda x: 0,
+        gan_loss=float,  # float is also a function that returns 0.0
         costmap_key="cmap",
         sliding_window_fns={},
         **kwargs,
