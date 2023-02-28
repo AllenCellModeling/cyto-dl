@@ -28,10 +28,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Setup GNU Fortran
+        uses: modflowpy/install-gfortran-action@v1
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install '.[test]'
+          pip install wheel
+          pip install numpy
+          pip install -r requirements/test-requirements.txt
+          pip install .
           pip install sh
 
       - name: List dependencies
@@ -55,10 +61,16 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Setup GNU Fortran
+        uses: modflowpy/install-gfortran-action@v1
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install '.[test]'
+          pip install wheel
+          pip install numpy
+          pip install -r requirements/test-requirements.txt
+          pip install .
 
       - name: Run tests and collect coverage
         run: pytest --cov aics_im2im

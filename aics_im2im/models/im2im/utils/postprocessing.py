@@ -10,24 +10,25 @@ def rescale(img: torch.Tensor) -> np.ndarray:
 
 
 def detach(img: torch.Tensor) -> np.ndarray:
-    return img.detach().cpu().numpy().astype(float)
+    img = img.detach().cpu()
+    if img.dtype == torch.bfloat16:
+        img = img.half()
+    img = img.numpy()
+    return img
 
 
 def sigmoid_rescale(img: torch.Tensor) -> np.ndarray:
-    img = torch.nn.Sigmoid()(img)
-    img = img.detach().cpu().numpy()
+    img = detach(torch.nn.Sigmoid()(img))
     return (img * 255).astype(np.uint8)
 
 
 def sigmoid_thresh(img: torch.Tensor) -> np.ndarray:
-    img = torch.nn.Sigmoid()(img)
-    img = img.detach().cpu().numpy()
+    img = detach(torch.nn.Sigmoid()(img))
     return (img > 123).astype(np.uint8)
 
 
 def postprocess_label(img: torch.Tensor) -> np.ndarray:
-    img = torch.nn.Sigmoid()(img)
-    img = img.detach().cpu().numpy()
+    img = detach(torch.nn.Sigmoid()(img))
     return label(img > 0.5).astype(np.uint16)
 
 
@@ -44,6 +45,6 @@ class max_project:
 def concat_dict(input_dict, keys):
     output_img = []
     for key in keys:
-        im = input_dict[key].detach().cpu().numpy().astype(np.uint8)
+        im = detach(input_dict[key]).astype(np.uint8)
         output_img.append(im)
     return np.stack(output_img)

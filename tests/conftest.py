@@ -13,11 +13,18 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Experiment configs to test
 experiments = [
+    # Segmentation
     {
         "exp_path": "im2im/segmentation.yaml",
         "data_path": "test/segmentation.yaml",
-    },  # Segmentation
-    {"exp_path": "im2im/omnipose.yaml", "data_path": "test/omnipose.yaml"},  # Omnipose
+        "model_path": "test/simple_segmentation.yaml",
+    },
+    # Omnipose
+    {
+        "exp_path": "im2im/omnipose.yaml",
+        "data_path": "test/omnipose.yaml",
+        "model_path": "test/omnipose.yaml",
+    },
 ]
 
 
@@ -30,6 +37,7 @@ def cfg_train_global(request) -> DictConfig:
             overrides=[
                 f"experiment={request.param['exp_path']}",
                 f"data={request.param['data_path']}",
+                f"model={request.param['model_path']}",
                 "trainer=cpu.yaml",
             ],
         )
@@ -38,9 +46,9 @@ def cfg_train_global(request) -> DictConfig:
         with open_dict(cfg):
             cfg.paths.root_dir = str(pyrootutils.find_root())
             cfg.trainer.max_epochs = 1
-            cfg.trainer.limit_train_batches = 0.01
-            cfg.trainer.limit_val_batches = 0.1
-            cfg.trainer.limit_test_batches = 0.1
+            cfg.trainer.limit_train_batches = 2
+            cfg.trainer.limit_val_batches = 2
+            cfg.trainer.limit_test_batches = 2
             cfg.trainer.accelerator = "cpu"
             cfg.trainer.devices = 1
             cfg.data.num_workers = 0
@@ -61,6 +69,8 @@ def cfg_eval_global(request) -> DictConfig:
                 "ckpt_path=.",
                 f"experiment={request.param['exp_path']}",
                 f"data={request.param['data_path']}",
+                f"model={request.param['model_path']}",
+                "+test=True",
                 "trainer=cpu.yaml",
             ],
         )
@@ -69,7 +79,7 @@ def cfg_eval_global(request) -> DictConfig:
         with open_dict(cfg):
             cfg.paths.root_dir = str(pyrootutils.find_root())
             cfg.trainer.max_epochs = 1
-            cfg.trainer.limit_test_batches = 0.1
+            cfg.trainer.limit_test_batches = 2
             cfg.trainer.accelerator = "cpu"
             cfg.trainer.devices = 1
             cfg.data.num_workers = 0

@@ -35,7 +35,7 @@ class MultiTaskIm2Im(BaseModel):
         hr_skip=nn.Identity(),
         postprocessing=None,
         discriminator=None,
-        gan_loss=lambda x: 0,
+        gan_loss=float,  # float is also a function that returns 0.0
         costmap_key="cmap",
         sliding_window_fns={},
         **kwargs,
@@ -90,7 +90,7 @@ class MultiTaskIm2Im(BaseModel):
     def save_image(self, fn, img, directory):
         OmeTiffWriter().save(
             uri=Path(self.hparams.save_dir) / directory / fn,
-            data=img.squeeze(),
+            data=img.squeeze().astype(float),
             dims_order="STCZYX"[-len(img.shape)],
         )
 

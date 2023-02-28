@@ -1,4 +1,4 @@
-from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict
+from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict, read_write
 
 
 def kv_to_dict(kv: ListConfig) -> DictConfig:
@@ -24,11 +24,13 @@ def kv_to_dict(kv: ListConfig) -> DictConfig:
 
 
 def remove_aux_key(cfg):
-    with open_dict(cfg):
+    with read_write(cfg):
         for field in cfg.keys():
             if isinstance(cfg[field], DictConfig):
-                try:
-                    del cfg[field]["_aux"]
-                except KeyError:
-                    continue
+                with read_write(cfg[field]):
+                    with open_dict(cfg[field]):
+                        try:
+                            del cfg[field]["_aux"]
+                        except KeyError:
+                            continue
     return cfg

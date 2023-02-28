@@ -2,13 +2,21 @@ import os
 
 import pytest
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import open_dict
+from omegaconf import OmegaConf, open_dict
 
 from aics_im2im.eval import evaluate
 from aics_im2im.train import train
 
+from .conftest import experiments
+from .utils import resolve_readonly
+
 
 @pytest.mark.slow
+@pytest.mark.parametrize(
+    "cfg_train_global, cfg_eval_global",
+    zip(experiments, experiments),
+    indirect=True,
+)
 def test_train_eval(tmp_path, cfg_train, cfg_eval):
     """Train for 1 epoch with `train.py` and evaluate with `eval.py`"""
     assert str(tmp_path) == cfg_train.paths.output_dir == cfg_eval.paths.output_dir
@@ -18,6 +26,7 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
         cfg_train.test = True
 
     HydraConfig().set_config(cfg_train)
+    resolve_readonly(cfg_train)
     train_metric_dict, _ = train(cfg_train)
 
     assert "last.ckpt" in os.listdir(tmp_path / "checkpoints")
@@ -26,7 +35,10 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
         cfg_eval.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
 
     HydraConfig().set_config(cfg_eval)
+    resolve_readonly(cfg_eval)
     test_metric_dict, _ = evaluate(cfg_eval)
 
-    assert test_metric_dict["test/acc"] > 0.0
-    assert abs(train_metric_dict["test/acc"].item() - test_metric_dict["test/acc"].item()) < 0.001
+    assert test_metric_dict["test_loss"] > 0.0
+    assert (
+        abs(train_metric_dict["test_loss"].item() - test_metric_dict["test_loss"].item()) < 0.001
+    )
