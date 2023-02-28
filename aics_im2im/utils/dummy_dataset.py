@@ -58,10 +58,8 @@ class DummyDataset(Dataset):
             im = torch.zeros(*self.shapes[k])
             slicee = [slice(s // 2 - s // 4, s // 2 + s // 4, None) for s in self.shapes[k]]
             im[slicee] = 1
-        else:
-            im = torch.randn(*self.shapes[k])
-
-        return im
+            return im
+        return torch.randn(*self.shapes[k])
 
     def __getitem__(self, idx: int):
         out = {k: self.generate_img(k) for k in self.shapes.keys()}
