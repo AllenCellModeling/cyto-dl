@@ -1,0 +1,23 @@
+defaults:
+  - test/base.yaml@_here_
+
+tasks:
+  seg:
+    head:
+      _target_: aics_im2im.nn.IdentityAuxHead
+    loss:
+      _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
+      dim: 3
+
+postprocessing:
+  input:
+    seg:
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+      _partial_: True
+    raw:
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+      _partial_: True
+  prediction:
+    seg:
+      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+      _partial_: True
