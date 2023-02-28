@@ -46,7 +46,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          pytest -v
+          python -m pytest -v
 
   # upload code coverage report
   code-coverage:
