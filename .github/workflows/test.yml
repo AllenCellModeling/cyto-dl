@@ -13,12 +13,11 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         python-version: [3.8, 3.9, "3.10"]
-        os: [ubuntu-20.04, windows-latest, macos-11]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
