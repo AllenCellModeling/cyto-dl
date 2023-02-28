@@ -90,7 +90,7 @@ class MultiTaskIm2Im(BaseModel):
     def save_image(self, fn, img, directory):
         OmeTiffWriter().save(
             uri=Path(self.hparams.save_dir) / directory / fn,
-            data=img.squeeze(),
+            data=img.squeeze().astype(float),
             dims_order="STCZYX"[-len(img.shape)],
         )
 
