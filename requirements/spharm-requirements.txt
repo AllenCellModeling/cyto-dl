@@ -1,7 +1,6 @@
 aicscytoparam==0.1.6
 aicsimageio==4.9.4
 aicsshparam==0.1.1
-appdirs==1.4.4
 asciitree==0.3.3
 astropy==5.2.1
 certifi==2022.12.7
@@ -20,7 +19,7 @@ fonttools==4.38.0
 fsspec==2023.1.0
 idna==3.4
 imagecodecs==2023.1.23
-imageio==2.25.1
+imageio==2.26.0
 joblib==1.2.0
 kiwisolver==1.4.4
 locket==1.0.0
@@ -35,7 +34,8 @@ pandas==1.5.3
 partd==1.3.0
 pillow==9.4.0
 pint==0.20.1
-pooch==1.6.0
+platformdirs==3.0.0
+pooch==1.7.0
 pydantic==1.10.5
 pyerfa==2.0.0.1
 pyparsing==3.0.9
@@ -51,13 +51,13 @@ scikit-learn==1.2.1
 scipy==1.10.1
 six==1.16.0
 threadpoolctl==3.1.0
-tifffile==2023.2.3
+tifffile==2023.2.27
 toolz==0.12.0
 tqdm==4.64.1
 typing-extensions==4.5.0
 urllib3==1.26.14
 vtk==9.2.6
-wrapt==1.14.1
+wrapt==1.15.0
 xarray==2023.1.0
 xmlschema==2.2.1
 zarr==2.14.2
