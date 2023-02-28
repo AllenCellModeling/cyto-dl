@@ -2,10 +2,12 @@ import os
 
 import pytest
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import open_dict
+from omegaconf import OmegaConf, open_dict
 
 from aics_im2im.eval import evaluate
 from aics_im2im.train import train
+
+from .utils import resolve_readonly
 
 
 @pytest.mark.slow
@@ -18,6 +20,7 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
         cfg_train.test = True
 
     HydraConfig().set_config(cfg_train)
+    resolve_readonly(cfg_train)
     train_metric_dict, _ = train(cfg_train)
 
     assert "last.ckpt" in os.listdir(tmp_path / "checkpoints")
