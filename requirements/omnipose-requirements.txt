@@ -2,14 +2,14 @@ cellpose-omni @ git+https://github.com/kevinjohncutler/cellpose-omni@v0.8.2
 edt==2.3.0
 fastremap==1.13.4
 imagecodecs==2023.1.23
-imageio==2.25.1
+imageio==2.26.0
 joblib==1.2.0
 llvmlite==0.39.1
 mahotas==1.4.13
 mako==1.2.4
 MarkupSafe==2.1.2
 mgen==1.2.0
-natsort==8.2.0
+natsort==8.3.0
 ncolor==1.2.1
 networkx==3.0
 numba==0.56.4
@@ -30,7 +30,7 @@ scikit-learn==1.2.1
 scipy==1.10.1
 setuptools==67.4.0
 threadpoolctl==3.1.0
-tifffile==2023.2.3
+tifffile==2023.2.27
 torch==1.13.1
 torch-optimizer==0.3.0
 tqdm==4.64.1
