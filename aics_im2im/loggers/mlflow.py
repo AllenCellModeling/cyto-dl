@@ -69,13 +69,15 @@ class MLFlowLogger(_MLFlowLogger):
         try:
             super().log_metrics(metrics, step)
         except Exception as e:
-            log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}" "\nContinuing...")
+            log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing...")
 
     def after_save_checkpoint(self, ckpt_callback):
         try:
             self._after_save_checkpoint(ckpt_callback)
         except Exception as e:
-            log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}" "\nContinuing...")
+            log.warn(
+                f"`MLFlowLogger.after_save_checkpoint` failed with exception {e}\n\nContinuing..."
+            )
 
     def _after_save_checkpoint(self, ckpt_callback: ModelCheckpoint) -> None:
         """Called after model checkpoint callback saves a new checkpoint."""
