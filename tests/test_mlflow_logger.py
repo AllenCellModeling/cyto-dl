@@ -81,7 +81,7 @@ def test_mlflow_log_model(_, tmpdir, monitor):
             f"{logger.run_id}/artifacts/checkpoints/{monitor_key}",
         )
 
-        assert len(os.listdir(ckpt_folder)) == 2
+        assert len(os.listdir(ckpt_folder)) == 3
     else:
         ckpt_folder = os.path.join(run_root, f"{logger.run_id}/artifacts/checkpoints")
         assert len(os.listdir(ckpt_folder)) == 1
