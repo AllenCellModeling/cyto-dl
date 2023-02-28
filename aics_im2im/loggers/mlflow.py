@@ -114,8 +114,20 @@ class MLFlowLogger(_MLFlowLogger):
                     local_path=os.path.join(ckpt_callback.dirpath, ckpt),
                     artifact_path=artifact_path,
                 )
-        else:
+
+            # also save the current best model as "best.ckpt"
             filepath = ckpt_callback.best_model_path
+            best_path = Path(filepath).with_name("best.ckpt")
+            os.link(filepath, best_path)
+
+            self.experiment.log_artifact(
+                self.run_id, local_path=best_path, artifact_path=artifact_path
+            )
+
+            os.unlink(best_path)
+
+        else:
+            filepath = ckpt_callback.last_model_path
             artifact_path = "checkpoints"
 
             # mimic ModelCheckpoint's behavior: if `self.save_top_k == 1` only
