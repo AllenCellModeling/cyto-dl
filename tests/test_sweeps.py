@@ -19,6 +19,7 @@ def test_hydra_sweep(tmp_path):
         "model=test/omnipose",
         "hydra.sweep.dir=" + str(tmp_path),
         "+model.optimizer.lr=0.005,0.01",
+        "trainer=cpu",
         "++trainer.fast_dev_run=true",
     ] + overrides
 
