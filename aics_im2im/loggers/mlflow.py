@@ -14,6 +14,10 @@ from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import MLFlowLogger as _MLFlowLogger
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
+from aics_im2im import utils
+
+log = utils.get_pylogger(__name__)
+
 
 class MLFlowLogger(_MLFlowLogger):
     def __init__(
@@ -60,7 +64,22 @@ class MLFlowLogger(_MLFlowLogger):
                 self.run_id, local_path=reqs_path, artifact_path="requirements"
             )
 
-    def after_save_checkpoint(self, ckpt_callback: ModelCheckpoint) -> None:
+    @rank_zero_only
+    def log_metrics(self, metrics, step):
+        try:
+            super().log_metrics(metrics, step)
+        except Exception as e:
+            log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing...")
+
+    def after_save_checkpoint(self, ckpt_callback):
+        try:
+            self._after_save_checkpoint(ckpt_callback)
+        except Exception as e:
+            log.warn(
+                f"`MLFlowLogger.after_save_checkpoint` failed with exception {e}\n\nContinuing..."
+            )
+
+    def _after_save_checkpoint(self, ckpt_callback: ModelCheckpoint) -> None:
         """Called after model checkpoint callback saves a new checkpoint."""
         monitor = ckpt_callback.monitor
         if monitor is not None:
