@@ -86,7 +86,7 @@ pbr==5.11.1
 pillow==9.4.0
 pint==0.20.1
 PrettyTable==3.6.0
-protobuf==4.22.0
+protobuf==3.20.1
 pyarrow==10.0.1
 pydantic==1.10.5
 pygments==2.14.0
