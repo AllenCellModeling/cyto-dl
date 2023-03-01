@@ -52,7 +52,7 @@ def test_mlflow_log_model(_, tmpdir, monitor):
     mlflow_root = os.path.join(tmpdir, "mlflow/")
     local_ckpt_root = os.path.join(tmpdir, "local_ckpt")
 
-    logger = MLFlowLogger("test", save_dir=mlflow_root)
+    logger = MLFlowLogger("test", save_dir=mlflow_root, fault_tolerant=False)
 
     if monitor:
         checkpoint_callback = ModelCheckpoint(
@@ -94,7 +94,7 @@ def test_mlflow_log_hyperparams(_, tmpdir):
 
     mlflow_root = os.path.join(tmpdir, "mlflow/")
 
-    logger = MLFlowLogger("test", save_dir=mlflow_root)
+    logger = MLFlowLogger("test", save_dir=mlflow_root, fault_tolerant=False)
     logger.log_hyperparams(dict(a=1, b=2))
 
     config = get_config(
