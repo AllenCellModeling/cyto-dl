@@ -27,8 +27,6 @@ persist_cache: True
 trainer:
   max_epochs: 1000
   check_val_every_n_epoch: 1
-  accelerator: "gpu"
-  devices:
 
 model:
   # save_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/"
