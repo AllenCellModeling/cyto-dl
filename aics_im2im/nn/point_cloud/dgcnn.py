@@ -53,7 +53,7 @@ class DGCNN(nn.Module):
         convs = nn.ModuleList(convs)
 
         final_input_features = np.prod(hidden_features[:-1])
-        final_conv = _make_conv(final_input_features, hidden_features[-1], mode)
+        self.final_conv = _make_conv(final_input_features, hidden_features[-1], mode)
 
         if mode == "scalar":
             self.embedding = nn.Linear(hidden_features[-1], self.num_features, bias=False)
