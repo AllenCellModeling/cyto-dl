@@ -6,17 +6,18 @@
   LICENSE: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_AnTao
 """
 
+import nnumpy as np
 import torch
-from monai.networks.layers.simplelayers import Flatten
 from torch import nn
 from torch.nn import functional as F
 
-from .graph_functions import get_graph_feature
+from .graph_functions import get_graph_features
+from .vnn import VNLinear, VNLinearLeakyReLU, VNRotationMatrix
 
 
 def _make_conv(in_features, out_features, mode="scalar"):
     if mode == "vector":
-        pass
+        VNLinearLeakyReLU(in_features, out_features, use_batchnorm=True)
 
     return nn.Sequential(
         nn.Conv2d(in_features * 2, out_features, kernel_size=1, bias=False),
@@ -26,61 +27,67 @@ def _make_conv(in_features, out_features, mode="scalar"):
 
 
 class DGCNN(nn.Module):
-    def __init__(self, num_features, hidden_features=[64, 128, 256, 512], k=20, mode="scalar"):
+    def __init__(
+        self,
+        num_features,
+        hidden_features=[64, 128, 256, 512],
+        k=20,
+        mode="scalar",
+        include_cross=True,
+        include_coords=True,
+        get_rotation=False,
+    ):
         super().__init__()
         self.mode = mode
         self.k = k
         self.num_features = num_features
+        self.include_coords = include_coords
+        self.inclue_cross = include_cross
 
-        _features = [3] + hidden_features
+        _features = [3] + hidden_features[:-1]
 
         convs = [
             _make_conv(in_features, out_features, mode)
             for in_features, out_features in zip(_features[:-1], _features[1:])
         ]
+        convs = nn.ModuleList(convs)
 
-        self.clustering = None
-        self.lin_features_len = 512
-        if (self.num_features < self.lin_features_len) or (
-            self.num_features > self.lin_features_len
-        ):
-            self.flatten = Flatten()
-            self.embedding = nn.Linear(self.lin_features_len, self.num_features, bias=False)
+        final_input_features = np.prod(hidden_features[:-1])
+        final_conv = _make_conv(final_input_features, hidden_features[-1], mode)
 
-    def forward(self, x):
-        # print(x.shape)
-        # print(x)
+        if mode == "scalar":
+            self.embedding = nn.Linear(hidden_features[-1], self.num_features, bias=False)
+        else:
+            self.embedding = VNLinear(hidden_features[-1], self.num_features)
+
+        if mode == "vector" or get_rotation:
+            self.rotation = VNRotationMatrix(hidden_features[-1])
+
+    def get_graph_features(self, x):
+        return get_graph_features(
+            x,
+            k=self.k,
+            mode=self.mode,
+            include_cross=self.include_cross,
+            include_coords=self.include_coords,
+        )
+
+    def forward(self, x, get_rotation=False):
         x = x.transpose(2, 1)
 
         batch_size = x.size(0)
-        x = get_graph_feature(x, k=self.k)
-        x = self.conv1(x)
-        x1 = x.max(dim=-1, keepdim=False)[0]
 
-        x = get_graph_feature(x1, k=self.k)
-        x = self.conv2(x)
-        x2 = x.max(dim=-1, keepdim=False)[0]
+        intermediate_outs = []
+        for conv in self.convs[:-1]:
+            x = self.get_graph_feature(x)
+            x = conv(x)
+            intermediate_outs.append(x.mean(dim=-1, keepdim=False))
 
-        x = get_graph_feature(x2, k=self.k)
-        x = self.conv3(x)
-        x3 = x.max(dim=-1, keepdim=False)[0]
+        x = torch.cat(intermediate_outs, dim=1)
+        x = self.final_conv(x)
+        x = x.mean(dim=-1, keepdim=False)
 
-        x = get_graph_feature(x3, k=self.k)
-        x = self.conv4(x)
-        x4 = x.max(dim=-1, keepdim=False)[0]
+        if get_rotation:
+            return self.embedding(x), self.rotation(x)
 
-        x = torch.cat((x1, x2, x3, x4), dim=1)
-
-        x0 = self.conv5(x)
-        x = x0.max(dim=-1, keepdim=False)[0]
-        feat = x.unsqueeze(1)
-
-        if (self.num_features < self.lin_features_len) or (
-            self.num_features > self.lin_features_len
-        ):
-            x = self.flatten(feat)
-            features = self.embedding(x)
-        else:
-            features = torch.reshape(torch.squeeze(feat), (batch_size, 512))
-
-        return features
+        return self.embedding(x)
