@@ -4,6 +4,7 @@ fastremap==1.13.4
 imagecodecs==2023.1.23
 imageio==2.26.0
 joblib==1.2.0
+lazy-loader==0.1
 llvmlite==0.39.1
 mahotas==1.4.13
 mako==1.2.4
@@ -25,12 +26,12 @@ pbr==5.11.1
 pillow==9.4.0
 pytorch-ranger==0.1.1
 PyWavelets==1.4.1
-scikit-image==0.19.3
+scikit-image==0.20.0
 scikit-learn==1.2.1
-scipy==1.10.1
+scipy==1.9.1
 setuptools==67.4.0
 threadpoolctl==3.1.0
-tifffile==2023.2.27
+tifffile==2023.2.28
 torch==1.13.1
 torch-optimizer==0.3.0
 tqdm==4.64.1

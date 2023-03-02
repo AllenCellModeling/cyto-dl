@@ -55,7 +55,7 @@ spharm = [
     "aicsshparam>=0.1.1"
 ]
 omnipose = [
-    "scipy>=1.10.1",
+    "scipy<1.9.2,>=1.8",
     "scikit-image>=0.19.3",
     "edt>=0.56.4",
     "numba>=0.56.4",
