@@ -19,24 +19,33 @@ def knn(x, k):
 
     idx = pairwise_distance.topk(k=k, dim=-1)[1]
 
-    if idx.get_device() == -1:
-        idx_base = torch.arange(0, batch_size).view(-1, 1, 1) * num_points
-    else:
-        idx_base = torch.arange(0, batch_size, device=idx.get_device()).view(-1, 1, 1) * num_points
+    idx_base = torch.arange(0, batch_size).view(-1, 1, 1) * num_points
+    if idx_base.device != idx.device:
+        idx_base = idx.to(idx.device)
+
     idx = idx + idx_base
     idx = idx.view(-1)
 
     return idx
 
 
-def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, include_coords=True):
-    batch_size = x.size(0)
-    num_points = x.size(3)
+def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, include_input=True):
+    batch_size = x.shape[0]
+    num_points = x.shape[-1]
+
+    assert len(x.shape) in (3, 4)
+    if len(x.shape) == 4:
+        assert mode == "vector"
+
+    if mode == "vector":
+        if len(x.size()) == 3:
+            x = x.unsqueeze(1)  # [B, 1, 3, num_points]
+
     x = x.view(batch_size, -1, num_points)
     if idx is None:
         idx = knn(x, k=k)
 
-    _, num_dims, _ = x.size()
+    num_dims = x.size(1)
 
     if mode == "vector":
         num_dims = num_dims // 3
@@ -64,7 +73,7 @@ def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, inc
     else:
         feature = feature - x
 
-    if include_coords:
+    if include_input:
         feature = torch.cat((feature, x), dim=3)
 
     return feature.permute(*permute_dims).contiguous()
