@@ -18,18 +18,20 @@ from aics_im2im.dataframe import read_dataframe
 
 
 # make a sampler for each type of image in given image col in manifest
-class AlternatingSampler(Sampler):
-    def __init__(self, data_source):
-        super().__init__(data_source)
-        self.data_source = data_source
+class HeadSampler:
+    def __init__(self, indices):
+        self.indices = indices
 
-    def __iter__():
-        return iter(range(len(self.data_source)))
+    def __len__(self):
+        return len(self.indices)
+
+    def __iter__(self):
+        return iter(self.indices)
 
 
 # randomly switch between generating batches from each sampler
 class AlternatingBatchSampler(BatchSampler):
-    def __init__(self, samplers, batch_size, drop_last):
+    def __init__(self, samplers, batch_size, drop_last=False):
         super().__init__(samplers[0], batch_size, drop_last)
         self.samplers = samplers
         self.batch_size = batch_size
@@ -64,7 +66,7 @@ class AlternatingBatchSampler(BatchSampler):
         # We cannot enforce this condition, so we turn off typechecking for the
         # implementation below.
         # Somewhat related: see NOTE [ Lack of Default `__len__` in Python Abstract Base Classes ]
-        sampler_len = np.min(len(sampler) for sampler in self.samplers)
+        sampler_len = np.min([len(sampler) for sampler in self.samplers])
         if self.drop_last:
             return sampler_len // self.batch_size  # type: ignore[arg-type]
         else:
