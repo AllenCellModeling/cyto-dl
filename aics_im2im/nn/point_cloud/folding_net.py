@@ -1,3 +1,8 @@
+"""
+Adapted from: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/decoders.py
+License: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_TearingNet
+"""
+
 import numpy as np
 import torch
 from torch import nn

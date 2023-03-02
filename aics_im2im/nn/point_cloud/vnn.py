@@ -1,3 +1,11 @@
+"""Adapted from:
+
+- https://github.com/FlyingGiraffe/vnn-neural-implicits/blob/master/im2mesh/layers_equi.py
+- https://github.com/FlyingGiraffe/vnn-neural-implicits/blob/master/im2mesh/encoder/vnn2.py
+
+License: https://github.com/FlyingGiraffe/vnn-neural-implicits/blob/master/LICENSE
+"""
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -38,7 +46,7 @@ class VNBatchNorm(nn.Module):
 
 
 class VNLeakyReLU(nn.Module):
-    def __init__(self, in_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-3):
+    def __init__(self, in_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6):
         super().__init__()
         if share_nonlinearity:
             self.map_to_dir = VNLinear(in_channels, 1)
@@ -72,7 +80,7 @@ class VNLinearLeakyReLU(nn.Module):
         share_nonlinearity=False,
         use_batchnorm=True,
         negative_slope=0.2,
-        eps=1e-3,
+        eps=1e-6,
     ):
         super().__init__()
         self.eps = eps
@@ -111,16 +119,13 @@ class VNRotationMatrix(nn.Module):
         self,
         in_channels,
         dim=4,
-        normalize_frame=False,
         share_nonlinearity=False,
         use_batchnorm=True,
-        eps=1e-3,
+        eps=1e-6,
     ):
         super().__init__()
         self.eps = eps
         self.dim = dim
-        self.normalize_frame = normalize_frame
-        self.share_nonlinearity = share_nonlinearity
         self.use_batchnorm = use_batchnorm
 
         self.vn1 = VNLinearLeakyReLU(
@@ -139,10 +144,7 @@ class VNRotationMatrix(nn.Module):
             use_batchnorm=use_batchnorm,
             eps=eps,
         )
-        if normalize_frame:
-            self.vn_lin = VNLinear(in_channels // 4, 2)
-        else:
-            self.vn_lin = VNLinear(in_channels // 4, 3)
+        self.vn_lin = VNLinear(in_channels // 4, 2)
 
     def forward(self, x):
         """
@@ -152,7 +154,7 @@ class VNRotationMatrix(nn.Module):
         z = self.vn2(z)
         z = self.vn_lin(z)
 
-        # make z0 orthogonal. u2 = v2 - proj_u1(v2)
+        # produce two orthogonal vectors
         v1 = z[:, 0, :]
 
         v1_norm = torch.norm(v1, dim=1, keepdim=True)
@@ -168,6 +170,4 @@ class VNRotationMatrix(nn.Module):
         u3 = torch.cross(u1, u2)
         rot = torch.stack([u1, u2, u3], dim=1).transpose(1, 2)
 
-        x_std = torch.einsum("bij,bjk->bik", x, rot)
-
-        return x_std, rot
+        return rot

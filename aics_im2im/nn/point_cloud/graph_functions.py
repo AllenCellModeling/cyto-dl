@@ -29,7 +29,7 @@ def knn(x, k):
     return idx
 
 
-def get_graph_features(x, k=20, idx=None, vectors=False, cross=True):
+def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, include_coords=True):
     batch_size = x.size(0)
     num_points = x.size(3)
     x = x.view(batch_size, -1, num_points)
@@ -38,13 +38,13 @@ def get_graph_features(x, k=20, idx=None, vectors=False, cross=True):
 
     _, num_dims, _ = x.size()
 
-    if vectors:
+    if mode == "vector":
         num_dims = num_dims // 3
 
     x = x.transpose(2, 1).contiguous()
     feature = x.view(batch_size * num_points, -1)[idx, :]
 
-    if vectors:
+    if mode == "vector":
         feature_view_dims = (batch_size, num_points, k, num_dims, 3)
         x_view_dims = (batch_size, num_points, 1, num_dims, 3)
         repeat_dims = (1, 1, k, 1, 1)
@@ -58,10 +58,13 @@ def get_graph_features(x, k=20, idx=None, vectors=False, cross=True):
     feature = feature.view(*feature_view_dims)
     x = x.view(*x_view_dims).repeat(*repeat_dims)
 
-    if vectors and cross:
+    if mode == "vector" and include_cross:
         cross = torch.cross(feature, x, dim=-1)
-        feature = torch.cat((feature - x, x, cross), dim=3)
+        feature = torch.cat((feature - x, cross), dim=3)
     else:
-        feature = torch.cat((feature - x, x), dim=3)
+        feature = feature - x
+
+    if include_coords:
+        feature = torch.cat((feature, x), dim=3)
 
     return feature.permute(*permute_dims).contiguous()
