@@ -14,13 +14,25 @@ from torch.nn import functional as F
 class VNLinear(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
-        self.linear = nn.Linear(in_channels, out_channels, bias=False)
+        linear = nn.Linear(in_channels, out_channels, bias=False)
+        self.weight = nn.Parameter(linear.weight.data)
+        self.in_channels = in_channels
+        self.out_channels = out_channels
 
     def forward(self, x):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
-        return self.linear(x.transpose(1, -1)).transpose(1, -1)
+        orig_shape = x.shape
+        stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
+
+        out = F.conv2d(
+            stacked,
+            torch.kron(self.weight, torch.eye(3)).unsqueeze(-1).unsqueeze(-1),
+            bias=None,
+        )
+
+        return out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
 
 
 class VNBatchNorm(nn.Module):
