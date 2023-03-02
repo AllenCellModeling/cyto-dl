@@ -54,7 +54,9 @@ class BaseAuxHead(ABC, torch.nn.Module):
     def _inference_forward(self, x):
         # flag for whether to do sliding window
         with torch.no_grad():
-            outs = sliding_window_inference(inputs=x, predictor=self._train_forward, **self.inference_args)
+            outs = sliding_window_inference(
+                inputs=x, predictor=self._train_forward, **self.inference_args
+            )
         return outs
 
     def forward(self, x, stage):
@@ -130,17 +132,17 @@ class AuxHead(BaseAuxHead):
         super().__init__(loss, postprocess, model_args, calculate_metric, inference_args)
 
     def _init_model(self, model_args):
-        resolution = model_args.get('resolution', 'lr')
+        resolution = model_args.get("resolution", "lr")
         self.resolution = resolution
-        spatial_dims = model_args.get('spatial_dims', 3)
-        n_convs = model_args.get('n_convs', 1)
-        dropout=model_args.get('dropout', 0.0)
-        out_channels = model_args['out_channels']
-        final_act = model_args['final_act']
-        in_channels = model_args['in_channels']
+        spatial_dims = model_args.get("spatial_dims", 3)
+        n_convs = model_args.get("n_convs", 1)
+        dropout = model_args.get("dropout", 0.0)
+        out_channels = model_args["out_channels"]
+        final_act = model_args["final_act"]
+        in_channels = model_args["in_channels"]
 
         conv_input_channels = in_channels
-        modules = [model_args.get('first_layer', torch.nn.Identity())]
+        modules = [model_args.get("first_layer", torch.nn.Identity())]
         if resolution == "hr":
             conv_input_channels //= 2**spatial_dims
             self.upsample = SubpixelUpsample(
@@ -174,7 +176,7 @@ class AuxHead(BaseAuxHead):
             )
         )
         return torch.nn.Sequential(*modules)
-    
+
     def _train_forward(self, x):
         if self.resolution == "hr":
             x = self.upsample(x)

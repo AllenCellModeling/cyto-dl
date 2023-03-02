@@ -77,6 +77,9 @@ class DataframeDatamodule(pl.LightningDataModule):
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
 
+        head_allocation_columm: Optional[str]=None
+            Column name that dictates which head a row should be passed to
+
         dataloader_kwargs:
             Additional keyword arguments are passed to the
             torch.utils.data.DataLoader class when instantiating it (aside from
