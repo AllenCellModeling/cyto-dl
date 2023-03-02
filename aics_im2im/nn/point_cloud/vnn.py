@@ -109,7 +109,7 @@ class VNLinearLeakyReLU(nn.Module):
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
 
-        self.leaky_relu(in_channels, share_nonlinearity, negative_slope, eps)
+        self.leaky_relu = VNLeakyReLU(in_channels, share_nonlinearity, negative_slope, eps)
 
     def forward(self, x):
         """
