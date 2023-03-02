@@ -34,8 +34,10 @@ class PointCloudVAE(BaseVAE):
         beta: float = 1.0,
         embedding_prior: str = "identity",
         eps: float = 1e-6,
+        _transpose_rotation: bool = False,
     ):
         self.equivariant = equivariant
+        self._transpose_rotation = _transpose_rotation
 
         if embedding_prior == "gaussian":
             self.encoder_out_size = 2 * latent_dim
@@ -94,6 +96,9 @@ class PointCloudVAE(BaseVAE):
 
         if self.equivariant:
             rotation = z_parts["rotation"]
+            if self._transpose_rotation:
+                rotation = rotation.mT
+
             xhat = torch.einsum("bij,bjk->bik", base_xhat, rotation)
         else:
             xhat = base_xhat
