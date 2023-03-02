@@ -4,20 +4,19 @@ from typing import Iterator, List
 
 import numpy as np
 
-# try:
-#     import modin.pandas as pd
-# except ModuleNotFoundError:
-import pandas as pd
+try:
+    import modin.pandas as pd
+except ModuleNotFoundError:
+    import pandas as pd
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import DictConfig, ListConfig
-from torch.utils.data import BatchSampler, Sampler
+from torch.utils.data import BatchSampler
 from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
 
 
-# make a sampler for each type of image in given image col in manifest
 class HeadSampler:
     def __init__(self, indices):
         self.indices = indices
