@@ -1,7 +1,11 @@
 import math
+from abc import ABC
+from pathlib import Path
 
 import numpy as np
 import torch
+from aicsimageio.writers import OmeTiffWriter
+from monai.inferers import sliding_window_inference
 from monai.networks.blocks import (
     Convolution,
     SubpixelUpsample,
@@ -10,22 +14,78 @@ from monai.networks.blocks import (
 )
 
 
-class IdentityAuxHead(torch.nn.Module):
-    def __init__(self):
+class BaseAuxHead(ABC, torch.nn.Module):
+    def __init__(
+        self, loss, postprocess, model_args=None, calculate_metric=False, inference_args={}
+    ):
         super().__init__()
+        self.loss = loss
+        self.postprocess = postprocess
+        self.calculate_metric = calculate_metric
+        self.model = self._init_model(model_args)
+        self.inference_params = inference_args
 
-    def forward(self, x, hr_skip):
-        return x
+    def update_params(self, params):
+        for k, v in params.items():
+            setattr(self, k, v)
 
+    def _init_model(self, model_args):
+        return torch.nn.Sequential(torch.nn.Identity())
 
-class PoolProjectionLayer(torch.nn.Module):
-    def __init__(self, dim, pool_size):
-        super().__init__()
-        self.dim = dim
-        self.projection = torch.nn.MaxPool3d(kernel_size=[pool_size, 1, 1])
+    def _calculate_loss(self, y_hat, y):
+        return self.loss(y_hat, y)
 
-    def __call__(self, x):
-        return self.projection(x).squeeze(self.dim)
+    def _postprocess(self, img, img_type):
+        return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
+
+    def _save(self, fn, img, stage):
+        OmeTiffWriter().save(
+            uri=Path(self.save_dir) / f"{stage}_images" / fn,
+            data=img.squeeze().astype(float),
+            dims_order="STCZYX"[-len(img.shape)],
+        )
+
+    def _calculate_metric(self, y_hat, y):
+        raise NotImplementedError
+
+    def _train_forward(self, x):
+        return self.model(x)
+
+    def _inference_forward(self, x):
+        # flag for whether to do sliding window
+        with torch.no_grad():
+            outs = sliding_window_inference(inputs=x, predictor=self.model, **self.inference_args)
+        return outs
+
+    def forward(self, x, stage):
+        if stage in ("train", "val"):
+            return self._train_forward(x)
+        return self._inference_forward(x)
+
+    def run_head(self, backbone_features, batch, stage, save_image, global_step):
+        y_hat = self.forward(backbone_features, stage)
+        y = batch[self.head_name]
+        if stage != "predict":
+            loss = self._calculate_loss(y_hat, y)
+        if save_image:
+            y_hat_out = self._postprocess(y_hat, img_type="predict")
+            if stage in ("train", "val"):
+                y_out = self._postprocess(y, img_type="input")
+
+            save_name = (
+                [f"{global_step}_{self.head_name}.tif"]
+                if stage in ("train", "val")
+                else batch.get(f"{self.x_key}_meta_dict")
+            )
+            n_save = len(y_hat_out) if stage in ("test", "predict") else 1
+            for i in range(n_save):
+                self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+                if stage in ("train", "val"):
+                    self._save(save_name[i], y_out[i], stage)
+        metric = None
+        if self.calculate_metric and stage in ("val", "test"):
+            metric = self._calculate_metric(y_hat, y)
+        return {"loss": loss, "metric": metric}
 
 
 class ConvProjectionLayer(torch.nn.Module):
