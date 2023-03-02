@@ -42,7 +42,7 @@ class DGCNN(nn.Module):
         self.k = k
         self.num_features = num_features
         self.include_coords = include_coords
-        self.inclue_cross = include_cross
+        self.include_cross = include_cross
 
         _features = [3] + hidden_features[:-1]
 
