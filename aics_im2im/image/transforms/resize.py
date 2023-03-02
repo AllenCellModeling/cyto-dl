@@ -49,27 +49,23 @@ class Resized(Transform):
         self.antialias = antialias
 
     def __call__(self, img):
-        resized = {}
-        for key in img.keys():
-            if key in self.keys:
-                out_size = list(
-                    map(
-                        round,
-                        np.asarray(img[key].shape[-self.spatial_dims :]) * self.scale_factor,
-                    )
+        for key in self.keys:
+            out_size = list(
+                map(
+                    round,
+                    np.asarray(img[key].shape[-self.spatial_dims :]) * self.scale_factor,
                 )
-                raw_img = img[key]
-                if len(raw_img.shape) != self.spatial_dims + 1:
-                    raise ValueError("Images must have CZYX or CYX dimensions")
-                raw_img = raw_img.as_tensor() if isinstance(raw_img, MetaTensor) else raw_img
+            )
+            raw_img = img[key]
+            if len(raw_img.shape) != self.spatial_dims + 1:
+                raise ValueError("Images must have CZYX or CYX dimensions")
+            raw_img = raw_img.as_tensor() if isinstance(raw_img, MetaTensor) else raw_img
 
-                resized[key] = torch.nn.functional.interpolate(
-                    input=raw_img.unsqueeze(0),
-                    size=out_size,
-                    mode=self.mode,
-                    align_corners=self.align_corners,
-                    antialias=self.antialias,
-                ).squeeze(0)
-            else:
-                resized[key] = img[key]
-        return resized
+            img[key] = torch.nn.functional.interpolate(
+                input=raw_img.unsqueeze(0),
+                size=out_size,
+                mode=self.mode,
+                align_corners=self.align_corners,
+                antialias=self.antialias,
+            ).squeeze(0)
+        return img
