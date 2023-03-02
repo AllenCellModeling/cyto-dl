@@ -54,7 +54,7 @@ class BaseAuxHead(ABC, torch.nn.Module):
     def _inference_forward(self, x):
         # flag for whether to do sliding window
         with torch.no_grad():
-            outs = sliding_window_inference(inputs=x, predictor=self.model, **self.inference_args)
+            outs = sliding_window_inference(inputs=x, predictor=self._train_forward, **self.inference_args)
         return outs
 
     def forward(self, x, stage):
@@ -123,23 +123,24 @@ class ConvProjectionLayer(torch.nn.Module):
         return self.model(x).squeeze(self.dim)
 
 
-class AuxHead(torch.nn.Module):
+class AuxHead(BaseAuxHead):
     def __init__(
-        self,
-        resolution,
-        in_channels,
-        out_channels,
-        final_act,
-        n_convs=1,
-        dropout=0.1,
-        hr_skip_channels=0,
-        spatial_dims=3,
-        first_layer=torch.nn.Identity(),
+        self, loss, postprocess, model_args=None, calculate_metric=False, inference_args={}
     ):
-        super().__init__()
+        super().__init__(loss, postprocess, model_args, calculate_metric, inference_args)
+
+    def _init_model(self, model_args):
+        resolution = model_args.get('resolution', 'lr')
         self.resolution = resolution
+        spatial_dims = model_args.get('spatial_dims', 3)
+        n_convs = model_args.get('n_convs', 1)
+        dropout=model_args.get('dropout', 0.0)
+        out_channels = model_args['out_channels']
+        final_act = model_args['final_act']
+        in_channels = model_args['in_channels']
+
         conv_input_channels = in_channels
-        modules = [first_layer]
+        modules = [model_args.get('first_layer', torch.nn.Identity())]
         if resolution == "hr":
             conv_input_channels //= 2**spatial_dims
             self.upsample = SubpixelUpsample(
@@ -150,10 +151,6 @@ class AuxHead(torch.nn.Module):
 
         for i in range(n_convs):
             in_channels = conv_input_channels
-            # first hr block
-            if i == 0 and resolution == "hr":
-                in_channels += hr_skip_channels
-
             modules.append(
                 UnetResBlock(
                     spatial_dims=spatial_dims,
@@ -176,10 +173,9 @@ class AuxHead(torch.nn.Module):
                 final_act,
             )
         )
-        self.aux_head = torch.nn.Sequential(*modules)
-
-    def forward(self, x, hr_skip):
+        return torch.nn.Sequential(*modules)
+    
+    def _train_forward(self, x):
         if self.resolution == "hr":
-            x_hr = self.upsample(x)
-            x = torch.cat((x_hr, hr_skip), dim=1)
-        return self.aux_head(x)
+            x = self.upsample(x)
+        return self.model(x)
