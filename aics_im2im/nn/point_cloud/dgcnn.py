@@ -87,7 +87,11 @@ class DGCNN(nn.Module):
         x = self.final_conv(x)
         x = x.mean(dim=-1, keepdim=False)
 
-        if get_rotation:
-            return self.embedding(x), self.rotation(x)
+        embedding = self.embedding(x)
+        if self.mode == "vector":
+            embedding = embedding.norm(dim=1)
 
-        return self.embedding(x)
+        if get_rotation:
+            return embedding, self.rotation(x)
+
+        return embedding
