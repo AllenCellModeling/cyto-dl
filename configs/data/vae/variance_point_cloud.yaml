@@ -6,14 +6,16 @@ split_column: split
 
 batch_size: 64
 num_workers:
-multiprocessing_context: spawn
 persistent_workers: true
+# we're not using fsspec for now so this isn't necessary
+# multiprocessing_context: spawn
 
 transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols
     groups:
-      pcloud: registered_path
+      pcloud: the_col_with_the_path
       cell_id: CellId
+
   - _target_: aics_im2im.point_cloud.io.ReadPointCloud
-    keys: [pcloud]
+    keys: pcloud
     remote: false
