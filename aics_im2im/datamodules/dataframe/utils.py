@@ -1,19 +1,74 @@
 import re
 from itertools import chain
+from typing import Iterator, List
 
 import numpy as np
-from upath import UPath as Path
 
-try:
-    import modin.pandas as pd
-except ModuleNotFoundError:
-    import pandas as pd
-
+# try:
+#     import modin.pandas as pd
+# except ModuleNotFoundError:
+import pandas as pd
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import DictConfig, ListConfig
+from torch.utils.data import BatchSampler, Sampler
+from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
+
+
+# make a sampler for each type of image in given image col in manifest
+class AlternatingSampler(Sampler):
+    def __init__(self, data_source):
+        super().__init__(data_source)
+        self.data_source = data_source
+
+    def __iter__():
+        return iter(range(len(self.data_source)))
+
+
+# randomly switch between generating batches from each sampler
+class AlternatingBatchSampler(BatchSampler):
+    def __init__(self, samplers, batch_size, drop_last):
+        super().__init__(samplers[0], batch_size, drop_last)
+        self.samplers = samplers
+        self.batch_size = batch_size
+        self.drop_last = drop_last
+
+    def __iter__(self) -> Iterator[List[int]]:
+        sampler = np.random.choice(self.samplers)
+        # Implemented based on the benchmarking in https://github.com/pytorch/pytorch/pull/76951
+        if self.drop_last:
+            sampler_iter = iter(sampler)
+            while True:
+                try:
+                    batch = [next(sampler_iter) for _ in range(self.batch_size)]
+                    yield batch
+                except StopIteration:
+                    break
+        else:
+            batch = [0] * self.batch_size
+            idx_in_batch = 0
+            for idx in sampler:
+                batch[idx_in_batch] = idx
+                idx_in_batch += 1
+                if idx_in_batch == self.batch_size:
+                    yield batch
+                    idx_in_batch = 0
+                    batch = [0] * self.batch_size
+            if idx_in_batch > 0:
+                yield batch[:idx_in_batch]
+
+    def __len__(self) -> int:
+        # Can only be called if self.sampler has __len__ implemented
+        # We cannot enforce this condition, so we turn off typechecking for the
+        # implementation below.
+        # Somewhat related: see NOTE [ Lack of Default `__len__` in Python Abstract Base Classes ]
+        sampler_len = np.min(len(sampler) for sampler in self.samplers)
+        if self.drop_last:
+            return sampler_len // self.batch_size  # type: ignore[arg-type]
+        else:
+            return (sampler_len + self.batch_size - 1) // self.batch_size  # type: ignore[arg-type]
 
 
 def get_canonical_split_name(split):
