@@ -1,6 +1,7 @@
 import os
 import uuid
 from tempfile import TemporaryDirectory
+from typing import Sequence, Union
 
 from monai.transforms import MapTransform
 from pyntcloud import PyntCloud
@@ -8,18 +9,18 @@ from upath import UPath as Path
 
 
 class ReadPointCloud(MapTransform):
-    def __init__(self, *keys, remote: bool = False):
+    def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False):
         """
         Parameters
         ----------
-        *keys:
-            List of keys of the input dictionary to interpret as paths
+        keys: Union[str, Sequence[str]]
+            Key (or list thereof) of the input dictionary to interpret as paths
             to point cloud files which should be loaded
         remote: bool = False
             Whether files can be in a fsspec-interpretable remote location
         """
         super().__init__()
-        self.keys = keys
+        self.keys = [keys] if isinstance(keys, str) else keys
         self.remote = remote
 
     def __call__(self, row):
