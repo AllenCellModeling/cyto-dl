@@ -71,7 +71,7 @@ s3 = [
     "s3fs>=2023.1.0"
 ]
 all = [
-  "aics-im2im[equiv,spharm,omnipose,s3]"
+  "aics-im2im[equiv,spharm,omnipose,s3,point-cloud]"
 ]
 test = [
     "pyrootutils>=1.0.4",
@@ -79,6 +79,9 @@ test = [
     "sh>=1.14.3",
     "pytest-cov[toml]>=4.0.0",
     "aics-im2im[all]"
+]
+point-cloud = [
+    "pyntcloud>=0.3.1",
 ]
 
 [project.urls]

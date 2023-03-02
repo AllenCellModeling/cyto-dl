@@ -28,7 +28,7 @@ colorlog==6.7.0
 contourpy==1.0.7
 coverage==7.2.1
 cycler==0.11.0
-dask==2023.2.1
+dask==2023.3.0
 databricks-cli==0.17.4
 dnspython==2.3.0
 docker==6.0.1
@@ -120,6 +120,7 @@ pyerfa==2.0.0.1
 pygments==2.14.0
 pyjwt==2.6.0
 pymanopt==2.1.1
+pyntcloud==0.3.1
 pyparsing==3.0.9
 pyperclip==1.8.2
 pyrootutils==1.0.4
