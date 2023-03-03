@@ -32,7 +32,6 @@ def knn(x, k):
 def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, include_input=True):
     batch_size = x.shape[0]
     num_points = x.shape[-1]
-
     assert len(x.shape) in (3, 4)
     if len(x.shape) == 4:
         assert mode == "vector"
