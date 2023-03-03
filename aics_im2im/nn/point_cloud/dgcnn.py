@@ -138,7 +138,7 @@ class DGCNN(nn.Module):
 
         embedding = self.embedding(x)
         if self.mode == "vector":
-            embedding = embedding.norm(dim=1)
+            embedding = embedding.norm(dim=2)
 
         if get_rotation:
             return embedding, self.rotation(x)

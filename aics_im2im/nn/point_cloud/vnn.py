@@ -27,6 +27,7 @@ class VNLinear(nn.Module):
         n_squeeze = 0
         if len(x.shape) == 3:
             x = x.unsqueeze(-1).unsqueeze(-1)
+            n_squeeze = 2
         elif len(x.shape) == 4:
             x = x.unsqueeze(-1)
             n_squeeze = 1
