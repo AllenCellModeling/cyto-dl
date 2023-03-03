@@ -21,13 +21,13 @@ log = utils.get_pylogger(__name__)
 
 def _make_conv(in_features, out_features, mode="scalar", double_input=True, final=False):
     if double_input:
-        in_features = in_features*2
+        in_features = in_features * 2
 
     if mode == "vector":
         return VNLinearLeakyReLU(in_features, out_features, use_batchnorm=True)
 
-    conv = nn.Conv2d
-    batch_norm = nn.BatchNorm2d
+    conv = nn.Conv1d if final else nn.Conv2d
+    batch_norm = nn.BatchNorm1d if final else nn.BatchNorm2d
 
     return nn.Sequential(
         conv(in_features, out_features, kernel_size=1, bias=False),
@@ -63,7 +63,7 @@ class DGCNN(nn.Module):
                 log.warn("Overriding `mode` to `vector` because symmetry breaking is on.")
                 mode = "vector"
         else:
-            _features = [1 if mode == 'vector' else 3] + hidden_features[:-1]
+            _features = [1 if mode == "vector" else 3] + hidden_features[:-1]
 
         self.mode = mode
         convs = [_make_conv(_features[0], _features[1], mode, double_input=include_coords)]
@@ -76,8 +76,7 @@ class DGCNN(nn.Module):
 
         final_input_features = sum(hidden_features[:-1])
         self.final_conv = _make_conv(
-            final_input_features, hidden_features[-1], mode, 
-            double_input=False, final=True
+            final_input_features, hidden_features[-1], mode, double_input=False, final=True
         )
 
         if mode == "scalar":
@@ -132,13 +131,9 @@ class DGCNN(nn.Module):
             intermediate_outs.append(x)
 
         x = torch.cat(intermediate_outs, dim=1)
-        x = self.final_conv(x.unsqueeze(dim=-1)).squeeze(dim=-1)
+        x = self.final_conv(x)
         x = x.mean(dim=-1, keepdim=False)
 
-        if self.mode == 'vector':
-            x = x.unsqueeze(dim=-1).unsqueeze(dim=-1)
-        import ipdb
-        ipdb.set_trace()
         embedding = self.embedding(x)
         if self.mode == "vector":
             embedding = embedding.norm(dim=1)

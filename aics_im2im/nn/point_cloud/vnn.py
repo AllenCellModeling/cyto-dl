@@ -23,6 +23,14 @@ class VNLinear(nn.Module):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
+
+        n_squeeze = 0
+        if len(x.shape) == 3:
+            x = x.unsqueeze(-1).unsqueeze(-1)
+        elif len(x.shape) == 4:
+            x = x.unsqueeze(-1)
+            n_squeeze = 1
+
         orig_shape = x.shape
         stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
         out = F.conv2d(
@@ -31,7 +39,12 @@ class VNLinear(nn.Module):
             bias=None,
         )
 
-        return out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
+        out = out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
+
+        for _ in range(n_squeeze):
+            out = out.squeeze(-1)
+
+        return out
 
 
 class VNBatchNorm(nn.Module):
@@ -57,7 +70,9 @@ class VNBatchNorm(nn.Module):
 
 
 class VNLeakyReLU(nn.Module):
-    def __init__(self, in_channels, out_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6):
+    def __init__(
+        self, in_channels, out_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6
+    ):
         super().__init__()
         if share_nonlinearity:
             self.map_to_dir = VNLinear(in_channels, 1)
@@ -110,15 +125,15 @@ class VNLinearLeakyReLU(nn.Module):
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
 
-        self.leaky_relu = VNLeakyReLU(in_channels, out_channels, share_nonlinearity, negative_slope, eps)
+        self.leaky_relu = VNLeakyReLU(
+            in_channels, out_channels, share_nonlinearity, negative_slope, eps
+        )
 
     def forward(self, x):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
         # Conv
-        import ipdb
-        ipdb.set_trace()
         p = self.map_to_feat(x)
 
         # InstanceNorm
@@ -140,7 +155,6 @@ class VNRotationMatrix(nn.Module):
     ):
         super().__init__()
         self.eps = eps
-        self.dim = dim
         self.use_batchnorm = use_batchnorm
 
         self.vn1 = VNLinearLeakyReLU(
@@ -165,8 +179,6 @@ class VNRotationMatrix(nn.Module):
         """
         x: point features of shape [B, N_feat, 3]
         """
-        import ipdb
-        ipdb.set_trace()
         z = self.vn1(x)
         z = self.vn2(z)
         z = self.vn_lin(z)
