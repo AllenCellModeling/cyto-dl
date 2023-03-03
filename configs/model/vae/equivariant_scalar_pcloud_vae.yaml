@@ -1,20 +1,20 @@
-_target_: aics_ls.models.vae.PointCloudVAE
+_target_: aics_im2im.models.vae.PointCloudVAE
 
 x_label: pcloud
 id_label: cell_id
 
-latent_dim:
-num_points:
+latent_dim: 128
+num_points: 4096
 hidden_encoder_features: [64, 128, 256, 512]
 hidden_decoder_dim: 512
 k: 20
 
 mode: scalar
-equivariant: true
+equivariant: false
 include_cross: false
-include_coords: false
+include_coords: true
 
 beta: 1.0
-embedding_prior: str = "gaussian"
+embedding_prior: "gaussian"
 
 eps: 1e-6
