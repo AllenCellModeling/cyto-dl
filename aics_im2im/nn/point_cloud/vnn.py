@@ -148,7 +148,6 @@ class VNRotationMatrix(nn.Module):
     def __init__(
         self,
         in_channels,
-        dim=5,
         share_nonlinearity=False,
         use_batchnorm=True,
         eps=1e-6,
@@ -160,7 +159,7 @@ class VNRotationMatrix(nn.Module):
         self.vn1 = VNLinearLeakyReLU(
             in_channels,
             in_channels // 2,
-            dim=dim,
+            dim=4,
             share_nonlinearity=share_nonlinearity,
             use_batchnorm=use_batchnorm,
             eps=eps,
@@ -168,7 +167,7 @@ class VNRotationMatrix(nn.Module):
         self.vn2 = VNLinearLeakyReLU(
             in_channels // 2,
             in_channels // 4,
-            dim=dim,
+            dim=4,
             share_nonlinearity=share_nonlinearity,
             use_batchnorm=use_batchnorm,
             eps=eps,
