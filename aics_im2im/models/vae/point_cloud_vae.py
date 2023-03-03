@@ -34,9 +34,11 @@ class PointCloudVAE(BaseVAE):
         beta: float = 1.0,
         embedding_prior: str = "identity",
         eps: float = 1e-6,
+        symmetry_breaking_axis: Optional[Union[str, int]] = None,
         _transpose_rotation: bool = False,
     ):
         self.equivariant = equivariant
+        self.symmetry_breaking_axis = symmetry_breaking_axis
         self._transpose_rotation = _transpose_rotation
 
         if embedding_prior == "gaussian":
@@ -52,6 +54,7 @@ class PointCloudVAE(BaseVAE):
             include_cross=include_cross,
             include_coords=include_coords,
             get_rotation=equivariant,
+            break_symmetry=(symmetry_breaking_axis is not None),
         )
 
         decoder = FoldingNet(num_points, hidden_decoder_dim)
@@ -86,7 +89,14 @@ class PointCloudVAE(BaseVAE):
         x = batch[self.hparams.x_label]
 
         if self.equivariant:
-            embedding, rotation = self.encoder(x)
+            if isinstance(self.symmetry_breaking_axis, int):
+                axis = self.symmetry_breaking_axis
+            elif isinstance(self.symmetry_breaking_axis, str):
+                axis = batch[self.symmetry_breaking_axis]
+            else:
+                axis = None
+
+            embedding, rotation = self.encoder(x, symmetry_breaking_axis=axis)
             return {"embedding": embedding, "rotation": rotation}
 
         return {"embedding": self.encoder(x)}

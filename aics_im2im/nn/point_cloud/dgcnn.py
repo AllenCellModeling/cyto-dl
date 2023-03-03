@@ -40,7 +40,7 @@ class DGCNN(nn.Module):
         include_cross=True,
         include_coords=True,
         get_rotation=False,
-        break_symmetry_axis=None,
+        break_symmetry=False,
     ):
         super().__init__()
         self.k = k
@@ -48,7 +48,7 @@ class DGCNN(nn.Module):
         self.include_coords = include_coords
         self.include_cross = include_cross
 
-        self.break_symmetry_axis = break_symmetry_axis
+        self.break_symmetry = break_symmetry
 
         if self.break_symmetry_axis:
             _features = [6] + hidden_features[:-1]
@@ -88,14 +88,21 @@ class DGCNN(nn.Module):
             include_input=(self.mode == "vector" or self.include_coords or idx > 0),
         )
 
-    def concat_axis(self, x):
-        axis = torch.zeros(3).float()
-        axis[self.break_symmetry_axis] = 1.0
-        axis = axis.view(1, 1, 3, 1, 1)
-        axis = axis.expand(x.shape[0], 1, 3, x.shape[-2], x.shape[-1])
-        return torch.cat((x, axis), dim=1)
+    def concat_axis(self, x, axis):
+        if isinstance(axis, int):
+            # symmetry axis is aligned with one of the X,Y,Z axes
+            _axis = torch.zeros(3).float()
+            _axis[axis] = 1.0
+            _axis = _axis.view(1, 1, 3, 1, 1)
+        else:
+            # per-element symmetry axis (e.g. moving direction)
+            _axis = axis.view(x.shape[0], 1, 3, 1, 1)
 
-    def forward(self, x, get_rotation=False):
+        _axis = _axis.expand(x.shape[0], 1, 3, x.shape[-2], x.shape[-1])
+
+        return torch.cat((x, _axis), dim=1)
+
+    def forward(self, x, get_rotation=False, symmetry_breaking_axis=None):
         # x is [B, N, 3]
         x = x.transpose(2, 1)  # [B, 3, N]
 
@@ -105,8 +112,10 @@ class DGCNN(nn.Module):
         for idx, conv in enumerate(self.convs[:-1]):
             x = self.get_graph_feature(x, idx)
 
-            if idx == 0 and self.break_symmetry_axis is not None:
-                x = self.concat_axis(x)
+            if idx == 0 and symmetry_breaking_axis is not None:
+                if isinstance(symmetry_breaking_axis, int):
+                    x = self.concat_axis(x, symmetry_breaking_axis)
+                assert x.size(1) == 6
 
             x = conv(x)
             intermediate_outs.append(x.mean(dim=-1, keepdim=False))
