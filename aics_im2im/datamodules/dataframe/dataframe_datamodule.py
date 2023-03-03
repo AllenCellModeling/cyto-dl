@@ -8,7 +8,7 @@ from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from upath import UPath as Path
 
 from .utils import (
-    HeadSampler,
+    AlternatingBatchSampler,
     get_canonical_split_name,
     make_multiple_dataframe_splits,
     make_single_dataframe_splits,
@@ -137,12 +137,10 @@ class DataframeDatamodule(pl.LightningDataModule):
 
     def get_dataset(self, split):
         sample_size = self.subsample.get(split, -1)
-
-        if sample_size == -1:
-            return self.datasets[split]
-
+        # always return a subset
         sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
-
+        if sample_size == -1:
+            sample = range(len(self.dataset[split]))
         # this doesn't affect performance because it returns a Subset,
         # which loads from the underlying dataset lazily
         return self.datasets[split][sample]
@@ -150,31 +148,19 @@ class DataframeDatamodule(pl.LightningDataModule):
     def make_dataloader(self, split):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
-        dataset = self.get_dataset(split)
-        if "batch_sampler" in kwargs:
-            if self.head_allocation_column is None:
-                raise ValueError("head_allocation_column must be defined if using batch sampler.")
-            head_names = dataset.dataset.data.df[self.head_allocation_column].unique()
-            subset = dataset.dataset.data.df.iloc[dataset.indices].reset_index()
-            samplers = []
-            for name in head_names:
-                # returns an index into dataset.indices where head == name
-                head_indices = subset.index[subset[self.head_allocation_column] == name].to_list()
-                if len(head_indices) == 0:
-                    raise ValueError(
-                        "Dataset must contain examples of head {name}. Please increase the value of subsample for split {split}."
-                    )
-                samplers.append(HeadSampler(indices=head_indices))
-
-            batch_sampler = kwargs["batch_sampler"](
-                samplers, batch_size=kwargs["batch_size"], drop_last=kwargs.get("drop_last", False)
+        subset = self.get_dataset(split)
+        if kwargs.get("use_alternating_batch_sampler"):
+            batch_sampler = AlternatingBatchSampler(
+                subset,
+                batch_size=kwargs.pop("batch_size"),
+                drop_last=kwargs.pop("drop_last"),
+                shuffle=kwargs.pop("shuffle"),
             )
-            del_keys = ["batch_sampler", "batch_size", "shuffle", "sampler", "drop_last"]
-            for key in del_keys:
+            for key in ("batch_sampler", "sampler"):
                 if key in kwargs:
                     del kwargs[key]
-            return DataLoader(dataset=dataset, batch_sampler=batch_sampler, **kwargs)
-        return DataLoader(dataset=dataset, **kwargs)
+            return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
+        return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
