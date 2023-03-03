@@ -19,13 +19,19 @@ from .vnn import VNLinear, VNLinearLeakyReLU, VNRotationMatrix
 log = utils.get_pylogger(__name__)
 
 
-def _make_conv(in_features, out_features, mode="scalar"):
+def _make_conv(in_features, out_features, mode="scalar", double_input=True, final=False):
+    if double_input:
+        in_features = in_features*2
+
     if mode == "vector":
-        VNLinearLeakyReLU(in_features, out_features, use_batchnorm=True)
+        return VNLinearLeakyReLU(in_features, out_features, use_batchnorm=True)
+
+    conv = nn.Conv2d
+    batch_norm = nn.BatchNorm2d
 
     return nn.Sequential(
-        nn.Conv2d(in_features * 2, out_features, kernel_size=1, bias=False),
-        nn.BatchNorm2d(out_features),
+        conv(in_features, out_features, kernel_size=1, bias=False),
+        batch_norm(out_features),
         nn.LeakyReLU(negative_slope=0.2),
     )
 
@@ -47,27 +53,32 @@ class DGCNN(nn.Module):
         self.num_features = num_features
         self.include_coords = include_coords
         self.include_cross = include_cross
+        self.hidden_features = hidden_features
 
         self.break_symmetry = break_symmetry
 
-        if self.break_symmetry_axis:
-            _features = [6] + hidden_features[:-1]
+        if self.break_symmetry:
+            _features = [2] + hidden_features[:-1]
             if mode == "scalar":
                 log.warn("Overriding `mode` to `vector` because symmetry breaking is on.")
                 mode = "vector"
         else:
-            _features = [3] + hidden_features[:-1]
+            _features = [1 if mode == 'vector' else 3] + hidden_features[:-1]
 
         self.mode = mode
+        convs = [_make_conv(_features[0], _features[1], mode, double_input=include_coords)]
 
-        convs = [
+        convs += [
             _make_conv(in_features, out_features, mode)
-            for in_features, out_features in zip(_features[:-1], _features[1:])
+            for in_features, out_features in zip(_features[1:-1], _features[2:])
         ]
-        convs = nn.ModuleList(convs)
+        self.convs = nn.ModuleList(convs)
 
-        final_input_features = np.prod(hidden_features[:-1])
-        self.final_conv = _make_conv(final_input_features, hidden_features[-1], mode)
+        final_input_features = sum(hidden_features[:-1])
+        self.final_conv = _make_conv(
+            final_input_features, hidden_features[-1], mode, 
+            double_input=False, final=True
+        )
 
         if mode == "scalar":
             self.embedding = nn.Linear(hidden_features[-1], self.num_features, bias=False)
@@ -109,21 +120,25 @@ class DGCNN(nn.Module):
         batch_size = x.size(0)
 
         intermediate_outs = []
-        for idx, conv in enumerate(self.convs[:-1]):
-            x = self.get_graph_feature(x, idx)
+        for idx, conv in enumerate(self.convs):
+            x = self.get_graph_features(x, idx)
 
             if idx == 0 and symmetry_breaking_axis is not None:
                 if isinstance(symmetry_breaking_axis, int):
                     x = self.concat_axis(x, symmetry_breaking_axis)
                 assert x.size(1) == 6
-
             x = conv(x)
-            intermediate_outs.append(x.mean(dim=-1, keepdim=False))
+            x = x.mean(dim=-1, keepdim=False)
+            intermediate_outs.append(x)
 
         x = torch.cat(intermediate_outs, dim=1)
-        x = self.final_conv(x)
+        x = self.final_conv(x.unsqueeze(dim=-1)).squeeze(dim=-1)
         x = x.mean(dim=-1, keepdim=False)
 
+        if self.mode == 'vector':
+            x = x.unsqueeze(dim=-1).unsqueeze(dim=-1)
+        import ipdb
+        ipdb.set_trace()
         embedding = self.embedding(x)
         if self.mode == "vector":
             embedding = embedding.norm(dim=1)

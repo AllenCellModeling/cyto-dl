@@ -27,6 +27,7 @@ class FoldingNet(nn.Module):
         range_x = torch.linspace(-std, std, grid_side)
         range_y = torch.linspace(-std, std, grid_side)
         xy = torch.meshgrid(range_x, range_y, indexing="ij")
+        xy = torch.cat(xy, axis=0)
         self.grid = nn.Parameter(xy.float().reshape(-1, 2), requires_grad=False)
 
         self.hidden_dim = hidden_dim
@@ -52,10 +53,10 @@ class FoldingNet(nn.Module):
             nn.Linear(hidden_dim, 3),
         )
 
-    def forward(self, x, grid):
-        x = x.project(x)
+    def forward(self, x):
+        x = self.project(x)
 
-        grid = grid.unsqueeze(0).expand(x.shape[0], -1, -1)
+        grid = self.grid.unsqueeze(0).expand(x.shape[0], -1, -1)
         x = x.unsqueeze(1)
         cw_exp = x.expand(-1, grid.shape[1], -1)
 

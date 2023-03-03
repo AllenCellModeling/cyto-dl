@@ -25,7 +25,6 @@ class VNLinear(nn.Module):
         """
         orig_shape = x.shape
         stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
-
         out = F.conv2d(
             stacked,
             torch.kron(self.weight, torch.eye(3)).unsqueeze(-1).unsqueeze(-1),
@@ -58,13 +57,16 @@ class VNBatchNorm(nn.Module):
 
 
 class VNLeakyReLU(nn.Module):
-    def __init__(self, in_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6):
+    def __init__(self, in_channels, out_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6):
         super().__init__()
         if share_nonlinearity:
             self.map_to_dir = VNLinear(in_channels, 1)
         else:
-            self.map_to_dir = VNLinear(in_channels, in_channels)
+            self.map_to_dir = VNLinear(in_channels, out_channels)
+
         self.negative_slope = negative_slope
+        self.in_channels = in_channels
+        self.eps = eps
 
     def forward(self, x, x_dir=None):
         """
@@ -72,7 +74,6 @@ class VNLeakyReLU(nn.Module):
         """
 
         x_dir = x if x_dir is None else x_dir
-
         d = self.map_to_dir(x_dir)
 
         dotprod = (x * d).sum(2, keepdim=True)
@@ -109,13 +110,15 @@ class VNLinearLeakyReLU(nn.Module):
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
 
-        self.leaky_relu = VNLeakyReLU(in_channels, share_nonlinearity, negative_slope, eps)
+        self.leaky_relu = VNLeakyReLU(in_channels, out_channels, share_nonlinearity, negative_slope, eps)
 
     def forward(self, x):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
         # Conv
+        import ipdb
+        ipdb.set_trace()
         p = self.map_to_feat(x)
 
         # InstanceNorm
@@ -130,7 +133,7 @@ class VNRotationMatrix(nn.Module):
     def __init__(
         self,
         in_channels,
-        dim=4,
+        dim=5,
         share_nonlinearity=False,
         use_batchnorm=True,
         eps=1e-6,
@@ -162,6 +165,8 @@ class VNRotationMatrix(nn.Module):
         """
         x: point features of shape [B, N_feat, 3]
         """
+        import ipdb
+        ipdb.set_trace()
         z = self.vn1(x)
         z = self.vn2(z)
         z = self.vn_lin(z)
