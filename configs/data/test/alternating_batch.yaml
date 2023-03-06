@@ -1,0 +1,28 @@
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+
+path: 
+cache_dir:
+
+num_workers: 8
+batch_size: 1
+pin_memory: True
+persistent_workers: False
+split_column:
+use_alternating_batch_sampler: True
+
+columns:
+  - ${source_col}
+  - ${target_col}
+  - ${target2_col}
+  - head
+
+transforms:
+  _target_: monai.transforms.LoadImaged
+    keys: 
+      - ${source_col}
+      - ${target_col}
+      - ${target2_col}
+    reader:
+      - _target_: aics_im2im.image.io.MonaiBioReader
+        dimension_order_out: "CZYX"
+

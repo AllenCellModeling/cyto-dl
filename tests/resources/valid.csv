@@ -1,0 +1,6 @@
+,raw,seg1,seg2,seg_type
+0,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,seg1
+1,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,seg2
+2,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,seg1
+3,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,seg2
+4,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,seg1
