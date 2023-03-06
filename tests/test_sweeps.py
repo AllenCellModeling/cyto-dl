@@ -4,7 +4,7 @@ from tests.helpers.run_if import RunIf
 from tests.helpers.run_sh_command import run_sh_command
 
 startfile = "aics_im2im/train.py"
-overrides = ["logger=[]"]
+overrides = ["logger=[]", "++source_col=raw", "++target_col=seg"]
 
 
 @RunIf(sh=True)
