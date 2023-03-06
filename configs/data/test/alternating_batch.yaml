@@ -1,6 +1,6 @@
 _target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
 
-path: 
+path:
 cache_dir:
 
 num_workers: 8
@@ -18,11 +18,10 @@ columns:
 
 transforms:
   _target_: monai.transforms.LoadImaged
-    keys: 
-      - ${source_col}
-      - ${target_col}
-      - ${target2_col}
-    reader:
-      - _target_: aics_im2im.image.io.MonaiBioReader
-        dimension_order_out: "CZYX"
-
+  keys:
+    - ${source_col}
+    - ${target_col}
+    - ${target2_col}
+  reader:
+    - _target_: aics_im2im.image.io.MonaiBioReader
+      dimension_order_out: "CZYX"

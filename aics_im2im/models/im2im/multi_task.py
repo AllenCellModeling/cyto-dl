@@ -121,7 +121,6 @@ class MultiTaskIm2Im(BaseModel):
         run_heads = self._get_run_heads(batch)
 
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        print('STAGE', stage)
         if stage == "predict":
             return
         losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}

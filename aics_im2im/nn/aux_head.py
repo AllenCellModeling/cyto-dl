@@ -139,11 +139,8 @@ class ConvProjectionLayer(torch.nn.Module):
 
 
 class AuxHead(BaseAuxHead):
-    def __init__(
-        self, loss, postprocess, model_args=None, calculate_metric=False
-    ):
+    def __init__(self, loss, postprocess, model_args=None, calculate_metric=False):
         super().__init__(loss, postprocess, model_args, calculate_metric)
-
 
     def _init_model(self, model_args):
         resolution = model_args.get("resolution", "lr")
@@ -190,13 +187,10 @@ class AuxHead(BaseAuxHead):
                 final_act,
             )
         )
-        model = torch.nn.ModuleDict({
-            'upsample': upsample,
-            'model': torch.nn.Sequential(*modules)
-        })
+        model = torch.nn.ModuleDict({"upsample": upsample, "model": torch.nn.Sequential(*modules)})
         return model
 
     def forward(self, x):
         if self.resolution == "hr":
-            x = self.model['upsample'](x)
-        return self.model['model'](x)
+            x = self.model["upsample"](x)
+        return self.model["model"](x)
