@@ -1,32 +1,26 @@
 defaults:
   - test/base.yaml@_here_
 
-tasks: ${kv_to_dict:${model._aux._tasks}}
+task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 backbone:
   out_channels: 1
 
-postprocessing:
-  input: ${kv_to_dict:${model._aux._input_postprocessing}}
-  prediction: ${kv_to_dict:${model._aux._prediction_postprocessing}}
+inference_args:
+  sw_batch_size: 1
+  roi_size: ${model.patch_shape}
 
 _aux:
-  _input_postprocessing:
-    - - ${source_col}
-      - _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
-        _partial_: True
-    - - ${target_col}
-      - _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
-        _partial_: True
-  _prediction_postprocessing:
-    - - ${target_col}
-      - _target_: aics_im2im.models.im2im.utils.postprocessing.sigmoid_rescale
-        _partial_: True
-
   _tasks:
     - - ${target_col}
-      - head:
-          _target_: aics_im2im.nn.IdentityAuxHead
+      - _target_: aics_im2im.nn.BaseAuxHead
         loss:
           _target_: monai.losses.DiceCELoss
           sigmoid: True
+        postprocess:
+          input:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
+            _partial_: True
+          prediction:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.sigmoid_rescale
+            _partial_: True

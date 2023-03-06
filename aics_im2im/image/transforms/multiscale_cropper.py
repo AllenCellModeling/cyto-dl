@@ -99,6 +99,8 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
     def __call__(self, image_dict):
+        meta_keys = set(image_dict.keys()) - set(self.keys)
+        meta_dict = {mk: image_dict[mk] for mk in meta_keys}
         patches = []
         attempts = 0
         while len(patches) < self.num_samples:
@@ -113,11 +115,11 @@ class RandomMultiScaleCropd(RandomizableTransform):
                 key: _apply_slice(image_dict[key], slices[self.reversed_scale_dict[key]])
                 for key in self.keys
             }
+            patch_dict.update(meta_dict)
 
             if self.selection_fn is None or self.selection_fn(patch_dict):
                 patches.append(patch_dict)
                 attempts = 0
 
             attempts += 1
-
         return patches

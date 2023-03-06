@@ -1,19 +1,98 @@
 import re
 from itertools import chain
+from typing import Iterator, List
 
 import numpy as np
-from upath import UPath as Path
 
 try:
     import modin.pandas as pd
 except ModuleNotFoundError:
     import pandas as pd
 
+from random import shuffle as random_shuffle
+
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import DictConfig, ListConfig
+from torch.utils.data import BatchSampler, SubsetRandomSampler
+from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
+
+
+# randomly switch between generating batches from each sampler
+class AlternatingBatchSampler(BatchSampler):
+    def __init__(
+        self,
+        subset,
+        head_allocation_column,
+        batch_size,
+        drop_last=False,
+        shuffle=True,
+        sampler=SubsetRandomSampler,
+    ):
+        super().__init__(None, batch_size, drop_last)
+        if head_allocation_column is None:
+            raise ValueError("head_allocation_column must be defined if using batch sampler.")
+
+        # order is   subset.monai_dataset.dataframewrapper.dataframe
+        head_names = subset.dataset.data.df[head_allocation_column].unique()
+
+        # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
+        # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
+        # subset indices instead of the indices of the original dataframe, we have to reset the index
+        # of the subsetted dataframe
+        subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
+        samplers = []
+        for name in head_names:
+            # returns an index into dataset.indices where head == name
+            head_indices = subset_df.index[subset_df[head_allocation_column] == name].to_list()
+            if len(head_indices) == 0:
+                raise ValueError(
+                    f"Dataset must contain examples of head {name}. Please increase the value of subsample."
+                )
+            samplers.append(sampler(head_indices))
+
+        self.samplers = samplers
+        self.sampler_iterators = [iter(s) for s in samplers]
+
+        self.shuffle = shuffle
+        self.sampler_generator = self._sampler_generator()
+
+    def _sampler_generator(self):
+        # for now include equal numbers of all samplers
+        samples_per_sampler = self.__len__() // len(self.samplers)
+        if samples_per_sampler == 0:
+            raise ValueError("Insufficient examples per task head. Please decrease batch size.")
+        sampler_order = [[i] * samples_per_sampler for i in range(len(self.samplers))]
+        # sampler0, sampler1, ..., sampler n, sampler 0, sampler1, ..., sampler n...
+        interleaved_sampler_order = [
+            _ for sampler_tuple in zip(*sampler_order) for _ in sampler_tuple
+        ]
+
+        if self.shuffle:
+            random_shuffle(interleaved_sampler_order)
+        self.sampler_order = interleaved_sampler_order
+
+    def get_next_sampler(self):
+        if len(self.sampler_order) > 0:
+            return self.sampler_iterators[self.sampler_order.pop()]
+        self._sampler_generator()
+        raise StopIteration
+
+    def __iter__(self) -> Iterator[List[int]]:
+        sampler = self.get_next_sampler()
+        while True:
+            try:
+                batch = [next(sampler) for _ in range(self.batch_size)]
+                yield batch
+                sampler = self.get_next_sampler()
+            except StopIteration:
+                break
+
+    def __len__(self) -> int:
+        sampler_len = np.min([len(sampler) for sampler in self.samplers]) * len(self.samplers)
+        return sampler_len // self.batch_size  # type: ignore[arg-type]
 
 
 def get_canonical_split_name(split):

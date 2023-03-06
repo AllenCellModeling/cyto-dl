@@ -14,16 +14,10 @@ backbone:
   kernel_size: [3, 3, 3, 3, 3]
   upsample_kernel_size: [2, 2, 2, 2]
   filters: [64, 128, 256, 512, 768]
-  dropout: 0.1
+  dropout: 0.0
   res_block: True
 
-tasks:
-  seg:
-    head:
-      _target_: aics_im2im.nn.IdentityAuxHead
-    loss:
-      _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
-      dim: 3
+task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 optimizer:
   generator:
@@ -38,18 +32,21 @@ lr_scheduler:
     _target_: torch.optim.lr_scheduler.ExponentialLR
     gamma: 0.998
 
-postprocessing:
-  input:
-    seg:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
-      _partial_: True
-    raw:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
-      _partial_: True
-  prediction:
-    seg:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.detach
-      _partial_: True
-    # seg:
-    #   _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeClustering
-    #   _partial_: True
+inference_args:
+  sw_batch_size: 1
+  roi_size: ${model.patch_shape}
+
+_aux:
+  _tasks:
+    - - ${target_col}
+      - _target_: aics_im2im.nn.BaseAuxHead
+        loss:
+          _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
+          dim: 3
+        postprocess:
+          input:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+            _partial_: True
+          prediction:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+            _partial_: True

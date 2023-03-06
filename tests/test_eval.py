@@ -20,10 +20,8 @@ from .utils import resolve_readonly
 def test_train_eval(tmp_path, cfg_train, cfg_eval):
     """Train for 1 epoch with `train.py` and evaluate with `eval.py`"""
     assert str(tmp_path) == cfg_train.paths.output_dir == cfg_eval.paths.output_dir
-
     with open_dict(cfg_train):
         cfg_train.trainer.max_epochs = 1
-        cfg_train.test = True
 
     HydraConfig().set_config(cfg_train)
     resolve_readonly(cfg_train)
@@ -33,6 +31,7 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
 
     with open_dict(cfg_eval):
         cfg_eval.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
+        cfg_eval.test = True
 
     HydraConfig().set_config(cfg_eval)
     resolve_readonly(cfg_eval)
