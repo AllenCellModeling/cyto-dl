@@ -14,7 +14,7 @@ from random import shuffle as random_shuffle
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose
 from omegaconf import DictConfig, ListConfig
-from torch.utils.data import BatchSampler, RandomSampler
+from torch.utils.data import BatchSampler, SubsetRandomSampler
 from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
@@ -22,7 +22,15 @@ from aics_im2im.dataframe import read_dataframe
 
 # randomly switch between generating batches from each sampler
 class AlternatingBatchSampler(BatchSampler):
-    def __init__(self, subset, head_allocation_column, batch_size, drop_last=False, shuffle=True):
+    def __init__(
+        self,
+        subset,
+        head_allocation_column,
+        batch_size,
+        drop_last=False,
+        shuffle=True,
+        sampler=SubsetRandomSampler,
+    ):
         super().__init__(None, batch_size, drop_last)
         if head_allocation_column is None:
             raise ValueError("head_allocation_column must be defined if using batch sampler.")
@@ -43,65 +51,48 @@ class AlternatingBatchSampler(BatchSampler):
                 raise ValueError(
                     f"Dataset must contain examples of head {name}. Please increase the value of subsample."
                 )
-            samplers.append(RandomSampler(head_indices))
+            samplers.append(sampler(head_indices))
 
         self.samplers = samplers
+        self.sampler_iterators = [iter(s) for s in samplers]
+
         self.shuffle = shuffle
         self.sampler_generator = self._sampler_generator()
 
     def _sampler_generator(self):
         # for now include equal numbers of all samplers
-        steps_per_epoch = self.__len__()
-        sampler_order = [[i] * steps_per_epoch for i in range(len(self.samplers))]
+        samples_per_sampler = self.__len__() // len(self.samplers)
+        if samples_per_sampler == 0:
+            raise ValueError("Insufficient examples per task head. Please decrease batch size.")
+        sampler_order = [[i] * samples_per_sampler for i in range(len(self.samplers))]
         # sampler0, sampler1, ..., sampler n, sampler 0, sampler1, ..., sampler n...
         interleaved_sampler_order = [
             _ for sampler_tuple in zip(*sampler_order) for _ in sampler_tuple
         ]
+
         if self.shuffle:
             random_shuffle(interleaved_sampler_order)
+        self.sampler_order = interleaved_sampler_order
 
-        for sampler_idx in range(len(interleaved_sampler_order)):
-            yield self.samplers[sampler_idx]
+    def get_next_sampler(self):
+        if len(self.sampler_order) > 0:
+            return self.sampler_iterators[self.sampler_order.pop()]
+        self._sampler_generator()
+        raise StopIteration
 
     def __iter__(self) -> Iterator[List[int]]:
-        try:
-            sampler = next(self.sampler_generator)
-        except StopIteration:
-            self.sampler_generator = self._sampler_generator()
-            sampler = next(self.sampler_generator)
-
-        # Implemented based on the benchmarking in https://github.com/pytorch/pytorch/pull/76951
-        if self.drop_last:
-            sampler_iter = iter(sampler)
-            while True:
-                try:
-                    batch = [next(sampler_iter) for _ in range(self.batch_size)]
-                    yield batch
-                except StopIteration:
-                    break
-        else:
-            batch = [0] * self.batch_size
-            idx_in_batch = 0
-            for idx in sampler:
-                batch[idx_in_batch] = idx
-                idx_in_batch += 1
-                if idx_in_batch == self.batch_size:
-                    yield batch
-                    idx_in_batch = 0
-                    batch = [0] * self.batch_size
-            if idx_in_batch > 0:
-                yield batch[:idx_in_batch]
+        sampler = self.get_next_sampler()
+        while True:
+            try:
+                batch = [next(sampler) for _ in range(self.batch_size)]
+                yield batch
+                sampler = self.get_next_sampler()
+            except StopIteration:
+                break
 
     def __len__(self) -> int:
-        # Can only be called if self.sampler has __len__ implemented
-        # We cannot enforce this condition, so we turn off typechecking for the
-        # implementation below.
-        # Somewhat related: see NOTE [ Lack of Default `__len__` in Python Abstract Base Classes ]
-        sampler_len = np.min([len(sampler) for sampler in self.samplers])
-        if self.drop_last:
-            return sampler_len // self.batch_size  # type: ignore[arg-type]
-        else:
-            return (sampler_len + self.batch_size - 1) // self.batch_size  # type: ignore[arg-type]
+        sampler_len = np.min([len(sampler) for sampler in self.samplers]) * len(self.samplers)
+        return sampler_len // self.batch_size  # type: ignore[arg-type]
 
 
 def get_canonical_split_name(split):

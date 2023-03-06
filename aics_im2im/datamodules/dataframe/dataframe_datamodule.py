@@ -137,10 +137,10 @@ class DataframeDatamodule(pl.LightningDataModule):
 
     def get_dataset(self, split):
         sample_size = self.subsample.get(split, -1)
-        # always return a subset
-        sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
-        if sample_size == -1:
-            sample = range(len(self.dataset[split]))
+        # always return a Subset
+        sample = range(len(self.datasets[split]))
+        if sample_size != -1:
+            sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
         # this doesn't affect performance because it returns a Subset,
         # which loads from the underlying dataset lazily
         return self.datasets[split][sample]
@@ -153,12 +153,14 @@ class DataframeDatamodule(pl.LightningDataModule):
             batch_sampler = AlternatingBatchSampler(
                 subset,
                 batch_size=kwargs.pop("batch_size"),
-                drop_last=kwargs.pop("drop_last"),
+                drop_last=True,
                 shuffle=kwargs.pop("shuffle"),
+                head_allocation_column=self.head_allocation_column,
             )
-            for key in ("batch_sampler", "sampler"):
+            for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
                 if key in kwargs:
                     del kwargs[key]
+            print(split)
             return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
         return DataLoader(dataset=subset, **kwargs)
 
