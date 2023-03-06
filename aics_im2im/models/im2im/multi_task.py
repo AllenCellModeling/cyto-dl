@@ -4,6 +4,7 @@ from typing import Dict
 import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
+from monai.inferers import sliding_window_inference
 
 from aics_im2im.models.base_model import BaseModel
 
@@ -20,6 +21,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
+        inference_args: Dict = {},
         **kwargs,
     ):
         super().__init__(
@@ -48,15 +50,50 @@ class MultiTaskIm2Im(BaseModel):
                 scheds.append(scheduler)
         return (opts, scheds)
 
-    def forward(self, batch, stage, save_image, run_heads):
-        # run all heads if head_allocation_column not in batch
-        run_heads = run_heads or self.task_heads.keys()
-        x = batch[self.hparams.x_key]
-        z = self.backbone(x)
+    def _train_forward(self, batch, stage, save_image, run_heads):
+        """during training we are only dealing with patches,so we can calculate per-patch loss,
+        metrics, postprocessing etc."""
+        z = self.backbone(batch[self.hparams.x_key])
         return {
             task: self.task_heads[task].run_head(z, batch, stage, save_image, self.global_step)
             for task in run_heads
         }
+
+    def forward(self, x, run_heads):
+        z = self.backbone(x)
+        return {task: self.task_heads[task](z) for task in run_heads}
+
+    def _inference_forward(self, batch, stage, save_image, run_heads):
+        """during inference, we need to calculate per-fov loss/metrics/postprocessing.
+
+        To avoid storing and passing to each head the intermediate results of the backbone, we need
+        to run backbone + taskheads patch by patch, then do saving/postprocessing/etc on the entire
+        fov.
+        """
+        with torch.no_grad():
+            raw_pred_images = sliding_window_inference(
+                inputs=batch[self.hparams.x_key],
+                predictor=self.forward,
+                run_heads=run_heads,
+                **self.hparams.inference_args,
+            )
+        return {
+            head_name: head.run_head(
+                None,
+                batch,
+                stage,
+                save_image,
+                self.global_step,
+                run_forward=False,
+                y_hat=raw_pred_images[head_name],
+            )
+            for head_name, head in self.task_heads.items()
+        }
+
+    def run_forward(self, batch, stage, save_image, run_heads):
+        if stage in ("train", "val"):
+            return self._train_forward(batch, stage, save_image, run_heads)
+        return self._inference_forward(batch, stage, save_image, run_heads)
 
     def should_save_image(self, batch_idx, stage):
         return stage in ("test", "predict") or (
@@ -71,15 +108,20 @@ class MultiTaskIm2Im(BaseModel):
         losses["loss"] = summ
         return losses
 
+    def _get_run_heads(self, batch):
+        run_heads = batch.get(self.hparams.head_allocation_column, self.task_heads.keys())
+        return set(run_heads)
+
     def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
 
-        run_heads = batch.get(self.hparams.head_allocation_column)
+        run_heads = self._get_run_heads(batch)
 
-        outs = self(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        print('STAGE', stage)
         if stage == "predict":
             return
         losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}

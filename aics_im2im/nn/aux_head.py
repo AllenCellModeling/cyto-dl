@@ -5,7 +5,6 @@ from pathlib import Path
 import numpy as np
 import torch
 from aicsimageio.writers import OmeTiffWriter
-from monai.inferers import sliding_window_inference
 from monai.networks.blocks import (
     Convolution,
     SubpixelUpsample,
@@ -15,15 +14,12 @@ from monai.networks.blocks import (
 
 
 class BaseAuxHead(ABC, torch.nn.Module):
-    def __init__(
-        self, loss, postprocess, model_args=None, calculate_metric=False, inference_args={}
-    ):
+    def __init__(self, loss, postprocess, model_args=None, calculate_metric=False):
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
         self.calculate_metric = calculate_metric
         self.model = self._init_model(model_args)
-        self.inference_params = inference_args
 
     def update_params(self, params):
         for k, v in params.items():
@@ -48,46 +44,63 @@ class BaseAuxHead(ABC, torch.nn.Module):
     def _calculate_metric(self, y_hat, y):
         raise NotImplementedError
 
-    def _train_forward(self, x):
+    def save_image(self, y_hat, batch, stage, global_step):
+        y_hat_out = self._postprocess(y_hat, img_type="prediction")
+        y_out = None
+        if stage in ("train", "val"):
+            y_out = self._postprocess(batch[self.head_name], img_type="input")
+
+        try:
+            metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
+        except KeyError:
+            raise ValueError(
+                f"Please ensure your batches contain key `{self.x_key}_meta_dict['filename_or_obj']`"
+            )
+        save_name = (
+            [f"{global_step}_{self.head_name}.tif"]
+            if stage in ("train", "val")
+            else metadata_filenames
+        )
+        n_save = len(y_hat_out) if stage in ("test", "predict") else 1
+        for i in range(n_save):
+            self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+            if stage in ("train", "val"):
+                self._save(save_name[i], y_out[i], stage)
+        return y_hat_out, y_out
+
+    def forward(self, x):
         return self.model(x)
 
-    def _inference_forward(self, x):
-        # flag for whether to do sliding window
-        with torch.no_grad():
-            outs = sliding_window_inference(
-                inputs=x, predictor=self._train_forward, **self.inference_args
+    def run_head(
+        self,
+        backbone_features,
+        batch,
+        stage,
+        save_image,
+        global_step,
+        run_forward=True,
+        y_hat=None,
+    ):
+        if run_forward:
+            y_hat = self.forward(backbone_features)
+        if y_hat is None:
+            raise ValueError(
+                "y_hat must be provided, either by passing it in or setting `run_forward=True`"
             )
-        return outs
-
-    def forward(self, x, stage):
-        if stage in ("train", "val"):
-            return self._train_forward(x)
-        return self._inference_forward(x)
-
-    def run_head(self, backbone_features, batch, stage, save_image, global_step):
-        y_hat = self.forward(backbone_features, stage)
         y = batch[self.head_name]
+
+        loss = None
         if stage != "predict":
             loss = self._calculate_loss(y_hat, y)
-        if save_image:
-            y_hat_out = self._postprocess(y_hat, img_type="predict")
-            if stage in ("train", "val"):
-                y_out = self._postprocess(y, img_type="input")
 
-            save_name = (
-                [f"{global_step}_{self.head_name}.tif"]
-                if stage in ("train", "val")
-                else batch.get(f"{self.x_key}_meta_dict")
-            )
-            n_save = len(y_hat_out) if stage in ("test", "predict") else 1
-            for i in range(n_save):
-                self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
-                if stage in ("train", "val"):
-                    self._save(save_name[i], y_out[i], stage)
+        y_hat_out, y_out = None, None
+        if save_image:
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+
         metric = None
         if self.calculate_metric and stage in ("val", "test"):
             metric = self._calculate_metric(y_hat, y)
-        return {"loss": loss, "metric": metric}
+        return {"loss": loss, "metric": metric, "y_hat_out": y_hat_out, "y_out": y_out}
 
 
 class ConvProjectionLayer(torch.nn.Module):
@@ -127,9 +140,10 @@ class ConvProjectionLayer(torch.nn.Module):
 
 class AuxHead(BaseAuxHead):
     def __init__(
-        self, loss, postprocess, model_args=None, calculate_metric=False, inference_args={}
+        self, loss, postprocess, model_args=None, calculate_metric=False
     ):
-        super().__init__(loss, postprocess, model_args, calculate_metric, inference_args)
+        super().__init__(loss, postprocess, model_args, calculate_metric)
+
 
     def _init_model(self, model_args):
         resolution = model_args.get("resolution", "lr")
@@ -143,9 +157,10 @@ class AuxHead(BaseAuxHead):
 
         conv_input_channels = in_channels
         modules = [model_args.get("first_layer", torch.nn.Identity())]
+        upsample = torch.nn.Identity()
         if resolution == "hr":
             conv_input_channels //= 2**spatial_dims
-            self.upsample = SubpixelUpsample(
+            upsample = SubpixelUpsample(
                 spatial_dims=spatial_dims,
                 in_channels=in_channels,
                 out_channels=conv_input_channels,
@@ -175,9 +190,13 @@ class AuxHead(BaseAuxHead):
                 final_act,
             )
         )
-        return torch.nn.Sequential(*modules)
+        model = torch.nn.ModuleDict({
+            'upsample': upsample,
+            'model': torch.nn.Sequential(*modules)
+        })
+        return model
 
-    def _train_forward(self, x):
+    def forward(self, x):
         if self.resolution == "hr":
-            x = self.upsample(x)
-        return self.model(x)
+            x = self.model['upsample'](x)
+        return self.model['model'](x)
