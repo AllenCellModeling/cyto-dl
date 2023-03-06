@@ -30,6 +30,7 @@ class MLFlowLogger(_MLFlowLogger):
         prefix: str = "",
         artifact_location: Optional[str] = None,
         run_id: Optional[str] = None,
+        fault_tolerant=True,
     ):
         _MLFlowLogger.__init__(
             self,
@@ -42,6 +43,8 @@ class MLFlowLogger(_MLFlowLogger):
             artifact_location=artifact_location,
             run_id=run_id,
         )
+
+        self.fault_tolerant = fault_tolerant
 
         if tracking_uri is not None:
             mlflow.set_tracking_uri(tracking_uri)
@@ -69,15 +72,21 @@ class MLFlowLogger(_MLFlowLogger):
         try:
             super().log_metrics(metrics, step)
         except Exception as e:
-            log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing...")
+            if self.fault_tolerant:
+                log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing...")
+            else:
+                raise e
 
     def after_save_checkpoint(self, ckpt_callback):
         try:
             self._after_save_checkpoint(ckpt_callback)
         except Exception as e:
-            log.warn(
-                f"`MLFlowLogger.after_save_checkpoint` failed with exception {e}\n\nContinuing..."
-            )
+            if self.fault_tolerant:
+                log.warn(
+                    f"`MLFlowLogger.after_save_checkpoint` failed with exception {e}\n\nContinuing..."
+                )
+            else:
+                raise e
 
     def _after_save_checkpoint(self, ckpt_callback: ModelCheckpoint) -> None:
         """Called after model checkpoint callback saves a new checkpoint."""
@@ -127,7 +136,7 @@ class MLFlowLogger(_MLFlowLogger):
             os.unlink(best_path)
 
         else:
-            filepath = ckpt_callback.last_model_path
+            filepath = ckpt_callback.best_model_path
             artifact_path = "checkpoints"
 
             # mimic ModelCheckpoint's behavior: if `self.save_top_k == 1` only
