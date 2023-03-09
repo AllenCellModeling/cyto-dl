@@ -19,34 +19,46 @@ from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
 
+from monai.transforms import Transform
+
+class RemoveNaNKeysd(Transform):
+    ''''
+    Transform to remove 'nan' keys from data dictionary. When combined with adding
+    `allow_missing_keys=True` to transforms and the alternating batch sampler, this
+    allows multi-task training when only one target is available at a time.
+    '''
+    def __init__(img):
+        super().__init__()
+    def __call__(self, img):
+        new_data = {k: v for k, v in img.items() if not pd.isna(v)}
+        return new_data
+
 
 # randomly switch between generating batches from each sampler
 class AlternatingBatchSampler(BatchSampler):
     def __init__(
         self,
         subset,
-        head_allocation_column,
+        target_columns,
         batch_size,
         drop_last=False,
         shuffle=True,
         sampler=SubsetRandomSampler,
     ):
         super().__init__(None, batch_size, drop_last)
-        if head_allocation_column is None:
-            raise ValueError("head_allocation_column must be defined if using batch sampler.")
-
-        # order is   subset.monai_dataset.dataframewrapper.dataframe
-        head_names = subset.dataset.data.df[head_allocation_column].unique()
-
+        if target_columns is None:
+            raise ValueError("target_columns must be defined if using batch sampler.")
         # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
         # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
         # subset indices instead of the indices of the original dataframe, we have to reset the index
         # of the subsetted dataframe
+
+        # order is   subset.monai_dataset.dataframewrapper.dataframe
         subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
         samplers = []
-        for name in head_names:
-            # returns an index into dataset.indices where head == name
-            head_indices = subset_df.index[subset_df[head_allocation_column] == name].to_list()
+        for name in target_columns:
+            # returns an index into dataset.indices where head column is not emtpy
+            head_indices = subset_df.index[subset_df[name].isna()].to_list()
             if len(head_indices) == 0:
                 raise ValueError(
                     f"Dataset must contain examples of head {name}. Please increase the value of subsample."
@@ -54,12 +66,12 @@ class AlternatingBatchSampler(BatchSampler):
             samplers.append(sampler(head_indices))
 
         self.samplers = samplers
-        self.sampler_iterators = [iter(s) for s in samplers]
 
         self.shuffle = shuffle
         self.sampler_generator = self._sampler_generator()
 
     def _sampler_generator(self):
+        self.sampler_iterators = [iter(s) for s in self.samplers]
         # for now include equal numbers of all samplers
         samples_per_sampler = self.__len__() // len(self.samplers)
         if samples_per_sampler == 0:

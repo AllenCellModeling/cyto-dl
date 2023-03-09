@@ -40,7 +40,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         cache_dir: Optional[Union[Path, str]] = None,
         subsample: Optional[Dict] = None,
         seed: int = 42,
-        head_allocation_column: str = None,
+        target_columns: str = None,
         **dataloader_kwargs,
     ):
         """
@@ -126,7 +126,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
-        self.head_allocation_column = head_allocation_column
+        self.target_columns=target_columns
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
         self.dataloaders = {}
@@ -155,7 +155,7 @@ class DataframeDatamodule(pl.LightningDataModule):
                 batch_size=kwargs.pop("batch_size"),
                 drop_last=True,
                 shuffle=kwargs.pop("shuffle"),
-                head_allocation_column=self.head_allocation_column,
+                target_columns=self.target_columns,
             )
             for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
                 if key in kwargs:
