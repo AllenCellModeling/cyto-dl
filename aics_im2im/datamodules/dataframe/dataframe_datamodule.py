@@ -126,7 +126,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
-        self.target_columns=target_columns
+        self.target_columns = target_columns
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
         self.dataloaders = {}

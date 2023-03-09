@@ -27,7 +27,7 @@ from skimage.transform import rescale, resize
 
 
 class OmniposePreprocessd(Transform):
-    def __init__(self, label_keys, dim=3, allow_missing_keys = False):
+    def __init__(self, label_keys, dim=3, allow_missing_keys=False):
         super().__init__()
         self.label_keys = (
             label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
@@ -42,7 +42,9 @@ class OmniposePreprocessd(Transform):
         for key in self.label_keys:
             if key not in image_dict:
                 if not self.allow_missing_keys:
-                    raise KeyError(f'Key {key} not found in data. Available keys are {image_dict.keys()}')
+                    raise KeyError(
+                        f"Key {key} not found in data. Available keys are {image_dict.keys()}"
+                    )
                 continue
 
             im = image_dict[key]

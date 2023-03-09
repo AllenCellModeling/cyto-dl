@@ -12,23 +12,24 @@ except ModuleNotFoundError:
 from random import shuffle as random_shuffle
 
 from monai.data import Dataset, PersistentDataset
-from monai.transforms import Compose
+from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
 from torch.utils.data import BatchSampler, SubsetRandomSampler
 from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
 
-from monai.transforms import Transform
 
 class RemoveNaNKeysd(Transform):
-    ''''
-    Transform to remove 'nan' keys from data dictionary. When combined with adding
-    `allow_missing_keys=True` to transforms and the alternating batch sampler, this
-    allows multi-task training when only one target is available at a time.
-    '''
+    """' Transform to remove 'nan' keys from data dictionary.
+
+    When combined with adding `allow_missing_keys=True` to transforms and the alternating batch
+    sampler, this allows multi-task training when only one target is available at a time.
+    """
+
     def __init__(img):
         super().__init__()
+
     def __call__(self, img):
         new_data = {k: v for k, v in img.items() if not pd.isna(v)}
         return new_data
@@ -57,7 +58,7 @@ class AlternatingBatchSampler(BatchSampler):
         subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
         samplers = []
         for name in target_columns:
-            # returns an index into dataset.indices where head column is not emtpy
+            # returns an index into dataset.indices where head column is not empty
             head_indices = subset_df.index[subset_df[name].isna()].to_list()
             if len(head_indices) == 0:
                 raise ValueError(

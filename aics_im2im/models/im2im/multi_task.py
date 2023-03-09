@@ -109,7 +109,7 @@ class MultiTaskIm2Im(BaseModel):
         return losses
 
     def _get_run_heads(self, batch):
-        run_heads = [key for key in self.task_heads.keys() if key in batch] 
+        run_heads = [key for key in self.task_heads.keys() if key in batch]
         return set(run_heads)
 
     def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):

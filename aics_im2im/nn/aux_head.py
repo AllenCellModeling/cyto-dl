@@ -52,7 +52,9 @@ class BaseAuxHead(ABC, torch.nn.Module):
 
         try:
             metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
-            metadata_filenames = [f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames]
+            metadata_filenames = [
+                f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames
+            ]
         except KeyError:
             raise ValueError(
                 f"Please ensure your batches contain key `{self.x_key}_meta_dict['filename_or_obj']`"
@@ -99,7 +101,7 @@ class BaseAuxHead(ABC, torch.nn.Module):
 
         metric = None
         if self.calculate_metric and stage in ("val", "test"):
-            metric = self._calculate_metric(y_hat, y)
+            metric = self._calculate_metric(y_hat, batch[self.head_name])
         return {"loss": loss, "metric": metric, "y_hat_out": y_hat_out, "y_out": y_out}
 
 

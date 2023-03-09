@@ -18,7 +18,7 @@ class Resized(Transform):
         align_corners: Union[bool, None] = None,
         recompute_scale_factor: bool = False,
         antialias: bool = False,
-        allow_missing_keys: bool = False
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -72,5 +72,5 @@ class Resized(Transform):
                     antialias=self.antialias,
                 ).squeeze(0)
             elif not self.allow_missing_keys:
-                raise KeyError(f'Key {key} not found in data. Available keys are {img.keys()}')
+                raise KeyError(f"Key {key} not found in data. Available keys are {img.keys()}")
         return img

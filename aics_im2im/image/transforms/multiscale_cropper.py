@@ -43,7 +43,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         patch_per_image: int = 1,
         selection_fn: Callable = None,
         max_attempts: int = 100,
-        allow_missing_keys: bool = False
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
