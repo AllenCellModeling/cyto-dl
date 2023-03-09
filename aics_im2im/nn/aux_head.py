@@ -52,6 +52,7 @@ class BaseAuxHead(ABC, torch.nn.Module):
 
         try:
             metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
+            metadata_filenames = [f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames]
         except KeyError:
             raise ValueError(
                 f"Please ensure your batches contain key `{self.x_key}_meta_dict['filename_or_obj']`"
@@ -87,11 +88,10 @@ class BaseAuxHead(ABC, torch.nn.Module):
             raise ValueError(
                 "y_hat must be provided, either by passing it in or setting `run_forward=True`"
             )
-        y = batch[self.head_name]
 
         loss = None
         if stage != "predict":
-            loss = self._calculate_loss(y_hat, y)
+            loss = self._calculate_loss(y_hat, batch[self.head_name])
 
         y_hat_out, y_out = None, None
         if save_image:
