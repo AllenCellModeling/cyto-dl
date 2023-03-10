@@ -21,7 +21,7 @@ run_name: YOUR_RUN_NAME_HERE
 source_col: raw
 target_col: seg
 spatial_dims: 2
-img_load_dims: 'CYX'
+img_load_dims: "CYX"
 raw_im_channels: 3
 
 trainer:
@@ -40,4 +40,3 @@ data:
   # the overhead of running full epochs by running lots of steps of same images in single epoch
   subsample:
     train: 1000
-
