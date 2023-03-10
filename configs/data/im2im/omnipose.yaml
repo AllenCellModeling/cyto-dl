@@ -67,7 +67,6 @@ transforms:
         keys: ${source_col}
         channel_wise: True
 
-
   predict:
     _target_: monai.transforms.Compose
     transforms:
@@ -81,7 +80,6 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
-
 
   valid:
     _target_: monai.transforms.Compose

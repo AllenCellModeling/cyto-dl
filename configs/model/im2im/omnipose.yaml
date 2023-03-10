@@ -2,7 +2,7 @@ _target_: aics_im2im.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 x_key: ${source_col}
-patch_shape: 
+patch_shape:
 save_dir: ${paths.output_dir}
 
 backbone:
@@ -44,4 +44,3 @@ _aux:
           _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
           dim: ${spatial_dims}
         save_raw: True
-
