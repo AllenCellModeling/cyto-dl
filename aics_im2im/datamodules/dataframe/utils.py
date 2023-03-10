@@ -67,7 +67,6 @@ class AlternatingBatchSampler(BatchSampler):
             samplers.append(sampler(head_indices))
 
         self.samplers = samplers
-
         self.shuffle = shuffle
         self.sampler_generator = self._sampler_generator()
 
@@ -88,10 +87,9 @@ class AlternatingBatchSampler(BatchSampler):
         self.sampler_order = interleaved_sampler_order
 
     def get_next_sampler(self):
-        if len(self.sampler_order) > 0:
-            return self.sampler_iterators[self.sampler_order.pop()]
-        self._sampler_generator()
-        raise StopIteration
+        if len(self.sampler_order) == 0:
+            self._sampler_generator()
+        return self.sampler_iterators[self.sampler_order.pop()]
 
     def __iter__(self) -> Iterator[List[int]]:
         sampler = self.get_next_sampler()
