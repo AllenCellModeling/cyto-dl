@@ -17,7 +17,6 @@ class MultiTaskIm2Im(BaseModel):
         task_heads: Dict,
         x_key: str,
         save_dir="./",
-        head_allocation_column: str = None,
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = True,
@@ -108,9 +107,12 @@ class MultiTaskIm2Im(BaseModel):
         losses["loss"] = summ
         return losses
 
-    def _get_run_heads(self, batch):
-        run_heads = [key for key in self.task_heads.keys() if key in batch]
-        return set(run_heads)
+    def _get_run_heads(self, batch, stage):
+        if stage not in ("test", "predict"):
+            run_heads = [key for key in self.task_heads.keys() if key in batch]
+        else:
+            run_heads = self.task_heads.keys()
+        return run_heads
 
     def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
         # convert monai metatensors to tensors
@@ -118,7 +120,7 @@ class MultiTaskIm2Im(BaseModel):
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
 
-        run_heads = self._get_run_heads(batch)
+        run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
         if stage == "predict":
             return
