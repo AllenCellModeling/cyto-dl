@@ -12,14 +12,24 @@ from monai.networks.blocks import (
     UnetResBlock,
 )
 
+from aics_im2im.models.im2im.utils.postprocessing import detach
+
 
 class BaseAuxHead(ABC, torch.nn.Module):
-    def __init__(self, loss, postprocess, model_args=None, calculate_metric=False):
+    def __init__(
+        self,
+        loss,
+        postprocess={"input": detach, "prediction": detach},
+        model_args=None,
+        calculate_metric=False,
+        save_raw=False,
+    ):
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
         self.calculate_metric = calculate_metric
         self.model = self._init_model(model_args)
+        self.save_raw = save_raw
 
     def update_params(self, params):
         for k, v in params.items():
@@ -46,10 +56,11 @@ class BaseAuxHead(ABC, torch.nn.Module):
 
     def save_image(self, y_hat, batch, stage, global_step):
         y_hat_out = self._postprocess(y_hat, img_type="prediction")
-        y_out = None
+        y_out, raw_out = None, None
         if stage in ("train", "val"):
             y_out = self._postprocess(batch[self.head_name], img_type="input")
-
+            if self.save_raw:
+                raw_out = self._postprocess(batch[self.x_key], img_type="input")
         try:
             metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
             metadata_filenames = [
@@ -69,6 +80,9 @@ class BaseAuxHead(ABC, torch.nn.Module):
             self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
             if stage in ("train", "val"):
                 self._save(save_name[i], y_out[i], stage)
+                if self.save_raw:
+                    self._save(save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage)
+
         return y_hat_out, y_out
 
     def forward(self, x):
@@ -141,8 +155,15 @@ class ConvProjectionLayer(torch.nn.Module):
 
 
 class AuxHead(BaseAuxHead):
-    def __init__(self, loss, postprocess, model_args=None, calculate_metric=False):
-        super().__init__(loss, postprocess, model_args, calculate_metric)
+    def __init__(
+        self,
+        loss,
+        postprocess={"input": detach, "prediction": detach},
+        model_args=None,
+        calculate_metric=False,
+        save_raw=False,
+    ):
+        super().__init__(loss, postprocess, model_args, calculate_metric, save_raw)
 
     def _init_model(self, model_args):
         resolution = model_args.get("resolution", "lr")
