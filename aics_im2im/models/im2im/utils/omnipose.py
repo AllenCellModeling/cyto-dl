@@ -22,23 +22,31 @@ from scipy.spatial import ConvexHull
 from skimage.filters import apply_hysteresis_threshold, gaussian
 from skimage.measure import label
 from skimage.morphology import binary_dilation, remove_small_holes
-from skimage.segmentation import expand_labels
+from skimage.segmentation import expand_labels, find_boundaries
 from skimage.transform import rescale, resize
 
 
 class OmniposePreprocessd(Transform):
-    def __init__(self, label_keys, dim):
+    def __init__(self, label_keys, dim=3, allow_missing_keys=False):
         super().__init__()
         self.label_keys = (
             label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
         )
         self.dim = dim
+        self.allow_missing_keys = allow_missing_keys
 
     def __call__(self, image_dict):
         warnings.warn(
             "OmniPose preprocessing is slow, consider setting `persist_cache: True` in your experiment config"
         )
-        for key in tqdm.tqdm(self.label_keys):
+        for key in self.label_keys:
+            if key not in image_dict:
+                if not self.allow_missing_keys:
+                    raise KeyError(
+                        f"Key {key} not found in data. Available keys are {image_dict.keys()}"
+                    )
+                continue
+
             im = image_dict[key]
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
             numpy_im = im.numpy().squeeze()
@@ -47,10 +55,11 @@ class OmniposePreprocessd(Transform):
                 raise ValueError("Ground truth images for Omnipose must have at least 1 label")
 
             out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
+
             (
                 instance_seg,
                 rough_distance,
-                boundaries,
+                # boundaries,
                 smooth_distance,
                 flows,
             ) = masks_to_flows(numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device)
@@ -59,7 +68,9 @@ class OmniposePreprocessd(Transform):
 
             bg_edt = edt.edt(numpy_im < 0.5, black_border=True)
             boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
-            out_im[0] = boundaries
+            out_im[0] = find_boundaries(
+                instance_seg, mode="inner", connectivity=self.dim
+            )  # boundaries
             out_im[1] = boundary_weighted_mask
             out_im[2] = instance_seg
             out_im[3] = rough_distance
@@ -81,43 +92,43 @@ class OmniposeLoss:
         self.criterion11 = DerivativeLoss()
         self.criterion16 = DivergenceLoss()
 
-    def __call__(self, y, lbl):
+    def __call__(self, y_hat, y):
         """Loss function for Omnipose.
         Parameters
         --------------
-        lbl: ND-array, float
+        y: ND-array, float
             transformed labels in array [nimg x nchan x xy[0] x xy[1]]
-            lbl[:,0] boundary field
-            lbl[:,1] boundary-emphasized weights
-            lbl[:,2] cell masks
-            lbl[:,3] distance field
-            lbl[:,4:6] flow components
-            lbl[:,7] smooth distance field
+            y[:,0] boundary field
+            y[:,1] boundary-emphasized weights
+            y[:,2] cell masks
+            y[:,3] distance field
+            y[:,4:6] flow components
+            y[:,7] smooth distance field
 
 
-        y:  ND-tensor, float
+        y_hat:  ND-tensor, float
             network predictions, with dimension D, these are:
-            y[:,:D] flow field components at 0,1,...,D-1
-            y[:,D] distance fields at D
-            y[:,D+1] boundary fields at D+1
+            y_hat[:,:D] flow field components at 0,1,...,D-1
+            y_hat[:,D] distance fields at D
+            y_hat[:,D+1] boundary fields at D+1
 
         """
-        boundary = lbl[:, 0]
-        w = lbl[:, 1]
-        cellmask = (lbl[:, 2] > 0).bool()  # acts as a mask now, not output
+        boundary = y[:, 0]
+        w = y[:, 1]
+        cellmask = (y[:, 2] > 0).bool()  # acts as a mask now, not output
 
         # calculat loss on entire patch if no cells present - this helps
         # remove background artifacts
         for img_id in range(cellmask.shape[0]):
             if torch.sum(cellmask[img_id]) == 0:
                 cellmask[img_id] = True
-        veci = lbl[:, -(self.dim + 1) : -1]
-        dist = lbl[:, -1]  # now distance transform replaces probability
+        veci = y[:, -(self.dim + 1) : -1]
+        dist = y[:, -1]  # now distance transform replaces probability
 
         # prediction
-        flow = y[:, : self.dim]  # 0,1,...self.dim-1
-        dt = y[:, self.dim]
-        bd = y[:, self.dim + 1]
+        flow = y_hat[:, : self.dim]  # 0,1,...self.dim-1
+        dt = y_hat[:, self.dim]
+        bd = y_hat[:, self.dim + 1]
         a = 10.0
 
         # stacked versions for weighting vector fields with scalars
@@ -156,7 +167,7 @@ class OmniposeClustering:
     def __init__(
         self,
         mask_threshold=0,
-        rescale_factor=0.25,
+        rescale_factor=1.0,
         min_object_size=100,
         hole_size=0,
         flow_threshold=1e8,
@@ -164,7 +175,7 @@ class OmniposeClustering:
         boundary_seg=True,
         naive_label=False,
         fine_threshold=True,
-        convex_ratio_threshold=1.1,
+        convex_ratio_threshold=1.2,
     ):
         """
         Parameters

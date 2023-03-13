@@ -43,6 +43,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         patch_per_image: int = 1,
         selection_fn: Callable = None,
         max_attempts: int = 100,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -76,6 +77,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         self.selection_fn = selection_fn
         self.max_attempts = max_attempts
         self.spatial_dims = len(patch_shape)
+        self.allow_missing_keys = allow_missing_keys
 
         # reversed scales dict is used to map from a key to scale for sampling
         for k, v in scales_dict.items():
@@ -99,7 +101,11 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
     def __call__(self, image_dict):
-        meta_keys = set(image_dict.keys()) - set(self.keys)
+        available_keys = self.keys
+        if self.allow_missing_keys:
+            available_keys = [k for k in self.keys if k in image_dict]
+
+        meta_keys = set(image_dict.keys()) - set(available_keys)
         meta_dict = {mk: image_dict[mk] for mk in meta_keys}
         patches = []
         attempts = 0
@@ -113,7 +119,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
 
             patch_dict = {
                 key: _apply_slice(image_dict[key], slices[self.reversed_scale_dict[key]])
-                for key in self.keys
+                for key in available_keys
             }
             patch_dict.update(meta_dict)
 

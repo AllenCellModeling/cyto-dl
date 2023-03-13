@@ -1,5 +1,6 @@
 import monai
 import numpy as np
+import pandas as pd
 import pyrootutils
 import pytest
 from torch.utils.data import SubsetRandomSampler
@@ -7,6 +8,7 @@ from torch.utils.data import SubsetRandomSampler
 from aics_im2im.datamodules.dataframe import DataframeDatamodule
 from aics_im2im.datamodules.dataframe.utils import (
     AlternatingBatchSampler,
+    RemoveNaNKeysd,
     make_multiple_dataframe_splits,
 )
 from aics_im2im.image.io import MonaiBioReader
@@ -29,27 +31,37 @@ class TestSampler:
 @pytest.mark.parametrize("shuffle", [True, False])
 @pytest.mark.parametrize("sampler", [SubsetRandomSampler, TestSampler])
 def test_alternating_batch_sampler(shuffle, sampler):
-    print(shuffle, sampler)
     root_dir = pyrootutils.find_root()
     transforms = monai.transforms.Compose(
+        RemoveNaNKeysd(),
         monai.transforms.LoadImaged(
-            keys=["raw", "seg1", "seg2"], reader=MonaiBioReader(dimension_order_out="CZYX")
-        )
+            keys=["raw", "seg1", "seg2"],
+            reader=MonaiBioReader(dimension_order_out="CZYX"),
+            allow_missing_keys=True,
+        ),
     )
     transform_dict = {key: transforms for key in ["train", "test", "val", "predict"]}
     data = make_multiple_dataframe_splits(root_dir / "tests" / "resources", transform_dict)
     subset = data["train"][range(len(data["train"]))]
-
+    target_columns = ["seg1", "seg2"]
     batch_sampler = AlternatingBatchSampler(
-        subset, "seg_type", batch_size=2, drop_last=True, shuffle=shuffle, sampler=sampler
+        subset,
+        target_columns=target_columns,
+        batch_size=2,
+        drop_last=True,
+        shuffle=shuffle,
+        sampler=sampler,
     )
     index_counts = np.zeros(len(subset))
     seg_type_counts = {}
     batches = []
     prev_type = None
+
     for batch in batch_sampler:
         index_counts[batch] += 1
-        seg_type = subset.dataset.data.df["seg_type"][batch].unique()
+        seg_type = [
+            col for col in target_columns if pd.isna(subset.dataset.data.df[col][batch]).sum() == 0
+        ]
 
         assert len(seg_type) == 1
         try:

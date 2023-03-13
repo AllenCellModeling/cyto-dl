@@ -18,6 +18,7 @@ class Resized(Transform):
         align_corners: Union[bool, None] = None,
         recompute_scale_factor: bool = False,
         antialias: bool = False,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -47,25 +48,29 @@ class Resized(Transform):
         self.align_corners = align_corners
         self.recompute_scale_factor = recompute_scale_factor
         self.antialias = antialias
+        self.allow_missing_keys = allow_missing_keys
 
     def __call__(self, img):
         for key in self.keys:
-            out_size = list(
-                map(
-                    round,
-                    np.asarray(img[key].shape[-self.spatial_dims :]) * self.scale_factor,
+            if key in img.keys():
+                out_size = list(
+                    map(
+                        round,
+                        np.asarray(img[key].shape[-self.spatial_dims :]) * self.scale_factor,
+                    )
                 )
-            )
-            raw_img = img[key]
-            if len(raw_img.shape) != self.spatial_dims + 1:
-                raise ValueError("Images must have CZYX or CYX dimensions")
-            raw_img = raw_img.as_tensor() if isinstance(raw_img, MetaTensor) else raw_img
+                raw_img = img[key]
+                if len(raw_img.shape) != self.spatial_dims + 1:
+                    raise ValueError("Images must have CZYX or CYX dimensions")
+                raw_img = raw_img.as_tensor() if isinstance(raw_img, MetaTensor) else raw_img
 
-            img[key] = torch.nn.functional.interpolate(
-                input=raw_img.unsqueeze(0),
-                size=out_size,
-                mode=self.mode,
-                align_corners=self.align_corners,
-                antialias=self.antialias,
-            ).squeeze(0)
+                img[key] = torch.nn.functional.interpolate(
+                    input=raw_img.unsqueeze(0),
+                    size=out_size,
+                    mode=self.mode,
+                    align_corners=self.align_corners,
+                    antialias=self.antialias,
+                ).squeeze(0)
+            elif not self.allow_missing_keys:
+                raise KeyError(f"Key {key} not found in data. Available keys are {img.keys()}")
         return img
