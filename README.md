@@ -20,16 +20,7 @@
 
 In an effort to spend more work on methods development, simplify maintenance,
 and create a unified framework for all of AICS's deep learning tools, we have
-created `aics-im2im`. We based it on [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template).
-
-### Supported im2im model types
-
-1. Segmentation
-2. Transfer Function
-3. Labelfree
-4. EmbedSeg
-   - Our implementation of EmbedSeg is modified from the [original implementation](https://github.com/juglab/EmbedSeg) and the [MMV-Lab's implementation](https://github.com/MMV-Lab/mmv_im2im).
-   - [Docs](docs/embedseg.md)
+created `aics-im2im`. As the underlying framework is based on [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template), we recommend that you familiarize yourself with their (short) docs for detailed instructions on running training, overrides, etc.
 
 ## How to run
 
@@ -44,24 +35,23 @@ cd aics-im2im
 conda create -n myenv python=3.9
 conda activate myenv
 
+pip install -r requirements.txt/requirements.txt
+
 # [OPTIONAL] install extra dependencies - equivariance related
-pip install .[equiv,spharm]
-```
+pip install -r requirements.txt/equiv-requirements.txt
 
-Train model with default configuration
-
-```bash
-# train on CPU
-python aics_im2im/train.py trainer=cpu
-
-# train on GPU
-python aics_im2im/train.py trainer=gpu
+pip install -e .
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
 
 ```bash
-python aics_im2im/train.py experiment=experiment_name.yaml
+#gpu
+python aics_im2im/train.py experiment=experiment_name.yaml trainer=gpu
+
+#cpu
+python aics_im2im/train.py experiment=experiment_name.yaml trainer=cpu
+
 ```
 
 You can override any parameter from command line like this
