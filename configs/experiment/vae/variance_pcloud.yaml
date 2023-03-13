@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: vae/variance_3d.yaml
-  - override /model: vae/classical_image_vae.yaml
+  - override /data: vae/variance_point_cloud.yaml
+  - override /model: vae/classical_pcloud_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -13,23 +13,21 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: variance_classical_3d_vae
-tags: ["classical", "variance-dataset", "3d"]
+experiment_name: variance_pcloud
+tags: ["equivariance", "variance-dataset", "point-cloud"]
 
 seed: 42
 
-model:
-  spatial_dims: 3
-  in_shape: [1, 32, 60, 94]
-  strides: [1, 1, 1, 2, 1]
-  channels: [4, 8, 16, 32, 32]
+data:
+  subsample: { "train": 10000, "valid": 2000, "test": 2000 }
+  batch_size: 64
 
 trainer:
-  check_val_every_n_epoch: 1
-  min_epochs: 10
-  max_epochs: 100
+  check_val_every_n_epoch: 20
+  min_epochs: 400
+  max_epochs: 2000
   accelerator: gpu
-  devices:
+  devices: [3]
 
 callbacks:
   early_stopping:
@@ -43,8 +41,11 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: variance_3d_vae
-    run_name:
+    experiment_name: variance_pcloud
+    run_name: no_batchnorm
 
-zarr_level: 2
-padded_size: [-1, -1, -1]
+##### ONLY USE WITH A100s
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

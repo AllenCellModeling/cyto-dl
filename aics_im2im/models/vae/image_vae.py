@@ -91,7 +91,7 @@ class ImageVAE(BaseVAE):
 
         if decoder_pixelshuffle:
             last_layer = SubpixelUpsample(
-                self.spatial_dims,
+                spatial_dims,
                 channels[0],
                 out_channels=self.in_channels,
                 scale_factor=strides[0],
