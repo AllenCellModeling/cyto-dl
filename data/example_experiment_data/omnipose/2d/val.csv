@@ -1,0 +1,2 @@
+﻿raw,seg
+./data/example_experiment_data/omnipose/2d/source/20x_CAAX_Spy650_CellBrite505_Timelapse_S10_T2.tif,./data/example_experiment_data/omnipose/2d/target/20x_CAAX_Spy650_CellBrite505_Timelapse_S10_T2_cp_masks.tif

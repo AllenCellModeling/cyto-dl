@@ -20,14 +20,15 @@ transforms:
         keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: "CZYX"
+            dimension_order_out: ${img_load_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
-        dim: 3
+        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
+        channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}
@@ -47,12 +48,7 @@ transforms:
       - _target_: monai.transforms.RandAdjustContrastd
         prob: 0.1
         keys: ${source_col}
-        gamma: [0.9, 1.1]
-
-      - _target_: monai.transforms.RandRotate90d
-        keys: ${data.columns}
-        prob: 0.5
-        spatial_axes: [1, 2]
+        gamma: [0.9, 1.5]
 
   test:
     _target_: monai.transforms.Compose
@@ -61,14 +57,15 @@ transforms:
         keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: "CZYX"
+            dimension_order_out: ${img_load_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
-        dim: 3
+        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
+        channel_wise: True
 
   predict:
     _target_: monai.transforms.Compose
@@ -77,11 +74,12 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: "CZYX"
+            dimension_order_out: ${img_load_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
+        channel_wise: True
 
   valid:
     _target_: monai.transforms.Compose
@@ -90,14 +88,15 @@ transforms:
         keys: ${data.columns}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: "CZYX"
+            dimension_order_out: ${img_load_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
-        dim: 3
+        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
+        channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}

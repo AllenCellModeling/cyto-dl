@@ -21,6 +21,7 @@ def test_hydra_sweep(tmp_path):
         "+model.optimizer.lr=0.005,0.01",
         "trainer=cpu",
         "++trainer.fast_dev_run=true",
+        "++model.patch_shape=[16,16,16]",
     ] + overrides
 
     run_sh_command(command)
@@ -43,5 +44,6 @@ def test_hydra_sweep_ddp_sim(tmp_path):
         "+trainer.limit_val_batches=2",
         "+trainer.limit_test_batches=2",
         "+model.optimizer.lr=0.005,0.01,0.02",
+        "++model.patch_shape=[16,16,16]",
     ] + overrides
     run_sh_command(command)
