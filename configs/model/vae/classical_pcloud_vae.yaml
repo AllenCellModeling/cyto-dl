@@ -1,7 +1,7 @@
 _target_: aics_im2im.models.vae.PointCloudVAE
 
 x_label: pcloud
-id_label: cell_id
+# id_label: cell_id
 
 latent_dim: 128
 num_points: 4096
@@ -15,6 +15,6 @@ include_cross: false
 include_coords: true
 
 beta: 1.0
-embedding_prior: "gaussian"
+embedding_prior: "identity"
 
 eps: 1e-6

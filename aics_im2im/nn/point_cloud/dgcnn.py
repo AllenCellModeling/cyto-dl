@@ -25,7 +25,7 @@ def _make_conv(in_features, out_features, mode="scalar", double_input=True, fina
 
     if mode == "vector":
         return VNLinearLeakyReLU(
-            in_features, out_features, use_batchnorm=True, dim=(4 if final else 5)
+            in_features, out_features, use_batchnorm=False, dim=(4 if final else 5)
         )
 
     conv = nn.Conv1d if final else nn.Conv2d

@@ -14,7 +14,7 @@ transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols
     groups:
       pcloud: path
-      cell_id: CellId
+      # cell_id: CellId
 
   - _target_: aics_im2im.point_cloud.io.ReadPointCloud
     keys: pcloud
