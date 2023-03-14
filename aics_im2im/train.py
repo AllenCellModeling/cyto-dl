@@ -40,7 +40,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     # remove aux section after resolving and before instantiating
     cfg = utils.remove_aux_key(cfg)
 
-    log.info(f"Instantiating data <{cfg.data._target_}>")
+    log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
     data = hydra.utils.instantiate(cfg.data)
     if not isinstance(data, LightningDataModule):
         if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
