@@ -18,6 +18,7 @@ class Resized(Transform):
         align_corners: Union[bool, None] = None,
         recompute_scale_factor: bool = False,
         antialias: bool = False,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -47,11 +48,11 @@ class Resized(Transform):
         self.align_corners = align_corners
         self.recompute_scale_factor = recompute_scale_factor
         self.antialias = antialias
+        self.allow_missing_keys = allow_missing_keys
 
     def __call__(self, img):
-        resized = {}
-        for key in img.keys():
-            if key in self.keys:
+        for key in self.keys:
+            if key in img.keys():
                 out_size = list(
                     map(
                         round,
@@ -63,13 +64,13 @@ class Resized(Transform):
                     raise ValueError("Images must have CZYX or CYX dimensions")
                 raw_img = raw_img.as_tensor() if isinstance(raw_img, MetaTensor) else raw_img
 
-                resized[key] = torch.nn.functional.interpolate(
+                img[key] = torch.nn.functional.interpolate(
                     input=raw_img.unsqueeze(0),
                     size=out_size,
                     mode=self.mode,
                     align_corners=self.align_corners,
                     antialias=self.antialias,
                 ).squeeze(0)
-            else:
-                resized[key] = img[key]
-        return resized
+            elif not self.allow_missing_keys:
+                raise KeyError(f"Key {key} not found in data. Available keys are {img.keys()}")
+        return img

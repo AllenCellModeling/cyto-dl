@@ -1,0 +1,6 @@
+,raw,seg1,seg2
+0,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+1,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+2,./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif
+3,./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif
+4,./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif

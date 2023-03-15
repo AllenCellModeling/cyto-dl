@@ -16,33 +16,27 @@ defaults:
 tags: ["dev"]
 seed: 12345
 
-experiment_name: benji_omnipose
-run_name: test
+experiment_name: YOUR_EXPERIMENT_NAME_HERE
+run_name: YOUR_RUN_NAME_HERE
 source_col: raw
 target_col: seg
-persist_cache: True
-# mode: predict
+spatial_dims: 2
+img_load_dims: "CYX"
+raw_im_channels: 3
 
-# ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/checkpoints/epoch_079.ckpt"
 trainer:
-  max_epochs: 1000
+  max_epochs: 100
   check_val_every_n_epoch: 1
 
 model:
-  # save_dir: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/logs/train/runs/benji_omnipose/test/2023-02-08_14-09-56/"
-  patch_shape: [32, 256, 256]
+  patch_shape: [256, 256]
 
 data:
-  path: //allen/aics/assay-dev/users/Benji/CurrentProjects/20xBF_to_cellseg/laminseg_separate_interphase_and_mitotic_channel/3d_seg_2d_mito_mask/split_config/
-  cache_dir: ${paths.data_dir}/omnipose/cache
-  batch_size: 10
-  subsample:
-    train: 5000
-    valid: -1
-    test: 0
+  path: ${paths.data_dir}/example_experiment_data/omnipose/2d
+  cache_dir: ${paths.data_dir}/example_experiment_data/omnipose/2d/cache
+  batch_size: 1
 
-##### ONLY USE WITH A100s
-extras:
-  precision:
-    _target_: torch.set_float32_matmul_precision
-    precision: medium
+  # if epochs are very fast,setting a subsample >> training set size can reduce
+  # the overhead of running full epochs by running lots of steps of same images in single epoch
+  subsample:
+    train: 1000

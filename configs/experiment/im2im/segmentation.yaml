@@ -13,8 +13,8 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-source_col: raw # YOUR_RAW_COLUMN_NAME
-target_col: seg # YOUR_SEGMENTATION_COLUMN_NAME
+source_col: YOUR_RAW_COLUMN_NAME
+target_col: YOUR_SEGMENTATION_COLUMN_NAME
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 
@@ -25,7 +25,7 @@ model:
   patch_shape: [32, 256, 256]
 
 data:
-  path: /allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/aics-im2im/data/gt_to_im #${paths.data_dir}/DATAPATH/
+  path: ${paths.data_dir}/DATAPATH/
   cache_dir: ${paths.data_dir}/DATAPATH/cache
   subsample:
     train: 1

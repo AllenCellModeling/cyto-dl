@@ -1,0 +1,11 @@
+raw,seg1,seg2
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,./tests/resources/rand_im.tif
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif
+./tests/resources/rand_im.tif,,./tests/resources/rand_im.tif
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,
+./tests/resources/rand_im.tif,./tests/resources/rand_im.tif,

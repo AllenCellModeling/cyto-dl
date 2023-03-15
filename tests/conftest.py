@@ -56,6 +56,9 @@ def cfg_train_global(request) -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
+            cfg.source_col = "raw"
+            cfg.target_col = "seg"
+            cfg.model.patch_shape = [16, 16, 16]
     return cfg
 
 
@@ -87,6 +90,10 @@ def cfg_eval_global(request) -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
+            cfg.source_col = "raw"
+            cfg.target_col = "seg"
+            cfg.model.patch_shape = [16, 16, 16]
+
     return cfg
 
 

@@ -1,0 +1,138 @@
+from typing import Callable, Optional
+
+import numpy as np
+import pandas as pd
+from aicsimageio.aics_image import AICSImage
+from monai.data import DataLoader, Dataset
+from monai.transforms import Compose, apply_transform
+from omegaconf import ListConfig
+
+
+class CZIDataset(Dataset):
+    def __init__(
+        self,
+        csv_path,
+        img_path_column,
+        channel_column,
+        out_key,
+        spatial_dims=3,
+        scene_column="scene",
+        time_start_column="start",
+        time_stop_column="stop",
+        time_step_column="step",
+        transform: Optional[Callable] = None,
+    ):
+        super().__init__(None, transform)
+        df = pd.read_csv(csv_path)
+        self.img_path_column = img_path_column
+        self.channel_column = channel_column
+        self.scene_column = scene_column
+        self.time_start_column = time_start_column
+        self.time_stop_column = time_stop_column
+        self.time_step_column = time_step_column
+        self.out_key = out_key
+        self.spatial_dims = spatial_dims
+
+        self.img_data, self.n_files = self.get_per_file_args(df)
+
+    def _get_scenes(self, row, img):
+        scenes = row.get(self.scene_column, -1)
+        if scenes != -1:
+            scenes = scenes.strip().split(",")
+            for scene in scenes:
+                if scene not in img.scenes:
+                    raise ValueError(
+                        f"For image {row[self.img_path_column]} unable to find scene `{scene}`, available scenes are {img.scenes}"
+                    )
+        else:
+            scenes = img.scenes
+        return scenes
+
+    def _get_timepoints(self, row, img):
+        start = row.get(self.time_start_column, -1)
+        stop = row.get(self.time_stop_column, -1)
+        step = row.get(self.time_step_column, 1)
+        timepoints = list(range(start, stop, step))
+        if np.any((start, stop, step) == -1):
+            timepoints = list(range(img.dims.T))
+        return timepoints
+
+    def get_per_file_args(self, df):
+        n_files = 0
+        img_data = []
+        for row in df.itertuples():
+            row = row._asdict()
+            img = AICSImage(row[self.img_path_column])
+            scenes = self._get_scenes(row, img)
+            timepoints = self._get_timepoints(row, img)
+            n_files += len(scenes) * len(timepoints)
+            for scene in scenes:
+                for timepoint in timepoints:
+                    img_data.append(
+                        {
+                            "img": img,
+                            "dimension_order_out": "ZYX"[-self.spatial_dims :],
+                            "C": row[self.channel_column],
+                            "scene": scene,
+                            "T": timepoint,
+                            "original_path": row[self.img_path_column],
+                        }
+                    )
+        return img_data, n_files
+
+    def _metadata_to_str(self, metadata):
+        return "_".join([] + [f"{k}={v}" for k, v in metadata.items()])
+
+    def _ensure_channel_first(self, img):
+        while len(img.shape) < self.spatial_dims + 1:
+            img = np.expand_dims(img, 0)
+        return img
+
+    def _transform(self, index: int):
+        img_data = self.img_data.pop()
+        img = img_data.pop("img")
+        original_path = img_data.pop("original_path")
+        img.set_scene(img_data.pop("scene"))
+        data_i = img.get_image_dask_data(**img_data).compute()
+        data_i = self._ensure_channel_first(data_i)
+        return {
+            self.out_key: apply_transform(self.transform, data_i)
+            if self.transform is not None
+            else data_i,
+            f"{self.out_key}_meta_dict": {
+                "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
+            },
+        }
+
+    def __len__(self):
+        return self.n_files
+
+
+def make_CZI_dataloader(
+    csv_path,
+    img_path_column,
+    channel_column,
+    out_key,
+    spatial_dims=3,
+    scene_column="scene",
+    time_start_column="start",
+    time_stop_column="stop",
+    time_step_column="step",
+    transforms=None,
+    **dataloader_kwargs,
+):
+    if isinstance(transforms, (list, tuple, ListConfig)):
+        transforms = Compose(transforms)
+    dataset = CZIDataset(
+        csv_path,
+        img_path_column,
+        channel_column,
+        out_key,
+        spatial_dims,
+        scene_column=scene_column,
+        time_start_column=time_start_column,
+        time_stop_column=time_stop_column,
+        time_step_column=time_step_column,
+        transform=transforms,
+    )
+    return DataLoader(dataset, **dataloader_kwargs)

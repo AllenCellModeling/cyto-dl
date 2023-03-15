@@ -37,7 +37,7 @@ class PointCloudVAE(BaseVAE):
         symmetry_breaking_axis: Optional[Union[str, int]] = None,
         _transpose_rotation: bool = False,
     ):
-        self.equivariant = equivariant or mode=='vector'
+        self.equivariant = equivariant or mode == "vector"
         self.symmetry_breaking_axis = symmetry_breaking_axis
         self._transpose_rotation = _transpose_rotation
 
@@ -96,12 +96,14 @@ class PointCloudVAE(BaseVAE):
             else:
                 axis = None
 
-            embedding, rotation = self.encoder[self.hparams.x_label](x, symmetry_breaking_axis=axis, get_rotation=self.equivariant)
+            embedding, rotation = self.encoder[self.hparams.x_label](
+                x, symmetry_breaking_axis=axis, get_rotation=self.equivariant
+            )
             return {"embedding": embedding, "rotation": rotation}
 
         return {"embedding": self.encoder[self.hparams.x_label](x)}
 
-    def decode(self, z_parts):
+    def decode(self, z_parts, return_canonical=False):
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
 
         if self.equivariant:
@@ -112,5 +114,9 @@ class PointCloudVAE(BaseVAE):
             xhat = torch.einsum("bij,bjk->bik", base_xhat, rotation)
         else:
             xhat = base_xhat
+        
+        if return_canonical:
+            return {self.hparams.x_label: xhat}, z_parts, base_xhat
+        else:
+            return {self.hparams.x_label: xhat}, z_parts
 
-        return {self.hparams.x_label: xhat}, z_parts

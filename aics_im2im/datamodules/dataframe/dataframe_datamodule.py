@@ -8,6 +8,7 @@ from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from upath import UPath as Path
 
 from .utils import (
+    AlternatingBatchSampler,
     get_canonical_split_name,
     make_multiple_dataframe_splits,
     make_single_dataframe_splits,
@@ -39,6 +40,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         cache_dir: Optional[Union[Path, str]] = None,
         subsample: Optional[Dict] = None,
         seed: int = 42,
+        target_columns: str = None,
         **dataloader_kwargs,
     ):
         """
@@ -75,6 +77,9 @@ class DataframeDatamodule(pl.LightningDataModule):
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
 
+        head_allocation_columm: Optional[str]=None
+            Column name that dictates which head a row should be passed to
+
         dataloader_kwargs:
             Additional keyword arguments are passed to the
             torch.utils.data.DataLoader class when instantiating it (aside from
@@ -89,7 +94,6 @@ class DataframeDatamodule(pl.LightningDataModule):
         self.seed = seed
         self.path = path
         self.cache_dir = cache_dir
-
         # if only one loader is specified, the same transforms are
         # used for all  folds
         transforms = parse_transforms(transforms)
@@ -122,6 +126,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
+        self.target_columns = target_columns
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
         self.dataloaders = {}
@@ -132,12 +137,10 @@ class DataframeDatamodule(pl.LightningDataModule):
 
     def get_dataset(self, split):
         sample_size = self.subsample.get(split, -1)
-
-        if sample_size == -1:
-            return self.datasets[split]
-
-        sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
-
+        # always return a Subset
+        sample = range(len(self.datasets[split]))
+        if sample_size != -1:
+            sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
         # this doesn't affect performance because it returns a Subset,
         # which loads from the underlying dataset lazily
         return self.datasets[split][sample]
@@ -145,8 +148,21 @@ class DataframeDatamodule(pl.LightningDataModule):
     def make_dataloader(self, split):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
-
-        return DataLoader(dataset=self.get_dataset(split), **kwargs)
+        subset = self.get_dataset(split)
+        if kwargs.get("use_alternating_batch_sampler"):
+            batch_sampler = AlternatingBatchSampler(
+                subset,
+                batch_size=kwargs.pop("batch_size"),
+                drop_last=True,
+                shuffle=kwargs.pop("shuffle"),
+                target_columns=self.target_columns,
+            )
+            for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
+                if key in kwargs:
+                    del kwargs[key]
+            print(split)
+            return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
+        return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)

@@ -1,19 +1,103 @@
 import re
-from itertools import chain
+from itertools import chain, repeat
+from typing import Iterator, List
 
 import numpy as np
-from upath import UPath as Path
 
 try:
     import modin.pandas as pd
 except ModuleNotFoundError:
     import pandas as pd
 
+import random
+
 from monai.data import Dataset, PersistentDataset
-from monai.transforms import Compose
+from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
+from torch.utils.data import BatchSampler, SubsetRandomSampler
+from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
+
+
+class RemoveNaNKeysd(Transform):
+    """' Transform to remove 'nan' keys from data dictionary.
+
+    When combined with adding `allow_missing_keys=True` to transforms and the alternating batch
+    sampler, this allows multi-task training when only one target is available at a time.
+    """
+
+    def __init__(img):
+        super().__init__()
+
+    def __call__(self, img):
+        new_data = {k: v for k, v in img.items() if not pd.isna(v)}
+        return new_data
+
+
+# randomly switch between generating batches from each sampler
+class AlternatingBatchSampler(BatchSampler):
+    def __init__(
+        self,
+        subset,
+        target_columns,
+        batch_size,
+        drop_last=False,
+        shuffle=True,
+        sampler=SubsetRandomSampler,
+    ):
+        super().__init__(None, batch_size, drop_last)
+        if target_columns is None:
+            raise ValueError("target_columns must be defined if using batch sampler.")
+        # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
+        # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
+        # subset indices instead of the indices of the original dataframe, we have to reset the index
+        # of the subsetted dataframe
+
+        # order is subset.monai_dataset.dataframewrapper.dataframe
+        subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
+        samplers = []
+        for name in target_columns:
+            # returns an index into dataset.indices where head column is not empty
+            head_indices = subset_df.index[~subset_df[name].isna()].to_list()
+            if len(head_indices) == 0:
+                raise ValueError(
+                    f"Dataset must contain examples of head {name}. Please increase the value of subsample."
+                )
+            samplers.append(sampler(head_indices))
+
+        self.samplers = samplers
+        self.shuffle = shuffle
+        self._sampler_generator()
+
+    def _sampler_generator(self):
+        self.sampler_iterators = [iter(s) for s in self.samplers]
+
+        # for now include equal numbers of all samplers
+        samples_per_sampler = len(self) // len(self.samplers)
+
+        if samples_per_sampler == 0:
+            raise ValueError("Insufficient examples per task head. Please decrease batch size.")
+
+        interleaved_sampler_order = repeat(range(len(self.samplers)), samples_per_sampler)
+        interleaved_sampler_order = chain.from_iterable(interleaved_sampler_order)
+        interleaved_sampler_order = list(interleaved_sampler_order)
+
+        if self.shuffle:
+            random.shuffle(interleaved_sampler_order)
+
+        self.sampler_order = interleaved_sampler_order
+
+    def __iter__(self) -> Iterator[List[int]]:
+        for sampler_ix in self.sampler_order:
+            yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
+
+        self._sampler_generator()
+
+    def __len__(self) -> int:
+        min_num_samples = min(len(sampler) for sampler in self.samplers)
+        min_num_batches = min_num_samples // self.batch_size
+        return min_num_batches * len(self.samplers)
 
 
 def get_canonical_split_name(split):
