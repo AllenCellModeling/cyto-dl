@@ -62,7 +62,7 @@ class FoldingNet(nn.Module):
 
         cat1 = torch.cat((cw_exp, grid), dim=2)
 
-        folding_result1 = self.folding1(cat1.transpose(1,-1))
-        cat2 = torch.cat((cw_exp.transpose(1,-1), folding_result1), dim=1)
+        folding_result1 = self.folding1(cat1.transpose(1, -1))
+        cat2 = torch.cat((cw_exp.transpose(1, -1), folding_result1), dim=1)
         folding_result2 = self.folding2(cat2)
         return folding_result2.transpose(1, -1)

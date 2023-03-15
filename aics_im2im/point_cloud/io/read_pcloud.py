@@ -1,16 +1,19 @@
 import os
 import uuid
 from tempfile import TemporaryDirectory
-from typing import Sequence, Union, Optional
+from typing import Optional, Sequence, Union
 
+import numpy as np
+import torch
 from monai.transforms import MapTransform
 from pyntcloud import PyntCloud
 from upath import UPath as Path
-import torch
-import numpy as np
+
 
 class ReadPointCloud(MapTransform):
-    def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False, sample: Optional[int] = None):
+    def __init__(
+        self, keys: Union[str, Sequence[str]], remote: bool = False, sample: Optional[int] = None
+    ):
         """
         Parameters
         ----------
@@ -43,9 +46,11 @@ class ReadPointCloud(MapTransform):
                 else:
                     path = str(row[key])
 
-                res[key] = torch.tensor(PyntCloud.from_file(path).points.values, dtype=torch.get_default_dtype())
+                res[key] = torch.tensor(
+                    PyntCloud.from_file(path).points.values, dtype=torch.get_default_dtype()
+                )
                 if self.sample:
-                    self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample) 
+                    self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
                     res[key] = res[key][self.sample_idx]
 
         return res

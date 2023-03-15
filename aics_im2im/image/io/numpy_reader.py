@@ -1,12 +1,13 @@
 import os
 import uuid
 from tempfile import TemporaryDirectory
-from typing import Sequence, Union, Optional
+from typing import Optional, Sequence, Union
 
+import numpy as np
+import torch
 from monai.transforms import MapTransform
 from upath import UPath as Path
-import torch
-import numpy as np
+
 
 class ReadNumpyFile(MapTransform):
     def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False):
@@ -41,6 +42,8 @@ class ReadNumpyFile(MapTransform):
                 else:
                     path = str(row[key])
 
-                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype()).unsqueeze(dim=0)
+                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype()).unsqueeze(
+                    dim=0
+                )
 
         return res
