@@ -145,10 +145,12 @@ dmypy.json
 *.tar.gz
 
 # Lightning-Hydra-Template
-configs/local/*
+
+configs/*/local/*
 !configs/local/.gitkeep
 data/
 !configs/data
+configs/data/local
 logs/
 .env
 .autoenv
