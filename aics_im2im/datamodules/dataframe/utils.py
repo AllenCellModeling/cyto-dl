@@ -1,5 +1,5 @@
 import re
-from itertools import chain
+from itertools import chain, repeat
 from typing import Iterator, List
 
 import numpy as np
@@ -9,7 +9,7 @@ try:
 except ModuleNotFoundError:
     import pandas as pd
 
-from random import shuffle as random_shuffle
+import random
 
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose, Transform
@@ -54,12 +54,12 @@ class AlternatingBatchSampler(BatchSampler):
         # subset indices instead of the indices of the original dataframe, we have to reset the index
         # of the subsetted dataframe
 
-        # order is   subset.monai_dataset.dataframewrapper.dataframe
+        # order is subset.monai_dataset.dataframewrapper.dataframe
         subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
         samplers = []
         for name in target_columns:
             # returns an index into dataset.indices where head column is not empty
-            head_indices = subset_df.index[subset_df[name].isna()].to_list()
+            head_indices = subset_df.index[~subset_df[name].isna()].to_list()
             if len(head_indices) == 0:
                 raise ValueError(
                     f"Dataset must contain examples of head {name}. Please increase the value of subsample."
@@ -68,42 +68,36 @@ class AlternatingBatchSampler(BatchSampler):
 
         self.samplers = samplers
         self.shuffle = shuffle
-        self.sampler_generator = self._sampler_generator()
+        self._sampler_generator()
 
     def _sampler_generator(self):
         self.sampler_iterators = [iter(s) for s in self.samplers]
+
         # for now include equal numbers of all samplers
-        samples_per_sampler = self.__len__() // len(self.samplers)
+        samples_per_sampler = len(self) // len(self.samplers)
+
         if samples_per_sampler == 0:
             raise ValueError("Insufficient examples per task head. Please decrease batch size.")
-        sampler_order = [[i] * samples_per_sampler for i in range(len(self.samplers))]
-        # sampler0, sampler1, ..., sampler n, sampler 0, sampler1, ..., sampler n...
-        interleaved_sampler_order = [
-            _ for sampler_tuple in zip(*sampler_order) for _ in sampler_tuple
-        ]
+
+        interleaved_sampler_order = repeat(range(len(self.samplers)), samples_per_sampler)
+        interleaved_sampler_order = chain.from_iterable(interleaved_sampler_order)
+        interleaved_sampler_order = list(interleaved_sampler_order)
 
         if self.shuffle:
-            random_shuffle(interleaved_sampler_order)
+            random.shuffle(interleaved_sampler_order)
+
         self.sampler_order = interleaved_sampler_order
 
-    def get_next_sampler(self):
-        if len(self.sampler_order) == 0:
-            self._sampler_generator()
-        return self.sampler_iterators[self.sampler_order.pop()]
-
     def __iter__(self) -> Iterator[List[int]]:
-        sampler = self.get_next_sampler()
-        while True:
-            try:
-                batch = [next(sampler) for _ in range(self.batch_size)]
-                yield batch
-                sampler = self.get_next_sampler()
-            except StopIteration:
-                break
+        for sampler_ix in self.sampler_order:
+            yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
+
+        self._sampler_generator()
 
     def __len__(self) -> int:
-        sampler_len = np.min([len(sampler) for sampler in self.samplers]) * len(self.samplers)
-        return sampler_len // self.batch_size  # type: ignore[arg-type]
+        min_num_samples = min(len(sampler) for sampler in self.samplers)
+        min_num_batches = min_num_samples // self.batch_size
+        return min_num_batches * len(self.samplers)
 
 
 def get_canonical_split_name(split):
