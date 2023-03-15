@@ -135,6 +135,13 @@ class DataframeDatamodule(pl.LightningDataModule):
         for key in list(self.subsample.keys()):
             self.subsample[get_canonical_split_name(key)] = self.subsample[key]
 
+        if not just_inference:
+            self.train_dataloader()
+            self.val_dataloader()
+            self.test_dataloader()
+        else:
+            self.predict_dataloader()
+
     def get_dataset(self, split):
         sample_size = self.subsample.get(split, -1)
         # always return a Subset
