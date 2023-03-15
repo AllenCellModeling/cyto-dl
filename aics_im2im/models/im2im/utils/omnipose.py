@@ -54,7 +54,7 @@ class OmniposePreprocessd(Transform):
             if np.max(numpy_im) <= 0:
                 raise ValueError("Ground truth images for Omnipose must have at least 1 label")
 
-            out_im = np.zeros([5 + self.dim] + list(numpy_im.shape))
+            out_im = np.zeros([4 + self.dim] + list(numpy_im.shape))
 
             (
                 instance_seg,
@@ -73,9 +73,8 @@ class OmniposePreprocessd(Transform):
             )  # boundaries
             out_im[1] = boundary_weighted_mask
             out_im[2] = instance_seg
-            out_im[3] = rough_distance
-            out_im[4 : 4 + self.dim] = flows * 5.0  # weighted for loss function?
-            out_im[4 + self.dim] = smooth_distance
+            out_im[3 : 3 + self.dim] = flows * 5.0  # weighted for loss function?
+            out_im[3 + self.dim] = smooth_distance
             image_dict[key] = out_im
         return image_dict
 
@@ -101,10 +100,8 @@ class OmniposeLoss:
             y[:,0] boundary field
             y[:,1] boundary-emphasized weights
             y[:,2] cell masks
-            y[:,3] distance field
-            y[:,4:6] flow components
-            y[:,7] smooth distance field
-
+            y[:,3:3+self.dim] flow components
+            y[:,3+self.dim] smooth distance field
 
         y_hat:  ND-tensor, float
             network predictions, with dimension D, these are:
