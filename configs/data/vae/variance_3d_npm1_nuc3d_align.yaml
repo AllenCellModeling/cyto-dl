@@ -12,11 +12,13 @@ persistent_workers: true
 transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols
     groups:
-      image: sdf_path
+      image: sdf_path_align_3dnuc
       cell_id: CellId
   - _target_: aics_im2im.image.io.ReadNumpyFile
     keys: image
     remote: false
+  - _target_: monai.transforms.NormalizeIntensityd
+    keys: [image]
   - _target_: monai.transforms.ToTensord
     keys: [image]
     track_meta: false

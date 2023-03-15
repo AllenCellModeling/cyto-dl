@@ -1,0 +1,24 @@
+_target_: aics_im2im.datamodules.DataframeDatamodule
+_convert_: all
+
+path: /allen/aics/assay-dev/users/Alex/handoff/ritvik/npm_manifest_with_sdfs.csv
+split_column: split
+
+batch_size: 64
+num_workers: 10
+multiprocessing_context: spawn
+persistent_workers: true
+
+transforms:
+  - _target_: aics_im2im.dataframe.transforms.GroupCols
+    groups:
+      image: sdf_path_unalign
+      cell_id: CellId
+  - _target_: aics_im2im.image.io.ReadNumpyFile
+    keys: image
+    remote: false
+  - _target_: monai.transforms.NormalizeIntensityd
+    keys: [image]
+  - _target_: monai.transforms.ToTensord
+    keys: [image]
+    track_meta: false
