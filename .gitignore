@@ -146,11 +146,11 @@ dmypy.json
 
 # Lightning-Hydra-Template
 
-configs/*/local/*
-!configs/*/local/.gitkeep
 data/
 !configs/data
-configs/data/local
+
+configs/*/local/*
+!configs/*/local/.gitkeep
 logs/
 .env
 .autoenv
