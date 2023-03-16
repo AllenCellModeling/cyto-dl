@@ -18,33 +18,30 @@ transforms:
     transforms:
       # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
-        keys: ${source_col}
-        reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
-            C: 4
-      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
-      - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
-            C: 0
+            C: 4
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 5
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${source_col}
+        keys: ${data.columns}
         channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
@@ -87,19 +84,15 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${source_col}
-        channel_wise: True
+        keys: ${data.columns}
 
   predict:
     _target_: monai.transforms.Compose
@@ -140,18 +133,15 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: ${source_col}
+        keys: ${data.columns}
         channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}

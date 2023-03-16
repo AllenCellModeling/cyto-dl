@@ -33,19 +33,21 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: [seg]
+        threshold: 0.1
+        above: False
+        cval: 1
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}
@@ -87,19 +89,21 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: [seg]
+        threshold: 0.1
+        above: False
+        cval: 1
 
   predict:
     _target_: monai.transforms.Compose
@@ -140,19 +144,21 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:
+        keys:   
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
-        label_keys: ${target_col}
-        dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: [seg]
+        threshold: 0.1
+        above: False
+        cval: 1
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}

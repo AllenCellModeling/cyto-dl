@@ -1,15 +1,16 @@
 _target_: aics_im2im.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
+save_dir: ${paths.output_dir}
+
 x_key: ${source_col}
 patch_shape:
-save_dir: ${paths.output_dir}
 
 backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: ${spatial_dims}
   in_channels: ${raw_im_channels}
-  out_channels: 5
+  out_channels: 1
   strides: [1, 2, 2, 2]
   kernel_size: [3, 3, 3, 3]
   upsample_kernel_size: [2, 2, 2]
@@ -21,15 +22,15 @@ task_heads: ${kv_to_dict:${model._aux._tasks}}
 optimizer:
   generator:
     _partial_: True
-    _target_: torch.optim.AdamW
+    _target_: torch.optim.Adam
     lr: 0.0001
-    weight_decay: 0.001
+    weight_decay: 0.0001
 
 lr_scheduler:
   generator:
     _partial_: True
     _target_: torch.optim.lr_scheduler.ExponentialLR
-    gamma: 0.998
+    gamma: 0.995
 
 inference_args:
   sw_batch_size: 1
@@ -40,6 +41,13 @@ _aux:
     - - ${target_col}
       - _target_: aics_im2im.nn.BaseAuxHead
         loss:
-          _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
-          dim: ${spatial_dims}
+          _target_: monai.losses.DiceCELoss
+          sigmoid: True
+        postprocess:
+          input:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
+            _partial_: True
+          prediction:
+            _target_: aics_im2im.models.im2im.utils.postprocessing.sigmoid_rescale
+            _partial_: True
         save_raw: True
