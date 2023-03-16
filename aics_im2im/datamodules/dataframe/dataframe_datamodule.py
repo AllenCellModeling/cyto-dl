@@ -39,6 +39,7 @@ class DataframeDatamodule(pl.LightningDataModule):
         just_inference: bool = False,
         cache_dir: Optional[Union[Path, str]] = None,
         subsample: Optional[Dict] = None,
+        refresh_subsample: bool = False,
         seed: int = 42,
         target_columns: str = None,
         **dataloader_kwargs,
@@ -132,6 +133,8 @@ class DataframeDatamodule(pl.LightningDataModule):
         self.dataloaders = {}
         self.rng = np.random.default_rng(seed=seed)
         self.subsample = subsample or {}
+        self.refresh_subsample = refresh_subsample
+
         for key in list(self.subsample.keys()):
             self.subsample[get_canonical_split_name(key)] = self.subsample[key]
 
@@ -167,7 +170,7 @@ class DataframeDatamodule(pl.LightningDataModule):
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
 
-        if (split not in self.dataloaders) or (sample_size != -1):
+        if (split not in self.dataloaders) or (sample_size != -1 and self.refresh_subsample):
             # if we want to use a subsample per epoch, we need to remake the
             # dataloader, to refresh the sample
             self.dataloaders[split] = self.make_dataloader(split)
