@@ -152,19 +152,6 @@ class DataframeDatamodule(pl.LightningDataModule):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         subset = self.get_dataset(split)
-        if kwargs.get("use_alternating_batch_sampler"):
-            batch_sampler = AlternatingBatchSampler(
-                subset,
-                batch_size=kwargs.pop("batch_size"),
-                drop_last=True,
-                shuffle=kwargs.pop("shuffle"),
-                target_columns=self.target_columns,
-            )
-            for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
-                if key in kwargs:
-                    del kwargs[key]
-            print(split)
-            return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
         return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
