@@ -7,14 +7,14 @@ from omegaconf import OmegaConf, open_dict
 from aics_im2im.eval import evaluate
 from aics_im2im.train import train
 
-from .conftest import experiments
+from .conftest import experiment_types
 from .utils import resolve_readonly
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
     "cfg_train_global, cfg_eval_global",
-    zip(experiments, experiments),
+    zip(experiment_types, experiment_types),
     indirect=True,
 )
 def test_train_eval(tmp_path, cfg_train, cfg_eval):

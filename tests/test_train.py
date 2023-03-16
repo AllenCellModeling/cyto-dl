@@ -37,7 +37,7 @@ def test_train_epoch_gpu_amp(cfg_train):
     """Train 1 epoch on GPU with mixed-precision."""
     HydraConfig().set_config(cfg_train)
     with open_dict(cfg_train):
-        cfg_train.trainer.max_epochs = 1
+        cfg_train.trainer.max_epochs = 10
         cfg_train.trainer.accelerator = "cpu"
         cfg_train.trainer.precision = 16
     resolve_readonly(cfg_train)
