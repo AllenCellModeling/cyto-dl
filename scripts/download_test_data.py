@@ -36,7 +36,7 @@ def download_test_data(limit=-1):
             bucket, s3_path, local_file_name = parse_s3_path(fn)
             local_file_path = EXAMPLE_DATA_DIR / "s3_data" / local_file_name
             if not local_file_path.exists():
-                s3.download_file(bucket, s3_path, local_file_path)
+                s3.download_file(bucket, s3_path, str(local_file_path))
             local_data[col].append(local_file_path)
 
     local_data = pd.DataFrame(local_data)
