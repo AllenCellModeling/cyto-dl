@@ -30,6 +30,6 @@ model:
   patch_shape: [16, 32, 32]
 
 data:
-  path: ${paths.data_dir}/example_experiment_data
+  path: ${paths.data_dir}/example_experiment_data/segmentation
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1

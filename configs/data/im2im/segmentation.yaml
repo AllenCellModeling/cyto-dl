@@ -33,7 +33,7 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:   
+        keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
@@ -89,7 +89,7 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:   
+        keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
@@ -144,7 +144,7 @@ transforms:
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
       - _target_: aics_im2im.image.transforms.Resized
-        keys:   
+        keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
