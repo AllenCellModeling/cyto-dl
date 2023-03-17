@@ -41,6 +41,7 @@ dependencies = [
     "tifffile>=2023.2.3",
     "tqdm>=4.64.1",
     "protobuf<=3.20.1",
+    "boto3>=1.24.59",
 ]
 requires-python = ">=3.8,<3.11"
 
