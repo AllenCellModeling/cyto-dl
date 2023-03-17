@@ -49,7 +49,7 @@ def download_test_data(limit=-1):
 
 
 def delete_test_data():
-    for subdir in ("segmentation", "labelfree"):
+    for subdir in ("segmentation", "labelfree", "s3_data"):
         shutil.rmtree(EXAMPLE_DATA_DIR / subdir)
 
 
