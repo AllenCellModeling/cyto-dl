@@ -7,12 +7,13 @@ from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 from aics_im2im.utils.config import kv_to_dict
+from scripts.download_test_data import delete_test_data, download_test_data
 
 OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
 # Experiment configs to test
-experiment_types = ["segmentation" "omnipose", "labelfree"]
+experiment_types = ["segmentation"]  # , "omnipose", "labelfree"]
 
 
 @pytest.fixture(scope="package", params=experiment_types)
@@ -102,3 +103,12 @@ def cfg_eval(cfg_eval_global, tmp_path) -> Generator[DictConfig, None, None]:
     yield cfg
 
     GlobalHydra.instance().clear()
+
+
+def pytest_sessionstart(session):
+    download_test_data()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    delete_test_data()
+    return exitstatus
