@@ -37,6 +37,7 @@ class SO2ImageEncoder(torch.nn.Module):
             else gspaces.rot2dOnR3(n=-1, maximum_frequency=maximum_frequency)
         )
         self.in_type = nn.FieldType(self.gspace, [self.gspace.trivial_repr])
+        self.input_type = in_type
 
         blocks = [self.make_block(self.in_type, channels[0], strides[0])]
         for c, s in zip(channels[1:], strides[1:]):
@@ -75,7 +76,8 @@ class SO2ImageEncoder(torch.nn.Module):
 
         self.pose_head = nn.Linear(pre_pooled_type, pose_type)
 
-    def forward(self, x: nn.GeometricTensor):
+    def forward(self, x):
+        x = nn.GeometricTensor(x, self.input_type)
         y = self.backbone(x)
 
         sum_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
@@ -91,7 +93,7 @@ class SO2ImageEncoder(torch.nn.Module):
         y_embedding = self.embedding_head(y)
         y_pose = self.pose_head(y)
 
-        return nn.tensor_directsum((y_embedding, y_pose))
+        return y_embedding, y_pose
 
     def get_fields(self, n_channels):
         scalar_fields = nn.FieldType(self.gspace, n_channels * [self.gspace.trivial_repr])

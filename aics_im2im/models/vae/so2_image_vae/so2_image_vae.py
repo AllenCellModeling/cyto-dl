@@ -18,6 +18,9 @@ from aics_im2im.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 
 from .so2_encoder import SO2ImageEncoder
 from .utils import get_rotation_matrix, rotate_img
+from .modules_2d import Encoder as Encoder2D
+from .modules_3d import Encoder as Encoder3D
+
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -36,7 +39,8 @@ class SO2ImageVAE(BaseVAE):
         x_label: str,
         id_label: Optional[str] = None,
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
-        maximum_frequency: int = 16,
+        maximum_frequency: int = 8,
+        hidden_dim: int = 32,
         kernel_size: int = 3,
         up_kernel_size: int = 3,
         num_res_units: int = 0,
@@ -60,6 +64,7 @@ class SO2ImageVAE(BaseVAE):
         self.in_channels, *self.in_shape = in_shape
         self.use_sigmoid = use_sigmoid
         self.eps = eps
+        self.hidden_dim = hidden_dim
 
         self.latent_dim = latent_dim
         self.final_size = np.asarray(self.in_shape, dtype=int)
@@ -106,19 +111,26 @@ class SO2ImageVAE(BaseVAE):
 
         decodeL = nn.Linear(self.latent_dim, linear_size)
 
-        encoder_out_size = encoder_out_size or latent_dim
+        # encoder_out_size = encoder_out_size or latent_dim
 
-        encoder = SO2ImageEncoder(
-            spatial_dims=spatial_dims,
-            out_dim=encoder_out_size,
-            channels=channels,
-            strides=strides,
-            maximum_frequency=maximum_frequency,
-            kernel_size=kernel_size,
-            bias=bias,
-            relevance=encoder_relevance,
-            padding_mode=encoder_paddingmode,
-        )
+        # encoder = SO2ImageEncoder(
+        #     spatial_dims=spatial_dims,
+        #     out_dim=encoder_out_size,
+        #     channels=channels,
+        #     strides=strides,
+        #     maximum_frequency=maximum_frequency,
+        #     kernel_size=kernel_size,
+        #     bias=bias,
+        #     relevance=encoder_relevance,
+        #     padding_mode=encoder_paddingmode,
+        # )
+        if spatial_dims == 3:
+            encoder = Encoder3D(encoder_out_size, hidden_dim=self.hidden_dim, pool=False, in_channel=1)
+        elif spatial_dims == 2:
+            encoder = Encoder2D(encoder_out_size, hidden_dim=self.hidden_dim, pool=False, in_channel=1)
+        else:
+            raise Exception("Spatial dims must be 2 or 3")
+
 
         if decoder_pixelshuffle:
             last_layer = SubpixelUpsample(
@@ -171,14 +183,11 @@ class SO2ImageVAE(BaseVAE):
         if self.mask_input:
             x = self.mask(x)
 
-        # convert x to geometric tensor
-        x = self.encoder[self.hparams.x_label].in_type(x)
-
-        z = self.encoder[self.hparams.x_label](x).tensor
+        z, pose = self.encoder[self.hparams.x_label](x)
 
         parts = {
-            "embedding": z[:, : 2 * self.latent_dim],
-            "angle": z[:, 2 * self.latent_dim : 2 * self.latent_dim + 2],
+            "embedding": z,
+            "angle": pose,
         }
 
         parts["angle"] = parts["angle"] / (
@@ -187,14 +196,15 @@ class SO2ImageVAE(BaseVAE):
 
         return parts
 
-    def decode(self, z_parts):
+    def decode(self, z_parts, return_canonical=False):
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
         angles = z_parts["angle"]
-
         R = get_rotation_matrix(angles, spatial_dims=self.spatial_dims)
         xhat = rotate_img(base_xhat, R)
 
         if self.mask_output:
             xhat = self.mask(xhat)
-
-        return {self.hparams.x_label: xhat}, z_parts
+        if return_canonical:
+            return {self.hparams.x_label: xhat}, z_parts, base_xhat
+        else:
+            return {self.hparams.x_label: xhat}, z_parts
