@@ -37,20 +37,35 @@ class FoldingNet(nn.Module):
         else:
             self.project = nn.Identity()
 
+        # self.folding1 = nn.Sequential(
+        #     nn.Conv1d(hidden_dim + 2, hidden_dim, kernel_size=1),
+        #     nn.ReLU(),
+        #     nn.Conv1d(hidden_dim, hidden_dim, kernel_size=1),
+        #     nn.ReLU(),
+        #     nn.Conv1d(hidden_dim, 3, kernel_size=1),
+        # )
+
+        # self.folding2 = nn.Sequential(
+        #     nn.Conv1d(hidden_dim + 3, hidden_dim, kernel_size=1),
+        #     nn.ReLU(),
+        #     nn.Conv1d(hidden_dim, hidden_dim, kernel_size=1),
+        #     nn.ReLU(),
+        #     nn.Conv1d(hidden_dim, 3, kernel_size=1),
+        # )
         self.folding1 = nn.Sequential(
-            nn.Conv1d(hidden_dim + 2, hidden_dim, kernel_size=1),
+            nn.Linear(hidden_dim + 2, hidden_dim),
             nn.ReLU(),
-            nn.Conv1d(hidden_dim, hidden_dim, kernel_size=1),
+            nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Conv1d(hidden_dim, 3, kernel_size=1),
+            nn.Linear(hidden_dim, 3),
         )
 
         self.folding2 = nn.Sequential(
-            nn.Conv1d(hidden_dim + 3, hidden_dim, kernel_size=1),
+            nn.Linear(hidden_dim + 3, hidden_dim),
             nn.ReLU(),
-            nn.Conv1d(hidden_dim, hidden_dim, kernel_size=1),
+            nn.Linear(hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Conv1d(hidden_dim, 3, kernel_size=1),
+            nn.Linear(hidden_dim, 3),
         )
 
     def forward(self, x):
@@ -61,8 +76,14 @@ class FoldingNet(nn.Module):
         cw_exp = x.expand(-1, grid.shape[1], -1)
 
         cat1 = torch.cat((cw_exp, grid), dim=2)
-
-        folding_result1 = self.folding1(cat1.transpose(1, -1))
-        cat2 = torch.cat((cw_exp.transpose(1, -1), folding_result1), dim=1)
+        folding_result1 = self.folding1(cat1)
+        cat2 = torch.cat((cw_exp, folding_result1), dim=2)
         folding_result2 = self.folding2(cat2)
-        return folding_result2.transpose(1, -1)
+
+        # cat1 = torch.cat((cw_exp, grid), dim=2)
+
+        # folding_result1 = self.folding1(cat1.transpose(1, -1))
+        # cat2 = torch.cat((cw_exp.transpose(1, -1), folding_result1), dim=1)
+        # folding_result2 = self.folding2(cat2)
+        # return folding_result2.transpose(1, -1)
+        return folding_result2

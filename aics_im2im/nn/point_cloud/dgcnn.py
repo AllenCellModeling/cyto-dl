@@ -42,7 +42,7 @@ class DGCNN(nn.Module):
     def __init__(
         self,
         num_features,
-        hidden_features=[64, 128, 256, 512],
+        hidden_features=[64, 64, 256, 512],
         k=20,
         mode="scalar",
         include_cross=True,
