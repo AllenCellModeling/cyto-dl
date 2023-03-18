@@ -1,0 +1,8 @@
+_target_: aics_im2im.datamodules.dataframe.MNISTDataModule
+
+batch_size: 128
+num_workers: 4
+num_eval_samples: 200
+file_path: "/allen/aics/modeling/ritvik/projects/aics-latent-spaces/giae/mnist_all_rotation_normalized_float_train_valid.amat"
+x_label: "image"
+y_label: "class"

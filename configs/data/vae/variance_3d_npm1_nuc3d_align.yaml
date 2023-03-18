@@ -19,6 +19,7 @@ transforms:
     remote: false
   - _target_: monai.transforms.NormalizeIntensityd
     keys: [image]
+    nonzero: True
   - _target_: monai.transforms.ToTensord
     keys: [image]
     track_meta: false

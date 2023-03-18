@@ -5,7 +5,7 @@ path: s3://allencell-cytodata-variance-data/processed/manifest_split.parquet
 split_column: split
 
 batch_size: 64
-num_workers:
+num_workers: 4
 multiprocessing_context: spawn
 persistent_workers: true
 
@@ -32,6 +32,10 @@ transforms:
   - _target_: monai.transforms.SpatialPadd
     keys: [image]
     spatial_size: ${padded_size} # set to [-1, -1, -1] to bypass
+  - _target_: torchio.transforms.Resize
+    keys:
+      - image
+    target_shape: 32
   - _target_: monai.transforms.ToTensord
     keys: [image]
     track_meta: false
