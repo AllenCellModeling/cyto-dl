@@ -1,11 +1,11 @@
-_target_: aics_im2im.models.vae.ImageVAE
+_target_: aics_im2im.models.vae.so2_image_vae.SO2ImageVAE
 
-latent_dim: 32
-spatial_dims:
-in_shape:
+latent_dim: 128
+spatial_dims: 2
+in_shape: [1, 28, 28]
 out_channels: 1
-channels: [16, 16]
-strides: [2, 1]
+channels: [2, 2, 2, 2]
+strides: [1, 1, 1, 1]
 
 x_label: image
 id_label: null
@@ -23,10 +23,8 @@ reconstruction_loss:
   _target_: torch.nn.modules.loss.MSELoss
   reduction: sum
 
-encoder_out_size: 64
-prior:
-  _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior
-  dimensionality: 32
+encoder_out_size: 128
+embedding_prior: identity
 
 use_sigmoid: true
 
@@ -34,3 +32,5 @@ optimizer:
   _partial_: true
   _target_: torch.optim.adam.Adam
   lr: 0.001
+mask_input: False
+mask_output: False
