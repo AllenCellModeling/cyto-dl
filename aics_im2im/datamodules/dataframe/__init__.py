@@ -1,1 +1,2 @@
 from .dataframe_datamodule import DataframeDatamodule
+from .mnist_datamodule import MNISTDataModule

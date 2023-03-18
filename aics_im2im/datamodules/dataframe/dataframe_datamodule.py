@@ -135,6 +135,13 @@ class DataframeDatamodule(pl.LightningDataModule):
         for key in list(self.subsample.keys()):
             self.subsample[get_canonical_split_name(key)] = self.subsample[key]
 
+        if not just_inference:
+            self.train_dataloader()
+            self.val_dataloader()
+            self.test_dataloader()
+        else:
+            self.predict_dataloader()
+
     def get_dataset(self, split):
         sample_size = self.subsample.get(split, -1)
         # always return a Subset
@@ -160,14 +167,15 @@ class DataframeDatamodule(pl.LightningDataModule):
             for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
                 if key in kwargs:
                     del kwargs[key]
-            print(split)
             return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
+
         return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
 
-        if (split not in self.dataloaders) or (sample_size != -1):
+        # if (split not in self.dataloaders) or (sample_size != -1):
+        if split not in self.dataloaders:
             # if we want to use a subsample per epoch, we need to remake the
             # dataloader, to refresh the sample
             self.dataloaders[split] = self.make_dataloader(split)
