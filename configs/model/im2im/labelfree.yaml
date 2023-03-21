@@ -45,10 +45,8 @@ _aux:
         postprocess:
           input:
             _target_: aics_im2im.models.im2im.utils.ActThreshLabel
-            rescale_dtype:
-              _target_: numpy.uint8
+            rescale_dtype: numpy.uint8
           prediction:
             _target_: aics_im2im.models.im2im.utils.ActThreshLabel
-            rescale_dtype:
-              _target_: numpy.uint8
+            rescale_dtype: numpy.uint8
         save_raw: True
