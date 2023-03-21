@@ -2,36 +2,37 @@ from typing import Dict
 
 import numpy as np
 import torch
+from hydra.utils import get_class
 from skimage.exposure import rescale_intensity
 from skimage.measure import label
 
 
 class ActThreshLabel:
     def __init__(
-        self, activation=torch.nn.Identity(), threshold=None, label=False, dtype=np.uint8, ch=0
+        self,
+        activation=torch.nn.Identity(),
+        threshold=None,
+        label=False,
+        dtype=np.uint8,
+        ch=0,
+        rescale_dtype=None,
     ):
         self.activation = activation
         self.threshold = threshold
         self.label = label
         self.dtype = dtype
         self.ch = ch
+        self.rescale_dtype = get_class(rescale_dtype)
 
     def __call__(self, img: torch.Tensor) -> np.ndarray:
-        img = self.activation(img[self.ch].detach().cpu()).numpy()
+        img = self.activation(img[self.ch].detach().cpu().float()).numpy()
         if self.threshold is not None:
             img = img > self.threshold
         if self.label:
             img = label(img)
+        if self.rescale_dtype is not None:
+            img = rescale_intensity(img, out_range=self.rescale_dtype).astype(self.rescale_dtype)
         return img.astype(self.dtype)
-
-
-class Rescale:
-    def __init__(self, output_dtype):
-        self.output_dtype = output_dtype
-
-    def __call__(self, img: torch.Tensor) -> np.ndarray:
-        img = detach(img)
-        return rescale_intensity(img, out_range=self.output_dtype).astype(self.output_dtype)
 
 
 class DictToIm:
