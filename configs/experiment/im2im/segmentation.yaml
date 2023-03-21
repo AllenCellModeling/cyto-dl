@@ -2,10 +2,10 @@
 # to execute this experiment run:
 # python train.py experiment=example
 defaults:
-  - override /model: im2im/simple_segmentation.yaml
+  - override /data: im2im/segmentation.yaml
+  - override /model: im2im/segmentation.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /data: im2im/patch_segmentation.yaml
   - override /logger: mlflow.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
@@ -13,22 +13,22 @@ defaults:
 
 tags: ["dev"]
 seed: 12345
-source_col: YOUR_RAW_COLUMN_NAME
-target_col: YOUR_SEGMENTATION_COLUMN_NAME
+
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
+source_col: raw
+target_col: seg
+spatial_dims: 3
+raw_im_channels: 1
 
 trainer:
-  max_epochs: 1000
+  max_epochs: 100
 
 model:
-  patch_shape: [32, 256, 256]
+  patch_shape: [16, 32, 32]
 
 data:
-  path: ${paths.data_dir}/DATAPATH/
-  cache_dir: ${paths.data_dir}/DATAPATH/cache
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
   subsample:
-    train: 1
-    test: 1
-    valid: 1
-  batch_size: 2
+  batch_size: 1
