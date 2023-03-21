@@ -44,7 +44,7 @@ pip install -e .
 
 
 #[OPTIONAL] if you want to use default experiments on example data
-python aics_im2im/scripts download_test_data.py
+python scripts download_test_data.py
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
