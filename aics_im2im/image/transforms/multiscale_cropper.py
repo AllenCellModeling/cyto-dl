@@ -2,6 +2,7 @@ from typing import Callable, Dict, Sequence
 
 import numpy as np
 from monai.transforms import RandomizableTransform
+from omegaconf import ListConfig
 
 
 def _apply_slice(data, slicee):
@@ -18,8 +19,8 @@ def _apply_slice(data, slicee):
     """
     # pop z dimension to take corresponding 2d slice if 2d image is passed
     if len(data.shape) == len(slicee) - 1:
-        return data[[x for i, x in enumerate(slicee) if i != 1]]
-    return data[slicee]
+        return data[tuple(x for i, x in enumerate(slicee) if i != 1)]
+    return data[tuple(slicee)]
 
 
 def _generate_slice(start_coords: Sequence[int], roi_size: Sequence[int]) -> slice:
@@ -72,7 +73,9 @@ class RandomMultiScaleCropd(RandomizableTransform):
         self.roi_size = np.asarray(patch_shape)
         self.keys = keys
         self.num_samples = patch_per_image
-        self.scale_dict = scales_dict
+        self.scale_dict = {
+            k: v if type(v) in (list, ListConfig) else [v] for k, v in scales_dict.items()
+        }
         self.reversed_scale_dict = {}
         self.selection_fn = selection_fn
         self.max_attempts = max_attempts
@@ -80,7 +83,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         self.allow_missing_keys = allow_missing_keys
 
         # reversed scales dict is used to map from a key to scale for sampling
-        for k, v in scales_dict.items():
+        for k, v in self.scale_dict.items():
             for v_item in v:
                 self.reversed_scale_dict[v_item] = k
         assert 1 in self.scale_dict.keys()
@@ -122,7 +125,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
                 for key in available_keys
             }
             patch_dict.update(meta_dict)
-
             if self.selection_fn is None or self.selection_fn(patch_dict):
                 patches.append(patch_dict)
                 attempts = 0
