@@ -9,7 +9,8 @@ import torch
 import numpy as np
 
 class ReadNumpyFile(MapTransform):
-    def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False):
+    def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False, 
+    clip_min: Optional[int] = None, clip_max: Optional[int] = None ):
         """
         Parameters
         ----------
@@ -18,10 +19,13 @@ class ReadNumpyFile(MapTransform):
             to point cloud files which should be loaded
         remote: bool = False
             Whether files can be in a fsspec-interpretable remote location
+        clip_min, clip_max: Optional - clip values for output
         """
         super().__init__(keys)
         self.keys = [keys] if isinstance(keys, str) else keys
         self.remote = remote
+        self.clip_min = clip_min
+        self.clip_max = clip_max
 
     def __call__(self, row):
         res = dict(**row)
@@ -44,5 +48,7 @@ class ReadNumpyFile(MapTransform):
                 res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype()).unsqueeze(
                     dim=0
                 )
+                if (self.clip_min is not None) & (self.clip_max is not None):
+                    res[key] = np.clip(res[key], self.clip_min, self.clip_max)
 
         return res
