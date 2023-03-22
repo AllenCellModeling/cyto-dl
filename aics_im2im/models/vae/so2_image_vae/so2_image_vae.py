@@ -20,6 +20,7 @@ from .so2_encoder import SO2ImageEncoder
 from .utils import get_rotation_matrix, rotate_img
 from .modules_2d import Encoder as Encoder2D
 from .modules_3d import Encoder as Encoder3D
+from .modules_3d import Decoder as Decoder3D
 
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
@@ -132,23 +133,24 @@ class SO2ImageVAE(BaseVAE):
             raise Exception("Spatial dims must be 2 or 3")
 
 
-        if decoder_pixelshuffle:
-            last_layer = SubpixelUpsample(
-                self.spatial_dims,
-                channels[0],
-                out_channels=self.in_channels,
-                scale_factor=strides[0],
-                apply_pad_pool=True,
-            )
+        # if decoder_pixelshuffle:
+        #     last_layer = SubpixelUpsample(
+        #         self.spatial_dims,
+        #         channels[0],
+        #         out_channels=self.in_channels,
+        #         scale_factor=strides[0],
+        #         apply_pad_pool=True,
+        #     )
 
-            _full_net.decode[-1] = last_layer
+        #     _full_net.decode[-1] = last_layer
 
-        decoder = nn.Sequential(
-            decodeL,
-            Reshape(_full_net.encoded_channels, *self.final_size),
-            _full_net.decode,
-            nn.Sigmoid() if use_sigmoid else nn.Identity(),
-        )
+        # decoder = nn.Sequential(
+        #     decodeL,
+        #     Reshape(_full_net.encoded_channels, *self.final_size),
+        #     _full_net.decode,
+        #     nn.Sigmoid() if use_sigmoid else nn.Identity(),
+        # )
+        decoder = Decoder3D(latent_dim, self.hidden_dim, in_channel=1)
 
         encoder = {x_label: encoder}
         decoder = {x_label: decoder}

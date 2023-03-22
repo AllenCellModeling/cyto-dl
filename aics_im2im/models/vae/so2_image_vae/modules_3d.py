@@ -263,3 +263,72 @@ class ClassicalEncoder(Module):
         x = x.mean(dim=(2, 3, 4))
 
         return x
+
+class Decoder(Module):
+    def __init__(self, input_size, hidden_size, in_channel=1):
+        super().__init__()
+        # convolution 1
+        self.block1 = torch.nn.Sequential(
+            torch.nn.Conv3d(input_size, hidden_size, kernel_size=1, padding=0,),
+            torch.nn.BatchNorm3d(hidden_size),
+            torch.nn.Dropout3d(0.2),
+            torch.nn.ReLU()
+        )
+
+        # convolution 2
+        self.block2 = torch.nn.Sequential(
+            torch.nn.Conv3d(hidden_size, hidden_size, kernel_size=3, padding=1),
+            torch.nn.BatchNorm3d(hidden_size),
+            torch.nn.Dropout3d(0.2),
+            torch.nn.ReLU()
+        )
+
+        # convolution 3
+        self.block3 = torch.nn.Sequential(
+            torch.nn.Conv3d(hidden_size, hidden_size, kernel_size=3, padding=1),
+            torch.nn.BatchNorm3d(hidden_size),
+            torch.nn.Dropout3d(0.2),
+            torch.nn.ReLU()
+        )
+
+        # convolution 4
+        self.block4 = torch.nn.Sequential(
+            torch.nn.Conv3d(hidden_size, hidden_size, kernel_size=5, padding=2),
+            torch.nn.BatchNorm3d(hidden_size),
+            torch.nn.Dropout3d(0.2),
+            torch.nn.ReLU()
+        )
+
+        # convolution 5
+        self.block5 = torch.nn.Sequential(
+            torch.nn.Conv3d(hidden_size, hidden_size, kernel_size=5, padding=2),
+            torch.nn.BatchNorm3d(hidden_size),
+            torch.nn.Dropout3d(0.2),
+            torch.nn.ReLU()
+        )
+
+        # convolution 6
+        self.block6 = torch.nn.Sequential(
+            torch.nn.Conv3d(hidden_size, in_channel, kernel_size=1, padding=0),
+        )
+        self.scale_factor = 2.24
+
+    def forward(self, x: torch.Tensor):
+        x = x.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)  # [bz, emb_dim, 1, 1, 1]
+        x = x.expand(-1, -1, 2, 2, 2)
+        #pos_emb = torch.Tensor([[1, 2], [4, 3]]).type_as(x).unsqueeze(0).unsqueeze(0).expand(x.size(0), x.size(1), -1, -1)
+        #x = x + pos_emb
+
+        x = self.block1(x)
+        x = torch.nn.functional.interpolate(x, scale_factor=self.scale_factor)
+        x = self.block2(x)
+        x = torch.nn.functional.interpolate(x, scale_factor=self.scale_factor)
+        x = self.block3(x)
+        x = torch.nn.functional.interpolate(x, scale_factor=self.scale_factor)
+        x = self.block4(x)
+        x = torch.nn.functional.interpolate(x, scale_factor=self.scale_factor)
+        x = self.block5(x)
+        x = self.block6(x)
+        x = x[:, :, 3:35, 3:35, 3:35]
+        # x = torch.sigmoid(x)
+        return x
