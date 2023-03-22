@@ -17,9 +17,5 @@ transforms:
   - _target_: aics_im2im.image.io.ReadNumpyFile
     keys: image
     remote: false
-  - _target_: monai.transforms.NormalizeIntensityd
-    keys: [image]
-    nonzero: True
-  - _target_: monai.transforms.ToTensord
-    keys: [image]
-    track_meta: false
+    clip_min: -2
+    clip_max: 2 

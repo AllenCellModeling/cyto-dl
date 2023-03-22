@@ -23,9 +23,9 @@ reconstruction_loss:
   _target_: torch.nn.modules.loss.MSELoss
   reduction: sum
 
-encoder_out_size: 512
+encoder_out_size: 256
 prior:
-  _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior
+  _target_: aics_im2im.models.vae.priors.IdentityPrior
   dimensionality: 256
 
 use_sigmoid: False
