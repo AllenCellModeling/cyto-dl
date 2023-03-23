@@ -40,6 +40,6 @@ _aux:
     - - ${target_col}
       - _target_: aics_im2im.nn.BaseAuxHead
         loss:
-          _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
+          _target_: aics_im2im.models.im2im.utils.OmniposeLoss
           dim: ${spatial_dims}
         save_raw: True

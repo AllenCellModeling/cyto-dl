@@ -10,6 +10,7 @@ from monai.networks.blocks import (
     SubpixelUpsample,
     UnetOutBlock,
     UnetResBlock,
+    UpSample,
 )
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
@@ -174,19 +175,30 @@ class AuxHead(BaseAuxHead):
         out_channels = model_args["out_channels"]
         final_act = model_args["final_act"]
         in_channels = model_args["in_channels"]
+        upsample_method = model_args.get("upsample_method", "subpixel")
 
         conv_input_channels = in_channels
         modules = [model_args.get("first_layer", torch.nn.Identity())]
         upsample = torch.nn.Identity()
         if resolution == "hr":
-            conv_input_channels //= 2**spatial_dims
-            upsample = SubpixelUpsample(
-                spatial_dims=spatial_dims,
-                in_channels=in_channels,
-                out_channels=conv_input_channels,
-            )
-
-        for i in range(n_convs):
+            if upsample_method == "subpixel":
+                conv_input_channels //= 2**spatial_dims
+                upsample = SubpixelUpsample(
+                    spatial_dims=spatial_dims,
+                    in_channels=in_channels,
+                    out_channels=conv_input_channels,
+                )
+            else:
+                upsample_ratio = model_args["upsample_ratio"]
+                assert len(upsample_ratio) == spatial_dims
+                upsample = UpSample(
+                    spatial_dims,
+                    in_channels,
+                    conv_input_channels,
+                    scale_factor=upsample_ratio,
+                    mode="nontrainable",
+                )
+        for _ in range(n_convs):
             in_channels = conv_input_channels
             modules.append(
                 UnetResBlock(
