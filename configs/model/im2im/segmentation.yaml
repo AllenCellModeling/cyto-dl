@@ -45,10 +45,10 @@ _aux:
           sigmoid: True
         postprocess:
           input:
-            _target_: aics_im2im.models.im2im.utils.ActThreshLabel
+            _target_: aics_im2im.models.im2im.utils.postprocessing.ActThreshLabel
             rescale_dtype: numpy.uint8
           prediction:
-            _target_: aics_im2im.models.im2im.utils.ActThreshLabel
+            _target_: aics_im2im.models.im2im.utils.postprocessing.ActThreshLabel
             activation:
               _target_: torch.nn.Sigmoid
             rescale_dtype: numpy.uint8
