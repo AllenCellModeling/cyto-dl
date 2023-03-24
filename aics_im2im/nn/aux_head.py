@@ -5,13 +5,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from aicsimageio.writers import OmeTiffWriter
-from monai.networks.blocks import (
-    Convolution,
-    SubpixelUpsample,
-    UnetOutBlock,
-    UnetResBlock,
-    UpSample,
-)
+from monai.networks.blocks import Convolution, UnetOutBlock, UnetResBlock, UpSample
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
 
@@ -183,21 +177,15 @@ class AuxHead(BaseAuxHead):
         if resolution == "hr":
             if upsample_method == "subpixel":
                 conv_input_channels //= 2**spatial_dims
-                upsample = SubpixelUpsample(
-                    spatial_dims=spatial_dims,
-                    in_channels=in_channels,
-                    out_channels=conv_input_channels,
-                )
-            else:
-                upsample_ratio = model_args["upsample_ratio"]
-                assert len(upsample_ratio) == spatial_dims
-                upsample = UpSample(
-                    spatial_dims,
-                    in_channels,
-                    conv_input_channels,
-                    scale_factor=upsample_ratio,
-                    mode="nontrainable",
-                )
+            upsample_ratio = model_args.get("upsample_ratio", [2, 2, 2])
+            assert len(upsample_ratio) == spatial_dims
+            upsample = UpSample(
+                spatial_dims=spatial_dims,
+                in_channels=in_channels,
+                out_channels=conv_input_channels,
+                scale_factor=upsample_ratio,
+                mode=upsample_method,
+            )
         for _ in range(n_convs):
             in_channels = conv_input_channels
             modules.append(
