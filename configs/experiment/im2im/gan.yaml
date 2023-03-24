@@ -1,0 +1,41 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=example
+defaults:
+  - override /data: im2im/gan.yaml
+  - override /model: im2im/gan.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+source_col: seg
+target_col: raw
+spatial_dims: 3
+raw_im_channels: 1
+persist_cache: True
+
+trainer:
+  max_epochs: 100
+  devices: [3]
+
+model:
+  patch_shape: [32, 128, 128]
+
+data:
+  path: ${paths.data_dir}/gt_to_im/
+  subsample:
+    train: 1000
+  cache_dir: ${paths.data_dir}/gt_to_im/cache2
+  batch_size: 2
+
+callbacks:
+  model_checkpoint:
+    monitor: val_raw_loss_G

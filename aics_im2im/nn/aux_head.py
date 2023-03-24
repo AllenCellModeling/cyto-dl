@@ -216,3 +216,79 @@ class AuxHead(BaseAuxHead):
         if self.resolution == "hr":
             x = self.model["upsample"](x)
         return self.model["model"](x)
+
+
+from aics_im2im.nn.losses.gan_loss import pix2pix_hd
+
+
+class GANHead(BaseAuxHead):
+    def __init__(
+        self,
+        gan_loss=pix2pix_hd(scales=1),
+        reconstruction_loss=torch.nn.MSELoss(),
+        reconstruction_loss_weight=100,
+        postprocess={"input": detach, "prediction": detach},
+        model_args=None,
+        calculate_metric=False,
+        save_raw=False,
+    ):
+        super().__init__(None, postprocess, model_args, calculate_metric, save_raw)
+        self.gan_loss = gan_loss
+        self.reconstruction_loss = reconstruction_loss
+        self.reconstruction_loss_weight = reconstruction_loss_weight
+
+    def _init_model(self, model_args):
+        return torch.nn.Sequential(torch.nn.Tanh())
+
+    def _calculate_loss(self, y_hat, batch, discriminator):
+        # Fake Detection and Loss
+        # Real detection and loss
+        features_discriminator = discriminator(
+            batch[self.x_key], batch[self.head_name], y_hat.detach()
+        )
+        loss_D = self.gan_loss(features_discriminator, "discriminator")
+
+        # Gan Loss  (fake passabilityloss)
+        # GAN Feature Matching Loss
+        features_generator = discriminator(batch[self.x_key], batch[self.head_name], y_hat)
+        loss_G = self.gan_loss(features_generator, "generator")
+        loss_reconstruction = self.reconstruction_loss(batch[self.head_name], y_hat)
+        return loss_D, loss_G + loss_reconstruction * self.reconstruction_loss_weight
+
+    def run_head(
+        self,
+        backbone_features,
+        batch,
+        stage,
+        save_image,
+        global_step,
+        discriminator,
+        run_forward=True,
+        y_hat=None,
+    ):
+        if run_forward:
+            # Fake generation
+            y_hat = self.forward(backbone_features)
+        if y_hat is None:
+            raise ValueError(
+                "y_hat must be provided, either by passing it in or setting `run_forward=True`"
+            )
+        loss_D, loss_G = None, None
+        if stage != "predict":
+            loss_D, loss_G = self._calculate_loss(y_hat, batch, discriminator)
+
+        y_hat_out, y_out = None, None
+        if save_image:
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+
+        metric = None
+        if self.calculate_metric and stage in ("val", "test"):
+            metric = self._calculate_metric(y_hat, batch[self.head_name])
+
+        return {
+            "loss_D": loss_D,
+            "loss_G": loss_G,
+            "metric": metric,
+            "y_hat_out": y_hat_out,
+            "y_out": y_out,
+        }
