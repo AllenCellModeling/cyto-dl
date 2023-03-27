@@ -34,10 +34,10 @@ def _cast_omegaconf(value):
 
 
 def _parse_init_args(frame):
-    init_args = get_init_args(frame)[1]
+    init_args = get_init_args(frame)
     if frame.f_back.f_code.co_name == "__init__":
         # if this was called from a subclass's init
-        init_args.update(get_init_args(frame.f_back)[1])
+        init_args.update(get_init_args(frame.f_back))
 
     init_args = {k: _cast_omegaconf(v) for k, v in init_args.items()}
     ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]
