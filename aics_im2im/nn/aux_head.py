@@ -99,7 +99,6 @@ class BaseAuxHead(ABC, torch.nn.Module):
             raise ValueError(
                 "y_hat must be provided, either by passing it in or setting `run_forward=True`"
             )
-
         loss = None
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name])
@@ -177,7 +176,7 @@ class AuxHead(BaseAuxHead):
         if resolution == "hr":
             if upsample_method == "subpixel":
                 conv_input_channels //= 2**spatial_dims
-            upsample_ratio = model_args.get("upsample_ratio", [2, 2, 2])
+            upsample_ratio = model_args.get("upsample_ratio", [2] * self.spatial_dims)
             assert len(upsample_ratio) == spatial_dims
             upsample = UpSample(
                 spatial_dims=spatial_dims,
