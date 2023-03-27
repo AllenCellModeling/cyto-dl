@@ -262,7 +262,7 @@ class GANHead(BaseAuxHead):
         stage,
         save_image,
         global_step,
-        discriminator,
+        discriminator=None,
         run_forward=True,
         y_hat=None,
     ):
@@ -275,6 +275,10 @@ class GANHead(BaseAuxHead):
             )
         loss_D, loss_G = None, None
         if stage != "predict":
+            if discriminator is None:
+                raise ValueError(
+                    "Discriminator must be specified for train, test, and validation steps."
+                )
             loss_D, loss_G = self._calculate_loss(y_hat, batch, discriminator)
 
         y_hat_out, y_out = None, None
