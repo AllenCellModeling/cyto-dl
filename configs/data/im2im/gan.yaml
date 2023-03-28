@@ -60,26 +60,8 @@ transforms:
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
-        scales_dict:
-          1: ${data.columns}
-      - _target_: monai.transforms.RandRotate90d
-        keys:
-          - ${source_col}
-          - ${target_col}
-        prob: 0.5
-        spatial_axes: [1, 2]
-      - _target_: monai.transforms.RandFlipd
-        keys:
-          - ${source_col}
-          - ${target_col}
-        prob: 0.5
-        spatial_axis: [1]
-      - _target_: monai.transforms.RandFlipd
-        keys:
-          - ${source_col}
-          - ${target_col}
-        prob: 0.5
-        spatial_axis: [2]
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        x_key: ${source_col}
 
   test:
     _target_: monai.transforms.Compose
@@ -199,5 +181,12 @@ transforms:
         keys: ${data.columns}
         patch_shape: ${model.patch_shape}
         patch_per_image: 1
-        scales_dict:
-          1: ${data.columns}
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        x_key: ${source_col}
+
+_aux:
+  _scales_dict:
+    - - ${target_col}
+      - [1]
+    - - ${source_col}
+      - [1]
