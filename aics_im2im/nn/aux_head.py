@@ -220,6 +220,8 @@ class AuxHead(BaseAuxHead):
 
 
 class GANHead(BaseAuxHead):
+    """GAN Task head."""
+
     def __init__(
         self,
         gan_loss=pix2pix_hd(scales=1),
@@ -230,6 +232,24 @@ class GANHead(BaseAuxHead):
         calculate_metric=False,
         save_raw=False,
     ):
+        """
+        Parameters
+        ----------
+        gan_loss=pix2pix_hd(scales=1)
+            Loss for optimizing GAN
+        reconstruction_loss=torch.nn.MSELoss()
+            Loss for optimizing generator's image reconstructions
+        reconstruction_loss_weight=100
+            Weighting of reconstruction loss
+        postprocess={"input": detach, "prediction": detach}
+            Postprocessing for `input` and `predictions` of head
+        model_args=None
+            Arguments to initialize model. This is not used by the GAN head
+        calculate_metric=False
+            Whether to calculate a metric during training. Not used by GAN head.
+        save_raw=False
+            Whether to save out example input images during training
+        """
         super().__init__(None, postprocess, model_args, calculate_metric, save_raw)
         self.gan_loss = gan_loss
         self.reconstruction_loss = reconstruction_loss
@@ -239,13 +259,16 @@ class GANHead(BaseAuxHead):
         return torch.nn.Sequential(torch.nn.Tanh())
 
     def _calculate_loss(self, y_hat, batch, discriminator):
+        # extract intermediate activations from discriminator for real and predicted images
         features_discriminator = discriminator(
             batch[self.x_key], batch[self.head_name], y_hat.detach()
         )
         loss_D = self.gan_loss(features_discriminator, "discriminator")
 
+        # passability of generated images
         features_generator = discriminator(batch[self.x_key], batch[self.head_name], y_hat)
         loss_G = self.gan_loss(features_generator, "generator")
+        # image reconstruction quality
         loss_reconstruction = self.reconstruction_loss(batch[self.head_name], y_hat)
         return loss_D, loss_G + loss_reconstruction * self.reconstruction_loss_weight
 
@@ -261,7 +284,6 @@ class GANHead(BaseAuxHead):
         y_hat=None,
     ):
         if run_forward:
-            # Fake generation
             y_hat = self.forward(backbone_features)
         if y_hat is None:
             raise ValueError(
