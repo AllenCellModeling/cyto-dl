@@ -103,22 +103,6 @@ class BaseModel(pl.LightningModule):
     def predict_step(self, batch, batch_idx):
         return self._step("predict", batch, batch_idx, logger=False)
 
-    def _epoch_end(self, split, outputs):
-        if split in self.cache_outputs:
-            if split in self._cached_outputs:
-                del self._cached_outputs[split]
-                gc.collect()
-            self._cached_outputs[split] = outputs
-
-    def train_epoch_end(self, outputs):
-        self._epoch_end("train", outputs)
-
-    def validation_epoch_end(self, outputs):
-        self._epoch_end("val", outputs)
-
-    def test_epoch_end(self, outputs):
-        self._epoch_end("test", outputs)
-
     def configure_optimizers(self):
         optimizer = self.optimizer(self.parameters())
         if self.lr_scheduler is not None:
