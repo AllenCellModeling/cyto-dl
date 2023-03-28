@@ -9,7 +9,6 @@ from monai.inferers import sliding_window_inference
 from aics_im2im.models.base_model import BaseModel
 
 
-
 class GAN(BaseModel):
     def __init__(
         self,
@@ -24,15 +23,13 @@ class GAN(BaseModel):
         inference_args: Dict = {},
         discriminator=None,
         **kwargs,
-    ):  
-        super().__init__(
-            **kwargs
-        )
-        self.automatic_optimization=automatic_optimization
+    ):
+        super().__init__(**kwargs)
+        self.automatic_optimization = automatic_optimization
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = backbone
-        self.discriminator=discriminator
+        self.discriminator = discriminator
         self.task_heads = torch.nn.ModuleDict(task_heads)
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
@@ -58,7 +55,9 @@ class GAN(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(z, batch, stage, save_image, self.global_step, self.discriminator)
+            task: self.task_heads[task].run_head(
+                z, batch, stage, save_image, self.global_step, self.discriminator
+            )
             for task in run_heads
         }
 
@@ -87,6 +86,7 @@ class GAN(BaseModel):
                 stage,
                 save_image,
                 self.global_step,
+                discriminator=self.discriminator if stage == "test" else None,
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
             )
@@ -128,8 +128,12 @@ class GAN(BaseModel):
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
         if stage == "predict":
             return
-        loss_D = {f"{head_name}_loss_D": head_result["loss_D"] for head_name, head_result in outs.items()}
-        loss_G = {f"{head_name}_loss_G": head_result["loss_G"] for head_name, head_result in outs.items()}
+        loss_D = {
+            f"{head_name}_loss_D": head_result["loss_D"] for head_name, head_result in outs.items()
+        }
+        loss_G = {
+            f"{head_name}_loss_G": head_result["loss_G"] for head_name, head_result in outs.items()
+        }
         loss_D = self._sum_losses(loss_D)
         loss_G = self._sum_losses(loss_G)
         self.log_dict(
@@ -146,14 +150,13 @@ class GAN(BaseModel):
             on_step=False,
             on_epoch=True,
         )
-        if stage == 'train':
+        if stage == "train":
             g_opt, d_opt = self.optimizers()
 
             g_opt.zero_grad()
-            self.manual_backward(loss_G['loss'])
+            self.manual_backward(loss_G["loss"])
             g_opt.step()
 
             d_opt.zero_grad()
-            self.manual_backward(loss_D['loss'])
+            self.manual_backward(loss_D["loss"])
             d_opt.step()
-        
