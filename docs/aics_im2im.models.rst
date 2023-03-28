@@ -1,0 +1,26 @@
+aics\_im2im.models package
+==========================
+
+.. automodule:: aics_im2im.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   aics_im2im.models.im2im
+   aics_im2im.models.utils
+   aics_im2im.models.vae
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   aics_im2im.models.base_model
+   aics_im2im.models.basic_model

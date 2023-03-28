@@ -74,6 +74,12 @@ test = [
     "pytest-cov[toml]~=4.0",
     "aics-im2im[all]"
 ]
+docs = [
+    "aics-im2im[all]",
+    "furo<=2023.3.23",
+    "m2r2<=0.3.3.post2",
+    "sphinx<=6.1.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/AllenCellModeling/aics-im2im"
