@@ -10,18 +10,19 @@ except ModuleNotFoundError:
     import pandas as pd
 
 import random
+from typing import Sequence
 
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
-from torch.utils.data import BatchSampler, SubsetRandomSampler
+from torch.utils.data import BatchSampler, Sampler, Subset, SubsetRandomSampler
 from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
 
 
 class RemoveNaNKeysd(Transform):
-    """' Transform to remove 'nan' keys from data dictionary.
+    """Transform to remove 'nan' keys from data dictionary.
 
     When combined with adding `allow_missing_keys=True` to transforms and the alternating batch
     sampler, this allows multi-task training when only one target is available at a time.
@@ -37,15 +38,35 @@ class RemoveNaNKeysd(Transform):
 
 # randomly switch between generating batches from each sampler
 class AlternatingBatchSampler(BatchSampler):
+    """Subclass of pytorch's `BatchSampler` that alternates between sampling from mutually
+    exclusive columns of a dataframe dataset."""
+
     def __init__(
         self,
-        subset,
-        target_columns,
-        batch_size,
-        drop_last=False,
-        shuffle=True,
-        sampler=SubsetRandomSampler,
+        subset: Subset,
+        target_columns: Sequence[str],
+        batch_size: int,
+        drop_last: bool = False,
+        shuffle: bool = False,
+        sampler: Sampler = SubsetRandomSampler,
     ):
+        """
+        Parameters
+        ----------
+        subset: Subset
+            Subset of monai dataset wrapping a dataframe
+        target_columns: Sequence[str]
+            names of columns in `subset` dataframe representing types of ground truth images to alternate between
+        batch_size:int
+            Size of batch
+        drop_last:bool=False
+            Whether to drop last incomplete batch
+        shuffle:bool=False
+            Whether to randomly select between columns in `target_columns`. If False, batches will follow the order of
+            `target_columns`
+        sampler:Sampler=SubsetRandomSampler
+            Sampler to sample from each column in `target_columns`
+        """
         super().__init__(None, batch_size, drop_last)
         if target_columns is None:
             raise ValueError("target_columns must be defined if using batch sampler.")

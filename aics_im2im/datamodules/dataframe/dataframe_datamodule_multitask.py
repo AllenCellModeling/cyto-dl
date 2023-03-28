@@ -60,8 +60,15 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
 
-        head_allocation_columm: Optional[str]=None
-            Column name that dictates which head a row should be passed to
+        refresh_subsample: bool = False
+            Whether to refresh subsample each time dataloader is called
+
+        seed: int = 42
+            random seed
+
+        target_columns: str = None
+            column names in csv corresponding to ground truth types to alternate between
+            during training
 
         dataloader_kwargs:
             Additional keyword arguments are passed to the
@@ -96,6 +103,7 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         subset = self.get_dataset(split)
+
         batch_sampler = AlternatingBatchSampler(
             subset,
             batch_size=kwargs.pop("batch_size"),

@@ -1,4 +1,5 @@
-from typing import Callable, Optional
+from pathlib import Path
+from typing import Callable, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -9,19 +10,50 @@ from omegaconf import ListConfig
 
 
 class CZIDataset(Dataset):
+    """Dataset converting a `.csv` file listing CZI files and some metadata into batches of single-
+    scene, single-timepoint, single-channel images."""
+
     def __init__(
         self,
-        csv_path,
-        img_path_column,
-        channel_column,
-        out_key,
-        spatial_dims=3,
-        scene_column="scene",
-        time_start_column="start",
-        time_stop_column="stop",
-        time_step_column="step",
+        csv_path: Union[Path, str],
+        img_path_column: str,
+        channel_column: str,
+        out_key: str,
+        spatial_dims: int = 3,
+        scene_column: str = "scene",
+        time_start_column: str = "start",
+        time_stop_column: str = "stop",
+        time_step_column: str = "step",
         transform: Optional[Callable] = None,
     ):
+        """
+        Parameters
+        ----------
+        csv_path: Union[Path, str]
+            path to csv
+        img_path_column: str
+            column in `csv_path` that contains path to CZI file
+        channel_column:str
+            Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.
+        out_key:str
+            Key where single-scene/timepoint/channel is saved in output dictionary
+        spatial_dims:int=3
+            Spatial dimension of output image. Must be 2 for YX or 3 for ZYX
+        scene_column:str="scene",
+            Column in `csv_path` that contains scenes to extract from CZI file. If not specified, all scenes will
+            be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. `scene1,scene2`)
+        time_start_column:str="start"
+            Column in `csv_path` specifying which timepoint in timelapse CZI to start extracting. If any of `start_column`, `stop_column`, or `step_column`
+            are not specified, all timepoints are extracted.
+        time_stop_column:str="stop"
+            Column in `csv_path` specifying which timepoint in timelapse CZI to stop extracting. If any of `start_column`, `stop_column`, or `step_column`
+            are not specified, all timepoints are extracted.
+        time_step_column:str="step"
+            Column in `csv_path` specifying step between timepoints. For example, values in this column should be `2` if every other timepoint should be run.
+            If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.
+        transform: Optional[Callable] = None
+            Callable to that accepts numpy array. For example, image normalization functions could be passed here.
+        """
         super().__init__(None, transform)
         df = pd.read_csv(csv_path)
         self.img_path_column = img_path_column
@@ -31,6 +63,8 @@ class CZIDataset(Dataset):
         self.time_stop_column = time_stop_column
         self.time_step_column = time_step_column
         self.out_key = out_key
+        if spatial_dims not in (2, 3):
+            raise ValueError(f"`spatial_dims` must be 2 or 3, got {spatial_dims}")
         self.spatial_dims = spatial_dims
 
         self.img_data, self.n_files = self.get_per_file_args(df)
@@ -121,6 +155,36 @@ def make_CZI_dataloader(
     transforms=None,
     **dataloader_kwargs,
 ):
+    """Function to create a CZI Dataset. Currently, this dataset is only useful during prediction
+    and cannot be used for training or testing.
+
+    Parameters
+    ----------
+    csv_path: Union[Path, str]
+        path to csv
+    img_path_column: str
+        column in `csv_path` that contains path to CZI file
+    channel_column:str
+        Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.
+    out_key:str
+        Key where single-scene/timepoint/channel is saved in output dictionary
+    spatial_dims:int=3
+        Spatial dimension of output image. Must be 2 for YX or 3 for ZYX
+    scene_column:str="scene",
+        Column in `csv_path` that contains scenes to extract from CZI file. If not specified, all scenes will
+        be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. `scene1,scene2`)
+    time_start_column:str="start"
+        Column in `csv_path` specifying which timepoint in timelapse CZI to start extracting. If any of `start_column`, `stop_column`, or `step_column`
+        are not specified, all timepoints are extracted.
+    time_stop_column:str="stop"
+        Column in `csv_path` specifying which timepoint in timelapse CZI to stop extracting. If any of `start_column`, `stop_column`, or `step_column`
+        are not specified, all timepoints are extracted.
+    time_step_column:str="step"
+        Column in `csv_path` specifying step between timepoints. For example, values in this column should be `2` if every other timepoint should be run.
+        If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.
+    transform: Optional[Callable] = None
+        Callable to that accepts numpy array. For example, image normalization functions could be passed here.
+    """
     if isinstance(transforms, (list, tuple, ListConfig)):
         transforms = Compose(transforms)
     dataset = CZIDataset(

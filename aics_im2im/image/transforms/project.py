@@ -1,4 +1,4 @@
-from functools import partial
+from typing import Union
 
 import torch
 from monai.transforms import Transform
@@ -7,7 +7,9 @@ from monai.transforms import Transform
 class MaxProjectd(Transform):
     """Monai-style transform to take max projection of an image."""
 
-    def __init__(self, keys, projection_dim=1, allow_missing_keys=False):
+    def __init__(
+        self, keys: Union[list, str], projection_dim: int = 1, allow_missing_keys: bool = False
+    ):
         """
         Parameters
         ----------

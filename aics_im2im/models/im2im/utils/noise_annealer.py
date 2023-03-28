@@ -11,7 +11,15 @@ class NoiseAnnealer:
     make segmentation harder over time.
     """
 
-    def __init__(self, annealing_steps=5000, init_variance=0.3):
+    def __init__(self, annealing_steps: int = 5000, init_variance: float = 0.3):
+        """
+        Parameters
+        ----------
+        annealing_steps:int=5000
+            Number of steps to linearly anneal variance from `init_variance` to 0
+        init_variance:float=0.3
+            Initial variance of noise
+        """
         self.init_variance = init_variance
         self.noise = init_variance
         self.step_size = init_variance / annealing_steps
