@@ -59,7 +59,7 @@ class OmniposePreprocessd(Transform):
             (
                 instance_seg,
                 rough_distance,
-                # boundaries,
+                boundaries,
                 smooth_distance,
                 flows,
             ) = masks_to_flows(numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device)
@@ -68,9 +68,7 @@ class OmniposePreprocessd(Transform):
 
             bg_edt = edt.edt(numpy_im < 0.5, black_border=True)
             boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
-            out_im[0] = find_boundaries(
-                instance_seg, mode="inner", connectivity=self.dim
-            )  # boundaries
+            out_im[0] = boundaries
             out_im[1] = boundary_weighted_mask
             out_im[2] = instance_seg
             out_im[3 : 3 + self.dim] = flows * 5.0  # weighted for loss function?
@@ -244,6 +242,7 @@ class OmniposeClustering:
             flow_threshold=self.flow_threshold,
             boundary_seg=self.boundary_seg,
             mask_threshold=self.mask_threshold,
+            do_3D=True,
         )
         mask = self.rescale_instance(dist > self.mask_threshold, mask)
         return mask
