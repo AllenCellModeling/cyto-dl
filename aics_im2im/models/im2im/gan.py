@@ -25,7 +25,7 @@ class GAN(BaseModel):
         **kwargs,
     ):
         super().__init__(**kwargs)
-        self.automatic_optimization = automatic_optimization
+        self.automatic_optimization = False
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = backbone
