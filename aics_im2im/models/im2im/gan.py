@@ -10,20 +10,43 @@ from aics_im2im.models.base_model import BaseModel
 
 
 class GAN(BaseModel):
+    """Basic GAN model."""
+
     def __init__(
         self,
         *,
         backbone: nn.Module,
-        task_heads: Dict,
+        task_heads: Dict[str, nn.Module],
+        discriminator: nn.Module,
         x_key: str,
         save_dir="./",
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
         automatic_optimization: bool = False,
         inference_args: Dict = {},
-        discriminator=None,
         **kwargs,
     ):
+        """
+        Parameters
+        ----------
+        backbone: nn.Module
+            backbone network, parameters are shared between task heads
+        task_heads: Dict
+            task-specific heads
+        discriminator
+            discriminator network
+        x_key: str
+            key of input image in batch
+        save_dir="./"
+            directory to save images during training and validation
+        save_images_every_n_epochs=1
+            Frequency to save out images during training
+        optimizer=torch.optim.Adam
+        inference_args: Dict = {}
+            Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        **kwargs
+        """
+
         super().__init__(**kwargs)
         self.automatic_optimization = False
         for stage in ("train", "val", "test", "predict"):
@@ -31,6 +54,7 @@ class GAN(BaseModel):
         self.backbone = backbone
         self.discriminator = discriminator
         self.task_heads = torch.nn.ModuleDict(task_heads)
+        assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -118,7 +142,14 @@ class GAN(BaseModel):
             run_heads = self.task_heads.keys()
         return run_heads
 
-    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
+    def _extract_loss(self, outs, loss_type):
+        loss = {
+            f"{head_name}_{loss_type}": head_result[loss_type]
+            for head_name, head_result in outs.items()
+        }
+        return self._sum_losses(loss)
+
+    def _step(self, stage, batch, batch_idx, logger):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -128,14 +159,9 @@ class GAN(BaseModel):
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
         if stage == "predict":
             return
-        loss_D = {
-            f"{head_name}_loss_D": head_result["loss_D"] for head_name, head_result in outs.items()
-        }
-        loss_G = {
-            f"{head_name}_loss_G": head_result["loss_G"] for head_name, head_result in outs.items()
-        }
-        loss_D = self._sum_losses(loss_D)
-        loss_G = self._sum_losses(loss_G)
+        loss_D = self._extract_loss(outs, "loss_D")
+        loss_G = self._extract_loss(outs, "loss_G")
+
         self.log_dict(
             {f"{stage}_{k}": v for k, v in loss_D.items()},
             logger=True,

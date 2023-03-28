@@ -114,7 +114,7 @@ class MultiTaskIm2Im(BaseModel):
             run_heads = self.task_heads.keys()
         return run_heads
 
-    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
+    def _step(self, stage, batch, batch_idx, logger):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
