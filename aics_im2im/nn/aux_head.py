@@ -8,6 +8,7 @@ from aicsimageio.writers import OmeTiffWriter
 from monai.networks.blocks import Convolution, UnetOutBlock, UnetResBlock, UpSample
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
+from aics_im2im.nn.losses import pix2pix_hd
 
 
 class BaseAuxHead(ABC, torch.nn.Module):
@@ -218,9 +219,6 @@ class AuxHead(BaseAuxHead):
         return self.model["model"](x)
 
 
-from aics_im2im.nn.losses.gan_loss import pix2pix_hd
-
-
 class GANHead(BaseAuxHead):
     def __init__(
         self,
@@ -241,15 +239,11 @@ class GANHead(BaseAuxHead):
         return torch.nn.Sequential(torch.nn.Tanh())
 
     def _calculate_loss(self, y_hat, batch, discriminator):
-        # Fake Detection and Loss
-        # Real detection and loss
         features_discriminator = discriminator(
             batch[self.x_key], batch[self.head_name], y_hat.detach()
         )
         loss_D = self.gan_loss(features_discriminator, "discriminator")
 
-        # Gan Loss  (fake passabilityloss)
-        # GAN Feature Matching Loss
         features_generator = discriminator(batch[self.x_key], batch[self.head_name], y_hat)
         loss_G = self.gan_loss(features_generator, "generator")
         loss_reconstruction = self.reconstruction_loss(batch[self.head_name], y_hat)
