@@ -11,30 +11,28 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-tags: ["dev"]
+tags: [dev]
 seed: 12345
 
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
+# for synthetic image generation, our source is a segmentation and we are predicting a raw image
 source_col: seg
 target_col: raw
 spatial_dims: 3
 raw_im_channels: 1
-persist_cache: True
 
 trainer:
   max_epochs: 100
-  devices: [3]
 
 model:
-  patch_shape: [32, 128, 128]
+  patch_shape: [16, 32, 32]
 
 data:
-  path: ${paths.data_dir}/gt_to_im/
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
   subsample:
-    train: 1000
-  cache_dir: ${paths.data_dir}/gt_to_im/cache2
-  batch_size: 2
+  batch_size: 1
 
 callbacks:
   model_checkpoint:
