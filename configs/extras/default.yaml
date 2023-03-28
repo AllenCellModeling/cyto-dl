@@ -6,3 +6,6 @@ enforce_tags: True
 
 # pretty print config tree at the start of the run using Rich library
 print_config: True
+precision:
+  _target_: torch.set_float32_matmul_precision
+  precision: medium
