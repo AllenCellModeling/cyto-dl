@@ -60,7 +60,7 @@ _aux:
     - - ${target_col}
       - _target_: aics_im2im.nn.aux_head.GANHead
         gan_loss:
-          _target_: aics_im2im.nn.losses.gan_loss.pix2pix_hd
+          _target_: aics_im2im.nn.losses.gan_loss.Pix2PixHD
           scales: 1
         reconstruction_loss:
           _target_: torch.nn.MSELoss

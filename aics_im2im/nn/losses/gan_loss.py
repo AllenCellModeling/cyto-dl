@@ -76,7 +76,7 @@ class GANLoss(nn.Module):
 
 
 # modified from https://github.com/MMV-Lab/mmv_im2im/blob/1b92bf4ab27cafe2608aef071f366741df3b58d4/mmv_im2im/utils/gan_losses.py
-class pix2pix_hd(nn.Module):
+class Pix2PixHD(nn.Module):
     def __init__(self, scales, loss_weights={"GAN": 1, "FM": 10}):
         super().__init__()
         self.scales = scales

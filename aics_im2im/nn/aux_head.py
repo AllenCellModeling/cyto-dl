@@ -8,7 +8,7 @@ from aicsimageio.writers import OmeTiffWriter
 from monai.networks.blocks import Convolution, UnetOutBlock, UnetResBlock, UpSample
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
-from aics_im2im.nn.losses import pix2pix_hd
+from aics_im2im.nn.losses import Pix2PixHD
 
 
 class BaseAuxHead(ABC, torch.nn.Module):
@@ -224,7 +224,7 @@ class GANHead(BaseAuxHead):
 
     def __init__(
         self,
-        gan_loss=pix2pix_hd(scales=1),
+        gan_loss=Pix2PixHD(scales=1),
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
@@ -235,7 +235,7 @@ class GANHead(BaseAuxHead):
         """
         Parameters
         ----------
-        gan_loss=pix2pix_hd(scales=1)
+        gan_loss=Pix2PixHD(scales=1)
             Loss for optimizing GAN
         reconstruction_loss=torch.nn.MSELoss()
             Loss for optimizing generator's image reconstructions
