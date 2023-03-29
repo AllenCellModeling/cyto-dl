@@ -17,6 +17,7 @@ jobs:
           python-version: 3.8
       - name: Install Dependencies
         run: |
+          pip install numpy
           pip install -r requirements/docs-requirements.txt
       - name: Generate Docs
         run: |
