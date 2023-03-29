@@ -4,7 +4,18 @@ from .n_layer_discriminator import NLayerDiscriminator
 
 
 class MultiScaleDiscriminator(nn.Module):
-    def __init__(self, n_scales, **kwargs):
+    """Modified version of Pix2PixHD discriminator, which returns discriminator activations at
+    multiple spatial scales."""
+
+    def __init__(self, n_scales: int = 2, **kwargs):
+        """
+        Parameters
+        ----------
+            n_scales:int=2
+                Number of spatial scales to
+            **kwargs
+                Arguments to pass to NLayerDiscriminator
+        """
         super().__init__()
         self.scales = range(n_scales)
         self.discriminators = nn.ModuleDict(

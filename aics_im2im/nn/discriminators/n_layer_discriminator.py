@@ -9,19 +9,25 @@ class NLayerDiscriminator(nn.Module):
 
     def __init__(
         self,
-        input_nc,
-        ndf=64,
-        n_layers=3,
+        input_nc: int = 2,
+        ndf: int = 64,
+        n_layers: int = 3,
         norm_layer=nn.InstanceNorm3d,
         noise_annealer=None,
     ):
-        """Construct a PatchGAN discriminator.
-
-        Parameters:
-            input_nc (int)  -- the number of channels in input images
-            ndf (int)       -- the number of filters in the last conv layer
-            n_layers (int)  -- the number of conv layers in the discriminator
-            norm_layer      -- normalization layer
+        """
+        Parameters
+        ----------
+            input_nc:int=2
+                Number of channels of input images. Generally, `n_channels(input_im)+n_channels(model_output)`
+            ndf:int=64
+                Number of filters in the first conv layer. Later layers are multiples of `ndf`.
+            n_layers:int=3
+                Number of conv layers in the discriminator
+            norm_layer=nn.InstanceNorm3d
+                normalization layer
+            noise_annealer=None
+                Noise annealer object
         """
         super().__init__()
         if type(norm_layer) == functools.partial:

@@ -1,4 +1,5 @@
 import math
+from typing import Callable
 
 import numpy as np
 import torch
@@ -10,12 +11,14 @@ from .base_head import BaseHead
 
 
 class ResBlocksHead(BaseHead):
+    """Task head for doing task-specific convolution and optional upsampling."""
+
     def __init__(
         self,
         loss,
-        in_channels,
-        out_channels,
-        final_act,
+        in_channels: int,
+        out_channels: int,
+        final_act: Callable = torch.nn.Identity(),
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
         save_raw=False,
@@ -27,6 +30,37 @@ class ResBlocksHead(BaseHead):
         upsample_ratio=None,
         first_layer=torch.nn.Identity(),
     ):
+        """
+        Parameters
+        ----------
+        in_channels:int
+            Number of input channels (same as number of output channels from backbone)
+        out_channels:int
+            Number of output channels
+        final_act:Callable=torch.nn.Identity()
+            Final activation applied to logits
+        postprocess={"input": detach, "prediction": detach}
+            Postprocessing functions for ground truth and model predictions
+        calculate_metric=False
+            Whether to calculate a metric. Currently not implemented
+        save_raw=False
+            Whether to save raw image examples during training
+        resolution="lr"
+            Resolution of output image. If `lr`, no upsampling is done. If `hr`, `upsample_method` and `upsample_ratio` are used
+            to determine how to perform upsampling.
+        spatial_dims=3
+            Spatial dimension of data after `first_layer`
+        n_convs=1
+            Number of convolutional layers
+        dropout=0.0
+            Dropout ratio
+        upsample_method="subpixel"
+            Method of upsampling. See :ref:monai's docs`https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample` for options
+        upsample_ratio=None
+            Amount to upsample. If not None, should be array of length `spatial_dims`
+        first_layer=torch.nn.Identity()
+            Initial layer to apply to backbone outputs. For example, `ConvProjectionLayer` for transforming 3D->2D output.
+        """
         super().__init__(loss, postprocess, calculate_metric, save_raw)
 
         self.resolution = resolution
