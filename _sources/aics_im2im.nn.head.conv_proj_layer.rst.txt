@@ -1,0 +1,7 @@
+aics\_im2im.nn.head.conv\_proj\_layer module
+============================================
+
+.. automodule:: aics_im2im.nn.head.conv_proj_layer
+   :members:
+   :undoc-members:
+   :show-inheritance:

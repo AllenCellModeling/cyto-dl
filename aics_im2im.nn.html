@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.nn.losses package" href="aics_im2im.nn.losses.html" /><link rel="prev" title="aics_im2im.models.base_model module" href="aics_im2im.models.base_model.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.nn.discriminators package" href="aics_im2im.nn.discriminators.html" /><link rel="prev" title="aics_im2im.models.base_model module" href="aics_im2im.models.base_model.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
         <title>aics_im2im.nn package - aics-im2im 0.1.0 documentation</title>
@@ -221,6 +221,7 @@
 <li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.im2im.utils.omnipose.html">aics_im2im.models.im2im.utils.omnipose module</a></li>
 </ul>
 </li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.im2im.gan.html">aics_im2im.models.im2im.gan module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.im2im.multi_task.html">aics_im2im.models.im2im.multi_task module</a></li>
 </ul>
 </li>
@@ -257,7 +258,19 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">aics_im2im.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.discriminators.html">aics_im2im.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.discriminators.multi_scale_discriminator.html">aics_im2im.nn.discriminators.multi_scale_discriminator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.discriminators.n_layer_discriminator.html">aics_im2im.nn.discriminators.n_layer_discriminator module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.head.html">aics_im2im.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.base_head.html">aics_im2im.nn.head.base_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html">aics_im2im.nn.head.conv_proj_layer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html">aics_im2im.nn.head.gan_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html">aics_im2im.nn.head.res_blocks_head module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.adversarial_loss.html">aics_im2im.nn.losses.adversarial_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.continuous_bernoulli.html">aics_im2im.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.cosine_loss.html">aics_im2im.nn.losses.cosine_loss module</a></li>
@@ -269,15 +282,13 @@
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.weighted_mse_loss.html">aics_im2im.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.aux_head.html">aics_im2im.nn.aux_head module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.discriminator.html">aics_im2im.nn.discriminator module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.hr_skip.html">aics_im2im.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.mlp.html">aics_im2im.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.spatial_transformer.html">aics_im2im.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.utils.html">aics_im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.utils.spharm.html">aics_im2im.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.utils.html">aics_im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.utils.spharm.html">aics_im2im.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.reconstruction.html">aics_im2im.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.rotation.html">aics_im2im.utils.spharm.rotation module</a></li>
 </ul>
@@ -335,6 +346,42 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.discriminators.html">aics_im2im.nn.discriminators package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.discriminators.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.discriminators.multi_scale_discriminator.html">aics_im2im.nn.discriminators.multi_scale_discriminator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.discriminators.multi_scale_discriminator.html#aics_im2im.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator"><code class="docutils literal notranslate"><span class="pre">MultiScaleDiscriminator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.discriminators.n_layer_discriminator.html">aics_im2im.nn.discriminators.n_layer_discriminator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.discriminators.n_layer_discriminator.html#aics_im2im.nn.discriminators.n_layer_discriminator.NLayerDiscriminator"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.head.html">aics_im2im.nn.head package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.head.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html">aics_im2im.nn.head.base_head module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead"><code class="docutils literal notranslate"><span class="pre">BaseHead</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html">aics_im2im.nn.head.conv_proj_layer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html#aics_im2im.nn.head.conv_proj_layer.ConvProjectionLayer"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html">aics_im2im.nn.head.gan_head module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html#aics_im2im.nn.head.gan_head.GANHead"><code class="docutils literal notranslate"><span class="pre">GANHead</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html">aics_im2im.nn.head.res_blocks_head module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html#aics_im2im.nn.head.res_blocks_head.ResBlocksHead"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.losses.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.losses.adversarial_loss.html">aics_im2im.nn.losses.adversarial_loss module</a><ul>
@@ -351,6 +398,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.losses.gan_loss.html">aics_im2im.nn.losses.gan_loss module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss"><code class="docutils literal notranslate"><span class="pre">GANLoss</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.Pix2PixHD"><code class="docutils literal notranslate"><span class="pre">Pix2PixHD</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.losses.gaussian_nll_loss.html">aics_im2im.nn.losses.gaussian_nll_loss module</a><ul>
@@ -386,35 +434,6 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.aux_head.html">aics_im2im.nn.aux_head module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead"><code class="docutils literal notranslate"><span class="pre">AuxHead</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead.forward"><code class="docutils literal notranslate"><span class="pre">AuxHead.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead.training"><code class="docutils literal notranslate"><span class="pre">AuxHead.training</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.run_head()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.save_image()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.training"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.training</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.update_params"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.update_params()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.ConvProjectionLayer"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.ConvProjectionLayer.training"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.discriminator.html">aics_im2im.nn.discriminator module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.forward"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.set_requires_grad"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator.set_requires_grad()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.training"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.hr_skip.html">aics_im2im.nn.hr_skip module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.hr_skip.html#aics_im2im.nn.hr_skip.HRSkip"><code class="docutils literal notranslate"><span class="pre">HRSkip</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.hr_skip.html#aics_im2im.nn.hr_skip.HRSkip.forward"><code class="docutils literal notranslate"><span class="pre">HRSkip.forward()</span></code></a></li>
@@ -455,12 +474,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="aics_im2im.nn.losses.html">
+          <a class="next-page" href="aics_im2im.nn.discriminators.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">aics_im2im.nn.losses package</div>
+                <div class="title">aics_im2im.nn.discriminators package</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>

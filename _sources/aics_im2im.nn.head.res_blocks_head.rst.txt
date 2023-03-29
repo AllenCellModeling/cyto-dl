@@ -1,0 +1,7 @@
+aics\_im2im.nn.head.res\_blocks\_head module
+============================================
+
+.. automodule:: aics_im2im.nn.head.res_blocks_head
+   :members:
+   :undoc-members:
+   :show-inheritance:

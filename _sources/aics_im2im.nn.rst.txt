@@ -12,6 +12,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   aics_im2im.nn.discriminators
+   aics_im2im.nn.head
    aics_im2im.nn.losses
 
 Submodules
@@ -20,8 +22,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
-   aics_im2im.nn.aux_head
-   aics_im2im.nn.discriminator
    aics_im2im.nn.hr_skip
    aics_im2im.nn.mlp
    aics_im2im.nn.spatial_transformer

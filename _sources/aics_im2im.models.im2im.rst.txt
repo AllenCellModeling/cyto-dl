@@ -20,4 +20,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   aics_im2im.models.im2im.gan
    aics_im2im.models.im2im.multi_task

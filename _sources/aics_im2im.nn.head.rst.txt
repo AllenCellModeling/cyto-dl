@@ -1,0 +1,18 @@
+aics\_im2im.nn.head package
+===========================
+
+.. automodule:: aics_im2im.nn.head
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   aics_im2im.nn.head.base_head
+   aics_im2im.nn.head.conv_proj_layer
+   aics_im2im.nn.head.gan_head
+   aics_im2im.nn.head.res_blocks_head

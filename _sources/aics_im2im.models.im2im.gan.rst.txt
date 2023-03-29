@@ -1,7 +1,7 @@
-aics\_im2im.nn.discriminator module
+aics\_im2im.models.im2im.gan module
 ===================================
 
-.. automodule:: aics_im2im.nn.discriminator
+.. automodule:: aics_im2im.models.im2im.gan
    :members:
    :undoc-members:
    :show-inheritance:

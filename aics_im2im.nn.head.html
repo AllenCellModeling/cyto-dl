@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.nn.discriminator module" href="aics_im2im.nn.discriminator.html" /><link rel="prev" title="aics_im2im.nn.losses.weighted_mse_loss module" href="aics_im2im.nn.losses.weighted_mse_loss.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.nn.head.base_head module" href="aics_im2im.nn.head.base_head.html" /><link rel="prev" title="aics_im2im.nn.discriminators.n_layer_discriminator module" href="aics_im2im.nn.discriminators.n_layer_discriminator.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>aics_im2im.nn.aux_head module - aics-im2im 0.1.0 documentation</title>
+        <title>aics_im2im.nn.head package - aics-im2im 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -221,6 +221,7 @@
 <li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.im2im.utils.omnipose.html">aics_im2im.models.im2im.utils.omnipose module</a></li>
 </ul>
 </li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.im2im.gan.html">aics_im2im.models.im2im.gan module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.im2im.multi_task.html">aics_im2im.models.im2im.multi_task module</a></li>
 </ul>
 </li>
@@ -257,7 +258,19 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="aics_im2im.nn.html">aics_im2im.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.discriminators.html">aics_im2im.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.discriminators.multi_scale_discriminator.html">aics_im2im.nn.discriminators.multi_scale_discriminator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.discriminators.n_layer_discriminator.html">aics_im2im.nn.discriminators.n_layer_discriminator module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">aics_im2im.nn.head package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.base_head.html">aics_im2im.nn.head.base_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html">aics_im2im.nn.head.conv_proj_layer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html">aics_im2im.nn.head.gan_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html">aics_im2im.nn.head.res_blocks_head module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.adversarial_loss.html">aics_im2im.nn.losses.adversarial_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.continuous_bernoulli.html">aics_im2im.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.cosine_loss.html">aics_im2im.nn.losses.cosine_loss module</a></li>
@@ -269,15 +282,13 @@
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.weighted_mse_loss.html">aics_im2im.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">aics_im2im.nn.aux_head module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.discriminator.html">aics_im2im.nn.discriminator module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.hr_skip.html">aics_im2im.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.mlp.html">aics_im2im.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.spatial_transformer.html">aics_im2im.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.utils.html">aics_im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.utils.spharm.html">aics_im2im.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.utils.html">aics_im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.utils.spharm.html">aics_im2im.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.reconstruction.html">aics_im2im.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.rotation.html">aics_im2im.utils.spharm.rotation module</a></li>
 </ul>
@@ -329,66 +340,49 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-aics_im2im.nn.aux_head">
-<span id="aics-im2im-nn-aux-head-module"></span><h1>aics_im2im.nn.aux_head module<a class="headerlink" href="#module-aics_im2im.nn.aux_head" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.AuxHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.aux_head.</span></span><span class="sig-name descname"><span class="pre">AuxHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#AuxHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.AuxHead" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead" title="aics_im2im.nn.aux_head.BaseAuxHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseAuxHead</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.AuxHead.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#AuxHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.AuxHead.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.AuxHead.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#aics_im2im.nn.aux_head.AuxHead.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.aux_head.</span></span><span class="sig-name descname"><span class="pre">BaseAuxHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_args=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#BaseAuxHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#BaseAuxHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead.run_head">
-<span class="sig-name descname"><span class="pre">run_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#BaseAuxHead.run_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead.run_head" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead.save_image">
-<span class="sig-name descname"><span class="pre">save_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_hat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#BaseAuxHead.save_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead.save_image" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.BaseAuxHead.update_params">
-<span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#BaseAuxHead.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.BaseAuxHead.update_params" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.ConvProjectionLayer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.aux_head.</span></span><span class="sig-name descname"><span class="pre">ConvProjectionLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/aux_head.html#ConvProjectionLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.aux_head.ConvProjectionLayer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="aics_im2im.nn.aux_head.ConvProjectionLayer.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#aics_im2im.nn.aux_head.ConvProjectionLayer.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="module-aics_im2im.nn.head">
+<span id="aics-im2im-nn-head-package"></span><h1>aics_im2im.nn.head package<a class="headerlink" href="#module-aics_im2im.nn.head" title="Permalink to this heading">#</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.head.base_head.html">aics_im2im.nn.head.base_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead"><code class="docutils literal notranslate"><span class="pre">BaseHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseHead.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseHead.run_head()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseHead.save_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.training"><code class="docutils literal notranslate"><span class="pre">BaseHead.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.update_params"><code class="docutils literal notranslate"><span class="pre">BaseHead.update_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html">aics_im2im.nn.head.conv_proj_layer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html#aics_im2im.nn.head.conv_proj_layer.ConvProjectionLayer"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.conv_proj_layer.html#aics_im2im.nn.head.conv_proj_layer.ConvProjectionLayer.training"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html">aics_im2im.nn.head.gan_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html#aics_im2im.nn.head.gan_head.GANHead"><code class="docutils literal notranslate"><span class="pre">GANHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html#aics_im2im.nn.head.gan_head.GANHead.run_head"><code class="docutils literal notranslate"><span class="pre">GANHead.run_head()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.gan_head.html#aics_im2im.nn.head.gan_head.GANHead.training"><code class="docutils literal notranslate"><span class="pre">GANHead.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html">aics_im2im.nn.head.res_blocks_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html#aics_im2im.nn.head.res_blocks_head.ResBlocksHead"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html#aics_im2im.nn.head.res_blocks_head.ResBlocksHead.forward"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.nn.head.res_blocks_head.html#aics_im2im.nn.head.res_blocks_head.ResBlocksHead.training"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 </section>
 
         </article>
@@ -396,23 +390,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="aics_im2im.nn.discriminator.html">
+          <a class="next-page" href="aics_im2im.nn.head.base_head.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">aics_im2im.nn.discriminator module</div>
+                <div class="title">aics_im2im.nn.head.base_head module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="aics_im2im.nn.losses.weighted_mse_loss.html">
+          <a class="prev-page" href="aics_im2im.nn.discriminators.n_layer_discriminator.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">aics_im2im.nn.losses.weighted_mse_loss module</div>
+                <div class="title">aics_im2im.nn.discriminators.n_layer_discriminator module</div>
                 
               </div>
             </a>
@@ -446,24 +440,8 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">aics_im2im.nn.aux_head module</a><ul>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.AuxHead"><code class="docutils literal notranslate"><span class="pre">AuxHead</span></code></a><ul>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.AuxHead.forward"><code class="docutils literal notranslate"><span class="pre">AuxHead.forward()</span></code></a></li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.AuxHead.training"><code class="docutils literal notranslate"><span class="pre">AuxHead.training</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead</span></code></a><ul>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.forward()</span></code></a></li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.run_head()</span></code></a></li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.save_image()</span></code></a></li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead.training"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.training</span></code></a></li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.BaseAuxHead.update_params"><code class="docutils literal notranslate"><span class="pre">BaseAuxHead.update_params()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.ConvProjectionLayer"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer</span></code></a><ul>
-<li><a class="reference internal" href="#aics_im2im.nn.aux_head.ConvProjectionLayer.training"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer.training</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">aics_im2im.nn.head package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
 </ul>
 </li>
 </ul>

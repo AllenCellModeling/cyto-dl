@@ -1,0 +1,7 @@
+aics\_im2im.nn.discriminators.multi\_scale\_discriminator module
+================================================================
+
+.. automodule:: aics_im2im.nn.discriminators.multi_scale_discriminator
+   :members:
+   :undoc-members:
+   :show-inheritance:
