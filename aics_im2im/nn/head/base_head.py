@@ -15,7 +15,6 @@ class BaseHead(ABC, torch.nn.Module):
         self,
         loss,
         postprocess={"input": detach, "prediction": detach},
-        model_args=None,
         calculate_metric=False,
         save_raw=False,
     ):
@@ -23,15 +22,13 @@ class BaseHead(ABC, torch.nn.Module):
         self.loss = loss
         self.postprocess = postprocess
         self.calculate_metric = calculate_metric
-        self.model = self._init_model(model_args)
+
+        self.model = torch.nn.Sequential(torch.nn.Identity())
         self.save_raw = save_raw
 
     def update_params(self, params):
         for k, v in params.items():
             setattr(self, k, v)
-
-    def _init_model(self, model_args):
-        return torch.nn.Sequential(torch.nn.Identity())
 
     def _calculate_loss(self, y_hat, y):
         return self.loss(y_hat, y)

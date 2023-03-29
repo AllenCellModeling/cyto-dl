@@ -13,31 +13,34 @@ class ResBlocksHead(BaseHead):
     def __init__(
         self,
         loss,
+        in_channels,
+        out_channels,
+        final_act,
         postprocess={"input": detach, "prediction": detach},
-        model_args=None,
         calculate_metric=False,
         save_raw=False,
+        resolution="lr",
+        spatial_dims=3,
+        n_convs=1,
+        dropout=0.0,
+        upsample_method="subpixel",
+        upsample_ratio=None,
+        first_layer=torch.nn.Identity(),
     ):
-        super().__init__(loss, postprocess, model_args, calculate_metric, save_raw)
+        super().__init__(loss, postprocess, calculate_metric, save_raw)
 
-    def _init_model(self, model_args):
-        resolution = model_args.get("resolution", "lr")
         self.resolution = resolution
-        spatial_dims = model_args.get("spatial_dims", 3)
-        n_convs = model_args.get("n_convs", 1)
-        dropout = model_args.get("dropout", 0.0)
-        out_channels = model_args["out_channels"]
-        final_act = model_args["final_act"]
-        in_channels = model_args["in_channels"]
-        upsample_method = model_args.get("upsample_method", "subpixel")
-
         conv_input_channels = in_channels
-        modules = [model_args.get("first_layer", torch.nn.Identity())]
+        modules = [first_layer]
         upsample = torch.nn.Identity()
+
+        upsample_ratio = (
+            upsample_ratio if upsample_ratio is not None else ([2] * self.spatial_dims)
+        )
+
         if resolution == "hr":
             if upsample_method == "subpixel":
                 conv_input_channels //= 2**spatial_dims
-            upsample_ratio = model_args.get("upsample_ratio", [2] * self.spatial_dims)
             assert len(upsample_ratio) == spatial_dims
             upsample = UpSample(
                 spatial_dims=spatial_dims,
@@ -70,8 +73,9 @@ class ResBlocksHead(BaseHead):
                 final_act,
             )
         )
-        model = torch.nn.ModuleDict({"upsample": upsample, "model": torch.nn.Sequential(*modules)})
-        return model
+        self.model = torch.nn.ModuleDict(
+            {"upsample": upsample, "model": torch.nn.Sequential(*modules)}
+        )
 
     def forward(self, x):
         if self.resolution == "hr":

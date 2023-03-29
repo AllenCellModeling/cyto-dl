@@ -18,7 +18,6 @@ class GANHead(BaseHead):
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
-        model_args=None,
         calculate_metric=False,
         save_raw=False,
     ):
@@ -33,20 +32,15 @@ class GANHead(BaseHead):
             Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        model_args=None
-            Arguments to initialize model. This is not used by the GAN head
         calculate_metric=False
             Whether to calculate a metric during training. Not used by GAN head.
         save_raw=False
             Whether to save out example input images during training
         """
-        super().__init__(None, postprocess, model_args, calculate_metric, save_raw)
+        super().__init__(None, postprocess, calculate_metric, save_raw)
         self.gan_loss = gan_loss
         self.reconstruction_loss = reconstruction_loss
         self.reconstruction_loss_weight = reconstruction_loss_weight
-
-    def _init_model(self, model_args):
-        return torch.nn.Sequential(torch.nn.Tanh())
 
     def _calculate_loss(self, y_hat, batch, discriminator):
         # extract intermediate activations from discriminator for real and predicted images
