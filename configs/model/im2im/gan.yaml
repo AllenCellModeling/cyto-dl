@@ -20,7 +20,7 @@ backbone:
 task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 discriminator:
-  _target_: aics_im2im.nn.discriminator.MultiScaleDiscriminator
+  _target_: aics_im2im.nn.discriminators.MultiScaleDiscriminator
   n_scales: 1
   input_nc: 2 #conditioning image+real/fake image
   n_layers: 2
@@ -58,9 +58,9 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.aux_head.GANHead
+      - _target_: aics_im2im.nn.GANHead
         gan_loss:
-          _target_: aics_im2im.nn.losses.gan_loss.Pix2PixHD
+          _target_: aics_im2im.nn.losses.Pix2PixHD
           scales: 1
         reconstruction_loss:
           _target_: torch.nn.MSELoss

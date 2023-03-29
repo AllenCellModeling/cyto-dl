@@ -11,10 +11,6 @@ class MultiScaleDiscriminator(nn.Module):
             {str(scale): NLayerDiscriminator(**kwargs) for scale in self.scales}
         )
 
-    def set_requires_grad(self, requires_grad=False):
-        for scale in self.scales:
-            self.discriminators[str(scale)].set_requires_grad(requires_grad)
-
     def forward(self, x, real, pred):
         features = {}
         for key, img in zip(["real", "pred"], [real, pred]):

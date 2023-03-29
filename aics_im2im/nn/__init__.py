@@ -1,4 +1,4 @@
-from .aux_head import AuxHead, BaseAuxHead, ConvProjectionLayer
+from .aux_head import AuxHead, BaseAuxHead, ConvProjectionLayer, GANHead
 from .hr_skip import HRSkip
 from .losses import (
     AdversarialLoss,

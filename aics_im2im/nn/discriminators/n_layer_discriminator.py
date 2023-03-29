@@ -93,10 +93,6 @@ class NLayerDiscriminator(nn.Module):
         self.model = modules
         self.noise_annealer = noise_annealer
 
-    def set_requires_grad(self, requires_grad=False):
-        for param in self.model.parameters():
-            param.requires_grad = requires_grad
-
     def forward(self, im, x, requires_features=False):
         """Standard forward."""
         output_im = [x]
