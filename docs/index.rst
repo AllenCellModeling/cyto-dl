@@ -7,4 +7,5 @@
 
    Home <self>
    installation
+   using_examples
    Package modules <modules>

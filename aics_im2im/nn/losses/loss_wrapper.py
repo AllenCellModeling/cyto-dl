@@ -1,9 +1,22 @@
 import torch
+from numpy.typing import ArrayLike
 from torch import nn
 
 
 class LossWrapper(nn.Module):
-    def __init__(self, loss_fn, channel_weight, loss_scale):
+    def __init__(self, loss_fn, channel_weight: ArrayLike, loss_scale: float = 1.0):
+        """Loss Wrapper for weighting loss between channels differently. `loss_fn` is calculated
+        per-channel, scaled by `channel_weight`, averaged, and scaled by `loss_scale`
+
+        Parameters
+        ----------
+            loss_fn
+                Loss function
+            channel_weight:ArrayLike
+                array of floats with length equal to number of channels of predicted image
+            loss_scale: float
+                Scale for channel-weighted loss.
+        """
         super().__init__()
         self.loss_fn = loss_fn
         self.channel_weight = channel_weight
@@ -28,6 +41,14 @@ class LossWrapper(nn.Module):
 
 class CMAP_loss(nn.Module):
     def __init__(self, loss):
+        """Loss Wrapper for losses that accept a spatial costmap, differentially emphasizing pixel
+        losses throughout an image.
+
+        Parameters
+        ----------
+            loss
+                Loss function. Should provide per-pixel losses.
+        """
         super().__init__()
         self.loss = loss
 
