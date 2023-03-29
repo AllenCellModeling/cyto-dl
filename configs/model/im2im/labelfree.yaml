@@ -39,7 +39,7 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseAuxHead
+      - _target_: aics_im2im.nn.ResBlocksHead
         loss:
           _target_: torch.nn.MSELoss
         postprocess:
