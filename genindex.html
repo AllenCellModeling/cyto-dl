@@ -1,0 +1,1860 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
+
+    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 --><title>Index - aics-im2im 0.1.0 documentation</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">aics-im2im 0.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">aics-im2im 0.1.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.callback_utils.html">aics_im2im.callbacks.callback_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.latent_walk.html">aics_im2im.callbacks.latent_walk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.model_utils.html">aics_im2im.callbacks.model_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.dataframe.html">aics_im2im.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.dataframe.transforms.html">aics_im2im.dataframe.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.dataframe.transforms.filter.html">aics_im2im.dataframe.transforms.filter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.dataframe.transforms.group_cols.html">aics_im2im.dataframe.transforms.group_cols module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.dataframe.transforms.misc.html">aics_im2im.dataframe.transforms.misc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.dataframe.transforms.split.html">aics_im2im.dataframe.transforms.split module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.dataframe.readers.html">aics_im2im.dataframe.readers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.datamodules.html">aics_im2im.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.datamodules.dataframe.html">aics_im2im.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html">aics_im2im.datamodules.dataframe.dataframe_datamodule module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.utils.html">aics_im2im.datamodules.dataframe.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.czi.html">aics_im2im.datamodules.czi module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.folder.html">aics_im2im.datamodules.folder module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.transforms.html">aics_im2im.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.bright_sampler.html">aics_im2im.image.transforms.bright_sampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.multiscale_cropper.html">aics_im2im.image.transforms.multiscale_cropper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.o2_mask_transform.html">aics_im2im.image.transforms.o2_mask_transform module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.project.html">aics_im2im.image.transforms.project module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.resize.html">aics_im2im.image.transforms.resize module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.so2_random_rotation.html">aics_im2im.image.transforms.so2_random_rotation module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.loggers.html">aics_im2im.loggers package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.loggers.mlflow.html">aics_im2im.loggers.mlflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.models.html">aics_im2im.models package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.models.im2im.html">aics_im2im.models.im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="aics_im2im.models.im2im.utils.html">aics_im2im.models.im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="aics_im2im.models.im2im.utils.postprocessing.html">aics_im2im.models.im2im.utils.postprocessing package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="aics_im2im.models.im2im.utils.postprocessing.act_thresh_label.html">aics_im2im.models.im2im.utils.postprocessing.act_thresh_label module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html">aics_im2im.models.im2im.utils.postprocessing.dict_to_im module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.im2im.utils.noise_annealer.html">aics_im2im.models.im2im.utils.noise_annealer module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.im2im.utils.omnipose.html">aics_im2im.models.im2im.utils.omnipose module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.im2im.multi_task.html">aics_im2im.models.im2im.multi_task module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.models.utils.html">aics_im2im.models.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.utils.mlflow.html">aics_im2im.models.utils.mlflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.models.vae.html">aics_im2im.models.vae package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="aics_im2im.models.vae.o2_spharm_vae.html">aics_im2im.models.vae.o2_spharm_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html">aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html">aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="aics_im2im.models.vae.priors.html">aics_im2im.models.vae.priors package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.priors.abstract_prior.html">aics_im2im.models.vae.priors.abstract_prior module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.priors.gaussian.html">aics_im2im.models.vae.priors.gaussian module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.priors.identity_prior.html">aics_im2im.models.vae.priors.identity_prior module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.priors.joint_prior.html">aics_im2im.models.vae.priors.joint_prior module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="aics_im2im.models.vae.so2_image_vae.html">aics_im2im.models.vae.so2_image_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html">aics_im2im.models.vae.so2_image_vae.so2_encoder module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html">aics_im2im.models.vae.so2_image_vae.so2_image_vae module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="aics_im2im.models.vae.so2_image_vae.utils.html">aics_im2im.models.vae.so2_image_vae.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.vae.base_vae.html">aics_im2im.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.vae.image_vae.html">aics_im2im.models.vae.image_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.vae.latent_loss_vae.html">aics_im2im.models.vae.latent_loss_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.models.vae.tabular_vae.html">aics_im2im.models.vae.tabular_vae module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.models.base_model.html">aics_im2im.models.base_model module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.nn.html">aics_im2im.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.nn.losses.html">aics_im2im.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.adversarial_loss.html">aics_im2im.nn.losses.adversarial_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.continuous_bernoulli.html">aics_im2im.nn.losses.continuous_bernoulli module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.cosine_loss.html">aics_im2im.nn.losses.cosine_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.gan_loss.html">aics_im2im.nn.losses.gan_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.gaussian_nll_loss.html">aics_im2im.nn.losses.gaussian_nll_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.loss_wrapper.html">aics_im2im.nn.losses.loss_wrapper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.spharm_loss.html">aics_im2im.nn.losses.spharm_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.weibull.html">aics_im2im.nn.losses.weibull module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.nn.losses.weighted_mse_loss.html">aics_im2im.nn.losses.weighted_mse_loss module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.aux_head.html">aics_im2im.nn.aux_head module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.discriminator.html">aics_im2im.nn.discriminator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.hr_skip.html">aics_im2im.nn.hr_skip module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.mlp.html">aics_im2im.nn.mlp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.nn.spatial_transformer.html">aics_im2im.nn.spatial_transformer module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.utils.html">aics_im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.utils.spharm.html">aics_im2im.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.reconstruction.html">aics_im2im.utils.spharm.reconstruction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.utils.spharm.rotation.html">aics_im2im.utils.spharm.rotation module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.utils.config.html">aics_im2im.utils.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.utils.dummy_dataset.html">aics_im2im.utils.dummy_dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.utils.pylogger.html">aics_im2im.utils.pylogger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.utils.rich_utils.html">aics_im2im.utils.rich_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.utils.template_utils.html">aics_im2im.utils.template_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.eval.html">aics_im2im.eval module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.train.html">aics_im2im.train module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          
+<section class="genindex-section">
+  <h1 id="index">Index</h1>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#J"><strong>J</strong></a> | <a href="#K"><strong>K</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a> | <a href="#V"><strong>V</strong></a> | <a href="#W"><strong>W</strong></a></div>
+</section>
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.utils.postprocessing.act_thresh_label.html#aics_im2im.models.im2im.utils.postprocessing.act_thresh_label.ActThreshLabel">ActThreshLabel (class in aics_im2im.models.im2im.utils.postprocessing.act_thresh_label)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.adversarial_loss.html#aics_im2im.nn.losses.adversarial_loss.AdversarialLoss">AdversarialLoss (class in aics_im2im.nn.losses.adversarial_loss)</a>
+</li>
+        <li><a href="aics_im2im.loggers.mlflow.html#aics_im2im.loggers.mlflow.MLFlowLogger.after_save_checkpoint">after_save_checkpoint() (aics_im2im.loggers.mlflow.MLFlowLogger method)</a>
+</li>
+        <li>
+    aics_im2im
+
+        <ul>
+          <li><a href="aics_im2im.html#module-aics_im2im">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.html#module-aics_im2im.dataframe">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.readers
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.readers.html#module-aics_im2im.dataframe.readers">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.transforms
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.html#module-aics_im2im.dataframe.transforms">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.transforms.filter
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.filter.html#module-aics_im2im.dataframe.transforms.filter">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.transforms.group_cols
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.group_cols.html#module-aics_im2im.dataframe.transforms.group_cols">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.transforms.misc
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.misc.html#module-aics_im2im.dataframe.transforms.misc">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.dataframe.transforms.split
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.split.html#module-aics_im2im.dataframe.transforms.split">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.html#module-aics_im2im.datamodules">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.czi
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.czi.html#module-aics_im2im.datamodules.czi">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.dataframe
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.html#module-aics_im2im.datamodules.dataframe">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.dataframe.dataframe_datamodule
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.dataframe.utils
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.utils.html#module-aics_im2im.datamodules.dataframe.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.datamodules.folder
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.folder.html#module-aics_im2im.datamodules.folder">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.eval
+
+        <ul>
+          <li><a href="aics_im2im.eval.html#module-aics_im2im.eval">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image
+
+        <ul>
+          <li><a href="aics_im2im.image.html#module-aics_im2im.image">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.io
+
+        <ul>
+          <li><a href="aics_im2im.image.io.html#module-aics_im2im.image.io">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.io.monai_bio_reader
+
+        <ul>
+          <li><a href="aics_im2im.image.io.monai_bio_reader.html#module-aics_im2im.image.io.monai_bio_reader">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.io.ome_zarr_reader
+
+        <ul>
+          <li><a href="aics_im2im.image.io.ome_zarr_reader.html#module-aics_im2im.image.io.ome_zarr_reader">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.html#module-aics_im2im.image.transforms">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.bright_sampler
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.bright_sampler.html#module-aics_im2im.image.transforms.bright_sampler">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.multiscale_cropper
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.multiscale_cropper.html#module-aics_im2im.image.transforms.multiscale_cropper">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.o2_mask_transform
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.o2_mask_transform.html#module-aics_im2im.image.transforms.o2_mask_transform">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.project
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.project.html#module-aics_im2im.image.transforms.project">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.resize
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.resize.html#module-aics_im2im.image.transforms.resize">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.transforms.so2_random_rotation
+
+        <ul>
+          <li><a href="aics_im2im.image.transforms.so2_random_rotation.html#module-aics_im2im.image.transforms.so2_random_rotation">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.loggers
+
+        <ul>
+          <li><a href="aics_im2im.loggers.html#module-aics_im2im.loggers">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.loggers.mlflow
+
+        <ul>
+          <li><a href="aics_im2im.loggers.mlflow.html#module-aics_im2im.loggers.mlflow">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models
+
+        <ul>
+          <li><a href="aics_im2im.models.html#module-aics_im2im.models">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.base_model
+
+        <ul>
+          <li><a href="aics_im2im.models.base_model.html#module-aics_im2im.models.base_model">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.html#module-aics_im2im.models.im2im">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.multi_task
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.multi_task.html#module-aics_im2im.models.im2im.multi_task">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.html#module-aics_im2im.models.im2im.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils.noise_annealer
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.noise_annealer.html#module-aics_im2im.models.im2im.utils.noise_annealer">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils.omnipose
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.omnipose.html#module-aics_im2im.models.im2im.utils.omnipose">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils.postprocessing
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.html#module-aics_im2im.models.im2im.utils.postprocessing">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils.postprocessing.act_thresh_label
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.act_thresh_label.html#module-aics_im2im.models.im2im.utils.postprocessing.act_thresh_label">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.im2im.utils.postprocessing.dict_to_im
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#module-aics_im2im.models.im2im.utils.postprocessing.dict_to_im">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.utils
+
+        <ul>
+          <li><a href="aics_im2im.models.utils.html#module-aics_im2im.models.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.utils.mlflow
+
+        <ul>
+          <li><a href="aics_im2im.models.utils.mlflow.html#module-aics_im2im.models.utils.mlflow">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.html#module-aics_im2im.models.vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.base_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.base_vae.html#module-aics_im2im.models.vae.base_vae">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    aics_im2im.models.vae.image_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.image_vae.html#module-aics_im2im.models.vae.image_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.latent_loss_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.latent_loss_vae.html#module-aics_im2im.models.vae.latent_loss_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.o2_spharm_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.html#module-aics_im2im.models.vae.o2_spharm_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#module-aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html#module-aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.priors
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.html#module-aics_im2im.models.vae.priors">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.priors.abstract_prior
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#module-aics_im2im.models.vae.priors.abstract_prior">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.priors.gaussian
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#module-aics_im2im.models.vae.priors.gaussian">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.priors.identity_prior
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.identity_prior.html#module-aics_im2im.models.vae.priors.identity_prior">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.priors.joint_prior
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#module-aics_im2im.models.vae.priors.joint_prior">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.so2_image_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.html#module-aics_im2im.models.vae.so2_image_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.so2_image_vae.so2_encoder
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#module-aics_im2im.models.vae.so2_image_vae.so2_encoder">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.so2_image_vae.so2_image_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#module-aics_im2im.models.vae.so2_image_vae.so2_image_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.so2_image_vae.utils
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#module-aics_im2im.models.vae.so2_image_vae.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.models.vae.tabular_vae
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.tabular_vae.html#module-aics_im2im.models.vae.tabular_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn
+
+        <ul>
+          <li><a href="aics_im2im.nn.html#module-aics_im2im.nn">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.aux_head
+
+        <ul>
+          <li><a href="aics_im2im.nn.aux_head.html#module-aics_im2im.nn.aux_head">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.discriminator
+
+        <ul>
+          <li><a href="aics_im2im.nn.discriminator.html#module-aics_im2im.nn.discriminator">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.hr_skip
+
+        <ul>
+          <li><a href="aics_im2im.nn.hr_skip.html#module-aics_im2im.nn.hr_skip">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.html#module-aics_im2im.nn.losses">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.adversarial_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.adversarial_loss.html#module-aics_im2im.nn.losses.adversarial_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.continuous_bernoulli
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.continuous_bernoulli.html#module-aics_im2im.nn.losses.continuous_bernoulli">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.cosine_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.cosine_loss.html#module-aics_im2im.nn.losses.cosine_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.gan_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.gan_loss.html#module-aics_im2im.nn.losses.gan_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.gaussian_nll_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.gaussian_nll_loss.html#module-aics_im2im.nn.losses.gaussian_nll_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.loss_wrapper
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.loss_wrapper.html#module-aics_im2im.nn.losses.loss_wrapper">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.spharm_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.spharm_loss.html#module-aics_im2im.nn.losses.spharm_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.weibull
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.weibull.html#module-aics_im2im.nn.losses.weibull">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.losses.weighted_mse_loss
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.weighted_mse_loss.html#module-aics_im2im.nn.losses.weighted_mse_loss">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.mlp
+
+        <ul>
+          <li><a href="aics_im2im.nn.mlp.html#module-aics_im2im.nn.mlp">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.nn.spatial_transformer
+
+        <ul>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#module-aics_im2im.nn.spatial_transformer">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.train
+
+        <ul>
+          <li><a href="aics_im2im.train.html#module-aics_im2im.train">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils
+
+        <ul>
+          <li><a href="aics_im2im.utils.html#module-aics_im2im.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.config
+
+        <ul>
+          <li><a href="aics_im2im.utils.config.html#module-aics_im2im.utils.config">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.dummy_dataset
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#module-aics_im2im.utils.dummy_dataset">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.pylogger
+
+        <ul>
+          <li><a href="aics_im2im.utils.pylogger.html#module-aics_im2im.utils.pylogger">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.rich_utils
+
+        <ul>
+          <li><a href="aics_im2im.utils.rich_utils.html#module-aics_im2im.utils.rich_utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.spharm
+
+        <ul>
+          <li><a href="aics_im2im.utils.spharm.html#module-aics_im2im.utils.spharm">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.spharm.reconstruction
+
+        <ul>
+          <li><a href="aics_im2im.utils.spharm.reconstruction.html#module-aics_im2im.utils.spharm.reconstruction">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.spharm.rotation
+
+        <ul>
+          <li><a href="aics_im2im.utils.spharm.rotation.html#module-aics_im2im.utils.spharm.rotation">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.utils.template_utils
+
+        <ul>
+          <li><a href="aics_im2im.utils.template_utils.html#module-aics_im2im.utils.template_utils">module</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.AlternatingBatchSampler">AlternatingBatchSampler (class in aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.misc.html#aics_im2im.dataframe.transforms.misc.append_class_weights">append_class_weights() (in module aics_im2im.dataframe.transforms.misc)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.misc.html#aics_im2im.dataframe.transforms.misc.append_labels_to_integers">append_labels_to_integers() (in module aics_im2im.dataframe.transforms.misc)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.misc.html#aics_im2im.dataframe.transforms.misc.append_one_hot">append_one_hot() (in module aics_im2im.dataframe.transforms.misc)</a>
+</li>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead">AuxHead (class in aics_im2im.nn.aux_head)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="B" class="genindex-section">
+  <h2>B</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead">BaseAuxHead (class in aics_im2im.nn.aux_head)</a>
+</li>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel">BaseModel (class in aics_im2im.models.base_model)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE">BaseVAE (class in aics_im2im.models.vae.base_vae)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.bright_sampler.html#aics_im2im.image.transforms.bright_sampler.BrightSampler">BrightSampler (class in aics_im2im.image.transforms.bright_sampler)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.build_rot_matrices">build_rot_matrices() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_elbo">calculate_elbo() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_rcl">calculate_rcl() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.continuous_bernoulli.html#aics_im2im.nn.losses.continuous_bernoulli.CBLogLoss">CBLogLoss (class in aics_im2im.nn.losses.continuous_bernoulli)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.close_loggers">close_loggers() (in module aics_im2im.utils.template_utils)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.loss_wrapper.html#aics_im2im.nn.losses.loss_wrapper.CMAP_loss">CMAP_loss (class in aics_im2im.nn.losses.loss_wrapper)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.compute_tc_penalty">compute_tc_penalty() (in module aics_im2im.models.vae.priors.gaussian)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.configure_optimizers">configure_optimizers() (aics_im2im.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.multi_task.html#aics_im2im.models.im2im.multi_task.MultiTaskIm2Im.configure_optimizers">(aics_im2im.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE.configure_optimizers">(aics_im2im.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.ConvPoolReLU">ConvPoolReLU (class in aics_im2im.nn.spatial_transformer)</a>
+</li>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.ConvProjectionLayer">ConvProjectionLayer (class in aics_im2im.nn.aux_head)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.cosine_loss.html#aics_im2im.nn.losses.cosine_loss.CosineLoss">CosineLoss (class in aics_im2im.nn.losses.cosine_loss)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.czi.html#aics_im2im.datamodules.czi.CZIDataset">CZIDataset (class in aics_im2im.datamodules.czi)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule">DataframeDatamodule (class in aics_im2im.datamodules.dataframe.dataframe_datamodule)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask">DataframeDatamoduleMultiTask (class in aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.decode">decode() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE.decode">(aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE.decode">(aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#aics_im2im.models.im2im.utils.postprocessing.dict_to_im.detach">detach() (in module aics_im2im.models.im2im.utils.postprocessing.dict_to_im)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior">DiagonalGaussianPrior (class in aics_im2im.models.vae.priors.gaussian)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#aics_im2im.models.im2im.utils.postprocessing.dict_to_im.DictToIm">DictToIm (class in aics_im2im.models.im2im.utils.postprocessing.dict_to_im)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.do_naive_labeling">do_naive_labeling() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule">DummyDatamodule (class in aics_im2im.utils.dummy_dataset)</a>
+</li>
+        <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDataset">DummyDataset (class in aics_im2im.utils.dummy_dataset)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.encode">encode() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE.encode">(aics_im2im.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE.encode">(aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE.encode">(aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.utils.rich_utils.html#aics_im2im.utils.rich_utils.enforce_tags">enforce_tags() (in module aics_im2im.utils.rich_utils)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.evaluate_output_shape">evaluate_output_shape() (aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder method)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.expand_rot_matrices">expand_rot_matrices() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.extras">extras() (in module aics_im2im.utils.template_utils)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.filter_columns">filter_columns() (in module aics_im2im.dataframe.readers)</a>
+
+        <ul>
+          <li><a href="aics_im2im.dataframe.transforms.filter.html#aics_im2im.dataframe.transforms.filter.filter_columns">(in module aics_im2im.dataframe.transforms.filter)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.dataframe.transforms.filter.html#aics_im2im.dataframe.transforms.filter.filter_rows">filter_rows() (in module aics_im2im.dataframe.transforms.filter)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.flatten">flatten() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.flip_spharm">flip_spharm() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.forward">forward() (aics_im2im.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.im2im.multi_task.html#aics_im2im.models.im2im.multi_task.MultiTaskIm2Im.forward">(aics_im2im.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.forward">(aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.forward">(aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.forward">(aics_im2im.models.vae.priors.abstract_prior.Prior method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior.forward">(aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.forward">(aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.identity_prior.html#aics_im2im.models.vae.priors.identity_prior.IdentityPrior.forward">(aics_im2im.models.vae.priors.identity_prior.IdentityPrior method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.forward">(aics_im2im.models.vae.priors.joint_prior.JointPrior method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder.forward">(aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder method)</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead.forward">(aics_im2im.nn.aux_head.AuxHead method)</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.forward">(aics_im2im.nn.aux_head.BaseAuxHead method)</a>
+</li>
+          <li><a href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.forward">(aics_im2im.nn.discriminator.NLayerDiscriminator method)</a>
+</li>
+          <li><a href="aics_im2im.nn.hr_skip.html#aics_im2im.nn.hr_skip.HRSkip.forward">(aics_im2im.nn.hr_skip.HRSkip method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.adversarial_loss.html#aics_im2im.nn.losses.adversarial_loss.AdversarialLoss.forward">(aics_im2im.nn.losses.adversarial_loss.AdversarialLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.continuous_bernoulli.html#aics_im2im.nn.losses.continuous_bernoulli.CBLogLoss.forward">(aics_im2im.nn.losses.continuous_bernoulli.CBLogLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.cosine_loss.html#aics_im2im.nn.losses.cosine_loss.CosineLoss.forward">(aics_im2im.nn.losses.cosine_loss.CosineLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.gaussian_nll_loss.html#aics_im2im.nn.losses.gaussian_nll_loss.GaussianNLLLoss.forward">(aics_im2im.nn.losses.gaussian_nll_loss.GaussianNLLLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.spharm_loss.html#aics_im2im.nn.losses.spharm_loss.SpharmLoss.forward">(aics_im2im.nn.losses.spharm_loss.SpharmLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weibull.html#aics_im2im.nn.losses.weibull.WeibullLogLoss.forward">(aics_im2im.nn.losses.weibull.WeibullLogLoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weighted_mse_loss.html#aics_im2im.nn.losses.weighted_mse_loss.WeightedMSELoss.forward">(aics_im2im.nn.losses.weighted_mse_loss.WeightedMSELoss method)</a>
+</li>
+          <li><a href="aics_im2im.nn.mlp.html#aics_im2im.nn.mlp.MLP.forward">(aics_im2im.nn.mlp.MLP method)</a>
+</li>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.ConvPoolReLU.forward">(aics_im2im.nn.spatial_transformer.ConvPoolReLU method)</a>
+</li>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.STN.forward">(aics_im2im.nn.spatial_transformer.STN method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="G" class="genindex-section">
+  <h2>G</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss">GANLoss (class in aics_im2im.nn.losses.gan_loss)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.gaussian_nll_loss.html#aics_im2im.nn.losses.gaussian_nll_loss.GaussianNLLLoss">GaussianNLLLoss (class in aics_im2im.nn.losses.gaussian_nll_loss)</a>
+</li>
+        <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDataset.generate_img">generate_img() (aics_im2im.utils.dummy_dataset.DummyDataset method)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.multiscale_cropper.html#aics_im2im.image.transforms.multiscale_cropper.RandomMultiScaleCropd.generate_slices">generate_slices() (aics_im2im.image.transforms.multiscale_cropper.RandomMultiScaleCropd method)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.get_band_indices">get_band_indices() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.get_batch_norm">get_batch_norm() (in module aics_im2im.models.vae.so2_image_vae.so2_encoder)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.get_canonical_split_name">get_canonical_split_name() (in module aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        <li><a href="aics_im2im.models.utils.mlflow.html#aics_im2im.models.utils.mlflow.get_config">get_config() (in module aics_im2im.models.utils.mlflow)</a>
+</li>
+        <li><a href="aics_im2im.image.io.monai_bio_reader.html#aics_im2im.image.io.monai_bio_reader.MonaiBioReader.get_data">get_data() (aics_im2im.image.io.monai_bio_reader.MonaiBioReader method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.image.io.ome_zarr_reader.html#aics_im2im.image.io.ome_zarr_reader.OmeZarrReader.get_data">(aics_im2im.image.io.ome_zarr_reader.OmeZarrReader method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.get_dataloader">get_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.get_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.get_dataset">get_dataset() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.get_dataset">(in module aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder.get_fields">get_fields() (aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder method)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.reconstruction.html#aics_im2im.utils.spharm.reconstruction.get_image_from_shcoeffs">get_image_from_shcoeffs() (in module aics_im2im.utils.spharm.reconstruction)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.get_indices">get_indices() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.get_mask">get_mask() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.reconstruction.html#aics_im2im.utils.spharm.reconstruction.get_mesh_from_series">get_mesh_from_series() (in module aics_im2im.utils.spharm.reconstruction)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.get_metric_value">get_metric_value() (in module aics_im2im.utils.template_utils)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.get_non_linearity">get_non_linearity() (in module aics_im2im.models.vae.so2_image_vae.so2_encoder)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.czi.html#aics_im2im.datamodules.czi.CZIDataset.get_per_file_args">get_per_file_args() (aics_im2im.datamodules.czi.CZIDataset method)</a>
+</li>
+        <li><a href="aics_im2im.utils.pylogger.html#aics_im2im.utils.pylogger.get_pylogger">get_pylogger() (in module aics_im2im.utils.pylogger)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#aics_im2im.models.vae.so2_image_vae.utils.get_rotation_matrix">get_rotation_matrix() (in module aics_im2im.models.vae.so2_image_vae.utils)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#aics_im2im.models.vae.so2_image_vae.utils.get_rotation_matrix_2d">get_rotation_matrix_2d() (in module aics_im2im.models.vae.so2_image_vae.utils)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#aics_im2im.models.vae.so2_image_vae.utils.get_rotation_matrix_3d">get_rotation_matrix_3d() (in module aics_im2im.models.vae.so2_image_vae.utils)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.get_separated_masks">get_separated_masks (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering attribute)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor">get_target_tensor() (aics_im2im.nn.losses.gan_loss.GANLoss method)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.group_cols.html#aics_im2im.dataframe.transforms.group_cols.GroupCols">GroupCols (class in aics_im2im.dataframe.transforms.group_cols)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="H" class="genindex-section">
+  <h2>H</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.hr_skip.html#aics_im2im.nn.hr_skip.HRSkip">HRSkip (class in aics_im2im.nn.hr_skip)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="I" class="genindex-section">
+  <h2>I</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.priors.identity_prior.html#aics_im2im.models.vae.priors.identity_prior.IdentityPrior">IdentityPrior (class in aics_im2im.models.vae.priors.identity_prior)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.image_vae.html#aics_im2im.models.vae.image_vae.ImageVAE">ImageVAE (class in aics_im2im.models.vae.image_vae)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.instantiate_callbacks">instantiate_callbacks() (in module aics_im2im.utils.template_utils)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.instantiate_loggers">instantiate_loggers() (in module aics_im2im.utils.template_utils)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.is_merged_segmentation">is_merged_segmentation() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior">IsotropicGaussianPrior (class in aics_im2im.models.vae.priors.gaussian)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="J" class="genindex-section">
+  <h2>J</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior">JointPrior (class in aics_im2im.models.vae.priors.joint_prior)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="K" class="genindex-section">
+  <h2>K</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.kl_divergence">kl_divergence() (aics_im2im.models.vae.priors.abstract_prior.Prior method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence">(aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior class method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.kl_divergence">(aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior class method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.kl_divergence">(aics_im2im.models.vae.priors.joint_prior.JointPrior method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.utils.config.html#aics_im2im.utils.config.kv_to_dict">kv_to_dict() (in module aics_im2im.utils.config)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE.latent_compose_function">latent_compose_function() (aics_im2im.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE">LatentLossVAE (class in aics_im2im.models.vae.latent_loss_vae)</a>
+</li>
+        <li><a href="aics_im2im.models.utils.mlflow.html#aics_im2im.models.utils.mlflow.load_model_from_checkpoint">load_model_from_checkpoint() (in module aics_im2im.models.utils.mlflow)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.log_hyperparameters">log_hyperparameters() (in module aics_im2im.utils.template_utils)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.loggers.mlflow.html#aics_im2im.loggers.mlflow.MLFlowLogger.log_hyperparams">log_hyperparams() (aics_im2im.loggers.mlflow.MLFlowLogger method)</a>
+</li>
+        <li><a href="aics_im2im.loggers.mlflow.html#aics_im2im.loggers.mlflow.MLFlowLogger.log_metrics">log_metrics() (aics_im2im.loggers.mlflow.MLFlowLogger method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.log_metrics">(aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.nn.losses.loss_wrapper.html#aics_im2im.nn.losses.loss_wrapper.LossWrapper">LossWrapper (class in aics_im2im.nn.losses.loss_wrapper)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.eval.html#aics_im2im.eval.main">main() (in module aics_im2im.eval)</a>
+
+        <ul>
+          <li><a href="aics_im2im.train.html#aics_im2im.train.main">(in module aics_im2im.train)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder.make_block">make_block() (aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder method)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder.make_conv">make_conv() (aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder method)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.czi.html#aics_im2im.datamodules.czi.make_CZI_dataloader">make_CZI_dataloader() (in module aics_im2im.datamodules.czi)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.make_dataloader">make_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask.make_dataloader">(aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.datamodules.folder.html#aics_im2im.datamodules.folder.make_folder_dataloader">make_folder_dataloader() (in module aics_im2im.datamodules.folder)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.make_multiple_dataframe_splits">make_multiple_dataframe_splits() (in module aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.misc.html#aics_im2im.dataframe.transforms.misc.make_random_df">make_random_df() (in module aics_im2im.dataframe.transforms.misc)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.make_results_dict">make_results_dict() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.make_single_dataframe_splits">make_single_dataframe_splits() (in module aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.project.html#aics_im2im.image.transforms.project.MaxProjectd">MaxProjectd (class in aics_im2im.image.transforms.project)</a>
+</li>
+        <li><a href="aics_im2im.loggers.mlflow.html#aics_im2im.loggers.mlflow.MLFlowLogger">MLFlowLogger (class in aics_im2im.loggers.mlflow)</a>
+</li>
+        <li><a href="aics_im2im.nn.mlp.html#aics_im2im.nn.mlp.MLP">MLP (class in aics_im2im.nn.mlp)</a>
+</li>
+        <li>
+    module
+
+        <ul>
+          <li><a href="aics_im2im.html#module-aics_im2im">aics_im2im</a>
+</li>
+          <li><a href="aics_im2im.dataframe.html#module-aics_im2im.dataframe">aics_im2im.dataframe</a>
+</li>
+          <li><a href="aics_im2im.dataframe.readers.html#module-aics_im2im.dataframe.readers">aics_im2im.dataframe.readers</a>
+</li>
+          <li><a href="aics_im2im.dataframe.transforms.html#module-aics_im2im.dataframe.transforms">aics_im2im.dataframe.transforms</a>
+</li>
+          <li><a href="aics_im2im.dataframe.transforms.filter.html#module-aics_im2im.dataframe.transforms.filter">aics_im2im.dataframe.transforms.filter</a>
+</li>
+          <li><a href="aics_im2im.dataframe.transforms.group_cols.html#module-aics_im2im.dataframe.transforms.group_cols">aics_im2im.dataframe.transforms.group_cols</a>
+</li>
+          <li><a href="aics_im2im.dataframe.transforms.misc.html#module-aics_im2im.dataframe.transforms.misc">aics_im2im.dataframe.transforms.misc</a>
+</li>
+          <li><a href="aics_im2im.dataframe.transforms.split.html#module-aics_im2im.dataframe.transforms.split">aics_im2im.dataframe.transforms.split</a>
+</li>
+          <li><a href="aics_im2im.datamodules.html#module-aics_im2im.datamodules">aics_im2im.datamodules</a>
+</li>
+          <li><a href="aics_im2im.datamodules.czi.html#module-aics_im2im.datamodules.czi">aics_im2im.datamodules.czi</a>
+</li>
+          <li><a href="aics_im2im.datamodules.dataframe.html#module-aics_im2im.datamodules.dataframe">aics_im2im.datamodules.dataframe</a>
+</li>
+          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule">aics_im2im.datamodules.dataframe.dataframe_datamodule</a>
+</li>
+          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask</a>
+</li>
+          <li><a href="aics_im2im.datamodules.dataframe.utils.html#module-aics_im2im.datamodules.dataframe.utils">aics_im2im.datamodules.dataframe.utils</a>
+</li>
+          <li><a href="aics_im2im.datamodules.folder.html#module-aics_im2im.datamodules.folder">aics_im2im.datamodules.folder</a>
+</li>
+          <li><a href="aics_im2im.eval.html#module-aics_im2im.eval">aics_im2im.eval</a>
+</li>
+          <li><a href="aics_im2im.image.html#module-aics_im2im.image">aics_im2im.image</a>
+</li>
+          <li><a href="aics_im2im.image.io.html#module-aics_im2im.image.io">aics_im2im.image.io</a>
+</li>
+          <li><a href="aics_im2im.image.io.monai_bio_reader.html#module-aics_im2im.image.io.monai_bio_reader">aics_im2im.image.io.monai_bio_reader</a>
+</li>
+          <li><a href="aics_im2im.image.io.ome_zarr_reader.html#module-aics_im2im.image.io.ome_zarr_reader">aics_im2im.image.io.ome_zarr_reader</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.html#module-aics_im2im.image.transforms">aics_im2im.image.transforms</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.bright_sampler.html#module-aics_im2im.image.transforms.bright_sampler">aics_im2im.image.transforms.bright_sampler</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.multiscale_cropper.html#module-aics_im2im.image.transforms.multiscale_cropper">aics_im2im.image.transforms.multiscale_cropper</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.o2_mask_transform.html#module-aics_im2im.image.transforms.o2_mask_transform">aics_im2im.image.transforms.o2_mask_transform</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.project.html#module-aics_im2im.image.transforms.project">aics_im2im.image.transforms.project</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.resize.html#module-aics_im2im.image.transforms.resize">aics_im2im.image.transforms.resize</a>
+</li>
+          <li><a href="aics_im2im.image.transforms.so2_random_rotation.html#module-aics_im2im.image.transforms.so2_random_rotation">aics_im2im.image.transforms.so2_random_rotation</a>
+</li>
+          <li><a href="aics_im2im.loggers.html#module-aics_im2im.loggers">aics_im2im.loggers</a>
+</li>
+          <li><a href="aics_im2im.loggers.mlflow.html#module-aics_im2im.loggers.mlflow">aics_im2im.loggers.mlflow</a>
+</li>
+          <li><a href="aics_im2im.models.html#module-aics_im2im.models">aics_im2im.models</a>
+</li>
+          <li><a href="aics_im2im.models.base_model.html#module-aics_im2im.models.base_model">aics_im2im.models.base_model</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.html#module-aics_im2im.models.im2im">aics_im2im.models.im2im</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.multi_task.html#module-aics_im2im.models.im2im.multi_task">aics_im2im.models.im2im.multi_task</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.html#module-aics_im2im.models.im2im.utils">aics_im2im.models.im2im.utils</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.noise_annealer.html#module-aics_im2im.models.im2im.utils.noise_annealer">aics_im2im.models.im2im.utils.noise_annealer</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.omnipose.html#module-aics_im2im.models.im2im.utils.omnipose">aics_im2im.models.im2im.utils.omnipose</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.html#module-aics_im2im.models.im2im.utils.postprocessing">aics_im2im.models.im2im.utils.postprocessing</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.act_thresh_label.html#module-aics_im2im.models.im2im.utils.postprocessing.act_thresh_label">aics_im2im.models.im2im.utils.postprocessing.act_thresh_label</a>
+</li>
+          <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#module-aics_im2im.models.im2im.utils.postprocessing.dict_to_im">aics_im2im.models.im2im.utils.postprocessing.dict_to_im</a>
+</li>
+          <li><a href="aics_im2im.models.utils.html#module-aics_im2im.models.utils">aics_im2im.models.utils</a>
+</li>
+          <li><a href="aics_im2im.models.utils.mlflow.html#module-aics_im2im.models.utils.mlflow">aics_im2im.models.utils.mlflow</a>
+</li>
+          <li><a href="aics_im2im.models.vae.html#module-aics_im2im.models.vae">aics_im2im.models.vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.base_vae.html#module-aics_im2im.models.vae.base_vae">aics_im2im.models.vae.base_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.image_vae.html#module-aics_im2im.models.vae.image_vae">aics_im2im.models.vae.image_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.latent_loss_vae.html#module-aics_im2im.models.vae.latent_loss_vae">aics_im2im.models.vae.latent_loss_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.html#module-aics_im2im.models.vae.o2_spharm_vae">aics_im2im.models.vae.o2_spharm_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#module-aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder">aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder</a>
+</li>
+          <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html#module-aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae">aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.html#module-aics_im2im.models.vae.priors">aics_im2im.models.vae.priors</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#module-aics_im2im.models.vae.priors.abstract_prior">aics_im2im.models.vae.priors.abstract_prior</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#module-aics_im2im.models.vae.priors.gaussian">aics_im2im.models.vae.priors.gaussian</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.identity_prior.html#module-aics_im2im.models.vae.priors.identity_prior">aics_im2im.models.vae.priors.identity_prior</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#module-aics_im2im.models.vae.priors.joint_prior">aics_im2im.models.vae.priors.joint_prior</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.html#module-aics_im2im.models.vae.so2_image_vae">aics_im2im.models.vae.so2_image_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#module-aics_im2im.models.vae.so2_image_vae.so2_encoder">aics_im2im.models.vae.so2_image_vae.so2_encoder</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#module-aics_im2im.models.vae.so2_image_vae.so2_image_vae">aics_im2im.models.vae.so2_image_vae.so2_image_vae</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#module-aics_im2im.models.vae.so2_image_vae.utils">aics_im2im.models.vae.so2_image_vae.utils</a>
+</li>
+          <li><a href="aics_im2im.models.vae.tabular_vae.html#module-aics_im2im.models.vae.tabular_vae">aics_im2im.models.vae.tabular_vae</a>
+</li>
+          <li><a href="aics_im2im.nn.html#module-aics_im2im.nn">aics_im2im.nn</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#module-aics_im2im.nn.aux_head">aics_im2im.nn.aux_head</a>
+</li>
+          <li><a href="aics_im2im.nn.discriminator.html#module-aics_im2im.nn.discriminator">aics_im2im.nn.discriminator</a>
+</li>
+          <li><a href="aics_im2im.nn.hr_skip.html#module-aics_im2im.nn.hr_skip">aics_im2im.nn.hr_skip</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.html#module-aics_im2im.nn.losses">aics_im2im.nn.losses</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.adversarial_loss.html#module-aics_im2im.nn.losses.adversarial_loss">aics_im2im.nn.losses.adversarial_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.continuous_bernoulli.html#module-aics_im2im.nn.losses.continuous_bernoulli">aics_im2im.nn.losses.continuous_bernoulli</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.cosine_loss.html#module-aics_im2im.nn.losses.cosine_loss">aics_im2im.nn.losses.cosine_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.gan_loss.html#module-aics_im2im.nn.losses.gan_loss">aics_im2im.nn.losses.gan_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.gaussian_nll_loss.html#module-aics_im2im.nn.losses.gaussian_nll_loss">aics_im2im.nn.losses.gaussian_nll_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.loss_wrapper.html#module-aics_im2im.nn.losses.loss_wrapper">aics_im2im.nn.losses.loss_wrapper</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.spharm_loss.html#module-aics_im2im.nn.losses.spharm_loss">aics_im2im.nn.losses.spharm_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weibull.html#module-aics_im2im.nn.losses.weibull">aics_im2im.nn.losses.weibull</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weighted_mse_loss.html#module-aics_im2im.nn.losses.weighted_mse_loss">aics_im2im.nn.losses.weighted_mse_loss</a>
+</li>
+          <li><a href="aics_im2im.nn.mlp.html#module-aics_im2im.nn.mlp">aics_im2im.nn.mlp</a>
+</li>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#module-aics_im2im.nn.spatial_transformer">aics_im2im.nn.spatial_transformer</a>
+</li>
+          <li><a href="aics_im2im.train.html#module-aics_im2im.train">aics_im2im.train</a>
+</li>
+          <li><a href="aics_im2im.utils.html#module-aics_im2im.utils">aics_im2im.utils</a>
+</li>
+          <li><a href="aics_im2im.utils.config.html#module-aics_im2im.utils.config">aics_im2im.utils.config</a>
+</li>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#module-aics_im2im.utils.dummy_dataset">aics_im2im.utils.dummy_dataset</a>
+</li>
+          <li><a href="aics_im2im.utils.pylogger.html#module-aics_im2im.utils.pylogger">aics_im2im.utils.pylogger</a>
+</li>
+          <li><a href="aics_im2im.utils.rich_utils.html#module-aics_im2im.utils.rich_utils">aics_im2im.utils.rich_utils</a>
+</li>
+          <li><a href="aics_im2im.utils.spharm.html#module-aics_im2im.utils.spharm">aics_im2im.utils.spharm</a>
+</li>
+          <li><a href="aics_im2im.utils.spharm.reconstruction.html#module-aics_im2im.utils.spharm.reconstruction">aics_im2im.utils.spharm.reconstruction</a>
+</li>
+          <li><a href="aics_im2im.utils.spharm.rotation.html#module-aics_im2im.utils.spharm.rotation">aics_im2im.utils.spharm.rotation</a>
+</li>
+          <li><a href="aics_im2im.utils.template_utils.html#module-aics_im2im.utils.template_utils">aics_im2im.utils.template_utils</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.image.io.monai_bio_reader.html#aics_im2im.image.io.monai_bio_reader.MonaiBioReader">MonaiBioReader (class in aics_im2im.image.io.monai_bio_reader)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.multi_task.html#aics_im2im.models.im2im.multi_task.MultiTaskIm2Im">MultiTaskIm2Im (class in aics_im2im.models.im2im.multi_task)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator">NLayerDiscriminator (class in aics_im2im.nn.discriminator)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.utils.noise_annealer.html#aics_im2im.models.im2im.utils.noise_annealer.NoiseAnnealer">NoiseAnnealer (class in aics_im2im.models.im2im.utils.noise_annealer)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.image.transforms.o2_mask_transform.html#aics_im2im.image.transforms.o2_mask_transform.O2Mask">O2Mask (class in aics_im2im.image.transforms.o2_mask_transform)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.o2_mask_transform.html#aics_im2im.image.transforms.o2_mask_transform.O2Maskd">O2Maskd (class in aics_im2im.image.transforms.o2_mask_transform)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder">O2SpharmEncoder (class in aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE">O2SpharmVAE (class in aics_im2im.models.vae.o2_spharm_vae.o2_spharm_vae)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.image.io.ome_zarr_reader.html#aics_im2im.image.io.ome_zarr_reader.OmeZarrReader">OmeZarrReader (class in aics_im2im.image.io.ome_zarr_reader)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering">OmniposeClustering (class in aics_im2im.models.im2im.utils.omnipose)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeLoss">OmniposeLoss (class in aics_im2im.models.im2im.utils.omnipose)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd">OmniposePreprocessd (class in aics_im2im.models.im2im.utils.omnipose)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.pad_slice">pad_slice() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.parse_batch">parse_batch() (aics_im2im.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE.parse_batch">(aics_im2im.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.parse_transforms">parse_transforms() (in module aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.predict_dataloader">predict_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.predict_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.predict_step">predict_step() (aics_im2im.models.base_model.BaseModel method)</a>
+</li>
+        <li><a href="aics_im2im.utils.rich_utils.html#aics_im2im.utils.rich_utils.print_config_tree">print_config_tree() (in module aics_im2im.utils.rich_utils)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior">Prior (class in aics_im2im.models.vae.priors.abstract_prior)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.image.transforms.multiscale_cropper.html#aics_im2im.image.transforms.multiscale_cropper.RandomMultiScaleCropd">RandomMultiScaleCropd (class in aics_im2im.image.transforms.multiscale_cropper)</a>
+</li>
+        <li><a href="aics_im2im.image.io.monai_bio_reader.html#aics_im2im.image.io.monai_bio_reader.MonaiBioReader.read">read() (aics_im2im.image.io.monai_bio_reader.MonaiBioReader method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.image.io.ome_zarr_reader.html#aics_im2im.image.io.ome_zarr_reader.OmeZarrReader.read">(aics_im2im.image.io.ome_zarr_reader.OmeZarrReader method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_csv">read_csv() (in module aics_im2im.dataframe.readers)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_dataframe">read_dataframe() (in module aics_im2im.dataframe.readers)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_h5ad">read_h5ad() (in module aics_im2im.dataframe.readers)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_parquet">read_parquet() (in module aics_im2im.dataframe.readers)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.adversarial_loss.html#aics_im2im.nn.losses.adversarial_loss.AdversarialLoss.reduction">reduction (aics_im2im.nn.losses.adversarial_loss.AdversarialLoss attribute)</a>
+
+        <ul>
+          <li><a href="aics_im2im.nn.losses.continuous_bernoulli.html#aics_im2im.nn.losses.continuous_bernoulli.CBLogLoss.reduction">(aics_im2im.nn.losses.continuous_bernoulli.CBLogLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.cosine_loss.html#aics_im2im.nn.losses.cosine_loss.CosineLoss.reduction">(aics_im2im.nn.losses.cosine_loss.CosineLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.gaussian_nll_loss.html#aics_im2im.nn.losses.gaussian_nll_loss.GaussianNLLLoss.reduction">(aics_im2im.nn.losses.gaussian_nll_loss.GaussianNLLLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.spharm_loss.html#aics_im2im.nn.losses.spharm_loss.SpharmLoss.reduction">(aics_im2im.nn.losses.spharm_loss.SpharmLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weibull.html#aics_im2im.nn.losses.weibull.WeibullLogLoss.reduction">(aics_im2im.nn.losses.weibull.WeibullLogLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.weighted_mse_loss.html#aics_im2im.nn.losses.weighted_mse_loss.WeightedMSELoss.reduction">(aics_im2im.nn.losses.weighted_mse_loss.WeightedMSELoss attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.utils.config.html#aics_im2im.utils.config.remove_aux_key">remove_aux_key() (in module aics_im2im.utils.config)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.RemoveNaNKeysd">RemoveNaNKeysd (class in aics_im2im.datamodules.dataframe.utils)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.rescale_instance">rescale_instance() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.resize.html#aics_im2im.image.transforms.resize.Resized">Resized (class in aics_im2im.image.transforms.resize)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#aics_im2im.models.vae.so2_image_vae.utils.rotate_img">rotate_img() (in module aics_im2im.models.vae.so2_image_vae.utils)</a>
+</li>
+        <li><a href="aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.rotate_spharm">rotate_spharm() (in module aics_im2im.utils.spharm.rotation)</a>
+</li>
+        <li><a href="aics_im2im.models.im2im.multi_task.html#aics_im2im.models.im2im.multi_task.MultiTaskIm2Im.run_forward">run_forward() (aics_im2im.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.run_head">run_head() (aics_im2im.nn.aux_head.BaseAuxHead method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.sample">sample() (aics_im2im.models.vae.priors.abstract_prior.Prior method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.sample">(aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior class method)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.sample">(aics_im2im.models.vae.priors.joint_prior.JointPrior method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.dataframe.transforms.split.html#aics_im2im.dataframe.transforms.split.sample_n_each">sample_n_each() (in module aics_im2im.dataframe.transforms.split)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.sample_z">sample_z() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.save_file">save_file() (in module aics_im2im.utils.template_utils)</a>
+</li>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.save_image">save_image() (aics_im2im.nn.aux_head.BaseAuxHead method)</a>
+</li>
+        <li><a href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.set_requires_grad">set_requires_grad() (aics_im2im.nn.discriminator.NLayerDiscriminator method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.multi_task.html#aics_im2im.models.im2im.multi_task.MultiTaskIm2Im.should_save_image">should_save_image() (aics_im2im.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder">SO2ImageEncoder (class in aics_im2im.models.vae.so2_image_vae.so2_encoder)</a>
+</li>
+        <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE">SO2ImageVAE (class in aics_im2im.models.vae.so2_image_vae.so2_image_vae)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.so2_random_rotation.html#aics_im2im.image.transforms.so2_random_rotation.SO2RandomRotate">SO2RandomRotate (class in aics_im2im.image.transforms.so2_random_rotation)</a>
+</li>
+        <li><a href="aics_im2im.image.transforms.so2_random_rotation.html#aics_im2im.image.transforms.so2_random_rotation.SO2RandomRotated">SO2RandomRotated (class in aics_im2im.image.transforms.so2_random_rotation)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.spharm_loss.html#aics_im2im.nn.losses.spharm_loss.SpharmLoss">SpharmLoss (class in aics_im2im.nn.losses.spharm_loss)</a>
+</li>
+        <li><a href="aics_im2im.dataframe.transforms.split.html#aics_im2im.dataframe.transforms.split.split_dataframe">split_dataframe() (in module aics_im2im.dataframe.transforms.split)</a>
+</li>
+        <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.STN">STN (class in aics_im2im.nn.spatial_transformer)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.vae.tabular_vae.html#aics_im2im.models.vae.tabular_vae.TabularVAE">TabularVAE (class in aics_im2im.models.vae.tabular_vae)</a>
+</li>
+        <li><a href="aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.task_wrapper">task_wrapper() (in module aics_im2im.utils.template_utils)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.test_dataloader">test_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.test_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.test_step">test_step() (aics_im2im.models.base_model.BaseModel method)</a>
+</li>
+        <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.STN.toggle">toggle() (aics_im2im.nn.spatial_transformer.STN method)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.train_dataloader">train_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.train_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
+</li>
+        </ul></li>
+        <li><a href="aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.html#aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.training">training (aics_im2im.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder attribute)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.training">(aics_im2im.models.vae.priors.abstract_prior.Prior attribute)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior.training">(aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior attribute)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.training">(aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior attribute)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.identity_prior.html#aics_im2im.models.vae.priors.identity_prior.IdentityPrior.training">(aics_im2im.models.vae.priors.identity_prior.IdentityPrior attribute)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.training">(aics_im2im.models.vae.priors.joint_prior.JointPrior attribute)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder.training">(aics_im2im.models.vae.so2_image_vae.so2_encoder.SO2ImageEncoder attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.AuxHead.training">(aics_im2im.nn.aux_head.AuxHead attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.training">(aics_im2im.nn.aux_head.BaseAuxHead attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.ConvProjectionLayer.training">(aics_im2im.nn.aux_head.ConvProjectionLayer attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.discriminator.html#aics_im2im.nn.discriminator.NLayerDiscriminator.training">(aics_im2im.nn.discriminator.NLayerDiscriminator attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.hr_skip.html#aics_im2im.nn.hr_skip.HRSkip.training">(aics_im2im.nn.hr_skip.HRSkip attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss.training">(aics_im2im.nn.losses.gan_loss.GANLoss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.loss_wrapper.html#aics_im2im.nn.losses.loss_wrapper.CMAP_loss.training">(aics_im2im.nn.losses.loss_wrapper.CMAP_loss attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.losses.loss_wrapper.html#aics_im2im.nn.losses.loss_wrapper.LossWrapper.training">(aics_im2im.nn.losses.loss_wrapper.LossWrapper attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.mlp.html#aics_im2im.nn.mlp.MLP.training">(aics_im2im.nn.mlp.MLP attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.ConvPoolReLU.training">(aics_im2im.nn.spatial_transformer.ConvPoolReLU attribute)</a>
+</li>
+          <li><a href="aics_im2im.nn.spatial_transformer.html#aics_im2im.nn.spatial_transformer.STN.training">(aics_im2im.nn.spatial_transformer.STN attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.training_step">training_step() (aics_im2im.models.base_model.BaseModel method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="U" class="genindex-section">
+  <h2>U</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.im2im.utils.noise_annealer.html#aics_im2im.models.im2im.utils.noise_annealer.NoiseAnnealer.update_noise">update_noise() (aics_im2im.models.im2im.utils.noise_annealer.NoiseAnnealer method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.aux_head.html#aics_im2im.nn.aux_head.BaseAuxHead.update_params">update_params() (aics_im2im.nn.aux_head.BaseAuxHead method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="V" class="genindex-section">
+  <h2>V</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.val_dataloader">val_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.val_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.validation_step">validation_step() (aics_im2im.models.base_model.BaseModel method)</a>
+</li>
+        <li><a href="aics_im2im.image.io.monai_bio_reader.html#aics_im2im.image.io.monai_bio_reader.MonaiBioReader.verify_suffix">verify_suffix() (aics_im2im.image.io.monai_bio_reader.MonaiBioReader method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.image.io.ome_zarr_reader.html#aics_im2im.image.io.ome_zarr_reader.OmeZarrReader.verify_suffix">(aics_im2im.image.io.ome_zarr_reader.OmeZarrReader method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="W" class="genindex-section">
+  <h2>W</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.losses.weibull.html#aics_im2im.nn.losses.weibull.weibull_log_probs">weibull_log_probs() (in module aics_im2im.nn.losses.weibull)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="aics_im2im.nn.losses.weibull.html#aics_im2im.nn.losses.weibull.WeibullLogLoss">WeibullLogLoss (class in aics_im2im.nn.losses.weibull)</a>
+</li>
+        <li><a href="aics_im2im.nn.losses.weighted_mse_loss.html#aics_im2im.nn.losses.weighted_mse_loss.WeightedMSELoss">WeightedMSELoss (class in aics_im2im.nn.losses.weighted_mse_loss)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
+</html>
