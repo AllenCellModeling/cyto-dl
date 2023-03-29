@@ -9,27 +9,52 @@ from monai.inferers import sliding_window_inference
 from aics_im2im.models.base_model import BaseModel
 
 
-class MultiTaskIm2Im(BaseModel):
+class GAN(BaseModel):
+    """Basic GAN model."""
+
     def __init__(
         self,
         *,
         backbone: nn.Module,
-        task_heads: Dict,
+        task_heads: Dict[str, nn.Module],
+        discriminator: nn.Module,
         x_key: str,
         save_dir="./",
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
-        automatic_optimization: bool = True,
+        automatic_optimization: bool = False,
         inference_args: Dict = {},
         **kwargs,
     ):
-        super().__init__(
-            **kwargs,
-        )
+        """
+        Parameters
+        ----------
+        backbone: nn.Module
+            backbone network, parameters are shared between task heads
+        task_heads: Dict
+            task-specific heads
+        discriminator
+            discriminator network
+        x_key: str
+            key of input image in batch
+        save_dir="./"
+            directory to save images during training and validation
+        save_images_every_n_epochs=1
+            Frequency to save out images during training
+        optimizer=torch.optim.Adam
+        inference_args: Dict = {}
+            Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        **kwargs
+        """
+
+        super().__init__(**kwargs)
+        self.automatic_optimization = False
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = backbone
+        self.discriminator = discriminator
         self.task_heads = torch.nn.ModuleDict(task_heads)
+        assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -54,7 +79,9 @@ class MultiTaskIm2Im(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(z, batch, stage, save_image, self.global_step)
+            task: self.task_heads[task].run_head(
+                z, batch, stage, save_image, self.global_step, self.discriminator
+            )
             for task in run_heads
         }
 
@@ -83,6 +110,7 @@ class MultiTaskIm2Im(BaseModel):
                 stage,
                 save_image,
                 self.global_step,
+                discriminator=self.discriminator if stage == "test" else None,
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
             )
@@ -114,6 +142,13 @@ class MultiTaskIm2Im(BaseModel):
             run_heads = self.task_heads.keys()
         return run_heads
 
+    def _extract_loss(self, outs, loss_type):
+        loss = {
+            f"{head_name}_{loss_type}": head_result[loss_type]
+            for head_name, head_result in outs.items()
+        }
+        return self._sum_losses(loss)
+
     def _step(self, stage, batch, batch_idx, logger):
         # convert monai metatensors to tensors
         for k, v in batch.items():
@@ -124,13 +159,30 @@ class MultiTaskIm2Im(BaseModel):
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
         if stage == "predict":
             return
-        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-        losses = self._sum_losses(losses)
+        loss_D = self._extract_loss(outs, "loss_D")
+        loss_G = self._extract_loss(outs, "loss_G")
+
         self.log_dict(
-            {f"{stage}_{k}": v for k, v in losses.items()},
+            {f"{stage}_{k}": v for k, v in loss_D.items()},
             logger=True,
             sync_dist=True,
             on_step=False,
             on_epoch=True,
         )
-        return losses
+        self.log_dict(
+            {f"{stage}_{k}": v for k, v in loss_G.items()},
+            logger=True,
+            sync_dist=True,
+            on_step=False,
+            on_epoch=True,
+        )
+        if stage == "train":
+            g_opt, d_opt = self.optimizers()
+
+            g_opt.zero_grad()
+            self.manual_backward(loss_G["loss"])
+            g_opt.step()
+
+            d_opt.zero_grad()
+            self.manual_backward(loss_D["loss"])
+            d_opt.step()

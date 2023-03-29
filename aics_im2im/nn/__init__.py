@@ -1,5 +1,4 @@
-from .aux_head import AuxHead, BaseAuxHead, ConvProjectionLayer
-from .discriminator import NLayerDiscriminator
+from .head import BaseHead, ConvProjectionLayer, GANHead, ResBlocksHead
 from .hr_skip import HRSkip
 from .losses import (
     AdversarialLoss,

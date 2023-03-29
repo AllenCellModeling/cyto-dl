@@ -91,8 +91,8 @@ class BaseModel(pl.LightningModule):
         """
         raise NotImplementedError
 
-    def training_step(self, batch, batch_idx, optimizer_idx=None):
-        return self._step("train", batch, batch_idx, logger=True, optimizer_idx=optimizer_idx)
+    def training_step(self, batch, batch_idx):
+        return self._step("train", batch, batch_idx, logger=True)
 
     def validation_step(self, batch, batch_idx):
         return self._step("val", batch, batch_idx, logger=True)

@@ -73,3 +73,39 @@ class GANLoss(nn.Module):
             else:
                 loss = prediction.mean()
         return loss
+
+
+# modified from https://github.com/MMV-Lab/mmv_im2im/blob/1b92bf4ab27cafe2608aef071f366741df3b58d4/mmv_im2im/utils/gan_losses.py
+class Pix2PixHD(nn.Module):
+    def __init__(self, scales, loss_weights={"GAN": 1, "FM": 10}):
+        super().__init__()
+        self.scales = scales
+        self.gan_loss = GANLoss("vanilla")
+        self.feature_matching_loss = torch.nn.L1Loss()
+        self.weights = loss_weights
+
+    def get_feature_matching_loss(self, features):
+        loss_fm = 0
+        for scale in range(self.scales):
+            for real_feat, pred_feat in zip(features["real"][scale], features["pred"][scale]):
+                loss_fm += self.feature_matching_loss(real_feat.detach(), pred_feat)
+        return loss_fm / self.scales
+
+    def get_gan_loss(self, features, feature_type):
+        loss = 0
+        for scale in range(self.scales):
+            loss += self.gan_loss(features[scale][-1], feature_type == "real")
+        return loss / self.scales
+
+    def __call__(self, features, step):
+        if step == "discriminator":
+            return (
+                self.get_gan_loss(features["real"], "real")
+                + self.get_gan_loss(features["pred"], "pred")
+            ) * 0.5
+
+        elif step == "generator":
+            # tell discriminator these are real features
+            loss_G = self.get_gan_loss(features["pred"], "real")
+            loss_feature_matching = self.get_feature_matching_loss(features)
+            return loss_G * self.weights["GAN"] + loss_feature_matching * self.weights["FM"]
