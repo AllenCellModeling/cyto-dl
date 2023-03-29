@@ -38,7 +38,7 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.ResBlocksHead
+      - _target_: aics_im2im.nn.BaseHead
         loss:
           _target_: aics_im2im.models.im2im.utils.OmniposeLoss
           dim: ${spatial_dims}
