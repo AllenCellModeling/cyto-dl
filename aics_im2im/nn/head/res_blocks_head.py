@@ -34,9 +34,7 @@ class ResBlocksHead(BaseHead):
         modules = [first_layer]
         upsample = torch.nn.Identity()
 
-        upsample_ratio = (
-            upsample_ratio if upsample_ratio is not None else ([2] * self.spatial_dims)
-        )
+        upsample_ratio = upsample_ratio or [2] * spatial_dims
 
         if resolution == "hr":
             if upsample_method == "subpixel":
