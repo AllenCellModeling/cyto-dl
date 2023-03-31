@@ -123,15 +123,15 @@ class OmniposeRandFlipd(RandomizableTransform):
         self.spatial_axis = spatial_axis
 
     def _flip(self, img, is_label):
+        img = self.flipper(img)
+
         if is_label:
             assert (
                 img.shape[0] == 4 + self.dim
             ), f"Expected generated omnipose ground truth to have {4+self.dim} channels, got {img.shape[0]}"
-            flipped_flows = self.flipper(img[3 : 3 + self.dim])
+            flipped_flows = img[3 : 3 + self.dim]
             flipped_flows[self.spatial_axis] *= -1
             img[3 : 3 + self.dim] = flipped_flows
-        else:
-            img = self.flipper(img)
         return img
 
     def __call__(self, image_dict):
