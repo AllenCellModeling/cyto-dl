@@ -157,6 +157,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -352,6 +353,8 @@
 
 
 <div class="viewcode-block" id="BaseHead"><a class="viewcode-back" href="../../../../aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead">[docs]</a><span class="k">class</span> <span class="nc">BaseHead</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for task heads.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">loss</span><span class="p">,</span>
@@ -359,6 +362,18 @@
         <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">save_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        loss</span>
+<span class="sd">            Loss function for task</span>
+<span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
+<span class="sd">            Postprocessing for `input` and `predictions` of head</span>
+<span class="sd">        calculate_metric=False</span>
+<span class="sd">            Whether to calculate a metric during training. Not used by GAN head.</span>
+<span class="sd">        save_raw=False</span>
+<span class="sd">            Whether to save out example input images during training</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
@@ -390,6 +405,7 @@
 <div class="viewcode-block" id="BaseHead.save_image"><a class="viewcode-back" href="../../../../aics_im2im.nn.head.base_head.html#aics_im2im.nn.head.base_head.BaseHead.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">):</span>
         <span class="n">y_hat_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">img_type</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)</span>
         <span class="n">y_out</span><span class="p">,</span> <span class="n">raw_out</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="c1"># filename is determined by step in training during train/val and by its source filename for prediction/testing</span>
         <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
             <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span> <span class="n">img_type</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_raw</span><span class="p">:</span>
@@ -431,6 +447,8 @@
         <span class="n">run_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">y_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run head on backbone features, calculate loss, postprocess and save image, and calculate</span>
+<span class="sd">        metrics.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">run_forward</span><span class="p">:</span>
             <span class="n">y_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">backbone_features</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">y_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

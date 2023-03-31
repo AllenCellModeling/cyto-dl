@@ -157,6 +157,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -352,18 +353,20 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gan_mode</span><span class="p">,</span>
-        <span class="n">target_real_label</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-        <span class="n">target_fake_label</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">gan_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vanilla&quot;</span><span class="p">,</span>
+        <span class="n">target_real_label</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">target_fake_label</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the GANLoss class.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">            gan_mode (str) - - the type of GAN objective. It currently supports vanilla,</span>
-<span class="sd">                                lsgan, and wgangp.</span>
-<span class="sd">            target_real_label (bool) - - label for a real image</span>
-<span class="sd">            target_fake_label (bool) - - label of a fake image</span>
-
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            gan_mode:str=&#39;vanilla&#39;</span>
+<span class="sd">                Type of GAN objective `vanilla`, `lsgan`, and `wgangp` are supported.</span>
+<span class="sd">            target_real_label:float=1.0</span>
+<span class="sd">                label for a real image</span>
+<span class="sd">            target_fake_label:float=0.0</span>
+<span class="sd">                label of a fake image</span>
 <span class="sd">        Note: Do not use sigmoid as the last layer of Discriminator.</span>
 <span class="sd">        LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -380,13 +383,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;gan mode </span><span class="si">%s</span><span class="s2"> not implemented&quot;</span> <span class="o">%</span> <span class="n">gan_mode</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GANLoss.get_target_tensor"><a class="viewcode-back" href="../../../../aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">target_is_real</span><span class="p">):</span>
+<div class="viewcode-block" id="GANLoss.get_target_tensor"><a class="viewcode-back" href="../../../../aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">target_is_real</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create label tensors with the same size as the input.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">            prediction (tensor) - - tpyically the prediction from a discriminator</span>
-<span class="sd">            target_is_real (bool) - - if the ground truth label is for real images or</span>
-<span class="sd">                                      fake images</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            prediction:torch.Tensor</span>
+<span class="sd">                Prediction output from a discriminator</span>
+<span class="sd">            target_is_real:bool</span>
+<span class="sd">                if the ground truth label is for real images or fake images</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A label tensor filled with ground truth label, and with the size of input</span>
@@ -394,13 +399,15 @@
         <span class="n">target_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_label</span> <span class="k">if</span> <span class="n">target_is_real</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_label</span>
         <span class="k">return</span> <span class="n">target_tensor</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction</span><span class="p">,</span> <span class="n">target_is_real</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">target_is_real</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate loss given Discriminator&#39;s output and grount truth labels.</span>
 
-<span class="sd">        Parameters:</span>
-<span class="sd">            prediction (tensor) - - tpyically the prediction output from a discriminator</span>
-<span class="sd">            target_is_real (bool) - - if the ground truth label is for real images or</span>
-<span class="sd">                                      fake images</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            prediction:torch.Tensor</span>
+<span class="sd">                Prediction output from a discriminator</span>
+<span class="sd">            target_is_real:bool</span>
+<span class="sd">                if the ground truth label is for real images or fake images</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            the calculated loss.</span>

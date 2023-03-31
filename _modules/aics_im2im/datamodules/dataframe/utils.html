@@ -157,6 +157,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -351,18 +352,19 @@
     <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PersistentDataset</span>
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">Transform</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">BatchSampler</span><span class="p">,</span> <span class="n">SubsetRandomSampler</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">BatchSampler</span><span class="p">,</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">Subset</span><span class="p">,</span> <span class="n">SubsetRandomSampler</span>
 <span class="kn">from</span> <span class="nn">upath</span> <span class="kn">import</span> <span class="n">UPath</span> <span class="k">as</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">aics_im2im.dataframe</span> <span class="kn">import</span> <span class="n">read_dataframe</span>
 
 
 <div class="viewcode-block" id="RemoveNaNKeysd"><a class="viewcode-back" href="../../../../aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.RemoveNaNKeysd">[docs]</a><span class="k">class</span> <span class="nc">RemoveNaNKeysd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&#39; Transform to remove &#39;nan&#39; keys from data dictionary.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform to remove &#39;nan&#39; keys from data dictionary.</span>
 
 <span class="sd">    When combined with adding `allow_missing_keys=True` to transforms and the alternating batch</span>
 <span class="sd">    sampler, this allows multi-task training when only one target is available at a time.</span>
@@ -378,15 +380,35 @@
 
 <span class="c1"># randomly switch between generating batches from each sampler</span>
 <div class="viewcode-block" id="AlternatingBatchSampler"><a class="viewcode-back" href="../../../../aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.AlternatingBatchSampler">[docs]</a><span class="k">class</span> <span class="nc">AlternatingBatchSampler</span><span class="p">(</span><span class="n">BatchSampler</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subclass of pytorch&#39;s `BatchSampler` that alternates between sampling from mutually</span>
+<span class="sd">    exclusive columns of a dataframe dataset.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">subset</span><span class="p">,</span>
-        <span class="n">target_columns</span><span class="p">,</span>
-        <span class="n">batch_size</span><span class="p">,</span>
-        <span class="n">drop_last</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">sampler</span><span class="o">=</span><span class="n">SubsetRandomSampler</span><span class="p">,</span>
+        <span class="n">subset</span><span class="p">:</span> <span class="n">Subset</span><span class="p">,</span>
+        <span class="n">target_columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">drop_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">sampler</span><span class="p">:</span> <span class="n">Sampler</span> <span class="o">=</span> <span class="n">SubsetRandomSampler</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subset: Subset</span>
+<span class="sd">            Subset of monai dataset wrapping a dataframe</span>
+<span class="sd">        target_columns: Sequence[str]</span>
+<span class="sd">            names of columns in `subset` dataframe representing types of ground truth images to alternate between</span>
+<span class="sd">        batch_size:int</span>
+<span class="sd">            Size of batch</span>
+<span class="sd">        drop_last:bool=False</span>
+<span class="sd">            Whether to drop last incomplete batch</span>
+<span class="sd">        shuffle:bool=False</span>
+<span class="sd">            Whether to randomly select between columns in `target_columns`. If False, batches will follow the order of</span>
+<span class="sd">            `target_columns`</span>
+<span class="sd">        sampler:Sampler=SubsetRandomSampler</span>
+<span class="sd">            Sampler to sample from each column in `target_columns`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">drop_last</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;target_columns must be defined if using batch sampler.&quot;</span><span class="p">)</span>

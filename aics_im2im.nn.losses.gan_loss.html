@@ -158,6 +158,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -344,34 +345,36 @@
 <span id="aics-im2im-nn-losses-gan-loss-module"></span><h1>aics_im2im.nn.losses.gan_loss module<a class="headerlink" href="#module-aics_im2im.nn.losses.gan_loss" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aics_im2im.nn.losses.gan_loss.GANLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.losses.gan_loss.</span></span><span class="sig-name descname"><span class="pre">GANLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gan_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_real_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fake_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/losses/gan_loss.html#GANLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.losses.gan_loss.GANLoss" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.losses.gan_loss.</span></span><span class="sig-name descname"><span class="pre">GANLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gan_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'vanilla'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_real_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fake_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/losses/gan_loss.html#GANLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.losses.gan_loss.GANLoss" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Define different GAN objectives.</p>
 <p>The GANLoss class abstracts away the need to create the target label tensor that has the same
 size as the input.</p>
 <p>Initialize the GANLoss class.</p>
-<dl>
-<dt>Parameters:</dt><dd><dl class="simple">
-<dt>gan_mode (str) - - the type of GAN objective. It currently supports vanilla,</dt><dd><p>lsgan, and wgangp.</p>
-</dd>
-</dl>
-<p>target_real_label (bool) - - label for a real image
-target_fake_label (bool) - - label of a fake image</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gan_mode</strong> (<em>str=’vanilla’</em>) – Type of GAN objective <cite>vanilla</cite>, <cite>lsgan</cite>, and <cite>wgangp</cite> are supported.</p></li>
+<li><p><strong>target_real_label</strong> (<em>float=1.0</em>) – label for a real image</p></li>
+<li><p><strong>target_fake_label</strong> (<em>float=0.0</em>) – label of a fake image</p></li>
+</ul>
 </dd>
 </dl>
 <p>Note: Do not use sigmoid as the last layer of Discriminator.
 LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor">
-<span class="sig-name descname"><span class="pre">get_target_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_real</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/losses/gan_loss.html#GANLoss.get_target_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_target_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_real</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/losses/gan_loss.html#GANLoss.get_target_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.losses.gan_loss.GANLoss.get_target_tensor" title="Permalink to this definition">#</a></dt>
 <dd><p>Create label tensors with the same size as the input.</p>
-<dl>
-<dt>Parameters:</dt><dd><p>prediction (tensor) - - tpyically the prediction from a discriminator
-target_is_real (bool) - - if the ground truth label is for real images or</p>
-<blockquote>
-<div><p>fake images</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prediction</strong> (<em>torch.Tensor</em>) – Prediction output from a discriminator</p></li>
+<li><p><strong>target_is_real</strong> (<em>bool</em>) – if the ground truth label is for real images or fake images</p></li>
+</ul>
 </dd>
+</dl>
+<dl class="simple">
 <dt>Returns:</dt><dd><p>A label tensor filled with ground truth label, and with the size of input</p>
 </dd>
 </dl>

@@ -157,6 +157,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -341,6 +342,7 @@
           <h1>Source code for aics_im2im.models.im2im.utils.omnipose</h1><div class="highlight"><pre>
 <span></span><span class="c1"># all code modified from https://github.com/kevinjohncutler/omnipose/blob/main/omnipose/core.py</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">dask</span>
 <span class="kn">import</span> <span class="nn">edt</span>
@@ -363,12 +365,28 @@
 <span class="kn">from</span> <span class="nn">skimage.filters</span> <span class="kn">import</span> <span class="n">apply_hysteresis_threshold</span><span class="p">,</span> <span class="n">gaussian</span>
 <span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">label</span>
 <span class="kn">from</span> <span class="nn">skimage.morphology</span> <span class="kn">import</span> <span class="n">binary_dilation</span><span class="p">,</span> <span class="n">remove_small_holes</span>
-<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">expand_labels</span><span class="p">,</span> <span class="n">find_boundaries</span>
+<span class="kn">from</span> <span class="nn">skimage.segmentation</span> <span class="kn">import</span> <span class="n">expand_labels</span>
 <span class="kn">from</span> <span class="nn">skimage.transform</span> <span class="kn">import</span> <span class="n">rescale</span><span class="p">,</span> <span class="n">resize</span>
 
 
 <div class="viewcode-block" id="OmniposePreprocessd"><a class="viewcode-back" href="../../../../../aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd">[docs]</a><span class="k">class</span> <span class="nc">OmniposePreprocessd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label_keys</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">allow_missing_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrapper of core functions from [Omnipose](https://github.com/kevinjohncutler/omnipose) to</span>
+<span class="sd">    create an 5/6 channel Omnipose ground truth consisting of boundary, weight mask, flow, and</span>
+<span class="sd">    smooth distance images from an input instance segmentation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">label_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">allow_missing_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label_keys: Union[Sequence[str], str]</span>
+<span class="sd">            Keys of instance segmentations in input dictionary to convert to omnipose ground truth images.</span>
+<span class="sd">        dim:int=3</span>
+<span class="sd">            Spatial dimension of images</span>
+<span class="sd">        allow_missing_keys:bool=False</span>
+<span class="sd">            Whether to raise error if key in `label_keys` is not present</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label_keys</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">label_keys</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">label_keys</span><span class="p">]</span>
@@ -419,7 +437,16 @@
 
 
 <div class="viewcode-block" id="OmniposeLoss"><a class="viewcode-back" href="../../../../../aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeLoss">[docs]</a><span class="k">class</span> <span class="nc">OmniposeLoss</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loss function for Omnipose.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        --------------</span>
+<span class="sd">        dim:int=3</span>
+<span class="sd">            Spatial dimension of input images.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">dim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weighted_flow_MSE</span> <span class="o">=</span> <span class="n">WeightedLoss</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angular_flow_loss</span> <span class="o">=</span> <span class="n">ArcCosDotLoss</span><span class="p">()</span>
@@ -431,7 +458,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">criterion16</span> <span class="o">=</span> <span class="n">DivergenceLoss</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loss function for Omnipose.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        --------------</span>
 <span class="sd">        y: ND-array, float</span>

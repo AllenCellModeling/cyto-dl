@@ -158,6 +158,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -346,6 +347,17 @@
 <dt class="sig sig-object py" id="aics_im2im.nn.head.base_head.BaseHead">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.head.base_head.</span></span><span class="sig-name descname"><span class="pre">BaseHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/head/base_head.html#BaseHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.head.base_head.BaseHead" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Base class for task heads.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>loss</strong> – Loss function for task</p></li>
+<li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing for <cite>input</cite> and <cite>predictions</cite> of head</p></li>
+<li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric during training. Not used by GAN head.</p></li>
+<li><p><strong>save_raw=False</strong> – Whether to save out example input images during training</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.nn.head.base_head.BaseHead.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/head/base_head.html#BaseHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.head.base_head.BaseHead.forward" title="Permalink to this definition">#</a></dt>
@@ -354,7 +366,9 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.nn.head.base_head.BaseHead.run_head">
 <span class="sig-name descname"><span class="pre">run_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/head/base_head.html#BaseHead.run_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.head.base_head.BaseHead.run_head" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Run head on backbone features, calculate loss, postprocess and save image, and calculate
+metrics.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.nn.head.base_head.BaseHead.save_image">

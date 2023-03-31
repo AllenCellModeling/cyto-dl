@@ -158,6 +158,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -344,15 +345,18 @@
 <span id="aics-im2im-nn-discriminators-n-layer-discriminator-module"></span><h1>aics_im2im.nn.discriminators.n_layer_discriminator module<a class="headerlink" href="#module-aics_im2im.nn.discriminators.n_layer_discriminator" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="aics_im2im.nn.discriminators.n_layer_discriminator.NLayerDiscriminator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.discriminators.n_layer_discriminator.</span></span><span class="sig-name descname"><span class="pre">NLayerDiscriminator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_nc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndf=64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_layer=&lt;class</span> <span class="pre">'torch.nn.modules.instancenorm.InstanceNorm3d'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_annealer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/discriminators/n_layer_discriminator.html#NLayerDiscriminator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.discriminators.n_layer_discriminator.NLayerDiscriminator" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.nn.discriminators.n_layer_discriminator.</span></span><span class="sig-name descname"><span class="pre">NLayerDiscriminator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_nc:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndf:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_layer=&lt;class</span> <span class="pre">'torch.nn.modules.instancenorm.InstanceNorm3d'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_annealer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/nn/discriminators/n_layer_discriminator.html#NLayerDiscriminator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.nn.discriminators.n_layer_discriminator.NLayerDiscriminator" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Defines a PatchGAN discriminator.</p>
-<p>Construct a PatchGAN discriminator.</p>
-<dl class="simple">
-<dt>Parameters:</dt><dd><p>input_nc (int)  – the number of channels in input images
-ndf (int)       – the number of filters in the last conv layer
-n_layers (int)  – the number of conv layers in the discriminator
-norm_layer      – normalization layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_nc</strong> (<em>int=2</em>) – Number of channels of input images. Generally, <cite>n_channels(input_im)+n_channels(model_output)</cite></p></li>
+<li><p><strong>ndf</strong> (<em>int=64</em>) – Number of filters in the first conv layer. Later layers are multiples of <cite>ndf</cite>.</p></li>
+<li><p><strong>n_layers</strong> (<em>int=3</em>) – Number of conv layers in the discriminator</p></li>
+<li><p><strong>norm_layer=nn.InstanceNorm3d</strong> – normalization layer</p></li>
+<li><p><strong>noise_annealer=None</strong> – Noise annealer object</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">

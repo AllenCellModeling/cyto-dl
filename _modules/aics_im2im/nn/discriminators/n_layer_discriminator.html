@@ -157,6 +157,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -350,19 +351,25 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">input_nc</span><span class="p">,</span>
-        <span class="n">ndf</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-        <span class="n">n_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">input_nc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">ndf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="n">n_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">norm_layer</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">InstanceNorm3d</span><span class="p">,</span>
         <span class="n">noise_annealer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct a PatchGAN discriminator.</span>
-
-<span class="sd">        Parameters:</span>
-<span class="sd">            input_nc (int)  -- the number of channels in input images</span>
-<span class="sd">            ndf (int)       -- the number of filters in the last conv layer</span>
-<span class="sd">            n_layers (int)  -- the number of conv layers in the discriminator</span>
-<span class="sd">            norm_layer      -- normalization layer</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">            input_nc:int=2</span>
+<span class="sd">                Number of channels of input images. Generally, `n_channels(input_im)+n_channels(model_output)`</span>
+<span class="sd">            ndf:int=64</span>
+<span class="sd">                Number of filters in the first conv layer. Later layers are multiples of `ndf`.</span>
+<span class="sd">            n_layers:int=3</span>
+<span class="sd">                Number of conv layers in the discriminator</span>
+<span class="sd">            norm_layer=nn.InstanceNorm3d</span>
+<span class="sd">                normalization layer</span>
+<span class="sd">            noise_annealer=None</span>
+<span class="sd">                Noise annealer object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">norm_layer</span><span class="p">)</span> <span class="o">==</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">:</span>
