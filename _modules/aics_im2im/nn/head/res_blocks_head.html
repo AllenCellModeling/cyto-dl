@@ -375,9 +375,7 @@
         <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">first_layer</span><span class="p">]</span>
         <span class="n">upsample</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
 
-        <span class="n">upsample_ratio</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">upsample_ratio</span> <span class="k">if</span> <span class="n">upsample_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">([</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="n">upsample_ratio</span> <span class="o">=</span> <span class="n">upsample_ratio</span> <span class="ow">or</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
 
         <span class="k">if</span> <span class="n">resolution</span> <span class="o">==</span> <span class="s2">&quot;hr&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">upsample_method</span> <span class="o">==</span> <span class="s2">&quot;subpixel&quot;</span><span class="p">:</span>
