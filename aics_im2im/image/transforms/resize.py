@@ -12,7 +12,7 @@ class Resized(Transform):
     def __init__(
         self,
         keys: Sequence[str],
-        scale_factor: int,
+        scale_factor: Union[float, Sequence[float]],
         spatial_dims: int = 3,
         mode: str = "nearest",
         align_corners: Union[bool, None] = None,

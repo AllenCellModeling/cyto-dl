@@ -6,7 +6,21 @@ from monai.networks.blocks import Convolution
 
 
 class ConvProjectionLayer(torch.nn.Module):
-    def __init__(self, dim, pool_size, in_channels, out_channels):
+    """Layer for projecting e.g. 3D->2D image."""
+
+    def __init__(self, dim, pool_size: int, in_channels: int, out_channels: int):
+        """
+        Parameters
+        ---------
+        dim
+            Dimension to project, e.g. 2 for projecting NCZYX -> NCYX
+        pool_size:int
+            Size of convolutional kernel for downsampling
+        in_channels:int
+            number of input channels
+        out_channels:int
+            number of output channels
+        """
         super().__init__()
         self.dim = dim
         n_downs = math.floor(np.log2(pool_size))

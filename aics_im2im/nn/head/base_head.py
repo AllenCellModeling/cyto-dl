@@ -11,6 +11,8 @@ from aics_im2im.models.im2im.utils.postprocessing import detach
 
 
 class BaseHead(ABC, torch.nn.Module):
+    """Base class for task heads."""
+
     def __init__(
         self,
         loss,
@@ -18,6 +20,18 @@ class BaseHead(ABC, torch.nn.Module):
         calculate_metric=False,
         save_raw=False,
     ):
+        """
+        Parameters
+        ----------
+        loss
+            Loss function for task
+        postprocess={"input": detach, "prediction": detach}
+            Postprocessing for `input` and `predictions` of head
+        calculate_metric=False
+            Whether to calculate a metric during training. Not used by GAN head.
+        save_raw=False
+            Whether to save out example input images during training
+        """
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
@@ -49,6 +63,7 @@ class BaseHead(ABC, torch.nn.Module):
     def save_image(self, y_hat, batch, stage, global_step):
         y_hat_out = self._postprocess(y_hat, img_type="prediction")
         y_out, raw_out = None, None
+        # filename is determined by step in training during train/val and by its source filename for prediction/testing
         if stage in ("train", "val"):
             y_out = self._postprocess(batch[self.head_name], img_type="input")
             if self.save_raw:
@@ -90,6 +105,8 @@ class BaseHead(ABC, torch.nn.Module):
         run_forward=True,
         y_hat=None,
     ):
+        """Run head on backbone features, calculate loss, postprocess and save image, and calculate
+        metrics."""
         if run_forward:
             y_hat = self.forward(backbone_features)
         if y_hat is None:

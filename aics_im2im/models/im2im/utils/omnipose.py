@@ -1,5 +1,6 @@
 # all code modified from https://github.com/kevinjohncutler/omnipose/blob/main/omnipose/core.py
 import warnings
+from typing import Sequence, Union
 
 import dask
 import edt
@@ -22,12 +23,28 @@ from scipy.spatial import ConvexHull
 from skimage.filters import apply_hysteresis_threshold, gaussian
 from skimage.measure import label
 from skimage.morphology import binary_dilation, remove_small_holes
-from skimage.segmentation import expand_labels, find_boundaries
+from skimage.segmentation import expand_labels
 from skimage.transform import rescale, resize
 
 
 class OmniposePreprocessd(Transform):
-    def __init__(self, label_keys, dim=3, allow_missing_keys=False):
+    """Wrapper of core functions from [Omnipose](https://github.com/kevinjohncutler/omnipose) to
+    create an 5/6 channel Omnipose ground truth consisting of boundary, weight mask, flow, and
+    smooth distance images from an input instance segmentation."""
+
+    def __init__(
+        self, label_keys: Union[Sequence[str], str], dim: int = 3, allow_missing_keys: bool = False
+    ):
+        """
+        Parameters
+        ----------
+        label_keys: Union[Sequence[str], str]
+            Keys of instance segmentations in input dictionary to convert to omnipose ground truth images.
+        dim:int=3
+            Spatial dimension of images
+        allow_missing_keys:bool=False
+            Whether to raise error if key in `label_keys` is not present
+        """
         super().__init__()
         self.label_keys = (
             label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
@@ -78,7 +95,16 @@ class OmniposePreprocessd(Transform):
 
 
 class OmniposeLoss:
-    def __init__(self, dim):
+    """Loss function for Omnipose."""
+
+    def __init__(self, dim: int = 3):
+        """
+        Parameters
+        --------------
+        dim:int=3
+            Spatial dimension of input images.
+        """
+
         self.dim = dim
         self.weighted_flow_MSE = WeightedLoss()
         self.angular_flow_loss = ArcCosDotLoss()
@@ -90,7 +116,7 @@ class OmniposeLoss:
         self.criterion16 = DivergenceLoss()
 
     def __call__(self, y_hat, y):
-        """Loss function for Omnipose.
+        """
         Parameters
         --------------
         y: ND-array, float

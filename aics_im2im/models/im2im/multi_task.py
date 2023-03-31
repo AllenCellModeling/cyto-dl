@@ -19,17 +19,36 @@ class MultiTaskIm2Im(BaseModel):
         save_dir="./",
         save_images_every_n_epochs=1,
         optimizer=torch.optim.Adam,
-        automatic_optimization: bool = True,
         inference_args: Dict = {},
         **kwargs,
     ):
+        """
+        Parameters
+        ----------
+        backbone: nn.Module
+            backbone network, parameters are shared between task heads
+        task_heads: Dict
+            task-specific heads
+        x_key: str
+            key of input image in batch
+        save_dir="./"
+            directory to save images during training and validation
+        save_images_every_n_epochs=1
+            Frequency to save out images during training
+        optimizer=torch.optim.Adam
+        inference_args: Dict = {}
+            Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        **kwargs
+        """
         super().__init__(
             **kwargs,
         )
+        self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.backbone = backbone
-        self.task_heads = torch.nn.ModuleDict(task_heads)
+        self.backbone = torch.compile(backbone)
+        self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
+
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -96,7 +115,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def should_save_image(self, batch_idx, stage):
         return stage in ("test", "predict") or (
-            batch_idx == 0  # noqa: FURB124
+            batch_idx < len(self.task_heads)  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
 
