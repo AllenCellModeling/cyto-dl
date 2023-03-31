@@ -5,7 +5,6 @@ import dask
 import edt
 import numpy as np
 import torch
-import tqdm
 from cellpose_omni.core import (
     ArcCosDotLoss,
     DerivativeLoss,
@@ -22,8 +21,10 @@ from scipy.spatial import ConvexHull
 from skimage.filters import apply_hysteresis_threshold, gaussian
 from skimage.measure import label
 from skimage.morphology import binary_dilation, remove_small_holes
-from skimage.segmentation import expand_labels, find_boundaries
+from skimage.segmentation import expand_labels
 from skimage.transform import rescale, resize
+
+from aics_im2im.image.transforms.rand_flip_gradient import RandFlipGrad
 
 
 class OmniposePreprocessd(Transform):
@@ -74,6 +75,34 @@ class OmniposePreprocessd(Transform):
             out_im[3 : 3 + self.dim] = flows * 5.0  # weighted for loss function?
             out_im[3 + self.dim] = smooth_distance
             image_dict[key] = out_im
+        return image_dict
+
+
+class OmniposeRandFlipd(Transform):
+    def __init__(self, label_keys, spatial_axis, prob=0.1, dim=3, allow_missing_keys=False):
+        super().__init__()
+        self.label_keys = (
+            label_keys if isinstance(label_keys, (list, ListConfig)) else [label_keys]
+        )
+        self.dim = dim
+        self.allow_missing_keys = allow_missing_keys
+        self.flipper = RandFlipGrad(prob, spatial_axis)
+
+    def __call__(self, image_dict):
+        for key in self.label_keys:
+            if key not in image_dict:
+                if not self.allow_missing_keys:
+                    raise KeyError(
+                        f"Key {key} not found in data. Available keys are {image_dict.keys()}"
+                    )
+                continue
+            im = image_dict[key]
+            assert (
+                im.shape[0] == 4 + self.dim
+            ), f"Expected generated omnipose grount truth to have {3+self.dim+1} channels, got {im.shape[0]}"
+            # flip flow
+            im[3 : 3 + self.dim] = self.flipper(im[3 : 3 + self.dim])
+            image_dict[key] = im
         return image_dict
 
 
@@ -231,7 +260,7 @@ class OmniposeClustering:
         rescale_dist = rescale(
             dist, self.rescale_factor, order=3, preserve_range=True, anti_aliasing=False
         )
-        mask, p, tr, bounds = compute_masks(
+        mask, p, tr, bounds, affinity_graph = compute_masks(
             flow,
             rescale_dist,
             nclasses=4,
