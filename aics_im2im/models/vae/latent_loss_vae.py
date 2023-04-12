@@ -157,13 +157,13 @@ class LatentLossVAE(BaseVAE):
             weighted_adv_loss += _loss[part] * self.latent_loss_weights.get(part, 1.0)
 
         if stage != "test":
-            optimizers = self.optimizers()
+            optimizers = self.hparams.optimizers()
             lr_schedulers = self.lr_schedulers()
 
             main_optim = optimizers.pop(0)
             _ = lr_schedulers.pop(0)
 
-            non_main_key = [i for i in self.optimizer.keys() if i != "main"]
+            non_main_key = [i for i in self.hparams.optimizer.keys() if i != "main"]
             non_main_optims = []
             non_main_lr_scheds = []
             for i in non_main_key:
@@ -235,10 +235,10 @@ class LatentLossVAE(BaseVAE):
             return list(obj.parameters())
 
         _parameters = get_params(self.decoder)
-        for part in self.optimizer["main"]["keys"]:
+        for part in self.hparams.optimizer["main"]["keys"]:
             _parameters.extend(get_params(self.encoder[part]))
 
-        optimizers = [self.optimizer["main"]["opt"](_parameters)]
+        optimizers = [self.hparams.optimizer["main"]["opt"](_parameters)]
 
         lr_schedulers = [
             (
@@ -248,17 +248,19 @@ class LatentLossVAE(BaseVAE):
             )
         ]
 
-        non_main_key = [i for i in self.optimizer.keys() if i != "main"]
+        non_main_key = [i for i in self.hparams.optimizer.keys() if i != "main"]
 
         if len(non_main_key) > 0:
             non_main_key = non_main_key[0]
-            _parameters2 = get_params(self.encoder[self.optimizer[non_main_key]["keys"][0]])
-            if len(self.optimizer[non_main_key]["keys"]) > 1:
-                for key in self.optimizer[non_main_key]["keys"][1:]:
+            _parameters2 = get_params(
+                self.encoder[self.hparams.optimizer[non_main_key]["keys"][0]]
+            )
+            if len(self.hparams.optimizer[non_main_key]["keys"]) > 1:
+                for key in self.hparams.optimizer[non_main_key]["keys"][1:]:
                     _parameters2.extend(
-                        get_params(self.encoder[self.optimizer[non_main_key]["keys"][key]])
+                        get_params(self.encoder[self.hparams.optimizer[non_main_key]["keys"][key]])
                     )
-            optimizers.append(self.optimizer[non_main_key]["opt"](_parameters2))
+            optimizers.append(self.hparams.optimizer[non_main_key]["opt"](_parameters2))
             lr_schedulers.append(self.lr_scheduler[non_main_key](optimizer=optimizers[-1]))
 
         self.latent_loss_optimizer_map = {}
