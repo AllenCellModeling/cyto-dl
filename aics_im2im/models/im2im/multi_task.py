@@ -40,9 +40,7 @@ class MultiTaskIm2Im(BaseModel):
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         **kwargs
         """
-        super().__init__(
-            **kwargs,
-        )
+        super().__init__()
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
