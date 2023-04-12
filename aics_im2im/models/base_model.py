@@ -1,4 +1,3 @@
-import gc
 import inspect
 import logging
 from typing import Sequence, Union
@@ -6,8 +5,10 @@ from typing import Sequence, Union
 import numpy as np
 import pytorch_lightning as pl
 import torch
+from hydra.errors import InstantiationException
+from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from pytorch_lightning.utilities.parsing import get_init_args
+from pytorch_lightning.utilities.parsing import get_init_args, parse_class_init_keys
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -33,38 +34,35 @@ def _cast_omegaconf(value):
     return value
 
 
-def _parse_init_args(frame):
-    init_args = get_init_args(frame)
-    if frame.f_back.f_code.co_name == "__init__":
-        # if this was called from a subclass's init
-        init_args.update(get_init_args(frame.f_back))
+class BaseModelMeta(type):
+    def __call__(cls, *args, **kwargs):
+        """Meta class to handle instantiating configs."""
 
-    init_args = {k: _cast_omegaconf(v) for k, v in init_args.items()}
-    ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]
-    if "optimizer" in ignore:
-        ignore.remove("optimizer")
+        init_args = inspect.signature(cls.__init__).parameters.copy()
+        init_args.pop("self")
+        keys = tuple(init_args.keys())
 
-    if "lr_scheduler" in ignore:
-        ignore.remove("lr_scheduler")
+        init_args = {keys[ix]: arg for ix, arg in enumerate(args)}
+        init_args.update(kwargs)
 
-    for arg in ignore:
-        del init_args[arg]
-    return init_args
+        # instantiate class with instantiated `init_args`
+        # hydra doesn't change the original dict, so we can use it after this
+        # with `save_hyperparameters`
+        obj = type.__call__(cls, **instantiate(init_args, _recursive_=True, _convert_=True))
+
+        # make sure only primitives get stored in the ckpt
+        init_args = {k: _cast_omegaconf(v) for k, v in init_args.items()}
+        ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]
+
+        for arg in ignore:
+            init_args.pop(arg)
+
+        obj.save_hyperparameters(init_args, logger=False)
+
+        return obj
 
 
-class BaseModel(pl.LightningModule):
-    def __init__(self, **kwargs):
-        super().__init__()
-
-        frame = inspect.currentframe()
-        init_args = _parse_init_args(frame)
-
-        self.save_hyperparameters(init_args, logger=False)
-        self.optimizer = init_args.pop("optimizer", torch.optim.Adam)
-        self.lr_scheduler = init_args.pop("lr_scheduler", None)
-        self.cache_outputs = init_args.get("cache_outputs", ("test",))
-        self._cached_outputs = {}
-
+class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
     def parse_batch(self, batch):
         raise NotImplementedError
 
@@ -104,9 +102,12 @@ class BaseModel(pl.LightningModule):
         return self._step("predict", batch, batch_idx, logger=False)
 
     def configure_optimizers(self):
-        optimizer = self.optimizer(self.parameters())
-        if self.lr_scheduler is not None:
-            scheduler = self.lr_scheduler(optimizer=optimizer)
+        optimizer_cls = self.hparams.get("optimizer", torch.optim.Adam)
+        optimizer = optimizer_cls(self.parameters())
+
+        scheduler_cls = self.hparams.get("lr_scheduler")
+        if scheduler_cls is not None:
+            scheduler = scheduler_cls(optimizer=optimizer)
             return {
                 "optimizer": optimizer,
                 "lr_scheduler": {
