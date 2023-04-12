@@ -34,7 +34,6 @@ class LatentLossVAE(BaseVAE):
         lr_scheduler: LRScheduler = torch.optim.lr_scheduler.StepLR,
         loss_mask_label: Optional[str] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
-        cache_outputs: Sequence = ("test",),
         **kwargs,
     ):
         super().__init__(
@@ -49,7 +48,6 @@ class LatentLossVAE(BaseVAE):
             loss_mask_label=loss_mask_label,
             reconstruction_loss=reconstruction_loss,
             prior=prior,
-            cache_outputs=cache_outputs,
             **kwargs,
         )
 
