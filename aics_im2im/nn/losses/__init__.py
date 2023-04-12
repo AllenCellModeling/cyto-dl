@@ -8,5 +8,5 @@ from .weighted_mse_loss import WeightedMSELoss
 
 try:
     from .spharm_loss import SpharmLoss
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     SpharmLoss = None
