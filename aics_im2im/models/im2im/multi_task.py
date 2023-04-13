@@ -18,9 +18,8 @@ class MultiTaskIm2Im(BaseModel):
         x_key: str,
         save_dir="./",
         save_images_every_n_epochs=1,
-        optimizer=torch.optim.Adam,
         inference_args: Dict = {},
-        **kwargs,
+        **base_kwargs,
     ):
         """
         Parameters
@@ -35,12 +34,12 @@ class MultiTaskIm2Im(BaseModel):
             directory to save images during training and validation
         save_images_every_n_epochs=1
             Frequency to save out images during training
-        optimizer=torch.optim.Adam
         inference_args: Dict = {}
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
-        **kwargs
+        **base_kwargs:
+            Additional arguments passed to BaseModel
         """
-        super().__init__()
+        super().__init__(**base_kwargs)
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
@@ -54,14 +53,14 @@ class MultiTaskIm2Im(BaseModel):
         opts = []
         scheds = []
         for key in ("generator", "discriminator"):
-            if key in self.hparams.optimizer.keys():
+            if key in self.optimizer.keys():
                 if key == "generator":
-                    opt = self.hparams.optimizer[key](
+                    opt = self.optimizer[key](
                         list(self.backbone.parameters()) + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
-                    opt = self.hparams.optimizer[key](self.discriminator.parameters())
-                scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
+                    opt = self.optimizer[key](self.discriminator.parameters())
+                scheduler = self.lr_scheduler[key](optimizer=opt)
                 opts.append(opt)
                 scheds.append(scheduler)
         return (opts, scheds)

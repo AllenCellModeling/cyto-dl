@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
-from torch.optim.lr_scheduler import _LRScheduler as LRScheduler
 
 from aics_im2im.models.base_model import BaseModel
 
@@ -24,12 +23,10 @@ class BaseVAE(BaseModel):
         x_label: str,
         beta: float = 1.0,
         id_label: Optional[str] = None,
-        optimizer: torch.optim.Optimizer = torch.optim.Adam,
-        lr_scheduler: Optional[LRScheduler] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         prior: Optional[Sequence[Prior]] = None,
         latent_compose_function=None,
-        **kwargs,
+        **base_kwargs,
     ):
         """Instantiate a basic VAE model.
         Parameters
@@ -40,8 +37,6 @@ class BaseVAE(BaseModel):
             Decoder network
         x_label: Optional[str] = None
         id_label: Optional[str] = None
-        optimizer: torch.optim.Optimizer
-            Optimizer to use
         beta: float = 1.0
             Beta parameter - the weight of the KLD term in the loss function
         reconstruction_loss: Loss
@@ -50,8 +45,10 @@ class BaseVAE(BaseModel):
             i.e. subclasses torch.nn.modules._Loss
         prior: Optional[Sequence[AbstractPrior]]
             List of prior specifications to use for latent space
+        **base_kwargs:
+            Additional arguments passed to BaseModel
         """
-        super().__init__()
+        super().__init__(**base_kwargs)
 
         self.reconstruction_loss = reconstruction_loss
 

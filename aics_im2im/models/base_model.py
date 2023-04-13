@@ -1,14 +1,13 @@
 import inspect
 import logging
-from typing import Sequence, Union
+from collections.abc import MutableMapping
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pytorch_lightning as pl
 import torch
-from hydra.errors import InstantiationException
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from pytorch_lightning.utilities.parsing import get_init_args, parse_class_init_keys
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -63,6 +62,17 @@ class BaseModelMeta(type):
 
 
 class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
+    def __init__(
+        self,
+        *,
+        optimizer: Optional[torch.optim.Optimizer] = None,
+        lr_scheduler: Optional[torch.optim.lr_scheduler.LRScheduler] = None,
+    ):
+        super().__init__()
+
+        self.optimizer = optimizer if optimizer is not None else torch.optim.Adam
+        self.lr_scheduler = lr_scheduler
+
     def parse_batch(self, batch):
         raise NotImplementedError
 
