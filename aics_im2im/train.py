@@ -38,7 +38,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating
-    cfg = utils.remove_aux_key(cfg)
+    utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
     data = hydra.utils.instantiate(cfg.data)
