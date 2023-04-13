@@ -62,7 +62,8 @@ class GAN(BaseModel):
             Additional arguments passed to BaseModel
         """
 
-        super().__init__(**base_kwargs)
+        metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
+        super().__init__(metrics=metrics, **base_kwargs)
         self.automatic_optimization = False
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)

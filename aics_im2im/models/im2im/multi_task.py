@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
+from torchmetrics import MeanMetric, MinMetric
 
 from aics_im2im.models.base_model import BaseModel
 
@@ -39,7 +40,31 @@ class MultiTaskIm2Im(BaseModel):
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
-        super().__init__(**base_kwargs)
+
+        _DEFAULT_METRICS = {
+            "train/loss": MeanMetric(),
+            "val/loss": MeanMetric(),
+            "test/loss": MeanMetric(),
+            "train/loss/best": MinMetric(),
+            "val/loss/best": MinMetric(),
+            "test/loss/best": MinMetric(),
+        }
+
+        for head in task_heads.keys():
+            _DEFAULT_METRICS.update(
+                {
+                    f"train/loss/{head}": MeanMetric(),
+                    f"val/loss/{head}": MeanMetric(),
+                    f"test/loss/{head}": MeanMetric(),
+                    f"train/loss/{head}/best": MinMetric(),
+                    f"val/loss/{head}/best": MinMetric(),
+                    f"test/loss/{head}/best": MinMetric(),
+                }
+            )
+
+        metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
+        super().__init__(metrics=metrics, **base_kwargs)
+
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
@@ -130,7 +155,7 @@ class MultiTaskIm2Im(BaseModel):
             run_heads = self.task_heads.keys()
         return run_heads
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -142,11 +167,4 @@ class MultiTaskIm2Im(BaseModel):
             return
         losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
         losses = self._sum_losses(losses)
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in losses.items()},
-            logger=True,
-            sync_dist=True,
-            on_step=False,
-            on_epoch=True,
-        )
-        return losses
+        return losses, None, None
