@@ -125,7 +125,7 @@ class LatentLossVAE(BaseVAE):
         latent_basal = latent_basal + latent_covariate
         return latent_basal
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def model_step(self, stage, batch, batch_idx):
 
         (
             x_hat,
@@ -226,9 +226,9 @@ class LatentLossVAE(BaseVAE):
                 }
             )
 
-        self.log_metrics(stage, results, logger, x_hat.shape[0])
+        # self.log_metrics(stage, results, x_hat.shape[0])
 
-        return results
+        return results, None, None
 
     def configure_optimizers(self):
         def get_params(obj):

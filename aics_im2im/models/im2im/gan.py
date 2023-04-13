@@ -5,8 +5,24 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
+from torchmetrics import MeanMetric, MinMetric
 
 from aics_im2im.models.base_model import BaseModel
+
+_DEFAULT_METRICS = {
+    "train/loss/discriminator_loss": MeanMetric(),
+    "val/loss/discriminator_loss": MeanMetric(),
+    "test/loss/discriminator_loss": MeanMetric(),
+    "train/loss/generator_loss": MeanMetric(),
+    "val/loss/generator_loss": MeanMetric(),
+    "test/loss/generator_loss": MeanMetric(),
+    "train/loss/discriminator_loss/best": MinMetric(),
+    "val/loss/discriminator_loss/best": MinMetric(),
+    "test/loss/discriminator_loss/best": MinMetric(),
+    "train/loss/generator_loss/best": MinMetric(),
+    "val/loss/generator_loss/best": MinMetric(),
+    "test/loss/generator_loss/best": MinMetric(),
+}
 
 
 class GAN(BaseModel):
@@ -148,7 +164,7 @@ class GAN(BaseModel):
         }
         return self._sum_losses(loss)
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -157,24 +173,11 @@ class GAN(BaseModel):
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
         if stage == "predict":
-            return
+            return (None, None, None)
+
         loss_D = self._extract_loss(outs, "loss_D")
         loss_G = self._extract_loss(outs, "loss_G")
 
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in loss_D.items()},
-            logger=True,
-            sync_dist=True,
-            on_step=False,
-            on_epoch=True,
-        )
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in loss_G.items()},
-            logger=True,
-            sync_dist=True,
-            on_step=False,
-            on_epoch=True,
-        )
         if stage == "train":
             g_opt, d_opt = self.optimizers()
 
@@ -185,3 +188,11 @@ class GAN(BaseModel):
             d_opt.zero_grad()
             self.manual_backward(loss_D["loss"])
             d_opt.step()
+
+        loss_dict = {}
+        for key, loss in loss_D.items():
+            loss_dict[f"discriminator_{key}"] = loss
+        for key, loss in loss_G.items():
+            loss_dict[f"generator_{key}"] = loss
+
+        return loss_dict, None, None

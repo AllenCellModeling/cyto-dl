@@ -133,21 +133,28 @@ class BaseVAE(BaseModel):
             z,
         )
 
-    def forward(self, batch, decode=False, compute_loss=False, inference=False, **kwargs):
-
-        z_parts_params = self.encode(batch)
-
+    def forward(self, batch, decode=False, inference=True, return_params=False):
         is_inference = inference or not self.training
 
+        z_parts_params = self.encode(batch)
         z_parts = self.sample_z(z_parts_params, inference=inference)
+
+        if not decode:
+            return z_parts
 
         x_hat, z_composed = self.decode(z_parts)
 
-        if not decode:
-            return z_parts_params, z_composed
-
-        if not compute_loss:
+        if return_params:
             return x_hat, z_parts, z_parts_params, z_composed
+        return x_hat, z_parts, z_composed
+
+    def model_step(self, stage, batch, batch_idx):
+        (
+            x_hat,
+            z_parts,
+            z_parts_params,
+            z_composed,
+        ) = self.forward(batch, decode=True, inference=False, return_params=True)
 
         (
             loss,
@@ -156,105 +163,26 @@ class BaseVAE(BaseModel):
             kld_per_part,
         ) = self.calculate_elbo(batch, x_hat, z_parts_params)
 
-        return (
-            x_hat,
-            z_parts,
-            z_parts_params,
-            z_composed,
-            loss,
-            reconstruction_loss,
-            kld_loss,
-            kld_per_part,
-        )
-
-    def log_metrics(self, stage, results, logger, batch_size):
-        on_step = (stage == "val") | (stage == "train")
-
-        for key, value in results.items():
-            if (len(value.shape) == 0) | (len(value.shape) == 1):
-                self.log(
-                    f"{stage} {key}",
-                    value,
-                    logger=logger,
-                    on_step=on_step,
-                    on_epoch=True,
-                    batch_size=batch_size,
-                    sync_dist=True,
-                )
-
-    def make_results_dict(
-        self,
-        stage,
-        batch,
-        loss,
-        reconstruction_loss,
-        kld_loss,
-        kld_per_part,
-        z_parts,
-        z_parts_params,
-        z_composed,
-    ):
-
-        results = {
+        loss = {
             "loss": loss,
-            f"{stage}_loss": loss.detach(),  # for epoch end logging purposes
-            "kld_loss": kld_loss.detach(),
+            "loss/total_kld": kld_loss.detach(),
         }
 
-        for part, z_comp_part in z_composed.items():
-            results.update(
-                {
-                    f"z_composed/{part}": z_comp_part.detach(),
-                }
-            )
+        preds = {
+            f"z_composed/{part}": z_comp_part.detach() for part, z_comp_part in z_composed.items()
+        }
 
         for part, recon_part in reconstruction_loss.items():
-            results.update(
-                {
-                    f"reconstruction_loss/{part}": recon_part.detach(),
-                }
-            )
+            loss[f"loss/reconstruction_{part}"] = recon_part.detach()
 
         for part, z_part in z_parts.items():
-            results.update(
-                {
-                    f"z_parts/{part}": z_part.detach(),
-                    f"z_parts_params/{part}": z_parts_params[part].detach(),
-                    f"kld/{part}": kld_per_part[part].detach(),
-                }
-            )
+            preds[f"z_parts/{part}"] = z_part.detach()
+            preds[f"z_parts_params/{part}"] = z_parts_params[part].detach()
+            loss[f"loss/kld_{part}"] = kld_per_part[part].detach()
 
         if self.hparams.id_label is not None:
             if self.hparams.id_label in batch:
                 ids = batch[self.hparams.id_label].detach()
-                results.update({self.hparams.id_label: ids, "id": ids})
+                preds.update({self.hparams.id_label: ids, "id": ids})
 
-        return results
-
-    def _step(self, stage, batch, batch_idx, logger, **kwargs):
-        (
-            x_hat,
-            z_parts,
-            z_parts_params,
-            z_composed,
-            loss,
-            reconstruction_loss,
-            kld_loss,
-            kld_per_part,
-        ) = self.forward(batch, decode=True, compute_loss=True)
-
-        results = self.make_results_dict(
-            stage,
-            batch,
-            loss,
-            reconstruction_loss,
-            kld_loss,
-            kld_per_part,
-            z_parts,
-            z_parts_params,
-            z_composed,
-        )
-
-        self.log_metrics(stage, results, logger, batch[self.hparams.x_label].shape[0])
-
-        return results
+        return loss, preds, None
