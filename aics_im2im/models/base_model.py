@@ -112,12 +112,10 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         return self._step("predict", batch, batch_idx, logger=False)
 
     def configure_optimizers(self):
-        optimizer_cls = self.hparams.get("optimizer", torch.optim.Adam)
-        optimizer = optimizer_cls(self.parameters())
+        optimizer = self.optimizer(self.parameters())
 
-        scheduler_cls = self.hparams.get("lr_scheduler")
-        if scheduler_cls is not None:
-            scheduler = scheduler_cls(optimizer=optimizer)
+        if self.scheduler is not None:
+            scheduler = self.scheduler(optimizer=optimizer)
             return {
                 "optimizer": optimizer,
                 "lr_scheduler": {
