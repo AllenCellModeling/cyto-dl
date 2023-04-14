@@ -340,7 +340,10 @@
         </div>
         <article role="main">
           <h1>Source code for aics_im2im.utils.config</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span><span class="p">,</span> <span class="n">open_dict</span><span class="p">,</span> <span class="n">read_write</span>
+<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
+
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span><span class="p">,</span> <span class="n">open_dict</span><span class="p">,</span> <span class="n">read_write</span>
+<span class="kn">from</span> <span class="nn">omegaconf.errors</span> <span class="kn">import</span> <span class="n">InterpolationToMissingValueError</span><span class="p">,</span> <span class="n">MissingMandatoryValue</span>
 
 
 <div class="viewcode-block" id="kv_to_dict"><a class="viewcode-back" href="../../../aics_im2im.utils.config.html#aics_im2im.utils.config.kv_to_dict">[docs]</a><span class="k">def</span> <span class="nf">kv_to_dict</span><span class="p">(</span><span class="n">kv</span><span class="p">:</span> <span class="n">ListConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DictConfig</span><span class="p">:</span>
@@ -365,17 +368,32 @@
     <span class="k">return</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="is_config"><a class="viewcode-back" href="../../../aics_im2im.utils.config.html#aics_im2im.utils.config.is_config">[docs]</a><span class="k">def</span> <span class="nf">is_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="p">(</span><span class="n">ListConfig</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="remove_aux_key"><a class="viewcode-back" href="../../../aics_im2im.utils.config.html#aics_im2im.utils.config.remove_aux_key">[docs]</a><span class="k">def</span> <span class="nf">remove_aux_key</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+        <span class="k">return</span>
+
     <span class="k">with</span> <span class="n">read_write</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">field</span><span class="p">],</span> <span class="n">DictConfig</span><span class="p">):</span>
-                <span class="k">with</span> <span class="n">read_write</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">field</span><span class="p">]):</span>
-                    <span class="k">with</span> <span class="n">open_dict</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="n">field</span><span class="p">]):</span>
-                        <span class="k">try</span><span class="p">:</span>
-                            <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="n">field</span><span class="p">][</span><span class="s2">&quot;_aux&quot;</span><span class="p">]</span>
-                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                            <span class="k">continue</span>
-    <span class="k">return</span> <span class="n">cfg</span></div>
+        <span class="k">with</span> <span class="n">open_dict</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingMandatoryValue</span><span class="p">,</span> <span class="n">InterpolationToMissingValueError</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">):</span>
+                            <span class="n">remove_aux_key</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;_aux&quot;</span><span class="p">:</span>
+                                <span class="k">del</span> <span class="n">cfg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                                <span class="n">remove_aux_key</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">MissingMandatoryValue</span><span class="p">,</span> <span class="n">InterpolationToMissingValueError</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">)):</span>
+                            <span class="n">remove_aux_key</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>

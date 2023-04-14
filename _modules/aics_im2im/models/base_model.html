@@ -340,16 +340,16 @@
         </div>
         <article role="main">
           <h1>Source code for aics_im2im.models.base_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">gc</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
+<span></span><span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pytorch_lightning</span> <span class="k">as</span> <span class="nn">pl</span>
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">hydra.utils</span> <span class="kn">import</span> <span class="n">instantiate</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
-<span class="kn">from</span> <span class="nn">pytorch_lightning.utilities.parsing</span> <span class="kn">import</span> <span class="n">get_init_args</span>
 
 <span class="n">Array</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;lightning&quot;</span><span class="p">)</span>
@@ -375,37 +375,45 @@
     <span class="k">return</span> <span class="n">value</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_init_args</span><span class="p">(</span><span class="n">frame</span><span class="p">):</span>
-    <span class="n">init_args</span> <span class="o">=</span> <span class="n">get_init_args</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span> <span class="o">==</span> <span class="s2">&quot;__init__&quot;</span><span class="p">:</span>
-        <span class="c1"># if this was called from a subclass&#39;s init</span>
-        <span class="n">init_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">get_init_args</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">f_back</span><span class="p">))</span>
+<div class="viewcode-block" id="BaseModelMeta"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModelMeta">[docs]</a><span class="k">class</span> <span class="nc">BaseModelMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Meta class to handle instantiating configs.&quot;&quot;&quot;</span>
 
-    <span class="n">init_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_cast_omegaconf</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init_args</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-    <span class="n">ignore</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init_args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_primitive</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
-    <span class="k">if</span> <span class="s2">&quot;optimizer&quot;</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
-        <span class="n">ignore</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">)</span>
+        <span class="n">init_args</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">init_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">init_args</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-    <span class="k">if</span> <span class="s2">&quot;lr_scheduler&quot;</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
-        <span class="n">ignore</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">)</span>
+        <span class="n">init_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">keys</span><span class="p">[</span><span class="n">ix</span><span class="p">]:</span> <span class="n">arg</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)}</span>
+        <span class="n">init_args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
-        <span class="k">del</span> <span class="n">init_args</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">init_args</span>
+        <span class="c1"># instantiate class with instantiated `init_args`</span>
+        <span class="c1"># hydra doesn&#39;t change the original dict, so we can use it after this</span>
+        <span class="c1"># with `save_hyperparameters`</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nb">type</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">instantiate</span><span class="p">(</span><span class="n">init_args</span><span class="p">,</span> <span class="n">_recursive_</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_convert_</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+
+        <span class="c1"># make sure only primitives get stored in the ckpt</span>
+        <span class="n">init_args</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_cast_omegaconf</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init_args</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">ignore</span> <span class="o">=</span> <span class="p">[</span><span class="n">arg</span> <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init_args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">_is_primitive</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
+            <span class="n">init_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="n">obj</span><span class="o">.</span><span class="n">save_hyperparameters</span><span class="p">(</span><span class="n">init_args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">obj</span></div>
 
 
-<div class="viewcode-block" id="BaseModel"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel">[docs]</a><span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseModel"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel">[docs]</a><span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">BaseModelMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lr_scheduler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-        <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
-        <span class="n">init_args</span> <span class="o">=</span> <span class="n">_parse_init_args</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_hyperparameters</span><span class="p">(</span><span class="n">init_args</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">init_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;optimizer&quot;</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">init_args</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;lr_scheduler&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache_outputs</span> <span class="o">=</span> <span class="n">init_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_outputs&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span> <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="o">=</span> <span class="n">lr_scheduler</span>
 
 <div class="viewcode-block" id="BaseModel.parse_batch"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.parse_batch">[docs]</a>    <span class="k">def</span> <span class="nf">parse_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
@@ -447,8 +455,9 @@
 
 <div class="viewcode-block" id="BaseModel.configure_optimizers"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.configure_optimizers">[docs]</a>    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scheduler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheduler</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">{</span>
                 <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
                 <span class="s2">&quot;lr_scheduler&quot;</span><span class="p">:</span> <span class="p">{</span>

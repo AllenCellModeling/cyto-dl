@@ -376,7 +376,7 @@
     <span class="n">OmegaConf</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 
     <span class="c1"># remove aux section after resolving and before instantiating</span>
-    <span class="n">cfg</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">remove_aux_key</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">remove_aux_key</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">LightningDataModule</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)):</span>
@@ -396,7 +396,7 @@
             <span class="p">)</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Instantiating model &lt;</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_target_</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">LightningModule</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">LightningModule</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">_recursive_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Instantiating loggers...&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">instantiate_loggers</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logger&quot;</span><span class="p">))</span>
