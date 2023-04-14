@@ -37,7 +37,7 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
     resolve_readonly(cfg_eval)
     test_metric_dict, _ = evaluate(cfg_eval)
 
-    assert test_metric_dict["test_loss"] > 0.0
+    assert test_metric_dict["test/loss"] > 0.0
     assert (
-        abs(train_metric_dict["test_loss"].item() - test_metric_dict["test_loss"].item()) < 0.001
+        abs(train_metric_dict["test/loss"].item() - test_metric_dict["test/loss"].item()) < 0.001
     )
