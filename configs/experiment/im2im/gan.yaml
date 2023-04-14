@@ -35,7 +35,7 @@ data:
 
 callbacks:
   model_checkpoint:
-    monitor: val/generator_loss
+    monitor: val/loss/generator_loss
 
   early_stopping:
-    monitor: val/generator_loss
+    monitor: val/loss/generator_loss
