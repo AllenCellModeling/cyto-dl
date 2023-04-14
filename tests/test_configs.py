@@ -1,6 +1,6 @@
 import hydra
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 from aics_im2im.utils.config import remove_aux_key
 
