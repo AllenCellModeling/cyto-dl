@@ -50,7 +50,7 @@ transforms:
         cval: 1
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
-        patch_shape: ${model.patch_shape}
+        patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
         x_key: ${source_col}
@@ -161,7 +161,7 @@ transforms:
         cval: 1
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
-        patch_shape: ${model.patch_shape}
+        patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
         x_key: ${source_col}

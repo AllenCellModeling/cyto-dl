@@ -34,7 +34,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating
-    cfg = utils.remove_aux_key(cfg)
+    utils.remove_aux_key(cfg)
 
     data = hydra.utils.instantiate(cfg.data)
     if not isinstance(data, (LightningDataModule, DataLoader)):
@@ -54,7 +54,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
             )
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+    model: LightningModule = hydra.utils.instantiate(cfg.model, _recursive_=False)
 
     log.info("Instantiating loggers...")
     logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))

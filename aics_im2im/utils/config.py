@@ -1,4 +1,7 @@
+from contextlib import suppress
+
 from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict, read_write
+from omegaconf.errors import InterpolationToMissingValueError, MissingMandatoryValue
 
 
 def kv_to_dict(kv: ListConfig) -> DictConfig:
@@ -23,14 +26,29 @@ def kv_to_dict(kv: ListConfig) -> DictConfig:
     return OmegaConf.create(ret)
 
 
+def is_config(cfg):
+    return isinstance(cfg, (ListConfig, DictConfig))
+
+
 def remove_aux_key(cfg):
+    if not is_config(cfg):
+        return
+
     with read_write(cfg):
-        for field in cfg.keys():
-            if isinstance(cfg[field], DictConfig):
-                with read_write(cfg[field]):
-                    with open_dict(cfg[field]):
-                        try:
-                            del cfg[field]["_aux"]
-                        except KeyError:
-                            continue
-    return cfg
+        with open_dict(cfg):
+            if isinstance(cfg, DictConfig):
+                for k, v in cfg.items():
+                    with suppress(MissingMandatoryValue, InterpolationToMissingValueError):
+                        if isinstance(v, DictConfig):
+                            remove_aux_key(v)
+                            if k == "_aux":
+                                del cfg[k]
+
+                        if isinstance(v, ListConfig):
+                            for item in v:
+                                remove_aux_key(item)
+            else:
+                for v in cfg:
+                    with suppress(MissingMandatoryValue, InterpolationToMissingValueError):
+                        if isinstance(v, (DictConfig, ListConfig)):
+                            remove_aux_key(v)

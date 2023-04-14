@@ -4,7 +4,6 @@ save_images_every_n_epochs: 1
 save_dir: ${paths.output_dir}
 
 x_key: ${source_col}
-patch_shape:
 
 backbone:
   _target_: monai.networks.nets.DynUNet
@@ -51,7 +50,7 @@ lr_scheduler:
 
 inference_args:
   sw_batch_size: 1
-  roi_size: ${model.patch_shape}
+  roi_size: ${data._aux.patch_shape}
   overlap: 0.25
   mode: "gaussian"
 

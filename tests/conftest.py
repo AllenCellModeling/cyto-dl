@@ -42,6 +42,7 @@ def cfg_train_global(request) -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
+
     return cfg
 
 

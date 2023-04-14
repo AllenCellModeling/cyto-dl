@@ -28,7 +28,6 @@ class O2SpharmVAE(BaseVAE):
         optimizer=torch.optim.Adam,
         lr_scheduler=None,
         beta: float = 1.0,
-        cache_outputs: Sequence = ("test",),
         columns: Sequence[str] = None,
         max_spharm_band: int = 16,
         max_hidden_band: int = 8,
@@ -81,7 +80,6 @@ class O2SpharmVAE(BaseVAE):
             id_label=id_label,
             beta=beta,
             prior=prior,
-            cache_outputs=cache_outputs,
             columns=columns,
             reconstruction_loss=reconstruction_loss,
         )

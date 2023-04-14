@@ -27,7 +27,6 @@ class TabularVAE(BaseVAE):
         priors: Optional[Sequence[Prior]] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         reconstruction_reduce: str = "sum",
-        cache_outputs: Sequence = ("test",),
     ):
         encoder = MLP(
             x_dim,
@@ -51,7 +50,6 @@ class TabularVAE(BaseVAE):
             loss_mask_label=loss_mask_label,
             beta=beta,
             priors=priors,
-            cache_outputs=cache_outputs,
             reconstruction_loss=reconstruction_loss,
             reconstruction_reduce=reconstruction_reduce,
         )

@@ -38,7 +38,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating
-    cfg = utils.remove_aux_key(cfg)
+    utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
     data = hydra.utils.instantiate(cfg.data)
@@ -52,7 +52,8 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
             )
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+
+    model: LightningModule = hydra.utils.instantiate(cfg.model, _recursive_=False)
 
     log.info("Instantiating callbacks...")
     callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
