@@ -18,7 +18,6 @@ _DEFAULT_METRICS = {
     "train/loss": MeanMetric(),
     "val/loss": MeanMetric(),
     "test/loss": MeanMetric(),
-    "val/loss/best": MinMetric(),
 }
 
 
@@ -103,7 +102,6 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
             - `type` is either "loss", or an arbitrary string denoting a metric
             - `part` is optional, used when (loss, preds, targets) are dictionaries,
               in which case it must match a dictionary key
-            - `best` indicates a metric that is used at epoch ends to aggregate per-epoch metrics
         """
         for metric_key in self.metrics:
             metric_split, metric_type, *metric_part = metric_key.split("/")
@@ -111,9 +109,6 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
                 continue
 
             if len(metric_part) > 0:
-                # handle "best" metrics in _epoch_end
-                if metric_part[-1] == "best":
-                    continue
                 metric_part = "/".join(metric_part)
             else:
                 metric_part = None
@@ -122,52 +117,19 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
 
             if metric_type == "loss":
                 if metric_part is not None:
-                    metric(loss[metric_part])
+                    metric.update(loss[metric_part])
                 else:
                     if not isinstance(loss, MutableMapping):
-                        metric(loss)
+                        metric.update(loss)
             else:
                 if metric_part is not None:
-                    metric(preds[metric_part], targets[metric_part])
+                    metric.update(preds[metric_part], targets[metric_part])
                 else:
                     if not isinstance(preds, MutableMapping):
-                        metric(preds, targets)
+                        metric.update(preds, targets)
 
-            self.log(metric_key, metric, on_step=True, on_epoch=True, prog_bar=True)
-
-    def _epoch_end(self, split):
-        """Aggregate per epoch metrics.
-
-        See `compute_metrics` for more details
-        """
-        for metric_key in self.metrics:
-            metric_split, _, *metric_part = metric_key.split("/")
-            if not metric_split.startswith(split):
-                continue
-
-            if len(metric_part) > 0:
-                if metric_part[-1] == "best":
-                    continue
-            else:
-                continue
-
-            metric = getattr(self, metric_key)
-            best_key = f"{metric_key}/best"
-
-            if best_key in self.metrics:
-                val = metric.compute()
-                best = getattr(self, best_key)
-                best(val)
-                self.log(best_key, best.compute(), prog_bar=True)
-
-    def on_train_epoch_end(self):
-        self._epoch_end("train")
-
-    def on_validation_epoch_end(self):
-        self._epoch_end("val")
-
-    def on_test_epoch_end(self):
-        self._epoch_end("test")
+            self.log(metric_key, metric, on_step=True, on_epoch=False)
+            self.log(metric_key + "/epoch", metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def model_step(self, stage, batch, batch_idx):
         """Here you should implement the logic for a step in the training/validation/test process.

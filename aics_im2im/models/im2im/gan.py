@@ -16,12 +16,6 @@ _DEFAULT_METRICS = {
     "train/loss/generator_loss": MeanMetric(),
     "val/loss/generator_loss": MeanMetric(),
     "test/loss/generator_loss": MeanMetric(),
-    "train/loss/discriminator_loss/best": MinMetric(),
-    "val/loss/discriminator_loss/best": MinMetric(),
-    "test/loss/discriminator_loss/best": MinMetric(),
-    "train/loss/generator_loss/best": MinMetric(),
-    "val/loss/generator_loss/best": MinMetric(),
-    "test/loss/generator_loss/best": MinMetric(),
 }
 
 

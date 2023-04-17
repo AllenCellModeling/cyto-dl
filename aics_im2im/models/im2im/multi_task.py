@@ -45,9 +45,6 @@ class MultiTaskIm2Im(BaseModel):
             "train/loss": MeanMetric(),
             "val/loss": MeanMetric(),
             "test/loss": MeanMetric(),
-            "train/loss/best": MinMetric(),
-            "val/loss/best": MinMetric(),
-            "test/loss/best": MinMetric(),
         }
 
         for head in task_heads.keys():
@@ -56,9 +53,6 @@ class MultiTaskIm2Im(BaseModel):
                     f"train/loss/{head}": MeanMetric(),
                     f"val/loss/{head}": MeanMetric(),
                     f"test/loss/{head}": MeanMetric(),
-                    f"train/loss/{head}/best": MinMetric(),
-                    f"val/loss/{head}/best": MinMetric(),
-                    f"test/loss/{head}/best": MinMetric(),
                 }
             )
 
