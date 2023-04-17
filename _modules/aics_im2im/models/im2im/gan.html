@@ -347,8 +347,21 @@
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">monai.data.meta_tensor</span> <span class="kn">import</span> <span class="n">MetaTensor</span>
 <span class="kn">from</span> <span class="nn">monai.inferers</span> <span class="kn">import</span> <span class="n">sliding_window_inference</span>
+<span class="kn">from</span> <span class="nn">torchmetrics</span> <span class="kn">import</span> <span class="n">MeanMetric</span><span class="p">,</span> <span class="n">MinMetric</span>
 
 <span class="kn">from</span> <span class="nn">aics_im2im.models.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="n">_DEFAULT_METRICS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;train/loss/discriminator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;val/loss/discriminator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;test/loss/discriminator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;train/loss/generator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;val/loss/generator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;test/loss/generator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;train/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;val/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+    <span class="s2">&quot;test/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="GAN"><a class="viewcode-back" href="../../../../aics_im2im.models.im2im.gan.html#aics_im2im.models.im2im.gan.GAN">[docs]</a><span class="k">class</span> <span class="nc">GAN</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -388,7 +401,8 @@
 <span class="sd">            Additional arguments passed to BaseModel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="n">base_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_METRICS</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
             <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_images&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -490,7 +504,7 @@
         <span class="p">}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum_losses</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<div class="viewcode-block" id="GAN.model_step"><a class="viewcode-back" href="../../../../aics_im2im.models.im2im.gan.html#aics_im2im.models.im2im.gan.GAN.model_step">[docs]</a>    <span class="k">def</span> <span class="nf">model_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
         <span class="c1"># convert monai metatensors to tensors</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
@@ -499,24 +513,11 @@
         <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;predict&quot;</span><span class="p">:</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
         <span class="n">loss_D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_loss</span><span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="s2">&quot;loss_D&quot;</span><span class="p">)</span>
         <span class="n">loss_G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_loss</span><span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="s2">&quot;loss_G&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
-            <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loss_D</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-            <span class="n">logger</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">on_step</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log_dict</span><span class="p">(</span>
-            <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">loss_G</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-            <span class="n">logger</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">sync_dist</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">on_step</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">on_epoch</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
         <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
             <span class="n">g_opt</span><span class="p">,</span> <span class="n">d_opt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizers</span><span class="p">()</span>
 
@@ -526,7 +527,20 @@
 
             <span class="n">d_opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">manual_backward</span><span class="p">(</span><span class="n">loss_D</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">])</span>
-            <span class="n">d_opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span></div>
+            <span class="n">d_opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="n">loss_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">loss_D</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;discriminator_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">loss_G</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">loss_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;generator_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+            <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span>
+
+        <span class="n">loss_dict</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_loss</span>
+
+        <span class="k">return</span> <span class="n">loss_dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div></div>
 </pre></div>
         </article>
       </div>

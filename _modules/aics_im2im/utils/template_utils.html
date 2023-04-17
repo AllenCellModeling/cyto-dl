@@ -354,6 +354,8 @@
 <span class="kn">from</span> <span class="nn">pytorch_lightning.loggers</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">pytorch_lightning.utilities</span> <span class="kn">import</span> <span class="n">rank_zero_only</span>
 
+<span class="kn">from</span> <span class="nn">aics_im2im.loggers</span> <span class="kn">import</span> <span class="n">MLFlowLogger</span>
+
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">pylogger</span><span class="p">,</span> <span class="n">rich_utils</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">pylogger</span><span class="o">.</span><span class="n">get_pylogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -530,7 +532,10 @@
 
     <span class="c1"># send hparams to all loggers</span>
     <span class="k">for</span> <span class="n">logger</span> <span class="ow">in</span> <span class="n">trainer</span><span class="o">.</span><span class="n">loggers</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">log_hyperparams</span><span class="p">(</span><span class="n">hparams</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">MLFlowLogger</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_hyperparams</span><span class="p">(</span><span class="n">hparams</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">task_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log_hyperparams</span><span class="p">(</span><span class="n">hparams</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_metric_value"><a class="viewcode-back" href="../../../aics_im2im.utils.template_utils.html#aics_im2im.utils.template_utils.get_metric_value">[docs]</a><span class="k">def</span> <span class="nf">get_metric_value</span><span class="p">(</span><span class="n">metric_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
