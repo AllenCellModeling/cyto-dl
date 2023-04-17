@@ -97,7 +97,7 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         - the `_step` method of each model returns a tuple (loss, preds, targets),
           whose elements may be dictionaries
         - the keys of `self.metrics` have a specific structure:
-          'split/type(/part)(/best)' , where:
+          'split/type(/part)' , where:
             - `split` is one of (train, val, test, predict)
             - `type` is either "loss", or an arbitrary string denoting a metric
             - `part` is optional, used when (loss, preds, targets) are dictionaries,
@@ -121,6 +121,13 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
                 else:
                     if not isinstance(loss, MutableMapping):
                         metric.update(loss)
+                    elif "loss" in loss:
+                        metric.update(loss["loss"])
+                    else:
+                        raise TypeError(
+                            "Expected `loss` to be a single value or tensor, "
+                            "or a dictionary with a key 'loss', but it isn't."
+                        )
             else:
                 if metric_part is not None:
                     metric.update(preds[metric_part], targets[metric_part])
@@ -128,8 +135,8 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
                     if not isinstance(preds, MutableMapping):
                         metric.update(preds, targets)
 
-            self.log(metric_key, metric, on_step=True, on_epoch=False)
-            self.log(metric_key + "/epoch", metric, on_step=False, on_epoch=True, prog_bar=True)
+            self.log(metric_key + "/step", metric, on_step=True, on_epoch=False)
+            self.log(metric_key, metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def model_step(self, stage, batch, batch_idx):
         """Here you should implement the logic for a step in the training/validation/test process.
