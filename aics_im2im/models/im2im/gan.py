@@ -16,6 +16,9 @@ _DEFAULT_METRICS = {
     "train/loss/generator_loss": MeanMetric(),
     "val/loss/generator_loss": MeanMetric(),
     "test/loss/generator_loss": MeanMetric(),
+    "train/loss": MeanMetric(),
+    "val/loss": MeanMetric(),
+    "test/loss": MeanMetric(),
 }
 
 
@@ -187,7 +190,12 @@ class GAN(BaseModel):
         loss_dict = {}
         for key, loss in loss_D.items():
             loss_dict[f"discriminator_{key}"] = loss
+
+        total_loss = 0.0
         for key, loss in loss_G.items():
             loss_dict[f"generator_{key}"] = loss
+            total_loss += loss
+
+        loss_dict["loss"] = total_loss
 
         return loss_dict, None, None
