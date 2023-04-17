@@ -8,10 +8,17 @@ import pytorch_lightning as pl
 import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
+from torchmetrics import MeanMetric, MinMetric
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
 logger.propagate = False
+
+_DEFAULT_METRICS = {
+    "train/loss": MeanMetric(),
+    "val/loss": MeanMetric(),
+    "test/loss": MeanMetric(),
+}
 
 
 def _is_primitive(value):
@@ -67,8 +74,13 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         *,
         optimizer: Optional[torch.optim.Optimizer] = None,
         lr_scheduler: Optional[torch.optim.lr_scheduler.LRScheduler] = None,
+        metrics=_DEFAULT_METRICS,
     ):
         super().__init__()
+        self.metrics = tuple(metrics.keys())
+
+        for key, value in metrics.items():
+            setattr(self, key, value)
 
         self.optimizer = optimizer if optimizer is not None else torch.optim.Adam
         self.lr_scheduler = lr_scheduler
@@ -79,7 +91,54 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
     def forward(self, x, **kwargs):
         raise NotImplementedError
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def compute_metrics(self, loss, preds, targets, split):
+        """Method to handle logging metrics. Assumptions made:
+
+        - the `_step` method of each model returns a tuple (loss, preds, targets),
+          whose elements may be dictionaries
+        - the keys of `self.metrics` have a specific structure:
+          'split/type(/part)' , where:
+            - `split` is one of (train, val, test, predict)
+            - `type` is either "loss", or an arbitrary string denoting a metric
+            - `part` is optional, used when (loss, preds, targets) are dictionaries,
+              in which case it must match a dictionary key
+        """
+        for metric_key in self.metrics:
+            metric_split, metric_type, *metric_part = metric_key.split("/")
+            if not metric_split.startswith(split):
+                continue
+
+            if len(metric_part) > 0:
+                metric_part = "/".join(metric_part)
+            else:
+                metric_part = None
+
+            metric = getattr(self, metric_key)
+
+            if metric_type == "loss":
+                if metric_part is not None:
+                    metric.update(loss[metric_part])
+                else:
+                    if not isinstance(loss, MutableMapping):
+                        metric.update(loss)
+                    elif "loss" in loss:
+                        metric.update(loss["loss"])
+                    else:
+                        raise TypeError(
+                            "Expected `loss` to be a single value or tensor, "
+                            "or a dictionary with a key 'loss', but it isn't."
+                        )
+            else:
+                if metric_part is not None:
+                    metric.update(preds[metric_part], targets[metric_part])
+                else:
+                    if not isinstance(preds, MutableMapping):
+                        metric.update(preds, targets)
+
+            self.log(metric_key + "/step", metric, on_step=True, on_epoch=False)
+            self.log(metric_key, metric, on_step=False, on_epoch=True, prog_bar=True)
+
+    def model_step(self, stage, batch, batch_idx):
         """Here you should implement the logic for a step in the training/validation/test process.
         The stage (training/validation/test) is given by the variable `stage`.
 
@@ -100,16 +159,24 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         raise NotImplementedError
 
     def training_step(self, batch, batch_idx):
-        return self._step("train", batch, batch_idx, logger=True)
+        loss, preds, targets = self.model_step("train", batch, batch_idx)
+        self.compute_metrics(loss, preds, targets, "train")
+        return loss
 
     def validation_step(self, batch, batch_idx):
-        return self._step("val", batch, batch_idx, logger=True)
+        loss, preds, targets = self.model_step("val", batch, batch_idx)
+        self.compute_metrics(loss, preds, targets, "val")
+        return loss
 
     def test_step(self, batch, batch_idx):
-        return self._step("test", batch, batch_idx, logger=False)
+        loss, preds, targets = self.model_step("test", batch, batch_idx)
+        self.compute_metrics(loss, preds, targets, "test")
+        return loss
 
     def predict_step(self, batch, batch_idx):
-        return self._step("predict", batch, batch_idx, logger=False)
+        loss, preds, targets = self.model_step("predict", batch, batch_idx)
+        self.compute_metrics(loss, preds, targets, "predict")
+        return loss
 
     def configure_optimizers(self):
         optimizer = self.optimizer(self.parameters())
@@ -120,7 +187,7 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
                 "optimizer": optimizer,
                 "lr_scheduler": {
                     "scheduler": scheduler,
-                    "monitor": "val_loss",
+                    "monitor": "val/loss",
                     "frequency": 1,
                 },
             }

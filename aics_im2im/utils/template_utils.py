@@ -12,6 +12,8 @@ from pytorch_lightning import Callback
 from pytorch_lightning.loggers import Logger
 from pytorch_lightning.utilities import rank_zero_only
 
+from aics_im2im.loggers import MLFlowLogger
+
 from . import pylogger, rich_utils
 
 log = pylogger.get_pylogger(__name__)
@@ -188,7 +190,10 @@ def log_hyperparameters(object_dict: dict) -> None:
 
     # send hparams to all loggers
     for logger in trainer.loggers:
-        logger.log_hyperparams(hparams, mode=cfg.task_name)
+        if isinstance(logger, MLFlowLogger):
+            logger.log_hyperparams(hparams, mode=cfg.task_name)
+        else:
+            logger.log_hyperparams(hparams)
 
 
 def get_metric_value(metric_dict: dict, metric_name: str) -> float:
