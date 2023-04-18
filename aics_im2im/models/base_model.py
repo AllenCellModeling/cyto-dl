@@ -9,7 +9,7 @@ import pytorch_lightning as pl
 import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
