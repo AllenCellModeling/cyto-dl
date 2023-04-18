@@ -1,10 +1,10 @@
 from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
-import pytorch_lightning as pl
 import torch
+from lightning import LightningDataModule
+from lightning.utilities.exceptions import MisconfigurationException
 from monai.data import DataLoader
-from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from upath import UPath as Path
 
 from .utils import (
@@ -16,7 +16,7 @@ from .utils import (
 )
 
 
-class DataframeDatamodule(pl.LightningDataModule):
+class DataframeDatamodule(LightningDataModule):
     """A pytorch lightning datamodule based on dataframes. It can either use a single dataframe
     file, which contains a column based on which a train- val- test split can be made; or it can
     use three dataframe files, one for each fold (train, val, test).

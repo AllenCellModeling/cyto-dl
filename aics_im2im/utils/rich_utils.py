@@ -5,8 +5,8 @@ import rich
 import rich.syntax
 import rich.tree
 from hydra.core.hydra_config import HydraConfig
+from lightning.utilities import rank_zero_only
 from omegaconf import DictConfig, OmegaConf, open_dict
-from pytorch_lightning.utilities import rank_zero_only
 from rich.prompt import Prompt
 
 from aics_im2im.utils import pylogger

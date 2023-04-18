@@ -7,10 +7,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import hydra
+from lightning import Callback
+from lightning.loggers import Logger
+from lightning.utilities import rank_zero_only
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning import Callback
-from pytorch_lightning.loggers import Logger
-from pytorch_lightning.utilities import rank_zero_only
 
 from aics_im2im.loggers import MLFlowLogger
 

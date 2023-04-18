@@ -9,7 +9,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 import torch
-from pytorch_lightning import Callback, LightningModule, Trainer
+from lightning import Callback, LightningModule, Trainer
 
 log = logging.getLogger(__name__)
 

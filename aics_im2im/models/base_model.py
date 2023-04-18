@@ -4,9 +4,9 @@ from collections.abc import MutableMapping
 from typing import Optional, Sequence, Union
 
 import numpy as np
-import pytorch_lightning as pl
 import torch
 from hydra.utils import instantiate
+from lightning import LightningModule
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from torchmetrics import MeanMetric, MinMetric
 
@@ -68,7 +68,7 @@ class BaseModelMeta(type):
         return obj
 
 
-class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
+class BaseModel(LightningModule, metaclass=BaseModelMeta):
     def __init__(
         self,
         *,
