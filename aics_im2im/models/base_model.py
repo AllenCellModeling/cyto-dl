@@ -190,8 +190,8 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
     def configure_optimizers(self):
         optimizer = self.optimizer(self.parameters())
 
-        if self.scheduler is not None:
-            scheduler = self.scheduler(optimizer=optimizer)
+        if self.lr_scheduler is not None:
+            scheduler = self.lr_scheduler(optimizer=optimizer)
             return {
                 "optimizer": optimizer,
                 "lr_scheduler": {
