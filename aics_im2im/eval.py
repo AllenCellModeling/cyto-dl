@@ -3,9 +3,9 @@ from contextlib import suppress
 from typing import List, Tuple
 
 import hydra
+from lightning import LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from pytorch_lightning import LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers import Logger
 from torch.utils.data import DataLoader
 
 from aics_im2im import utils

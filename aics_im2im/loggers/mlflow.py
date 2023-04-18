@@ -6,13 +6,13 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 import mlflow
+from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.loggers import MLFlowLogger as _MLFlowLogger
+from lightning.pytorch.utilities.rank_zero import rank_zero_only
 from mlflow.store.artifact.artifact_repository_registry import get_artifact_repository
 from mlflow.store.artifact.local_artifact_repo import LocalArtifactRepository
 from mlflow.utils.file_utils import local_file_uri_to_path
 from omegaconf import OmegaConf
-from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import MLFlowLogger as _MLFlowLogger
-from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 from aics_im2im import utils
 

@@ -5,10 +5,10 @@ from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
 
 import hydra
-import pytorch_lightning as pl
+import lightning
+from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers.logger import Logger
 
 from aics_im2im import utils
 
@@ -32,7 +32,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
-        pl.seed_everything(cfg.seed, workers=True)
+        lightning.seed_everything(cfg.seed, workers=True)
 
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
