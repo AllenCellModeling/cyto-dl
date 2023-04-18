@@ -160,6 +160,13 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         """
         raise NotImplementedError
 
+    def on_train_start(self):
+        for metric_key in self.metrics:
+            metric_split, *_ = metric_key.split("/")
+            if metric_split.startswith("val"):
+                metric = getattr(self, metric_key)
+                metric.reset()
+
     def training_step(self, batch, batch_idx):
         loss, preds, targets = self.model_step("train", batch, batch_idx)
         self.compute_metrics(loss, preds, targets, "train")
