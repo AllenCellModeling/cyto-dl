@@ -343,10 +343,10 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pytorch_lightning</span> <span class="k">as</span> <span class="nn">pl</span>
 <span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">lightning</span> <span class="kn">import</span> <span class="n">LightningDataModule</span>
+<span class="kn">from</span> <span class="nn">lightning.pytorch.utilities.exceptions</span> <span class="kn">import</span> <span class="n">MisconfigurationException</span>
 <span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">pytorch_lightning.utilities.exceptions</span> <span class="kn">import</span> <span class="n">MisconfigurationException</span>
 <span class="kn">from</span> <span class="nn">upath</span> <span class="kn">import</span> <span class="n">UPath</span> <span class="k">as</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
@@ -358,7 +358,7 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="DataframeDatamodule"><a class="viewcode-back" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule">[docs]</a><span class="k">class</span> <span class="nc">DataframeDatamodule</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">LightningDataModule</span><span class="p">):</span>
+<div class="viewcode-block" id="DataframeDatamodule"><a class="viewcode-back" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule">[docs]</a><span class="k">class</span> <span class="nc">DataframeDatamodule</span><span class="p">(</span><span class="n">LightningDataModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A pytorch lightning datamodule based on dataframes. It can either use a single dataframe</span>
 <span class="sd">    file, which contains a column based on which a train- val- test split can be made; or it can</span>
 <span class="sd">    use three dataframe files, one for each fold (train, val, test).</span>
