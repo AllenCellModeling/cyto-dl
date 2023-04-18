@@ -5,14 +5,14 @@ from unittest import mock
 import pytest
 import torch
 from lightning import Trainer
-from lightning.callbacks import ModelCheckpoint
-from lightning.demos.boring_classes import BoringModel
+from lightning.pytorch.callbacks import ModelCheckpoint
+from lightning.pytorch.demos.boring_classes import BoringModel
 
 from aics_im2im.loggers import MLFlowLogger
 from aics_im2im.models.utils.mlflow import get_config
 
 
-@mock.patch("lightning.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
+@mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
 @pytest.mark.parametrize("monitor", [True, False])
 def test_mlflow_log_model(_, tmpdir, monitor):
     """Test that the logger creates the folders and files in the right place."""
@@ -88,7 +88,7 @@ def test_mlflow_log_model(_, tmpdir, monitor):
         assert os.path.isfile(os.path.join(ckpt_folder, "last.ckpt"))
 
 
-@mock.patch("lightning.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
+@mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
 def test_mlflow_log_hyperparams(_, tmpdir):
     """Test that the logger creates the folders and files in the right place."""
 

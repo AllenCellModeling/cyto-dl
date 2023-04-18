@@ -3,7 +3,7 @@ from typing import Dict, Optional, Sequence, Union
 import numpy as np
 import torch
 from lightning import LightningDataModule
-from lightning.utilities.exceptions import MisconfigurationException
+from lightning.pytorch.utilities.exceptions import MisconfigurationException
 from monai.data import DataLoader
 from upath import UPath as Path
 

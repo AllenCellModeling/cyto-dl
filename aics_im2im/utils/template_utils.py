@@ -8,8 +8,8 @@ from typing import Any, Callable, Dict, List
 
 import hydra
 from lightning import Callback
-from lightning.loggers import Logger
-from lightning.utilities import rank_zero_only
+from lightning.pytorch.loggers import Logger
+from lightning.pytorch.utilities import rank_zero_only
 from omegaconf import DictConfig, OmegaConf
 
 from aics_im2im.loggers import MLFlowLogger

@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 import hydra
 from lightning import LightningDataModule, LightningModule, Trainer
-from lightning.loggers import Logger
+from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from torch.utils.data import DataLoader
 

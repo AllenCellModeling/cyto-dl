@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple
 import hydra
 import lightning
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
-from lightning.loggers.logger import Logger
+from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig, OmegaConf
 
 from aics_im2im import utils
