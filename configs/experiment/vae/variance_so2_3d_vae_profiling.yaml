@@ -49,7 +49,7 @@ trainer:
   accelerator: gpu
   devices:
   profiler:
-    _target_: pytorch_lightning.profilers.PyTorchProfiler
+    _target_: lightning.profilers.PyTorchProfiler
     dirpath: ${paths.output_dir}
     filename: profile.out
     with_stack: true
