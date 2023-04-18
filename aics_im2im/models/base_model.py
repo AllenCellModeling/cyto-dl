@@ -1,3 +1,4 @@
+import copy
 import inspect
 import logging
 from collections.abc import MutableMapping
@@ -8,7 +9,7 @@ import pytorch_lightning as pl
 import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -63,7 +64,8 @@ class BaseModelMeta(type):
         for arg in ignore:
             init_args.pop(arg)
 
-        obj.save_hyperparameters(init_args, logger=False)
+        obj._set_hparams(init_args)
+        obj._hparams_initial = copy.deepcopy(obj._hparams)
 
         return obj
 
@@ -135,7 +137,9 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
                     if not isinstance(preds, MutableMapping):
                         metric.update(preds, targets)
 
-            self.log(metric_key + "/step", metric, on_step=True, on_epoch=False)
+            self.log(
+                metric_key + "/step", metric.value.detach().item(), on_step=True, on_epoch=False
+            )
             self.log(metric_key, metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def model_step(self, stage, batch, batch_idx):
@@ -157,6 +161,13 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
         return results
         """
         raise NotImplementedError
+
+    def on_train_start(self):
+        for metric_key in self.metrics:
+            metric_split, *_ = metric_key.split("/")
+            if metric_split.startswith("val"):
+                metric = getattr(self, metric_key)
+                metric.reset()
 
     def training_step(self, batch, batch_idx):
         loss, preds, targets = self.model_step("train", batch, batch_idx)
@@ -181,8 +192,8 @@ class BaseModel(pl.LightningModule, metaclass=BaseModelMeta):
     def configure_optimizers(self):
         optimizer = self.optimizer(self.parameters())
 
-        if self.scheduler is not None:
-            scheduler = self.scheduler(optimizer=optimizer)
+        if self.lr_scheduler is not None:
+            scheduler = self.lr_scheduler(optimizer=optimizer)
             return {
                 "optimizer": optimizer,
                 "lr_scheduler": {
