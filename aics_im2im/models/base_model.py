@@ -1,3 +1,4 @@
+import copy
 import inspect
 import logging
 from collections.abc import MutableMapping
@@ -63,7 +64,8 @@ class BaseModelMeta(type):
         for arg in ignore:
             init_args.pop(arg)
 
-        obj.save_hyperparameters(init_args, logger=False)
+        obj._set_hparams(init_args)
+        obj._hparams_initial = copy.deepcopy(obj._hparams)
 
         return obj
 
