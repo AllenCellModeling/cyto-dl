@@ -62,8 +62,8 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.backbone = torch.compile(backbone)
-        self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
+        self.backbone = torch.compile(backbone, backend="aot_eager")
+        self.task_heads = torch.nn.ModuleDict({k: torch.compile(v, backend="aot_eager") for k, v in task_heads.items()})
 
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
