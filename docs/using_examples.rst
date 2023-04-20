@@ -1,13 +1,18 @@
 .. highlight:: shell
 
 ============
-Modifying the Example Configs
+Modifying the Example Configs 
 ============
+
++++++++++++++++
+Training
++++++++++++++++
 
 Here we will outline some of the basic modifications that can be made to the provided example configurations if the default configurations does not work on your data.
 We assume familiarity with running the default configurations and the `lightning-hydra-template` style.
 
 1. Changes to the `data` config
+
 Our data configs all follow the same structure - image loading, image normalization, and image augmentation. Any of these steps can be modified to better suit your needs.
     a. Image loading
         By default, we use [aicsimageio](https://github.com/AllenCellModeling/aicsimageio), which allows flexible image loading of many formats. In the examples, we assume 3D data and load ZYX slices from a multi-channel image.
@@ -21,6 +26,7 @@ Our data configs all follow the same structure - image loading, image normalizat
         **Note** For omnipose, do not spatially augment the generated Omnipose ground truth after the `OmniposePreprocessd` transform, as this will result in incorrect gradients in the ground truth.
 
 2. Changes to the `model` config
+
 The model config specifies neural network architecture and optimization parameters. Our templates provided a shared `backbone` with task-specific `task_heads`, for multi-task learning, (e.g. segmentation and labelfree signal prediction).
     a. Modifying the `backbone`
         [monai](https://docs.monai.io/en/stable/networks.html#nets) provides many cutting edge networks. Crucial parameters to change are the `spatial_dims` if you are changing from a 3D to 2D task, `in_channels` if you want to provide multi-channel images to the network, and `out_channels`.
@@ -35,3 +41,17 @@ The model config specifies neural network architecture and optimization paramete
 ### Memory considerations
 GPU memory is often a limiting factor in neural network training. Here, GPU memory use is primarily determined by combination of `model.patch_shape` x `data.batch_size`. As a rule of thumb, the `model.patch_shape` should be large enough to contain one instance of the entity that you are trying to predict.
 Once `model.patch_size` is established, `data.batch_size` can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the [Resized Transform](aics_im2im/image/transforms/resized.py) can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.
+
++++++++++++++++
+Testing/Prediction
++++++++++++++++
+
+Few modifications are required to run testing and prediction using your training config - all of which can be overridden from the experiment config.
+1. Top level changes
+    `ckpt_path`: this should be the path to the trained `.ckpt` file that you want to test or use for prediction
+    `test`: Boolean that dictates whether to run testing or prediction
+2. `model` changes  
+    - `save_dir`: Path to save result images. If ommitted, a new directory will be created in the `logs` directory
+3. `data` changes
+    - `path`: If running prediction, `path` should point to a `.csv` of images to predict on, otherwise prediction will be run on `test` split from data used for training. 
+    - `columns`: For prediction, only the `source_col` is required
