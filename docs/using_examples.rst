@@ -23,7 +23,7 @@ Our data configs all follow the same structure - image loading, image normalizat
     c. Image augmentation
         Targeted image augmentation can increase model robustness. Again, monai provides excellent options for [intensity](https://docs.monai.io/en/stable/transforms.html#intensity-dict) and [spatial](https://docs.monai.io/en/stable/transforms.html#spatial-dict) augmentations.
         For spatial augmentations, ensure that your input and ground truth images are both passed to the transformation, while for intensity augmentations ensure that only the input image is changed.
-        **Note** For omnipose, do not spatially augment the generated Omnipose ground truth after the `OmniposePreprocessd` transform, as this will result in incorrect gradients in the ground truth.
+        **Note** For Omnipose, use Omnipose-specific spatial transforms. Naive implementations of flipping/rotation/ other spatial transforms will make augmented vector fields incorrect.
 
 2. Changes to the `model` config
 
@@ -37,8 +37,7 @@ The model config specifies neural network architecture and optimization paramete
         Additional `task_heads` can be added for multi-task learning. The name of each `task_head` should line up with the name of an image in your training batch. For example, if our batch looks like `{'raw':torch.Tensor, 'segmentation':torch.Tensor, 'distance':torch.Tensor}` and `raw` is our input image,
         we should provide `task_heads`  for `segmentation` and `distance` that predict a segmentation and distance map respectively.
 
-
-### Memory considerations
+3. Memory considerations
 GPU memory is often a limiting factor in neural network training. Here, GPU memory use is primarily determined by combination of `model.patch_shape` x `data.batch_size`. As a rule of thumb, the `model.patch_shape` should be large enough to contain one instance of the entity that you are trying to predict.
 Once `model.patch_size` is established, `data.batch_size` can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the [Resized Transform](aics_im2im/image/transforms/resized.py) can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.
 
