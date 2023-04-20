@@ -1,7 +1,7 @@
 .. highlight:: shell
 
 ============
-Modifying the Example Configs 
+Modifying the Example Configs
 ============
 
 +++++++++++++++
@@ -49,8 +49,8 @@ Few modifications are required to run testing and prediction using your training
 1. Top level changes
     `ckpt_path`: this should be the path to the trained `.ckpt` file that you want to test or use for prediction
     `test`: Boolean that dictates whether to run testing or prediction
-2. `model` changes  
+2. `model` changes
     - `save_dir`: Path to save result images. If ommitted, a new directory will be created in the `logs` directory
 3. `data` changes
-    - `path`: If running prediction, `path` should point to a `.csv` of images to predict on, otherwise prediction will be run on `test` split from data used for training. 
+    - `path`: If running prediction, `path` should point to a `.csv` of images to predict on, otherwise prediction will be run on `test` split from data used for training.
     - `columns`: For prediction, only the `source_col` is required
