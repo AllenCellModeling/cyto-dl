@@ -55,7 +55,7 @@ class ResBlocksHead(BaseHead):
         dropout=0.0
             Dropout ratio
         upsample_method="subpixel"
-            Method of upsampling. See :ref:monai's docs`https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample` for options
+            Method of upsampling. See the [monai upsampling docs](https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample) for options
         upsample_ratio=None
             Amount to upsample. If not None, should be array of length `spatial_dims`
         first_layer=torch.nn.Identity()
