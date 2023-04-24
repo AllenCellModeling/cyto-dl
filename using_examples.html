@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -335,7 +335,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -343,56 +343,89 @@
         <article role="main">
           <section id="modifying-the-example-configs">
 <h1>Modifying the Example Configs<a class="headerlink" href="#modifying-the-example-configs" title="Permalink to this heading">#</a></h1>
+<section id="training">
+<h2>Training<a class="headerlink" href="#training" title="Permalink to this heading">#</a></h2>
 <p>Here we will outline some of the basic modifications that can be made to the provided example configurations if the default configurations does not work on your data.
 We assume familiarity with running the default configurations and the <cite>lightning-hydra-template</cite> style.</p>
-<p>1. Changes to the <cite>data</cite> config
-Our data configs all follow the same structure - image loading, image normalization, and image augmentation. Any of these steps can be modified to better suit your needs.</p>
-<blockquote>
-<div><ol class="loweralpha simple">
+<ol class="arabic simple">
+<li><p>Changes to the <cite>data</cite> config</p></li>
+</ol>
+<dl class="simple">
+<dt>Our data configs all follow the same structure - image loading, image normalization, and image augmentation. Any of these steps can be modified to better suit your needs.</dt><dd><ol class="loweralpha simple">
 <li><dl class="simple">
-<dt>Image loading</dt><dd><p>By default, we use :ref:aicsimageio`https://github.com/AllenCellModeling/aicsimageio`, which allows flexible image loading of many formats. In the examples, we assume 3D data and load ZYX slices from a multi-channel image.
+<dt>Image loading</dt><dd><p>By default, we use [aicsimageio](<a class="reference external" href="https://github.com/AllenCellModeling/aicsimageio">https://github.com/AllenCellModeling/aicsimageio</a>), which allows flexible image loading of many formats. In the examples, we assume 3D data and load ZYX slices from a multi-channel image.
 If your images are 2D, you can change <cite>dimension_order_out</cite> to <cite>YX</cite>. Note that the image processing transforms expect channel-first images.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Image normalization</dt><dd><p>It is recommended that you transform your images from raw pixel values into a format suitable for your use case. :ref:Monai`https://docs.monai.io/en/stable/transforms.html#intensity-dict` provides many useful transforms for this. Note that we use the dictionary versions of these transforms.
+<dt>Image normalization</dt><dd><p>It is recommended that you transform your images from raw pixel values into a format suitable for your use case. [Monai](<a class="reference external" href="https://docs.monai.io/en/stable/transforms.html#intensity-dict">https://docs.monai.io/en/stable/transforms.html#intensity-dict</a>) provides many useful transforms for this. Note that we use the dictionary versions of these transforms.
 Ground truth images should also be normalized based on your use case, e.g. binarized for segmentation, transformed to range [-1, 1] for GANs, etc.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Image augmentation</dt><dd><p>Targeted image augmentation can increase model robustness. Again, monai provides excellent options for :ref:intensity`https://docs.monai.io/en/stable/transforms.html#intensity-dict` and :ref:spatial`https://docs.monai.io/en/stable/transforms.html#spatial-dict` augmentations.
+<dt>Image augmentation</dt><dd><p>Targeted image augmentation can increase model robustness. Again, monai provides excellent options for [intensity](<a class="reference external" href="https://docs.monai.io/en/stable/transforms.html#intensity-dict">https://docs.monai.io/en/stable/transforms.html#intensity-dict</a>) and [spatial](<a class="reference external" href="https://docs.monai.io/en/stable/transforms.html#spatial-dict">https://docs.monai.io/en/stable/transforms.html#spatial-dict</a>) augmentations.
 For spatial augmentations, ensure that your input and ground truth images are both passed to the transformation, while for intensity augmentations ensure that only the input image is changed.
-<strong>Note</strong> For omnipose, do not spatially augment the generated Omnipose ground truth after the <cite>OmniposePreprocessd</cite> transform, as this will result in incorrect gradients in the ground truth.</p>
+<strong>Note</strong> For Omnipose, use Omnipose-specific spatial transforms. Naive implementations of flipping/rotation/ other spatial transforms will make augmented vector fields incorrect.</p>
 </dd>
 </dl>
 </li>
 </ol>
-</div></blockquote>
-<p>2. Changes to the <cite>model</cite> config
-The model config specifies neural network architecture and optimization parameters. Our templates provided a shared <cite>backbone</cite> with task-specific <cite>task_heads</cite>, for multi-task learning, (e.g. segmentation and labelfree signal prediction).</p>
-<blockquote>
-<div><ol class="loweralpha simple">
+</dd>
+</dl>
+<ol class="arabic simple" start="2">
+<li><p>Changes to the <cite>model</cite> config</p></li>
+</ol>
+<dl class="simple">
+<dt>The model config specifies neural network architecture and optimization parameters. Our templates provided a shared <cite>backbone</cite> with task-specific <cite>task_heads</cite>, for multi-task learning, (e.g. segmentation and labelfree signal prediction).</dt><dd><ol class="loweralpha simple">
 <li><dl class="simple">
-<dt>Modifying the <cite>backbone</cite></dt><dd><p>:ref:monai`https://docs.monai.io/en/stable/networks.html#nets` provides many cutting edge networks. Crucial parameters to change are the <cite>spatial_dims</cite> if you are changing from a 3D to 2D task, <cite>in_channels</cite> if you want to provide multi-channel images to the network, and <cite>out_channels</cite>.
+<dt>Modifying the <cite>backbone</cite></dt><dd><p>[monai](<a class="reference external" href="https://docs.monai.io/en/stable/networks.html#nets">https://docs.monai.io/en/stable/networks.html#nets</a>) provides many cutting edge networks. Crucial parameters to change are the <cite>spatial_dims</cite> if you are changing from a 3D to 2D task, <cite>in_channels</cite> if you want to provide multi-channel images to the network, and <cite>out_channels</cite>.
 For multi-task learning, it is important to increase the number of <cite>out_channels</cite> so that the task heads are not bottlenecked by the number of <cite>out_channels</cite> in the backbone.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
 <dt>Modifying the <cite>task_heads</cite></dt><dd><p><cite>task_heads</cite> can be modified by changing their loss function (suggested if you are changing e.g. from labelfree to segmentation), postprocessing (if you are changing from segmentation to omnipose), and <cite>task-head</cite> type (if you are changing from a segmentation network to a GAN).
-:ref:torch`https://pytorch.org/docs/stable/nn.html#loss-functions` and :ref:monai`https://docs.monai.io/en/stable/losses.html` provide many loss functions. We provide basic :ref:postprocessing`aics_im2im/models/utils/postprocessing` functions.
+[torch](<a class="reference external" href="https://pytorch.org/docs/stable/nn.html#loss-functions">https://pytorch.org/docs/stable/nn.html#loss-functions</a>) and [monai](<a class="reference external" href="https://docs.monai.io/en/stable/losses.html">https://docs.monai.io/en/stable/losses.html</a>) provide many loss functions. We provide basic [postprocessing](aics_im2im/models/utils/postprocessing) functions.
 Additional <cite>task_heads</cite> can be added for multi-task learning. The name of each <cite>task_head</cite> should line up with the name of an image in your training batch. For example, if our batch looks like <cite>{‘raw’:torch.Tensor, ‘segmentation’:torch.Tensor, ‘distance’:torch.Tensor}</cite> and <cite>raw</cite> is our input image,
 we should provide <cite>task_heads</cite>  for <cite>segmentation</cite> and <cite>distance</cite> that predict a segmentation and distance map respectively.</p>
 </dd>
 </dl>
 </li>
 </ol>
-</div></blockquote>
-<p>### Memory considerations
+</dd>
+</dl>
+<p>3. Memory considerations
 GPU memory is often a limiting factor in neural network training. Here, GPU memory use is primarily determined by combination of <cite>model.patch_shape</cite> x <cite>data.batch_size</cite>. As a rule of thumb, the <cite>model.patch_shape</cite> should be large enough to contain one instance of the entity that you are trying to predict.
-Once <cite>model.patch_size</cite> is established, <cite>data.batch_size</cite> can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the :ref:Resized Transform`aics_im2im/image/transforms/resized.py` can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.</p>
+Once <cite>model.patch_size</cite> is established, <cite>data.batch_size</cite> can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the [Resized Transform](aics_im2im/image/transforms/resized.py) can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.</p>
+</section>
+<section id="testing-prediction">
+<h2>Testing/Prediction<a class="headerlink" href="#testing-prediction" title="Permalink to this heading">#</a></h2>
+<p>Few modifications are required to run testing and prediction using your training config - all of which can be overridden from the experiment config.
+1. Top level changes</p>
+<blockquote>
+<div><p><cite>ckpt_path</cite>: this should be the path to the trained <cite>.ckpt</cite> file that you want to test or use for prediction
+<cite>test</cite>: Boolean that dictates whether to run testing or prediction</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><dl class="simple">
+<dt><cite>model</cite> changes</dt><dd><ul class="simple">
+<li><p><cite>save_dir</cite>: Path to save result images. If omitted, a new directory will be created in the <cite>logs</cite> directory</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>data</cite> changes</dt><dd><ul class="simple">
+<li><p><cite>path</cite>: If running prediction, <cite>path</cite> should point to a <cite>.csv</cite> of images to predict on, otherwise prediction will be run on <cite>test</cite> split from data used for training.</p></li>
+<li><p><cite>columns</cite>: For prediction, only the <cite>source_col</cite> is required</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
 </section>
 
         </article>
@@ -438,8 +471,28 @@ Once <cite>model.patch_size</cite> is established, <cite>data.batch_size</cite> 
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Modifying the Example Configs</a><ul>
+<li><a class="reference internal" href="#training">Training</a></li>
+<li><a class="reference internal" href="#testing-prediction">Testing/Prediction</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

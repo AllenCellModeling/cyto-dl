@@ -362,7 +362,7 @@ to determine how to perform upsampling.</p></li>
 <li><p><strong>spatial_dims=3</strong> – Spatial dimension of data after <cite>first_layer</cite></p></li>
 <li><p><strong>n_convs=1</strong> – Number of convolutional layers</p></li>
 <li><p><strong>dropout=0.0</strong> – Dropout ratio</p></li>
-<li><p><strong>upsample_method=”subpixel”</strong> – Method of upsampling. See :ref:monai’s docs`https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample` for options</p></li>
+<li><p><strong>upsample_method=”subpixel”</strong> – Method of upsampling. See the [monai upsampling docs](<a class="reference external" href="https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample">https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample</a>) for options</p></li>
 <li><p><strong>upsample_ratio=None</strong> – Amount to upsample. If not None, should be array of length <cite>spatial_dims</cite></p></li>
 <li><p><strong>first_layer=torch.nn.Identity()</strong> – Initial layer to apply to backbone outputs. For example, <cite>ConvProjectionLayer</cite> for transforming 3D-&gt;2D output.</p></li>
 </ul>

@@ -13,7 +13,7 @@ Some important arguments are :
 - `path`: references a folder with `train.csv`, `test.csv`, and `valid.csv` or to a single `.csv` file with a `split` column
 - `cache_dir`: references a location to save cached images to speed up training
 - `split_column`: if a single `.csv` is passed to `path`, `split_column` is used to divide the manifest into `train`/`test`/`valid` splits.
-- `transforms`: sequence of transforms that load, preprocess, and augment images for training, testing, and validation.[Monai](https://docs.monai.io/en/stable/transforms.html) offers a wide array of useful transforms. Often, the selected transforms are the primary differentiators of different tasks. For example, `labelfree` and `segmentation` differ in part due to how the target is normalized (z-score normalized for `labelfree` vs binarized for `segmentation`). When creating your own configs, the transforms are the first thing to change/
+- `transforms`: sequence of transforms that load, preprocess, and augment images for training, testing, and validation. [Monai](https://docs.monai.io/en/stable/transforms.html) offers a wide array of useful transforms. Often, the selected transforms are the primary differentiators of different tasks. For example, `labelfree` and `segmentation` differ in part due to how the target is normalized (z-score normalized for `labelfree` vs binarized for `segmentation`). When creating your own configs, the transforms are the first thing to change/
 - All additional arguments are assumed to be arguments for the dataloaders, e.g. `num_worker`, `batch_size`, `pin_memory`, etc. See [here](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader) for dataloader arguments.
 
 ## experiment
