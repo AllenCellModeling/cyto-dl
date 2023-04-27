@@ -35,7 +35,9 @@ def _is_primitive(value):
     return False
 
 
-def _cast_omegaconf(value):
+def _cast_init_arg(value):
+    if isinstance(value, inspect.Parameter):
+        return value._default
     if isinstance(value, (ListConfig, DictConfig)):
         return OmegaConf.to_container(value, resolve=True)
     return value
@@ -49,8 +51,10 @@ class BaseModelMeta(type):
         init_args.pop("self")
         keys = tuple(init_args.keys())
 
-        init_args = {keys[ix]: arg for ix, arg in enumerate(args)}
-        init_args.update(kwargs)
+        user_init_args = {keys[ix]: arg for ix, arg in enumerate(args)}
+        user_init_args.update(kwargs)
+        init_args.update(user_init_args)
+        init_args = {k: _cast_init_arg(v) for k, v in init_args.items()}
 
         # instantiate class with instantiated `init_args`
         # hydra doesn't change the original dict, so we can use it after this
@@ -58,7 +62,6 @@ class BaseModelMeta(type):
         obj = type.__call__(cls, **instantiate(init_args, _recursive_=True, _convert_=True))
 
         # make sure only primitives get stored in the ckpt
-        init_args = {k: _cast_omegaconf(v) for k, v in init_args.items()}
         ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]
 
         for arg in ignore:
