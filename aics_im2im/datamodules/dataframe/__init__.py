@@ -1,2 +1,2 @@
 from .dataframe_datamodule import DataframeDatamodule
-from .dataframe_datamodule_multitask import DataframeDatamoduleMultiTask
+from .grouped_dataframe_datamodule import GroupedDataframeDatamodule

@@ -7,9 +7,14 @@ from .dataframe_datamodule import DataframeDatamodule
 from .utils import AlternatingBatchSampler
 
 
-class DataframeDatamoduleMultiTask(DataframeDatamodule):
-    """A DataframeDatamodule modified for multi-task settings, leveraging an
-    AlternatingBatchSampler."""
+class GroupedDataframeDatamodule(DataframeDatamodule):
+    """A DataframeDatamodule modified for cases where batches should be grouped by some criterion
+    leveraging an AlternatingBatchSampler.
+
+    The two use cases currently supported are 1. multitask training where ground truths are only
+    available for one task at a time and 2. training where batches are grouped by some
+    characteristic of the images.
+    """
 
     def __init__(
         self,
@@ -24,6 +29,7 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
         refresh_subsample: bool = False,
         seed: int = 42,
         target_columns: str = None,
+        grouping_column: str = None,
         **dataloader_kwargs,
     ):
         """
@@ -70,6 +76,10 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
             column names in csv corresponding to ground truth types to alternate between
             during training
 
+        grouping_column: str = None
+            column names in csv corresponding to a factor that should be homogeneous across
+            a batch
+
         dataloader_kwargs:
             Additional keyword arguments are passed to the
             torch.utils.data.DataLoader class when instantiating it (aside from
@@ -95,9 +105,10 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
             subsample=subsample,
             refresh_subsample=refresh_subsample,
             seed=seed,
-            target_columns=target_columns,
             **dataloader_kwargs,
         )
+        self.group_column = grouping_column
+        self.target_columns = target_columns
 
     def make_dataloader(self, split):
         kwargs = dict(**self.dataloader_kwargs)
@@ -110,5 +121,6 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
             drop_last=True,
             shuffle=kwargs.pop("shuffle"),
             target_columns=self.target_columns,
+            grouping_column=self.group_column,
         )
         return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
