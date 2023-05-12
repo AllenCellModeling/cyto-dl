@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 import torch
 import torch.nn as nn
@@ -39,7 +39,7 @@ class MultiTaskIm2Im(BaseModel):
         inference_args: Dict = {}
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         run_heads: Union[List, None] = None
-            Optional list of heads to run during inference. Defaults to running all heads. 
+            Optional list of heads to run during inference. Defaults to running all heads.
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
