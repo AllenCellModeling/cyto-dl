@@ -41,7 +41,6 @@ class DataframeDatamodule(LightningDataModule):
         subsample: Optional[Dict] = None,
         refresh_subsample: bool = False,
         seed: int = 42,
-        target_columns: str = None,
         **dataloader_kwargs,
     ):
         """
@@ -77,9 +76,6 @@ class DataframeDatamodule(LightningDataModule):
             Dictionary with a key per split ("train", "val", "test"), and the
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
-
-        head_allocation_columm: Optional[str]=None
-            Column name that dictates which head a row should be passed to
 
         dataloader_kwargs:
             Additional keyword arguments are passed to the
@@ -127,7 +123,6 @@ class DataframeDatamodule(LightningDataModule):
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
-        self.target_columns = target_columns
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
         self.dataloaders = {}
