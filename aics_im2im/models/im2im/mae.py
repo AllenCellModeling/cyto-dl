@@ -3,12 +3,12 @@ from typing import Dict
 
 import torch
 import torch.nn as nn
+from aicsimageio.writers import OmeTiffWriter
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
 from torchmetrics import MeanMetric, MinMetric
 
 from aics_im2im.models.base_model import BaseModel
-from aicsimageio.writers import OmeTiffWriter
 
 
 class MaskedAutoEncoder(BaseModel):
@@ -53,7 +53,7 @@ class MaskedAutoEncoder(BaseModel):
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.model = model #torch.compile(model) #model #
+        self.model = model  # torch.compile(model) #model #
 
     def configure_optimizers(self):
         opts = []
@@ -72,7 +72,7 @@ class MaskedAutoEncoder(BaseModel):
 
     def should_save_image(self, batch_idx, stage):
         return stage in ("test", "predict") or (
-            batch_idx ==0   # noqa: FURB124
+            batch_idx == 0  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
 
@@ -84,24 +84,30 @@ class MaskedAutoEncoder(BaseModel):
 
         x = batch[self.hparams.x_key]
         pred, mask = self(x)
-        x = x[:, :, :pred.shape[-3], :pred.shape[-2], :pred.shape[-1]]
+        x = x[:, :, : pred.shape[-3], : pred.shape[-2], : pred.shape[-1]]
 
-        loss = torch.mul((x-pred)**2, mask).mean()
+        loss = torch.mul((x - pred) ** 2, mask).mean()
 
         if self.should_save_image(batch_idx, stage):
             OmeTiffWriter().save(
-                uri=Path(self.hparams.save_dir) / f"{stage}_images" / f'{self.current_epoch}_pred.tif',
-                data=pred.detach().cpu().numpy().squeeze().astype(float),
+                uri=Path(self.hparams.save_dir)
+                / f"{stage}_images"
+                / f"{self.current_epoch}_pred.tif",
+                data=pred[0].detach().cpu().numpy().squeeze().astype(float),
                 dims_order="STCZYX"[-len(pred.shape)],
             )
             OmeTiffWriter().save(
-                uri=Path(self.hparams.save_dir) / f"{stage}_images" / f'{self.current_epoch}_real.tif',
-                data=x.detach().cpu().numpy().squeeze().astype(float),
+                uri=Path(self.hparams.save_dir)
+                / f"{stage}_images"
+                / f"{self.current_epoch}_real.tif",
+                data=x[0].detach().cpu().numpy().squeeze().astype(float),
                 dims_order="STCZYX"[-len(pred.shape)],
             )
             OmeTiffWriter().save(
-                uri=Path(self.hparams.save_dir) / f"{stage}_images" / f'{self.current_epoch}_mask.tif',
-                data=mask.detach().cpu().numpy().squeeze().astype(float),
+                uri=Path(self.hparams.save_dir)
+                / f"{stage}_images"
+                / f"{self.current_epoch}_mask.tif",
+                data=mask[0].detach().cpu().numpy().squeeze().astype(float),
                 dims_order="STCZYX"[-len(pred.shape)],
             )
 
