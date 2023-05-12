@@ -99,12 +99,25 @@ class RandomMultiScaleCropd(RandomizableTransform):
             slice(start, end) for start, end in zip(start_coords, start_coords + roi_size)
         ]
 
+    def _get_max_start_indices(self, image_dict: Dict):
+        """Find crop start coordinates within bounds across all images/scales given roi size."""
+        max_start_indices = np.ones(self.spatial_dims) * np.inf
+        for im_name, rescale_factor in self.scale_dict.items():
+            if im_name not in image_dict:
+                continue
+            shape = np.asarray(image_dict[im_name].shape[-self.spatial_dims :])
+            shape = np.floor_divide(shape, rescale_factor)
+            roi_size = np.floor_divide(self.roi_size, rescale_factor)
+            max_start_indices_img = shape - roi_size
+            max_start_indices = np.minimum(max_start_indices_img, max_start_indices)
+            if np.any(max_start_indices < 0):
+                raise ValueError(f"Crop size {roi_size} is too large for image size {shape}")
+        return max_start_indices
+
     def generate_slices(self, image_dict: Dict) -> Dict:
         """Generate dictionary of slices at all scales starting at random point."""
-        max_shape = np.asarray(image_dict[self.x_key].shape[-self.spatial_dims :])
-        max_start_indices = max_shape - self.roi_size + 1
-        if np.any(max_start_indices < 0):
-            raise ValueError(f"Crop size {self.roi_size} is too large for image size {max_shape}")
+        max_start_indices = self._get_max_start_indices(image_dict)
+
         start_indices = self.R.randint(max_start_indices)
 
         scaled_start_indices = {
@@ -137,6 +150,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
             patch_dict = {
                 key: self._apply_slice(image_dict[key], slices[key]) for key in available_keys
             }
+
             patch_dict.update(meta_dict)
             if self.selection_fn is None or self.selection_fn(patch_dict):
                 patches.append(patch_dict)
