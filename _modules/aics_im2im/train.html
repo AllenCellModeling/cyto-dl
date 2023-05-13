@@ -469,9 +469,6 @@
             <span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cache_dir</span> <span class="o">=</span> <span class="n">temp_dir</span>
             <span class="n">metric_dict</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
 
-    <span class="c1"># train the model</span>
-    <span class="n">metric_dict</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-
     <span class="c1"># safely retrieve metric value for hydra-based hyperparameter optimization</span>
     <span class="n">metric_value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_metric_value</span><span class="p">(</span>
         <span class="n">metric_dict</span><span class="o">=</span><span class="n">metric_dict</span><span class="p">,</span> <span class="n">metric_name</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;optimized_metric&quot;</span><span class="p">)</span>

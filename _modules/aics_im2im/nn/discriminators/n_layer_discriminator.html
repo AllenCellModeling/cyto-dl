@@ -443,9 +443,13 @@
 
 <div class="viewcode-block" id="NLayerDiscriminator.forward"><a class="viewcode-back" href="../../../../aics_im2im.nn.discriminators.n_layer_discriminator.html#aics_im2im.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">requires_features</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Standard forward.&quot;&quot;&quot;</span>
-        <span class="n">output_im</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_annealer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">im</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_annealer</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:],</span>
+            <span class="p">)</span>
         <span class="n">output_im</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">im</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">requires_features</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">output_im</span><span class="p">]</span>
