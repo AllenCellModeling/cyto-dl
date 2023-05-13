@@ -101,9 +101,13 @@ class NLayerDiscriminator(nn.Module):
 
     def forward(self, im, x, requires_features=False):
         """Standard forward."""
-        output_im = [x]
         if self.noise_annealer is not None:
             im = self.noise_annealer(im)
+        if x.shape != im.shape:
+            x = torch.nn.functional.interpolate(
+                input=x,
+                size=im.shape[-3:],
+            )
         output_im = torch.cat([x, im], 1)
         if requires_features:
             results = [output_im]
