@@ -20,7 +20,7 @@ class MultiTaskIm2Im(BaseModel):
         save_dir="./",
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
-        run_heads: Union[List, None] = None,
+        inference_heads: Union[List, None] = None,
         **base_kwargs,
     ):
         """
@@ -38,7 +38,7 @@ class MultiTaskIm2Im(BaseModel):
             Frequency to save out images during training
         inference_args: Dict = {}
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
-        run_heads: Union[List, None] = None
+        inference_heads: Union[List, None] = None
             Optional list of heads to run during inference. Defaults to running all heads.
         **base_kwargs:
             Additional arguments passed to BaseModel
@@ -67,7 +67,7 @@ class MultiTaskIm2Im(BaseModel):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
         self.backbone = torch.compile(backbone)
         self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
-        self.run_heads = run_heads or self.task_heads.keys()
+        self.inference_heads = inference_heads or self.task_heads.keys()
 
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
@@ -150,7 +150,7 @@ class MultiTaskIm2Im(BaseModel):
         if stage not in ("test", "predict"):
             run_heads = [key for key in self.task_heads.keys() if key in batch]
         else:
-            run_heads = self.run_heads
+            run_heads = self.inference_heads
         return run_heads
 
     def model_step(self, stage, batch, batch_idx):
