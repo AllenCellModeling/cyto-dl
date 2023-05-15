@@ -59,7 +59,7 @@ class Patchify(torch.nn.Module):
         patch_size = [int(s / self.n_patches) for s in img.shape[-3:]]
         assert np.all(
             np.asarray(patch_size) > 1
-        ), "All patch size must be >1 in all dimensions, got {patches}. Increase physical_crop_size or decrease number of patches. "
+        ), f"All patch size must be >1 in all dimensions, got {patch_size}. Increase physical_crop_size or decrease number of patches. "
         tokens = torch.nn.functional.conv3d(
             img, weight=self.resample_weight(patch_size), stride=patch_size
         )

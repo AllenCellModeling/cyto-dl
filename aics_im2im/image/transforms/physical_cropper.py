@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Sequence
+from typing import Dict, Sequence
 
 import numpy as np
 from monai.transforms import RandomizableTransform
@@ -63,7 +63,7 @@ class RandomPhysicalDimsCropper(RandomizableTransform):
         max_shape = image_dict[available_keys[0]].shape[-self.spatial_dims :]
         max_start_indices = max_shape - roi_size + 1
         if np.any(max_start_indices < 0):
-            raise ValueError(f"Crop size {self.roi_size} is too large for image size {max_shape}")
+            raise ValueError(f"Crop size {roi_size} is too large for image size {max_shape}")
         start_indices = self.R.randint(max_start_indices)
         return self._generate_slice(start_indices, roi_size)
 
