@@ -7,10 +7,15 @@ from monai.transforms import MapTransform
 from upath import UPath as Path
 import torch
 import numpy as np
+from torchvision.transforms import Resize
+# import torchvision.transforms.functional as F
+import torch.nn.functional as F
+
 
 class ReadNumpyFile(MapTransform):
     def __init__(self, keys: Union[str, Sequence[str]], remote: bool = False, 
-    clip_min: Optional[int] = None, clip_max: Optional[int] = None ):
+    clip_min: Optional[int] = None, clip_max: Optional[int] = None, 
+    read_center: Optional[int] = None, resize: Optional[int] = None):
         """
         Parameters
         ----------
@@ -26,6 +31,8 @@ class ReadNumpyFile(MapTransform):
         self.remote = remote
         self.clip_min = clip_min
         self.clip_max = clip_max
+        self.read_center = read_center
+        self.resize = resize
 
     def __call__(self, row):
         res = dict(**row)
@@ -50,5 +57,11 @@ class ReadNumpyFile(MapTransform):
                 )
                 if (self.clip_min is not None) & (self.clip_max is not None):
                     res[key] = np.clip(res[key], self.clip_min, self.clip_max)
+                if self.read_center:
+                    res[key] = res[key][:,16,...]
+                if self.resize:
+                    # import ipdb
+                    # ipdb.set_trace()
+                    res[key] = F.interpolate(res[key].unsqueeze(dim=1), 28)[:,0,...]
 
         return res

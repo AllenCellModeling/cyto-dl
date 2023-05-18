@@ -1,6 +1,6 @@
 _target_: aics_im2im.models.vae.so2_image_vae.SO2ImageVAE
 
-latent_dim: 256
+latent_dim: 1024
 spatial_dims: 2
 in_shape: [1, 28, 28]
 out_channels: 1
@@ -23,7 +23,7 @@ reconstruction_loss:
   _target_: torch.nn.modules.loss.MSELoss
   reduction: sum
 
-encoder_out_size: 256
+encoder_out_size: 1024
 embedding_prior: identity
 
 use_sigmoid: False

@@ -12,12 +12,10 @@ persistent_workers: true
 transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols
     groups:
-      image: sdf_path_unalign
+      image: sdf_path_unalign_maxproj_32
       cell_id: CellId
   - _target_: aics_im2im.image.io.ReadNumpyFile
     keys: image
     remote: false
     clip_min: -2
     clip_max: 2 
-    read_center: True
-    resize: True

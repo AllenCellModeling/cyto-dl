@@ -21,6 +21,7 @@ from .utils import get_rotation_matrix, rotate_img
 from .modules_2d import Encoder as Encoder2D
 from .modules_3d import Encoder as Encoder3D
 from .modules_3d import Decoder as Decoder3D
+from .modules_2d import Decoder as Decoder2D
 
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
@@ -127,8 +128,10 @@ class SO2ImageVAE(BaseVAE):
         # )
         if spatial_dims == 3:
             encoder = Encoder3D(encoder_out_size, hidden_dim=self.hidden_dim, pool=False, in_channel=1)
+            decoder = Decoder3D(latent_dim, self.hidden_dim, in_channel=1)
         elif spatial_dims == 2:
             encoder = Encoder2D(encoder_out_size, hidden_dim=self.hidden_dim, pool=False, in_channel=1)
+            decoder = Decoder2D(latent_dim, self.hidden_dim)
         else:
             raise Exception("Spatial dims must be 2 or 3")
 
@@ -150,7 +153,7 @@ class SO2ImageVAE(BaseVAE):
         #     _full_net.decode,
         #     nn.Sigmoid() if use_sigmoid else nn.Identity(),
         # )
-        decoder = Decoder3D(latent_dim, self.hidden_dim, in_channel=1)
+        
 
         encoder = {x_label: encoder}
         decoder = {x_label: decoder}

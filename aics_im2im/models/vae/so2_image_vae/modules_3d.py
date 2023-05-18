@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.nn import Module
 from escnn import gspaces
 from escnn import nn
-from escnn.gspaces import rot2dOnR3
+from escnn.gspaces import rot2dOnR3, rot3dOnR3
 from escnn.nn import R3Conv, IIDBatchNorm3d, MultipleModule, NormNonLinearity, ReLU, SequentialModule
 from .batch_normthree import NormBatchNorm
 
@@ -35,7 +35,8 @@ class Encoder(Module):
     def __init__(self, out_dim, hidden_dim=32, pool=False, in_channel=1):
         super().__init__()
         self.out_dim=out_dim
-        self.r2_act = rot2dOnR3(n=-1, maximum_frequency=8)
+        # self.r2_act = rot2dOnR3(n=-1, maximum_frequency=8)
+        self.r2_act = rot3dOnR3(maximum_frequency=8)
         in_type = nn.FieldType(self.r2_act, in_channel*[self.r2_act.trivial_repr])
         self.input_type = in_type
         self.pool=pool
@@ -311,7 +312,7 @@ class Decoder(Module):
         self.block6 = torch.nn.Sequential(
             torch.nn.Conv3d(hidden_size, in_channel, kernel_size=1, padding=0),
         )
-        self.scale_factor = 2.24
+        self.scale_factor = 2
 
     def forward(self, x: torch.Tensor):
         x = x.unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)  # [bz, emb_dim, 1, 1, 1]
@@ -329,6 +330,7 @@ class Decoder(Module):
         x = torch.nn.functional.interpolate(x, scale_factor=self.scale_factor)
         x = self.block5(x)
         x = self.block6(x)
-        x = x[:, :, 3:35, 3:35, 3:35]
-        # x = torch.sigmoid(x)
+        # x = x[:, :, 3:35, 3:35, 3:35]
+        x = x[:, :, 2:30, 2:30, 2:30]
+        x = torch.sigmoid(x)
         return x

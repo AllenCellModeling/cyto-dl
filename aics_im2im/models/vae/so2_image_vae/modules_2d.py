@@ -137,7 +137,7 @@ class Encoder(Module):
         out_type = out_scalar_fields + out_vector_field
 
         self.block7 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=1, padding=0, bias=False),
+            nn.R2Conv(in_type, out_type, kernel_size=1, padding=1, bias=False),
         )
 
         if self.pool is not True:
@@ -244,6 +244,8 @@ class Decoder(Module):
             torch.nn.Conv2d(hidden_size, 1, kernel_size=1, padding=0),
         )
 
+        self.scale_factor = 2.24
+        # self.scale_factor = 2
     def forward(self, x: torch.Tensor):
         x = x.unsqueeze(-1).unsqueeze(-1)  # [bz, emb_dim, 1, 1]
         x = x.expand(-1, -1, 2, 2)
@@ -251,15 +253,16 @@ class Decoder(Module):
         #x = x + pos_emb
 
         x = self.block1(x)
-        x = torch.nn.functional.upsample_bilinear(x, scale_factor=2)
+        x = torch.nn.functional.upsample_bilinear(x, scale_factor=self.scale_factor)
         x = self.block2(x)
-        x = torch.nn.functional.upsample_bilinear(x, scale_factor=2)
+        x = torch.nn.functional.upsample_bilinear(x, scale_factor=self.scale_factor)
         x = self.block3(x)
-        x = torch.nn.functional.upsample_bilinear(x, scale_factor=2)
+        x = torch.nn.functional.upsample_bilinear(x, scale_factor=self.scale_factor)
         x = self.block4(x)
-        x = torch.nn.functional.upsample_bilinear(x, scale_factor=2)
+        x = torch.nn.functional.upsample_bilinear(x, scale_factor=self.scale_factor)
         x = self.block5(x)
         x = self.block6(x)
-        x = x[:, :, 2:30, 2:30]
-        x = torch.sigmoid(x)
+        # x = x[:, :, 2:30, 2:30]
+        x = x[:, :, 3:35, 3:35]
+        # x = torch.sigmoid(x)
         return x
