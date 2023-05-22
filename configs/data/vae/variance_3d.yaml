@@ -5,7 +5,7 @@ path: s3://allencell-cytodata-variance-data/processed/manifest_split.parquet
 split_column: split
 
 batch_size: 64
-num_workers:
+num_workers: 16
 multiprocessing_context: spawn
 persistent_workers: true
 
@@ -22,16 +22,19 @@ transforms:
     groups:
       image: registered_path
       cell_id: CellId
+
   - _target_: monai.transforms.LoadImaged
     keys: [image]
     reader:
       _target_: aics_im2im.image.io.OmeZarrReader
       level: ${zarr_level}
-      channels: ["membrane_segmentation"]
+      channels: ${channels}
     expanduser: false
+
   - _target_: monai.transforms.SpatialPadd
     keys: [image]
     spatial_size: ${padded_size} # set to [-1, -1, -1] to bypass
+
   - _target_: monai.transforms.ToTensord
     keys: [image]
     track_meta: false
