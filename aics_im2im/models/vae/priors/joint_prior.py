@@ -13,6 +13,10 @@ class JointPrior(Prior):
             priors = nn.ModuleList(*priors)
         self.priors = priors
 
+    @property
+    def param_size(self):
+        return sum(_.param_size for _ in self.priors)
+
     def kl_divergence(self, z_params, reduction="sum"):
         kl = []
 
