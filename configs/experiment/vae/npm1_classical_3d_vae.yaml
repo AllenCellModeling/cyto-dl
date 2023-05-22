@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: vae/variance_centerslice_resize.yaml
+  - override /data: vae/variance_3d_npm1.yaml
   - override /model: vae/classical_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
@@ -13,22 +13,23 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: variance_classical_2d_vae
-
-tags: ["classical", "variance-dataset", "2d"]
+experiment_name: npm1_3d_sdf
+tags: ["classical", "npm1", "3d"]
 
 seed: 42
+
+model:
+  spatial_dims: 3
+  in_shape: [1, 32, 32, 32]
+  strides: [1, 1, 1, 2, 1]
+  channels: [4, 8, 16, 32, 32]
 
 trainer:
   check_val_every_n_epoch: 1
   min_epochs: 10
   max_epochs: 100
   accelerator: gpu
-  devices:
-
-model:
-  in_shape: [1, 28, 28]
-  spatial_dims: 2
+  devices: 1
 
 callbacks:
   early_stopping:
@@ -42,5 +43,5 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: variance_2d_vae
+    experiment_name: npm1_3d_sdf
     run_name:

@@ -10,8 +10,6 @@ x_label: image
 id_label: null
 
 kernel_size: 3
-up_kernel_size: 3
-num_res_units: 0
 act: relu
 norm: batch
 dropout: null
@@ -23,7 +21,7 @@ reconstruction_loss:
   reduction: sum
 
 prior:
-  _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior
+  _target_: aics_im2im.models.vae.priors.IdentityPrior
   dimensionality: 256
 
 last_act:
