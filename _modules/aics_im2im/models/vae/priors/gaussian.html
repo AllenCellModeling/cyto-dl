@@ -353,10 +353,14 @@
 
 
 <div class="viewcode-block" id="IsotropicGaussianPrior"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior">[docs]</a><span class="k">class</span> <span class="nc">IsotropicGaussianPrior</span><span class="p">(</span><span class="n">Prior</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dimensionality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clamp_logvar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">tc_penalty_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dimensionality</span><span class="p">,</span> <span class="n">clamp_logvar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">tc_penalty_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tc_penalty_weight</span> <span class="o">=</span> <span class="n">tc_penalty_weight</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clamp_logvar</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">clamp_logvar</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dimensionality</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span>
 
 <div class="viewcode-block" id="IsotropicGaussianPrior.kl_divergence"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.kl_divergence">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">logvar</span><span class="p">,</span> <span class="n">tc_penalty_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">):</span>
@@ -462,6 +466,10 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tc_penalty_weight</span> <span class="o">=</span> <span class="n">tc_penalty_weight</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span>
 
 <div class="viewcode-block" id="DiagonalGaussianPrior.kl_divergence"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">logvar1</span><span class="p">,</span> <span class="n">logvar2</span><span class="p">,</span> <span class="n">tc_penalty_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">):</span>

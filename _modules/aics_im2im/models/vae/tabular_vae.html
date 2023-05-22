@@ -364,12 +364,10 @@
         <span class="n">hidden_layers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">id_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">loss_mask_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">optimizer</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">,</span>
-        <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">priors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Prior</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reconstruction_loss</span><span class="p">:</span> <span class="n">Loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">),</span>
         <span class="n">reconstruction_reduce</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">base_kwargs</span>
     <span class="p">):</span>
         <span class="n">encoder</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
             <span class="n">x_dim</span><span class="p">,</span>
@@ -387,14 +385,12 @@
             <span class="n">encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
             <span class="n">decoder</span><span class="o">=</span><span class="n">decoder</span><span class="p">,</span>
             <span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">,</span>
-            <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
             <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span>
             <span class="n">id_label</span><span class="o">=</span><span class="n">id_label</span><span class="p">,</span>
-            <span class="n">loss_mask_label</span><span class="o">=</span><span class="n">loss_mask_label</span><span class="p">,</span>
-            <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span>
             <span class="n">priors</span><span class="o">=</span><span class="n">priors</span><span class="p">,</span>
             <span class="n">reconstruction_loss</span><span class="o">=</span><span class="n">reconstruction_loss</span><span class="p">,</span>
             <span class="n">reconstruction_reduce</span><span class="o">=</span><span class="n">reconstruction_reduce</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">base_kwargs</span>
         <span class="p">)</span></div>
 </pre></div>
         </article>

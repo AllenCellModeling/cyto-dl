@@ -355,7 +355,11 @@
 <div class="viewcode-block" id="IdentityPrior.forward"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.identity_prior.html#aics_im2im.models.vae.priors.identity_prior.IdentityPrior.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;kl&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;kl&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">z</span></div></div>
+        <span class="k">return</span> <span class="n">z</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span></div>
 </pre></div>
         </article>
       </div>
