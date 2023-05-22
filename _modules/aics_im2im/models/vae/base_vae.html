@@ -341,23 +341,25 @@
         </div>
         <article role="main">
           <h1>Source code for aics_im2im.models.vae.base_vae</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span>
 <span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span> <span class="k">as</span> <span class="n">Loss</span>
-<span class="kn">from</span> <span class="nn">torchmetrics</span> <span class="kn">import</span> <span class="n">MeanMetric</span>
 
 <span class="kn">from</span> <span class="nn">aics_im2im.models.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">IdentityPrior</span><span class="p">,</span> <span class="n">IsotropicGaussianPrior</span><span class="p">,</span> <span class="n">Prior</span>
+<span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">IsotropicGaussianPrior</span><span class="p">,</span> <span class="n">Prior</span>
+
+
+<span class="k">def</span> <span class="nf">_latent_compose_function</span><span class="p">(</span><span class="n">z_parts</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">z_parts</span>
 
 
 <div class="viewcode-block" id="BaseVAE"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE">[docs]</a><span class="k">class</span> <span class="nc">BaseVAE</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="p">,</span>
         <span class="n">encoder</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">decoder</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
         <span class="n">latent_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -366,7 +368,7 @@
         <span class="n">id_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reconstruction_loss</span><span class="p">:</span> <span class="n">Loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">),</span>
         <span class="n">prior</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Prior</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">decoder_latent_parts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">latent_compose_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">base_kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate a basic VAE model.</span>
@@ -386,73 +388,16 @@
 <span class="sd">            i.e. subclasses torch.nn.modules._Loss</span>
 <span class="sd">        prior: Optional[Sequence[AbstractPrior]]</span>
 <span class="sd">            List of prior specifications to use for latent space</span>
-<span class="sd">        decoder_latent_parts: Optional[Dict[str, Sequence[str]]] = None</span>
-<span class="sd">            Dictionary that specifies for each output part&#39;s decoer, what latent</span>
-<span class="sd">            keys it depends on</span>
 <span class="sd">        **base_kwargs:</span>
 <span class="sd">            Additional arguments passed to BaseModel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">_DEFAULT_METRICS</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;train/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;val/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;test/loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;train/loss/total_reconstruction&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;val/loss/total_reconstruction&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;test/loss/total_reconstruction&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;train/loss/total_kld&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;val/loss/total_kld&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-            <span class="s2">&quot;test/loss/total_kld&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-        <span class="p">}</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
-            <span class="n">prior</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="n">prior</span><span class="p">}</span>
-
-        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">_DEFAULT_METRICS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;train/loss/kld_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                    <span class="sa">f</span><span class="s2">&quot;val/loss/kld_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                    <span class="sa">f</span><span class="s2">&quot;test/loss/kld_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reconstruction_loss</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
-            <span class="k">assert</span> <span class="n">x_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="n">recon_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_label</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">recon_parts</span> <span class="o">=</span> <span class="n">reconstruction_loss</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">recon_parts</span><span class="p">:</span>
-            <span class="n">_DEFAULT_METRICS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="sa">f</span><span class="s2">&quot;train/loss/reconstruction_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                    <span class="sa">f</span><span class="s2">&quot;val/loss/reconstruction_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                    <span class="sa">f</span><span class="s2">&quot;test/loss/reconstruction_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-
-        <span class="n">metrics</span> <span class="o">=</span> <span class="n">base_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_METRICS</span><span class="p">)</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
-                <span class="k">if</span> <span class="n">prior</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
-                    <span class="n">prior</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">IsotropicGaussianPrior</span><span class="p">(</span><span class="n">dimensionality</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">prior</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">IdentityPrior</span><span class="p">(</span><span class="n">dimensionality</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">Prior</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Expected prior to either be one of (&#39;gaussian&#39;, &#39;identity&#39;, None)&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;or an object of type `Prior`. Got: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prior</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span> <span class="o">=</span> <span class="n">reconstruction_loss</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
-            <span class="n">encoder</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;embedding&quot;</span><span class="p">:</span> <span class="n">encoder</span><span class="p">}</span>
+            <span class="k">assert</span> <span class="n">x_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">encoder</span> <span class="o">=</span> <span class="p">{</span><span class="n">x_label</span><span class="p">:</span> <span class="n">encoder</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">encoder</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">decoder</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
@@ -460,35 +405,32 @@
             <span class="n">decoder</span> <span class="o">=</span> <span class="p">{</span><span class="n">x_label</span><span class="p">:</span> <span class="n">decoder</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">decoder</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">reconstruction_loss</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
-            <span class="k">assert</span> <span class="n">x_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="n">reconstruction_loss</span> <span class="o">=</span> <span class="p">{</span><span class="n">x_label</span><span class="p">:</span> <span class="n">reconstruction_loss</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">reconstruction_loss</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
 
-        <span class="k">if</span> <span class="n">decoder_latent_parts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">decoder_latent_parts</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">decoder_latent_parts</span> <span class="o">=</span> <span class="n">decoder_latent_parts</span>
-            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_latent_parts</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Decoder with key &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; doesn&#39;t have an entry in &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;`decoder_latent_parts`, so we don&#39;t know which &quot;</span>
-                        <span class="s2">&quot;latent parts it uses.&quot;</span>
-                    <span class="p">)</span>
+        <span class="k">if</span> <span class="n">prior</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prior</span> <span class="o">=</span> <span class="n">IsotropicGaussianPrior</span><span class="p">()</span>
 
-<div class="viewcode-block" id="BaseVAE.calculate_rcl"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_rcl">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_rcl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="n">rcl_per_input_dimension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="n">x</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">xhat</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
+            <span class="k">assert</span> <span class="n">x_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">prior</span> <span class="o">=</span> <span class="p">{</span><span class="n">x_label</span><span class="p">:</span> <span class="n">prior</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prior</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">latent_compose_function</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">latent_compose_function</span> <span class="o">=</span> <span class="n">_latent_compose_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latent_compose_function</span> <span class="o">=</span> <span class="n">latent_compose_function</span>
+
+<div class="viewcode-block" id="BaseVAE.calculate_rcl"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_rcl">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_rcl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">rcl_per_input_dimension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="n">x</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">x_hat</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">rcl_per_input_dimension</span></div>
 
-<div class="viewcode-block" id="BaseVAE.calculate_elbo"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_elbo">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_elbo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseVAE.calculate_elbo"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.calculate_elbo">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_elbo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+
         <span class="n">rcl_per_input_dimension</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">rcl_reduced</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">xhat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">rcl_per_input_dimension</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_rcl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">x_hat</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">rcl_per_input_dimension</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_rcl</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rcl_per_input_dimension</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">rcl</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">rcl_per_input_dimension</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -503,91 +445,83 @@
                 <span class="n">rcl_reduced</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">rcl_per_input_dimension</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
         <span class="n">kld_per_part</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">part</span><span class="p">:</span> <span class="n">prior</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">part</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;kl&quot;</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">prior</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="n">part</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="n">part</span><span class="p">](</span><span class="n">z_part</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;kl&quot;</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">z_part</span> <span class="ow">in</span> <span class="n">z</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
 
         <span class="n">kld_per_part_summed</span> <span class="o">=</span> <span class="p">{</span><span class="n">part</span><span class="p">:</span> <span class="n">kl</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">kl</span> <span class="ow">in</span> <span class="n">kld_per_part</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
         <span class="n">total_kld</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">kld_per_part_summed</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="n">total_recon</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">rcl_reduced</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">total_recon</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">total_kld</span><span class="p">,</span>
-            <span class="n">total_recon</span><span class="p">,</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="n">rcl_reduced</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">total_kld</span><span class="p">,</span>
             <span class="n">rcl_reduced</span><span class="p">,</span>
             <span class="n">total_kld</span><span class="p">,</span>
             <span class="n">kld_per_part</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseVAE.sample_z"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.sample_z">[docs]</a>    <span class="k">def</span> <span class="nf">sample_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_parts_params</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">part_params</span> <span class="ow">in</span> <span class="n">z_parts_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="p">:</span>
-                <span class="n">z</span><span class="p">[</span><span class="n">part</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="n">part</span><span class="p">](</span><span class="n">part_params</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># if prior for this part isn&#39;t in the dict, assume dirac prior</span>
-                <span class="c1"># i.e. just return the params, and it won&#39;t contribute to kl</span>
-                <span class="n">z</span><span class="p">[</span><span class="n">part</span><span class="p">]</span> <span class="o">=</span> <span class="n">part_params</span>
-
-        <span class="k">return</span> <span class="n">z</span></div>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">part</span><span class="p">:</span> <span class="n">prior</span><span class="p">(</span><span class="n">z_parts_params</span><span class="p">[</span><span class="n">part</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">prior</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span></div>
 
 <div class="viewcode-block" id="BaseVAE.encode"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">part</span><span class="p">:</span> <span class="n">encoder</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="n">part</span><span class="p">])</span> <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">encoder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
-<div class="viewcode-block" id="BaseVAE.decode"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
-        <span class="c1"># for each decoder key, get the latent parts it uses from `self.decoder_latent_keys`</span>
-        <span class="c1"># and pass them as *args to that decoder&#39;s forward method</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="n">part</span><span class="p">:</span> <span class="n">decoder</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">z</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_latent_keys</span><span class="p">[</span><span class="n">part</span><span class="p">]])</span>
-            <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">decoder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span></div>
+<div class="viewcode-block" id="BaseVAE.decode"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_parts</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latent_compose_function</span><span class="p">(</span><span class="n">z_parts</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">{</span><span class="n">part</span><span class="p">:</span> <span class="n">decoder</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">part</span><span class="p">])</span> <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">decoder</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="n">z</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseVAE.forward"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_params</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">is_inference</span> <span class="o">=</span> <span class="n">inference</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span>
 
-        <span class="n">z_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_z</span><span class="p">(</span><span class="n">z_params</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
+        <span class="n">z_parts_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">z_parts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_z</span><span class="p">(</span><span class="n">z_parts_params</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="n">inference</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">decode</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">z</span>
+            <span class="k">return</span> <span class="n">z_parts</span>
 
-        <span class="n">xhat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">x_hat</span><span class="p">,</span> <span class="n">z_composed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z_parts</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">return_params</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z_params</span>
-
-        <span class="k">return</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">z</span></div>
+            <span class="k">return</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">z_parts</span><span class="p">,</span> <span class="n">z_parts_params</span><span class="p">,</span> <span class="n">z_composed</span>
+        <span class="k">return</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">z_parts</span><span class="p">,</span> <span class="n">z_composed</span></div>
 
 <div class="viewcode-block" id="BaseVAE.model_step"><a class="viewcode-back" href="../../../../aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.model_step">[docs]</a>    <span class="k">def</span> <span class="nf">model_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
         <span class="p">(</span>
-            <span class="n">xhat</span><span class="p">,</span>
-            <span class="n">z</span><span class="p">,</span>
-            <span class="n">z_params</span><span class="p">,</span>
+            <span class="n">x_hat</span><span class="p">,</span>
+            <span class="n">z_parts</span><span class="p">,</span>
+            <span class="n">z_parts_params</span><span class="p">,</span>
+            <span class="n">z_composed</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_params</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="p">(</span>
             <span class="n">loss</span><span class="p">,</span>
-            <span class="n">rec_loss</span><span class="p">,</span>
-            <span class="n">rec_loss_per_part</span><span class="p">,</span>
+            <span class="n">reconstruction_loss</span><span class="p">,</span>
             <span class="n">kld_loss</span><span class="p">,</span>
             <span class="n">kld_per_part</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_elbo</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">xhat</span><span class="p">,</span> <span class="n">z_params</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_elbo</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">z_parts_params</span><span class="p">)</span>
 
         <span class="n">loss</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
-            <span class="s2">&quot;total_kld&quot;</span><span class="p">:</span> <span class="n">kld_loss</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
-            <span class="s2">&quot;total_reconstruction&quot;</span><span class="p">:</span> <span class="n">rec_loss</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+            <span class="s2">&quot;loss/total_kld&quot;</span><span class="p">:</span> <span class="n">kld_loss</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
         <span class="p">}</span>
 
-        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">recon_part</span> <span class="ow">in</span> <span class="n">rec_loss_per_part</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">loss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;reconstruction_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recon_part</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="sa">f</span><span class="s2">&quot;z_composed/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">z_comp_part</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">z_comp_part</span> <span class="ow">in</span> <span class="n">z_composed</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
 
-        <span class="n">preds</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">z_part</span> <span class="ow">in</span> <span class="n">z</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">preds</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;z/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_part</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-            <span class="n">preds</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;z_params/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_params</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">recon_part</span> <span class="ow">in</span> <span class="n">reconstruction_loss</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">loss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;loss/reconstruction_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recon_part</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior</span><span class="p">:</span>
-            <span class="n">loss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;kld_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kld_per_part</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">z_part</span> <span class="ow">in</span> <span class="n">z_parts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">preds</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;z_parts/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_part</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">preds</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;z_parts_params/</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_parts_params</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="n">loss</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;loss/kld_</span><span class="si">{</span><span class="n">part</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kld_per_part</span><span class="p">[</span><span class="n">part</span><span class="p">]</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">id_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">id_label</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
