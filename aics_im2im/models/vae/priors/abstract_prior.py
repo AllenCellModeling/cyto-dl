@@ -11,6 +11,10 @@ class Prior(nn.Module):
     def __len__(self):
         return self.dimensionality
 
+    @property
+    def param_size(self):
+        raise NotImplementedError
+
     def kl_divergence(self, z):
         raise NotImplementedError
 

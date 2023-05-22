@@ -29,12 +29,7 @@ class LatentLossVAE(BaseVAE):
         latent_loss_optimizer: torch.optim.Optimizer = torch.optim.Adam,
         latent_loss_scheduler: LRScheduler = torch.optim.lr_scheduler.StepLR,
         beta: float = 1.0,
-        id_label: Optional[str] = None,
-        optimizer: torch.optim.Optimizer = torch.optim.Adam,
-        lr_scheduler: LRScheduler = torch.optim.lr_scheduler.StepLR,
-        loss_mask_label: Optional[str] = None,
-        reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
-        **kwargs,
+        **base_kwargs,
     ):
         super().__init__(
             encoder=encoder,
@@ -42,13 +37,8 @@ class LatentLossVAE(BaseVAE):
             latent_dim=latent_dim,
             x_label=x_label,
             beta=beta,
-            id_label=id_label,
-            optimizer=optimizer,
-            lr_scheduler=lr_scheduler,
-            loss_mask_label=loss_mask_label,
-            reconstruction_loss=reconstruction_loss,
             prior=prior,
-            **kwargs,
+            **base_kwargs,
         )
 
         self.continuous_labels = continuous_labels

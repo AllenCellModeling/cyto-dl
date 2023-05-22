@@ -33,10 +33,10 @@ class O2SpharmVAE(BaseVAE):
         max_hidden_band: int = 8,
         grid_size: int = 64,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
-        embedding_prior: str = "gaussian",
+        prior: str = "gaussian",
         eps: float = 1e-9,
     ):
-        assert embedding_prior in ("gaussian", "none")
+        assert prior in ("gaussian", "none")
 
         self.eps = eps
 
@@ -47,7 +47,7 @@ class O2SpharmVAE(BaseVAE):
         prior = {
             "embedding": (
                 IsotropicGaussianPrior()
-                if embedding_prior == "gaussian"
+                if prior == "gaussian"
                 else IdentityPrior(dimensionality=latent_dim)
             ),
             "angle": IdentityPrior(dimensionality=1),
@@ -59,7 +59,7 @@ class O2SpharmVAE(BaseVAE):
         encoder = O2SpharmEncoder(
             hidden_layers=encoder_hidden_layers,
             reflections=reflections,
-            out_dim=(2 * latent_dim if embedding_prior == "gaussian" else latent_dim),
+            out_dim=(2 * latent_dim if prior == "gaussian" else latent_dim),
             max_spharm_band=max_spharm_band,
             max_hidden_band=max_hidden_band,
             grid_size=grid_size,
