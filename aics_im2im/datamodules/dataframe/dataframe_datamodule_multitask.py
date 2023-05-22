@@ -95,7 +95,6 @@ class DataframeDatamoduleMultiTask(DataframeDatamodule):
             subsample=subsample,
             refresh_subsample=refresh_subsample,
             seed=seed,
-            target_columns=target_columns,
             **dataloader_kwargs,
         )
 
