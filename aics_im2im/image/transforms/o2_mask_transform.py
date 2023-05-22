@@ -31,7 +31,7 @@ class O2Mask(Transform):
         mask_margin: float = 0.0
             Margin to smooth the mask edges. See the escnn docs linked above
             for details. Note: ignored if background is not `None`
-        background: Optional[int] = None
+        background: Optional[float] = None
             Value for masked out pixels/voxels. If `None` (default) background
             value will be 0. If not `None`, `mask_margin` is ignored and the
             mask is not smooth.
@@ -51,7 +51,9 @@ class O2Mask(Transform):
 
     def __call__(self, img):
         if self.background is not None:
-            return torch.where(self.mask, img, self.background)
+            return torch.where(
+                self.mask.type_as(img) > 0, img, torch.tensor(self.background).type_as(img)
+            )
 
         return img * self.mask.type_as(img)
 
@@ -63,7 +65,7 @@ class O2Maskd(Transform):
         spatial_dims: int,
         mask_side: int,
         mask_margin: float = 0.0,
-        background: Optional[int] = None,
+        background: Optional[float] = None,
         cylinder_axis: int = 2,
     ):
         """Dictionary-transform version of O2Mask."""
