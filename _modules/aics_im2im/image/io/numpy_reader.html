@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>aics_im2im.utils.spharm.rotation - aics-im2im 0.1.0 documentation</title>
+        <title>aics_im2im.image.io.numpy_reader - aics-im2im 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -340,148 +340,62 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for aics_im2im.utils.spharm.rotation</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">re</span>
+          <h1>Source code for aics_im2im.image.io.numpy_reader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span> <span class="k">as</span> <span class="n">Loss</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">MapTransform</span>
+<span class="kn">from</span> <span class="nn">upath</span> <span class="kn">import</span> <span class="n">UPath</span> <span class="k">as</span> <span class="n">Path</span>
 
 
-<div class="viewcode-block" id="flatten"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.flatten">[docs]</a><span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">lst</span><span class="p">))</span></div>
+<div class="viewcode-block" id="ReadNumpyFile"><a class="viewcode-back" href="../../../../aics_im2im.image.io.numpy_reader.html#aics_im2im.image.io.numpy_reader.ReadNumpyFile">[docs]</a><span class="k">class</span> <span class="nc">ReadNumpyFile</span><span class="p">(</span><span class="n">MapTransform</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remote</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keys: Union[str, Sequence[str]]</span>
+<span class="sd">            Key (or list thereof) of the input dictionary to interpret as paths</span>
+<span class="sd">            to point cloud files which should be loaded</span>
+<span class="sd">        remote: bool = False</span>
+<span class="sd">            Whether files can be in a fsspec-interpretable remote location</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remote</span> <span class="o">=</span> <span class="n">remote</span>
 
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">)</span>
 
-<div class="viewcode-block" id="get_indices"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.get_indices">[docs]</a><span class="k">def</span> <span class="nf">get_indices</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">max_band</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-    <span class="c1"># the spherical harmonics in our data have the form</span>
-    <span class="c1"># {prefix}{band}M{m}{sign}</span>
-    <span class="c1"># where `m` varies from 0 to `band`,</span>
-    <span class="c1"># and `sign` is either &quot;C&quot; or &quot;S&quot; (for cosine and sine), and</span>
-    <span class="c1"># which correspond to positive and negative m values, respectively</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;.*L([0-9]*)M([0-9]*)(S|C)&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
 
-    <span class="n">m_groups</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">((</span><span class="kc">None</span><span class="p">,))</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_band</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">zero_indices</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">fifo_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="n">fifo_path</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
-        <span class="c1"># parse the relevant values from the column string</span>
-        <span class="n">band</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">sign</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+                    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_input</span><span class="p">:</span>
+                        <span class="n">Path</span><span class="p">(</span><span class="n">fifo_path</span><span class="p">)</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">f_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">fifo_path</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
 
-        <span class="n">band</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-        <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s2">&quot;S&quot;</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">get_default_dtype</span><span class="p">())</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">zero_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix</span><span class="p">)</span>
-            <span class="k">continue</span>
-
-        <span class="c1"># get indices for each m group ordered by band. each band has a pair.</span>
-        <span class="c1"># each pair in each m group gets rotated by the same angle</span>
-        <span class="n">m_groups</span><span class="p">[</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">band</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">sign</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ix</span>
-
-    <span class="k">return</span> <span class="n">get_band_indices</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">max_band</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">m_groups</span></div>
-
-
-<div class="viewcode-block" id="build_rot_matrices"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.build_rot_matrices">[docs]</a><span class="k">def</span> <span class="nf">build_rot_matrices</span><span class="p">(</span><span class="n">angles</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">)),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="expand_rot_matrices"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.expand_rot_matrices">[docs]</a><span class="k">def</span> <span class="nf">expand_rot_matrices</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">max_band</span><span class="p">):</span>
-    <span class="n">rot_matrices</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">rot</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-        <span class="p">(</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">rot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">rot</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
-            <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">rot</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
-        <span class="p">),</span>
-        <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">_rot</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_band</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-
-        <span class="n">_rot</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">_rot</span><span class="p">,</span> <span class="n">rot</span><span class="p">)</span>
-
-        <span class="n">rot_matrices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">_rot</span><span class="o">.</span><span class="n">expand</span><span class="p">((</span><span class="n">max_band</span> <span class="o">-</span> <span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">_rot</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">rot_matrices</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
-
-
-<span class="k">def</span> <span class="nf">_rotate_spharm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">rot_matrices</span><span class="p">):</span>
-    <span class="n">b</span><span class="p">,</span> <span class="n">m</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span>
-        <span class="n">rot_matrices</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="nb">input</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="rotate_spharm"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.rotate_spharm">[docs]</a><span class="k">def</span> <span class="nf">rotate_spharm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">rot</span><span class="p">,</span> <span class="n">paired_indices</span><span class="p">,</span> <span class="n">max_band</span><span class="p">):</span>
-    <span class="n">flat_idx</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">paired_indices</span><span class="p">)</span>
-    <span class="n">num_groups</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">flat_idx</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-
-    <span class="nb">input</span><span class="p">[:,</span> <span class="n">flat_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">_rotate_spharm</span><span class="p">(</span>
-        <span class="nb">input</span><span class="p">[:,</span> <span class="n">flat_idx</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">num_groups</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
-        <span class="n">expand_rot_matrices</span><span class="p">(</span><span class="n">rot</span><span class="p">,</span> <span class="n">max_band</span><span class="p">),</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">input</span></div>
-
-
-<div class="viewcode-block" id="flip_spharm"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.flip_spharm">[docs]</a><span class="k">def</span> <span class="nf">flip_spharm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">paired_indices</span><span class="p">,</span> <span class="n">flips</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">m_group</span> <span class="ow">in</span> <span class="n">paired_indices</span><span class="p">:</span>
-        <span class="n">neg</span> <span class="o">=</span> <span class="p">[</span><span class="n">true_ix</span> <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">true_ix</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">m_group</span><span class="p">)</span> <span class="k">if</span> <span class="n">ix</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="nb">input</span><span class="p">[:,</span> <span class="n">neg</span><span class="p">]</span> <span class="o">=</span> <span class="n">flips</span> <span class="o">*</span> <span class="nb">input</span><span class="p">[:,</span> <span class="n">neg</span><span class="p">]</span>
-    <span class="k">return</span> <span class="nb">input</span></div>
-
-
-<div class="viewcode-block" id="get_band_indices"><a class="viewcode-back" href="../../../../aics_im2im.utils.spharm.rotation.html#aics_im2im.utils.spharm.rotation.get_band_indices">[docs]</a><span class="k">def</span> <span class="nf">get_band_indices</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">max_band</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;get the tensor indices for each band, based on the column order of the batch loader (given</span>
-<span class="sd">    by `columns`, assuming that it is in the same order).</span>
-
-<span class="sd">    this is passed to `rotate_spharm` later, to rotate the spherical harmonics around the z axis</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># the spherical harmonics in our data have the form</span>
-    <span class="c1"># {prefix}{band}M{m}{sign}</span>
-    <span class="c1"># where `m` varies from 0 to `band`,</span>
-    <span class="c1"># and `sign` is either &quot;C&quot; or &quot;S&quot; (for cosine and sine), and</span>
-    <span class="c1"># which correspond to positive and negative m values, respectively</span>
-    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;.*L([0-9]*)M([0-9]*)(S|C)&quot;</span><span class="p">)</span>
-    <span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">band</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_band</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="c1"># each band has 2 * band + 1 elements, but here we exclude m=0</span>
-        <span class="c1"># because it remains unchanged under rotations around the Z axis</span>
-        <span class="n">band_size</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">band</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">((</span><span class="kc">None</span><span class="p">,))</span> <span class="o">*</span> <span class="n">band_size</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">ix</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">columns</span><span class="p">):</span>
-        <span class="c1"># parse the relevant values from the column string</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">band</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">sign</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">continue</span>
-
-        <span class="n">band</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">band</span><span class="p">)</span>
-        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-        <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">==</span> <span class="s2">&quot;S&quot;</span> <span class="k">else</span> <span class="mi">1</span>
-
-        <span class="c1"># for this band, the element corresponding to `(sign)m` is at the index `ix`</span>
-        <span class="c1"># of the tensor. we sum it by `band - (sign &gt; 0)` such that the left most element is</span>
-        <span class="c1"># at the list index 0.</span>
-        <span class="c1">#</span>
-        <span class="c1"># e.g., for band = 2, we have the correspondence:</span>
-        <span class="c1"># [-2, -1, 0, 1, 2] -&gt; [0, 1, 2, 3, 4]</span>
-
-        <span class="n">bands</span><span class="p">[</span><span class="n">band</span><span class="p">][(</span><span class="n">sign</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="n">ix</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">flat</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">bands</span>
-    <span class="k">return</span> <span class="n">flatten</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">res</span></div>
 </pre></div>
         </article>
       </div>

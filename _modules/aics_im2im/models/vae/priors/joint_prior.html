@@ -191,6 +191,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.numpy_reader.html">aics_im2im.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
 </ul>
 </li>
@@ -354,6 +355,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">):</span>
             <span class="n">priors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span><span class="o">*</span><span class="n">priors</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priors</span> <span class="o">=</span> <span class="n">priors</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">_</span><span class="o">.</span><span class="n">param_size</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">priors</span><span class="p">)</span>
 
 <div class="viewcode-block" id="JointPrior.kl_divergence"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.kl_divergence">[docs]</a>    <span class="k">def</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z_params</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">):</span>
         <span class="n">kl</span> <span class="o">=</span> <span class="p">[]</span>

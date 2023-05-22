@@ -191,6 +191,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.numpy_reader.html">aics_im2im.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../../aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
 </ul>
 </li>
@@ -352,6 +353,10 @@
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensionality</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">param_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="Prior.kl_divergence"><a class="viewcode-back" href="../../../../../aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.kl_divergence">[docs]</a>    <span class="k">def</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>

@@ -190,6 +190,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.numpy_reader.html">aics_im2im.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
 </ul>
 </li>
@@ -487,6 +488,13 @@
 </li>
         </ul></li>
         <li>
+    aics_im2im.image.io.numpy_reader
+
+        <ul>
+          <li><a href="aics_im2im.image.io.numpy_reader.html#module-aics_im2im.image.io.numpy_reader">module</a>
+</li>
+        </ul></li>
+        <li>
     aics_im2im.image.io.ome_zarr_reader
 
         <ul>
@@ -668,6 +676,8 @@
           <li><a href="aics_im2im.models.vae.image_vae.html#module-aics_im2im.models.vae.image_vae">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     aics_im2im.models.vae.latent_loss_vae
 
@@ -675,8 +685,6 @@
           <li><a href="aics_im2im.models.vae.latent_loss_vae.html#module-aics_im2im.models.vae.latent_loss_vae">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     aics_im2im.models.vae.o2_spharm_vae
 
@@ -1466,6 +1474,8 @@
 </li>
           <li><a href="aics_im2im.image.io.monai_bio_reader.html#module-aics_im2im.image.io.monai_bio_reader">aics_im2im.image.io.monai_bio_reader</a>
 </li>
+          <li><a href="aics_im2im.image.io.numpy_reader.html#module-aics_im2im.image.io.numpy_reader">aics_im2im.image.io.numpy_reader</a>
+</li>
           <li><a href="aics_im2im.image.io.ome_zarr_reader.html#module-aics_im2im.image.io.ome_zarr_reader">aics_im2im.image.io.ome_zarr_reader</a>
 </li>
           <li><a href="aics_im2im.image.transforms.html#module-aics_im2im.image.transforms">aics_im2im.image.transforms</a>
@@ -1673,18 +1683,30 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.models.im2im.utils.omnipose.html#aics_im2im.models.im2im.utils.omnipose.OmniposeClustering.pad_slice">pad_slice() (aics_im2im.models.im2im.utils.omnipose.OmniposeClustering method)</a>
 </li>
+        <li><a href="aics_im2im.models.vae.priors.abstract_prior.html#aics_im2im.models.vae.priors.abstract_prior.Prior.param_size">param_size (aics_im2im.models.vae.priors.abstract_prior.Prior property)</a>
+
+        <ul>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior.param_size">(aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior property)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior.param_size">(aics_im2im.models.vae.priors.gaussian.IsotropicGaussianPrior property)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.identity_prior.html#aics_im2im.models.vae.priors.identity_prior.IdentityPrior.param_size">(aics_im2im.models.vae.priors.identity_prior.IdentityPrior property)</a>
+</li>
+          <li><a href="aics_im2im.models.vae.priors.joint_prior.html#aics_im2im.models.vae.priors.joint_prior.JointPrior.param_size">(aics_im2im.models.vae.priors.joint_prior.JointPrior property)</a>
+</li>
+        </ul></li>
         <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.parse_batch">parse_batch() (aics_im2im.models.base_model.BaseModel method)</a>
 
         <ul>
           <li><a href="aics_im2im.models.vae.latent_loss_vae.html#aics_im2im.models.vae.latent_loss_vae.LatentLossVAE.parse_batch">(aics_im2im.models.vae.latent_loss_vae.LatentLossVAE method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.parse_transforms">parse_transforms() (in module aics_im2im.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in aics_im2im.nn.losses.gan_loss)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.predict_dataloader">predict_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
@@ -1720,6 +1742,8 @@
         <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_h5ad">read_h5ad() (in module aics_im2im.dataframe.readers)</a>
 </li>
         <li><a href="aics_im2im.dataframe.readers.html#aics_im2im.dataframe.readers.read_parquet">read_parquet() (in module aics_im2im.dataframe.readers)</a>
+</li>
+        <li><a href="aics_im2im.image.io.numpy_reader.html#aics_im2im.image.io.numpy_reader.ReadNumpyFile">ReadNumpyFile (class in aics_im2im.image.io.numpy_reader)</a>
 </li>
         <li><a href="aics_im2im.nn.losses.adversarial_loss.html#aics_im2im.nn.losses.adversarial_loss.AdversarialLoss.reduction">reduction (aics_im2im.nn.losses.adversarial_loss.AdversarialLoss attribute)</a>
 
