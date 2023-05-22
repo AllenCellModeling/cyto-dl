@@ -11,6 +11,12 @@ except (ModuleNotFoundError, ImportError):
     O2Maskd = None
 
 try:
+    from .o3_mask_transform import O3Mask, O3Maskd
+except (ModuleNotFoundError, ImportError):
+    O3Mask = None
+    O3Maskd = None
+
+try:
     from .so2_random_rotation import SO2RandomRotate, SO2RandomRotated
 except (ModuleNotFoundError, ImportError):
     SO2RandomRotate = None
