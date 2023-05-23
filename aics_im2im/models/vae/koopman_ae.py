@@ -3,7 +3,6 @@ from typing import Optional, Sequence
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from dlkoopman.utils import _SVD
 from torch.nn.modules.loss import _Loss as Loss
 from torchmetrics import MeanMetric
 
@@ -13,6 +12,7 @@ from aics_im2im.models.base_model import BaseModel
 class KoopmanAE(BaseModel):
     def __init__(
         self,
+        *,
         encoder: nn.Module,
         decoder: nn.Module,
         latent_dim: int,
@@ -60,48 +60,50 @@ class KoopmanAE(BaseModel):
         self.latent_dim = latent_dim
         self.encoder = encoder
         self.decoder = decoder
-        self.rank = rank
+        self.rank = rank if rank not in (0, None) else latent_dim
 
     def forward(self, batch):
         return self.encoder(batch[self.hparams.x_label])
 
-    def _dmd_linearize(self, z, z_prime) -> tuple[torch.Tensor, torch.Tensor]:
+    def _dmd_linearize(self, z, z_prime, rank):
         """Adapted from dlkoopman."""
 
         # U: (latent_dim, min(B-1, latent_dim))
         # Sigma: (min(B-1, latent_dim),)
         # V: (B-1, min(B-1, latent_dim))
-        U, Sigma, V = _SVD.apply(z)
 
-        U = U[:, : self.rank]  # (latent_dim, rank)
+        U, Sigma, V = torch.linalg.svd(z)
+
+        U = U[:, :rank]  # (latent_dim, rank)
         Ut = U.T  # (rank, latent_dim)
 
-        Sigma = torch.diag(Sigma[: self.rank])  # shape = (rank, rank)
+        Sigma = torch.diag(Sigma[:rank])  # shape = (rank, rank)
 
         # Right singular vectors
-        V = V[:, : self.rank]  # shape = (B-1, rank)
+        V = V[:, :rank]  # shape = (B-1, rank)
 
         # Outputs
-        intermediate = z_prime @ V @ torch.linalg.inv(Sigma)  # shape = (latent_dim, rank)
+        intermediate = z_prime @ (V @ torch.linalg.inv(Sigma))  # shape = (latent_dim, rank)
         Atilde = Ut @ intermediate  # shape = (rank, rank)
 
         Lambda, eigvecstilde = torch.linalg.eig(Atilde)
         logLambda = torch.diag(torch.log(Lambda))  # shape = (rank, rank)
-        eigvecs = intermediate.astype(eigvecstilde) @ eigvecstilde  # shape = (latent_dim, rank)
+
+        eigvecs = intermediate.type_as(eigvecstilde) @ eigvecstilde  # shape = (latent_dim, rank)
 
         return Atilde, logLambda, eigvecs
 
-    def _dmd_predict(self, t, y0, logLambda, eigvecs) -> torch.Tensor:
+    def _dmd_predict(self, t, z0, logLambda, eigvecs):
         """Adapted from dlkoopman."""
 
-        coeffs = torch.linalg.pinv(eigvecs, rtol=0.01) @ y0
+        coeffs = torch.linalg.pinv(eigvecs, rtol=0.01) @ z0.type_as(eigvecs)
 
         logLambda_exp = torch.linalg.matrix_exp(
             logLambda.expand(len(t), logLambda.shape[0], logLambda.shape[1])
-            * torch.tensor(t).as_type(logLambda)
+            * torch.tensor(t).view(len(t), 1, 1).type_as(logLambda)
         )
 
-        z_pred = eigvecs @ (logLambda_exp @ coeffs)
+        z_pred = (logLambda_exp @ coeffs) @ eigvecs.T
 
         return z_pred.abs()  # norm of complex value
 
@@ -117,7 +119,8 @@ class KoopmanAE(BaseModel):
         z = self.encode(x)
         xhat = self.decode(z)
 
-        Atilde, logLambda, eigvecs = self._dmd_linearize(z[:-1], z[1:])
+        rank = min(self.rank, len(z) - 1)
+        Atilde, logLambda, eigvecs = self._dmd_linearize(z[:-1].T, z[1:].T, rank)
 
         t = range(len(z) - 1)
         z_prime_hat = self._dmd_predict(t, z[0], logLambda, eigvecs)

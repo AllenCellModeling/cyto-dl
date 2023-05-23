@@ -20,6 +20,7 @@ seed: 42
 
 model:
   spatial_dims: 3
+  in_shape: [1, 64, 64, 64]
   channels: [2, 4, 8, 16, 32]
   strides: [2, 2, 2, 2, 2]
 

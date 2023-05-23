@@ -24,6 +24,7 @@ transforms:
       - _target_: aics_im2im.image.io.MonaiBioReader
         dimension_order_out: "CZYX"
   - _target_: monai.transforms.ResizeWithPadOrCropd
+    keys: image
     spatial_size: [128, 128, 128]
   - _target_: aics_im2im.image.transforms.Resized
     keys: [image]

@@ -11,13 +11,11 @@ from .koopman_ae import KoopmanAE
 class ImageKoopmanAE(KoopmanAE):
     def __init__(
         self,
+        *,
         latent_dim: int,
-        x_label: str,
-        in_channels: int,
+        in_shape: int,
         channels,
         strides,
-        rank: int = 0,
-        reconstruction_loss: Loss = nn.MSELoss(reduction="mean"),
         spatial_dims: int = 3,
         kernel_size: int = 3,
         up_kernel_size: int = 3,
@@ -80,9 +78,11 @@ class ImageKoopmanAE(KoopmanAE):
             Additional arguments passed to BaseModel
         """
 
+        in_channels = in_shape[0]
+
         net = VarAutoEncoder(
             spatial_dims=spatial_dims,
-            in_channels=in_channels,
+            in_shape=in_shape,
             latent_size=latent_dim,
             out_channels=in_channels,
             channels=channels,
@@ -101,13 +101,13 @@ class ImageKoopmanAE(KoopmanAE):
 
         del net.logvar
 
-        encoder = nn.Sequential(net.encoder, net.intermediate, Flatten(), net.mu)
+        encoder = nn.Sequential(net.encode, net.intermediate, Flatten(), net.mu)
 
         decoder = nn.Sequential(
             net.decodeL,
             nn.ReLU(),
             Reshape(net.channels[-1], *net.final_size),
-            net.decoder,
+            net.decode,
         )
 
-        super().__init__(encoder=encoder, decoder=decoder, **base_kwargs)
+        super().__init__(encoder=encoder, decoder=decoder, latent_dim=latent_dim, **base_kwargs)

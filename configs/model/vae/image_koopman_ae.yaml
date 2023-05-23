@@ -2,7 +2,7 @@ _target_: aics_im2im.models.vae.ImageKoopmanAE
 
 latent_dim: 128
 x_label: image
-in_channels: 1
+in_shape: [1, 64, 64, 64]
 
 channels: [2, 4, 8, 16, 32]
 strides: [2, 2, 2, 2, 2]
