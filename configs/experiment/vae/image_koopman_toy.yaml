@@ -1,0 +1,48 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/toy_tracks
+  - override /model: vae/image_koopman_ae
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: mlflow
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: synthetic_data_koopman
+tags: ["koopman", "synthetic", "3d"]
+
+seed: 42
+
+model:
+  spatial_dims: 3
+  channels: [2, 4, 8, 16, 32]
+  strides: [2, 2, 2, 2, 2]
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 5
+    min_delta: 10
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: koopman_ae_toy
+    run_name:

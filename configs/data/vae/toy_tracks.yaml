@@ -1,0 +1,34 @@
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamoduleTracks
+
+path: "/allen/aics/modeling/gui.pires/data/toy_shapes_v4_split_morph.csv"
+
+split_column: split
+num_workers: 10
+
+time_col: T_index
+track_id_col: track_id
+batch_size: 64
+
+window_overlap:
+n_random_chunks: 3 # number of random chunks from track per epoch
+
+transforms:
+  - _target_: aics_im2im.dataframe.transforms.GroupCols
+    groups:
+      image: crop_seg
+      track_id: track_id
+      t: T_index
+  - _target_: monai.transforms.LoadImaged
+    keys: image
+    reader:
+      - _target_: aics_im2im.image.io.MonaiBioReader
+        dimension_order_out: "CZYX"
+  - _target_: monai.transforms.ResizeWithPadOrCropd
+    spatial_size: [128, 128, 128]
+  - _target_: aics_im2im.image.transforms.Resized
+    keys: [image]
+    # images become [64, 64, 64]
+    scale_factor: 0.5
+  - _target_: monai.transforms.ToTensord
+    keys: [image]
+    track_meta: false
