@@ -25,7 +25,8 @@ class DataframeDatamoduleTracks(DataframeDatamodule):
         just_inference: bool = False,
         cache_dir: Optional[Union[Path, str]] = None,
         seed: int = 42,
-        window_overlap: Optional[int] = 0,
+        window_overlap: Optional[int] = None,
+        n_random_chunks: Optional[int] = None,
         track_id_col: str = "track_id",
         time_col: str = "T",
         **dataloader_kwargs,
@@ -89,21 +90,32 @@ class DataframeDatamoduleTracks(DataframeDatamodule):
         )
 
         self.window_overlap = window_overlap
+        self.n_random_chunks = n_random_chunks
         self.track_id_col = track_id_col
         self.time_col = time_col
+        self.split_column = split_column
 
     def make_dataloader(self, split):
         kwargs = dict(**self.dataloader_kwargs)
-        kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
+        kwargs.pop("shuffle", None)
+        kwargs.pop("drop_last", None)
 
-        # we're always getting the full dataset here,
         subset = self.get_dataset(split)
 
-        track_indices = subset.dataset.data.df.groupby(  # access the underlying dataframe
-            self.track_id_col
-        ).apply(get_track_indices)
+        # access the underlying dataframe and get the split subdataframe,
+        # so we can iloc it later
+        split_df = subset.dataset.data.df.loc[
+            lambda row: row[self.split_column] == split
+        ].reset_index()
+
+        track_indices = split_df.groupby(self.track_id_col).apply(
+            lambda gr: get_track_indices(gr, self.time_col)
+        )
 
         batch_sampler = TrackSampler(
-            track_indices, batch_size=kwargs.pop("batch_size"), overlap=self.window_overlap
+            track_indices,
+            batch_size=kwargs.pop("batch_size"),
+            overlap=self.window_overlap,
+            n_random_chunks=self.n_random_chunks,
         )
         return DataLoader(subset, batch_sampler=batch_sampler, **kwargs)

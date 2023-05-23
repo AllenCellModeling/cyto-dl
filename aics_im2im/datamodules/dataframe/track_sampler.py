@@ -29,24 +29,43 @@ def window(iterable, chunk_size=3, overlap=0):
             yield tuple(queue)[-i:]
 
 
+def random_chunks(iterable, chunk_size, n_chunks):
+    last_possible_start = len(iterable) - chunk_size - 1
+    for chunk in range(n_chunks):
+        start_ix = random.randint(0, last_possible_start)  # nosec
+        yield iterable[start_ix : start_ix + chunk_size]
+
+
 class TrackSampler(torch.utils.data.Sampler):
-    def __init__(self, track_indices, batch_size, overlap=None):
+    def __init__(self, track_indices, batch_size, overlap=None, n_random_chunks=None):
         self.track_indices = track_indices
         self.batch_size = batch_size
 
-        if overlap is None:
-            overlap = batch_size // 2
-        self.overlap = overlap
-
         self.total_batches = 0
-        for track in track_indices:
-            self.total_batches += math.ceil((len(track) - overlap) / (batch_size - overlap))
+        if overlap is not None:
+            self.overlap = overlap
+            self.n_random_chunks = None
+            for track in track_indices:
+                self.total_batches += math.ceil((len(track) - overlap) / (batch_size - overlap))
+        else:
+            self.overlap = None
+            if n_random_chunks is None:
+                n_random_chunks = 2
+            self.n_random_chunks = n_random_chunks
+
+            self.total_batches = len(track_indices) * n_random_chunks
 
     def __iter__(self):
-        iterators = [
-            window(track, chunk_size=self.batch_size, overlap=self.overlap)
-            for track in self.track_indices
-        ]
+        if self.overlap is not None:
+            iterators = [
+                window(track, chunk_size=self.batch_size, overlap=self.overlap)
+                for track in self.track_indices
+            ]
+        else:
+            iterators = [
+                random_chunks(track, chunk_size=self.batch_size, n_chunks=self.n_random_chunks)
+                for track in self.track_indices
+            ]
 
         iterator_indices = list(range(len(iterators)))
 
