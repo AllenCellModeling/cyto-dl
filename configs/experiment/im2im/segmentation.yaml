@@ -4,7 +4,7 @@
 defaults:
   - override /data: im2im/segmentation.yaml
   - override /model: im2im/segmentation.yaml
-  - override /callbacks: default.yaml
+  - override /callbacks: outlier_detection.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
 
@@ -21,13 +21,16 @@ target_col: seg
 spatial_dims: 3
 raw_im_channels: 1
 
+ckpt_path: "//allen/aics/assay-dev/users/Benji/aics-im2im/logs/train/runs/YOUR_EXP_NAME/YOUR_RUN_NAME/2023-05-24_15-34-56/166/b0a85ed58f5d4d009f0fbeb46938932f/checkpoints/epoch=9-step=1000.ckpt"
 trainer:
-  max_epochs: 100
+  max_epochs: 2
+  check_val_every_n_epoch: 10
 
 data:
   path: ${paths.data_dir}/example_experiment_data/segmentation
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
   subsample:
+    train: 100
   batch_size: 1
   _aux:
     patch_shape: [16, 32, 32]
