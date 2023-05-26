@@ -15,7 +15,7 @@ from typing import Sequence
 from monai.data import Dataset, PersistentDataset
 from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
-from torch.utils.data import BatchSampler, Sampler, Subset, SubsetRandomSampler
+from torch.utils.data import BatchSampler, Sampler, SubsetRandomSampler
 from upath import UPath as Path
 
 from aics_im2im.dataframe import read_dataframe
@@ -36,14 +36,13 @@ class RemoveNaNKeysd(Transform):
         return new_data
 
 
-# randomly switch between generating batches from each sampler
 class AlternatingBatchSampler(BatchSampler):
     """Subclass of pytorch's `BatchSampler` that alternates between sampling from mutually
     exclusive columns of a dataframe dataset."""
 
     def __init__(
         self,
-        subset: Subset,
+        subset_df: pd.DataFrame,
         target_columns: Sequence[str] = None,
         grouping_column: Sequence[str] = None,
         batch_size: int = 1,
@@ -72,13 +71,6 @@ class AlternatingBatchSampler(BatchSampler):
             grouping_column is not None or target_columns is not None
         ), "Either target column or grouping column must be provided"
         super().__init__(None, batch_size, drop_last)
-        # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
-        # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
-        # subset indices instead of the indices of the original dataframe, we have to reset the index
-        # of the subsetted dataframe
-
-        # order is subset.monai_dataset.dataframewrapper.dataframe
-        subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
         samplers = []
         if target_columns is not None:
             for name in target_columns:
@@ -90,8 +82,8 @@ class AlternatingBatchSampler(BatchSampler):
                     )
                 samplers.append(sampler(head_indices))
         else:
-            grouping_options = subset.dataset.data.df[grouping_column].unique()
-            for i, opt in enumerate(grouping_options):
+            grouping_options = subset_df[grouping_column].unique()
+            for opt in grouping_options:
                 group_indices = subset_df.index[subset_df[grouping_column] == opt].to_list()
                 if len(group_indices) == 0:
                     raise ValueError(

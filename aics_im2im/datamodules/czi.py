@@ -8,6 +8,8 @@ from monai.data import DataLoader, Dataset
 from monai.transforms import Compose, apply_transform
 from omegaconf import ListConfig
 
+from .dataframe.utils import AlternatingBatchSampler
+
 
 class CZIDataset(Dataset):
     """Dataset converting a `.csv` file listing CZI files and some metadata into batches of single-
@@ -20,6 +22,7 @@ class CZIDataset(Dataset):
         channel_column: str,
         out_key: str,
         spatial_dims: int = 3,
+        df: pd.DataFrame = None,
         scene_column: str = "scene",
         time_start_column: str = "start",
         time_stop_column: str = "stop",
@@ -55,7 +58,8 @@ class CZIDataset(Dataset):
             Callable to that accepts numpy array. For example, image normalization functions could be passed here.
         """
         super().__init__(None, transform)
-        df = pd.read_csv(csv_path)
+        if df is None:
+            df = pd.read_csv(csv_path)
         self.img_path_column = img_path_column
         self.channel_column = channel_column
         self.scene_column = scene_column
@@ -87,7 +91,7 @@ class CZIDataset(Dataset):
         stop = row.get(self.time_stop_column, -1)
         step = row.get(self.time_step_column, 1)
         timepoints = list(range(start, stop, step))
-        if np.any((start, stop, step) == -1):
+        if np.any(np.asarray((start, stop, step)) == -1):
             timepoints = list(range(img.dims.T))
         return timepoints
 
@@ -110,6 +114,7 @@ class CZIDataset(Dataset):
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
+                            "pixel_size": row.get("pixel_size"),
                         }
                     )
         return img_data, n_files
@@ -123,36 +128,46 @@ class CZIDataset(Dataset):
         return img
 
     def _transform(self, index: int):
-        img_data = self.img_data.pop()
+        img_data = self.img_data.pop(index)
         img = img_data.pop("img")
+        pixel_size = img_data.pop("pixel_size")
         original_path = img_data.pop("original_path")
         img.set_scene(img_data.pop("scene"))
         data_i = img.get_image_dask_data(**img_data).compute()
         data_i = self._ensure_channel_first(data_i)
-        return {
-            self.out_key: apply_transform(self.transform, data_i)
-            if self.transform is not None
-            else data_i,
+
+        data_dict = {
+            self.out_key: data_i,
+            "pixel_size": pixel_size,
             f"{self.out_key}_meta_dict": {
                 "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
             },
         }
+        out = apply_transform(self.transform, data_dict)
+        return out
+
+    def __getitem__(self, index):
+        return self._transform(index)
 
     def __len__(self):
         return self.n_files
 
 
 def make_CZI_dataloader(
-    csv_path,
-    img_path_column,
-    channel_column,
-    out_key,
+    csv_path: str = None,
+    img_path_column: str = "img",
+    channel_column: str = "channel",
+    out_key: str = "img",
+    df: pd.DataFrame = None,
     spatial_dims=3,
     scene_column="scene",
     time_start_column="start",
     time_stop_column="stop",
     time_step_column="step",
     transforms=None,
+    grouped=False,
+    target_columns=None,
+    grouping_column=None,
     **dataloader_kwargs,
 ):
     """Function to create a CZI Dataset. Currently, this dataset is only useful during prediction
@@ -187,16 +202,35 @@ def make_CZI_dataloader(
     """
     if isinstance(transforms, (list, tuple, ListConfig)):
         transforms = Compose(transforms)
+
     dataset = CZIDataset(
-        csv_path,
-        img_path_column,
-        channel_column,
-        out_key,
-        spatial_dims,
+        csv_path=csv_path,
+        img_path_column=img_path_column,
+        channel_column=channel_column,
+        out_key=out_key,
+        df=df,
+        spatial_dims=spatial_dims,
         scene_column=scene_column,
         time_start_column=time_start_column,
         time_stop_column=time_stop_column,
         time_step_column=time_step_column,
         transform=transforms,
     )
+    if grouped:
+        dataloader_kwargs.pop("drop_last", None)
+        dataloader_kwargs.pop("batch_sampler", None)
+        dataloader_kwargs.pop("sampler", None)
+
+        if df is None and csv_path is not None:
+            df = pd.read_csv(csv_path).reset_index()
+
+        batch_sampler = AlternatingBatchSampler(
+            df,
+            batch_size=dataloader_kwargs.pop("batch_size"),
+            drop_last=True,
+            shuffle=dataloader_kwargs.pop("shuffle"),
+            target_columns=target_columns,
+            grouping_column=grouping_column,
+        )
+        return DataLoader(dataset, batch_sampler=batch_sampler, **dataloader_kwargs)
     return DataLoader(dataset, **dataloader_kwargs)

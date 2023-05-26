@@ -89,11 +89,6 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
             https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
         """
 
-        # make sure dataloader kwargs doesn't contain invalid arguments
-        dataloader_kwargs.pop("drop_last", None)
-        dataloader_kwargs.pop("batch_sampler", None)
-        dataloader_kwargs.pop("sampler", None)
-
         super().__init__(
             path=path,
             transforms=transforms,
@@ -116,7 +111,12 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
         subset = self.get_dataset(split)
 
         batch_sampler = AlternatingBatchSampler(
-            subset,
+            # order: subset.monai_dataset.dataframewrapper.dataframe
+            subset.dataset.data.df.iloc[subset.indices].reset_index(),
+            # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
+            # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
+            # subset indices instead of the indices of the original dataframe, we have to reset the index
+            # of the subsetted dataframe
             batch_size=kwargs.pop("batch_size"),
             drop_last=True,
             shuffle=kwargs.pop("shuffle"),
