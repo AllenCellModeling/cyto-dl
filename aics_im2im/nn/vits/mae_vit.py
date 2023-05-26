@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
-from monai.networks.blocks import UnetBasicBlock, UnetOutBlock
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
@@ -57,9 +56,6 @@ class Patchify(torch.nn.Module):
     def forward(self, img):
         # all images in batch assumed to be same resolution
         patch_size = [int(s / self.n_patches) for s in img.shape[-3:]]
-        assert np.all(
-            np.asarray(patch_size) > 1
-        ), f"All patch size must be >1 in all dimensions, got {patch_size}. Increase physical_crop_size or decrease number of patches. "
         tokens = torch.nn.functional.conv3d(
             img, weight=self.resample_weight(patch_size), stride=patch_size
         )

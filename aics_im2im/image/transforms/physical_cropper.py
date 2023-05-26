@@ -80,4 +80,5 @@ class RandomPhysicalDimsCropper(RandomizableTransform):
             patch_dict = {key: image_dict[key][slices] for key in available_keys}
             patch_dict.update(meta_dict)
             patches.append(patch_dict)
+
         return patches
