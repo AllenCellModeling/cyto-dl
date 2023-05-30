@@ -28,7 +28,7 @@ class DataframeDatamoduleTracks(DataframeDatamodule):
         window_overlap: Optional[int] = None,
         n_random_chunks: Optional[int] = None,
         track_id_col: str = "track_id",
-        time_col: str = "T",
+        time_col: str = "T_index",
         **dataloader_kwargs,
     ):
         """
