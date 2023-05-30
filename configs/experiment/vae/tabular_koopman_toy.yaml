@@ -1,0 +1,61 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/toy_tracks_spharm
+  - override /model: vae/tabular_koopman_ae
+  - override /callbacks: default
+  - override /trainer: default
+  - override /logger: mlflow
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["koopman", "synthetic", "spharm"]
+
+seed: 42
+
+data:
+  path: /allen/aics/modeling/gui.pires/data/toy_shapes_spharm.csv
+  time_col: T_index
+  track_id_col: track_id
+  batch_size: 32
+
+  n_random_chunks: 5
+  num_workers: 0
+
+model:
+  x_label: spharm
+  x_dim: 578
+  latent_dim: 4
+  hidden_layers: [32, 16]
+
+  linearity_loss_factor: 100
+  Areg_factor: 100
+
+  n_epochs_before_dmd: 0
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  gradient_clip_val: 0.1
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 5
+    min_delta: 10
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: koopman_ae_toy_spharm
+    run_name:

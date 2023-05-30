@@ -1,0 +1,9 @@
+_target_: aics_im2im.models.vae.TabularKoopmanAE
+
+x_label:
+x_dim:
+latent_dim:
+hidden_layers: [128, 128]
+
+linearity_loss_factor:
+Areg_factor:

@@ -4,4 +4,5 @@ from .image_vae import ImageVAE
 from .koopman_ae import KoopmanAE
 from .latent_loss_vae import LatentLossVAE
 from .o2_spharm_vae.o2_spharm_vae import O2SpharmVAE
+from .tabular_koopman_ae import TabularKoopmanAE
 from .tabular_vae import TabularVAE
