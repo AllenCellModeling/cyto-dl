@@ -1,6 +1,6 @@
 _target_: aics_im2im.datamodules.dataframe.DataframeDatamoduleTracks
 
-path: "/allen/aics/modeling/gui.pires/data/toy_shapes_v4_split_morph.csv"
+path: "/allen/aics/modeling/gui.pires/data/toy_shapes_v4_split_morph_linear.csv"
 
 split_column: split
 num_workers: 10
@@ -10,7 +10,7 @@ track_id_col: track_id
 batch_size: 64
 
 window_overlap:
-n_random_chunks: 3 # number of random chunks from track per epoch
+n_random_chunks: 5 # number of random chunks from track per epoch
 
 transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols

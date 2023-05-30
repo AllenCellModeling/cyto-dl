@@ -40,10 +40,6 @@ class ImageKoopmanAE(KoopmanAE):
         latent_dim: int
             Bottleneck size
         x_label: Optional[str] = None
-        reconstruction_loss: Loss
-            Loss to be used for reconstruction. Can be a PyTorch loss or a class
-            that respects the same interface,
-            i.e. subclasses torch.nn.modules._Loss
         in_channels: int
             The number of channels in the input image
         channels: Sequence[int]
@@ -101,7 +97,13 @@ class ImageKoopmanAE(KoopmanAE):
 
         del net.logvar
 
-        encoder = nn.Sequential(net.encode, net.intermediate, Flatten(), net.mu)
+        encoder = nn.Sequential(
+            net.encode,
+            net.intermediate,
+            Flatten(),
+            net.mu,
+            nn.Tanh(),
+        )
 
         decoder = nn.Sequential(
             net.decodeL,
