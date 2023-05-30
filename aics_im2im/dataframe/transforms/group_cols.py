@@ -27,7 +27,7 @@ class GroupCols(Transform):
             Dictionary where keys are column group names (as in `groups`),
             and values are either:
             - a numpy dtype or python type
-            - a string recognize by `np.dtype` that can be turned into a dtype
+            - a string recognized by `np.dtype` that can be turned into a dtype
             - `None` in which case the dtype of the group remains as-is
 
         """
