@@ -33,8 +33,9 @@ model:
   hidden_layers: [32, 16]
 
   linearity_loss_factor: 100
-  Areg_factor: 100
+  Areg_factor: 10
 
+  rank: 4
   n_epochs_before_dmd: 0
 
 trainer:
