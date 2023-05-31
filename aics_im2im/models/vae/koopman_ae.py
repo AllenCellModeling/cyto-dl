@@ -118,7 +118,7 @@ class KoopmanAE(BaseModel):
             * torch.tensor(t).view(len(t), 1, 1).type_as(log_Lambda)
         )
 
-        z_pred = (log_Lambda_exp @ coeffs) @ eigvecs.T
+        z_pred = (eigvecs @ log_Lambda_exp) @ coeffs
 
         return z_pred.abs()  # norm of complex value
 
