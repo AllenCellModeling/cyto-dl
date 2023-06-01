@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install gcc gfortran libfftw3-dev libblas-dev liblapack-dev
+          sudo apt install gcc gfortran libfftw3-dev libblas-dev liblapack-dev
           python -m pip install --upgrade pip
           pip install wheel
           pip install numpy
@@ -65,7 +65,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt install gcc gfortran libfftw3-dev libblas-dev liblapack-dev
+          sudo apt install gcc gfortran libfftw3-dev libblas-dev liblapack-dev
           python -m pip install --upgrade pip
           pip install wheel
           pip install numpy
