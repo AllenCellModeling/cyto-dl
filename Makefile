@@ -64,10 +64,21 @@ test: ## Run not slow tests
 test-full: ## Run all tests
 	pytest
 
-sync-reqs-files: ## sync requirements/*-requirements.txt with pdm.lock
-	pdm export -f requirements --without-hashes -o requirements/requirements.txt
-	pdm export -f requirements -G equiv --no-default --without-hashes -o requirements/equiv-requirements.txt
-	pdm export -f requirements -G spharm --no-default --without-hashes -o requirements/spharm-requirements.txt
-	pdm export -f requirements -G omnipose --no-default --without-hashes -o requirements/omnipose-requirements.txt
-	pdm export -f requirements -G test --no-default --without-hashes -o requirements/test-requirements.txt
-	pdm export -f requirements -G all --without-hashes -o requirements/all-requirements.txt
+pdm.lock: pyproject.toml
+	pdm lock -G :all
+
+requirements/%-requirements.txt: pdm.lock
+	pdm export -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
+
+requirements/requirements.txt:
+	pdm lock -L simple.lock
+	pdm export -L simple.lock -f requirements --without-hashes -o requirements/requirements.txt
+	rm simple.lock
+
+sync-reqs-files: requirements/requirements.txt \
+                 requirements/equiv-requirements.txt \
+                 requirements/spharm-requirements.txt \
+                 requirements/omnipose-requirements.txt \
+                 requirements/all-requirements.txt \
+                 requirements/test-requirements.txt \
+                 requirements/docs-requirements.txt

@@ -31,7 +31,7 @@ dependencies = [
     "pyarrow~=10.0",
     "PyYAML~=6.0",
     "scikit-learn~=1.2",
-    "aicsimageio~=4.9",
+    "aicsimageio~=4.11.0",
     "universal-pathlib~=0.0",
     "ome-zarr~=0.6",
     "anndata~=0.8",
@@ -46,7 +46,7 @@ requires-python = ">=3.8,<3.11"
 
 [project.optional-dependencies]
 equiv = [
-    "escnn~=1.0.4",
+    "escnn~=1.0.7",
     "e3nn~=0.5.1"
 ]
 spharm = [
@@ -56,23 +56,26 @@ spharm = [
 ]
 omnipose = [
     "edt>=0.56.4",
-    "torchvf @ git+https://github.com/colobas/torchvf.git@682b8b7",
-    "cellpose-omni[omni] @ git+https://github.com/kevinjohncutler/cellpose-omni.git@9602b30",
+    "torchvf~=0.1.2",
     "omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@ce2e9aa",
 ]
 s3 = [
     "boto3>=1.23.5,<1.24.5",
     "s3fs~=2023.1"
 ]
+torchserve = [
+    "torchserve>=0.8.0",
+    "nvgpu>=0.10.0",
+]
 all = [
-  "aics-im2im[equiv,spharm,omnipose,s3]"
+    "aics-im2im[equiv,spharm,omnipose,s3,torchserve]",
 ]
 test = [
+    "aics-im2im[all]",
     "pyrootutils~=1.0",
     "pytest~=7.2",
     "sh~=1.14",
     "pytest-cov[toml]~=4.0",
-    "aics-im2im[all]"
 ]
 docs = [
     "aics-im2im[all]",
@@ -80,6 +83,7 @@ docs = [
     "m2r2<=0.3.3.post2",
     "sphinx<=6.1.3",
 ]
+
 
 [project.urls]
 Homepage = "https://github.com/AllenCellModeling/aics-im2im"
