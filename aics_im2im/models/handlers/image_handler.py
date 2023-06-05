@@ -3,12 +3,14 @@ import logging
 import gorilla
 from hydra.utils import instantiate
 
+import aics_im2im.models.handlers.load_image_patch as lip
 from aics_im2im.datamodules.dataframe.utils import parse_transforms
+from aics_im2im.models.handlers.base_handler import BaseHandler
 
-from .base_handler import BaseHandler
-from .load_image_patch import load_image__call__patch
+patches = gorilla.find_patches([lip])
+for patch in patches:
+    gorilla.apply(patch)
 
-gorilla.apply(load_image__call__patch)
 logger = logging.getLogger(__name__)
 
 

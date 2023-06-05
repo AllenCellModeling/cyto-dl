@@ -1,1 +1,1 @@
-from .segmentation_handler import SegmentationHandler
+from .base_handler import BaseHandler
