@@ -1,12 +1,14 @@
 import logging
 
-import torch
+import gorilla
 from hydra.utils import instantiate
 
 from aics_im2im.datamodules.dataframe.utils import parse_transforms
 
 from .base_handler import BaseHandler
+from .load_image_patch import load_image__call__patch
 
+gorilla.apply(load_image__call__patch)
 logger = logging.getLogger(__name__)
 
 

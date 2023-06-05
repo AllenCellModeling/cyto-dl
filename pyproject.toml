@@ -41,6 +41,7 @@ dependencies = [
     "tqdm~=4.64",
     "protobuf<=3.20.1",
     "lightning>=2.0.1.post0",
+    "gorilla>=0.4.0",
 ]
 requires-python = ">=3.8,<3.11"
 
