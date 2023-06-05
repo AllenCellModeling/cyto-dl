@@ -4,6 +4,11 @@ defaults:
   - _self_
   - data: null # choose datamodule with `test_dataloader()` for evaluation
   - model: null
+  # only here so that we can use experiments that try to override these
+  - logger: null
+  - optional callbacks: null
+  - trainer: default.yaml
+  ########################################################################
   - paths: default.yaml
   - extras: default.yaml
   - hydra: default.yaml
@@ -11,8 +16,12 @@ defaults:
   - optional experiment: null
 
 task_name: "compile"
+experiment_name: "catchall_experiment"
+run_name: "catchall_run"
 
 tags: ["dev"]
 
 # passing checkpoint path is necessary for evaluation
-ckpt_path: ???
+ckpt_path:
+model_file:
+handler_file:

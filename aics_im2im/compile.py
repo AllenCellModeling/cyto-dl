@@ -8,7 +8,7 @@ from typing import Tuple
 
 import hydra
 from lightning import LightningDataModule
-from model_archiver.model_archiver import package_model
+from model_archiver.model_packaging import package_model
 from model_archiver.model_packaging_utils import ModelExportUtils
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from torch.utils.data import DataLoader
@@ -68,7 +68,8 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
         cfg_path = Path(tmp_dir) / "config.yaml"
         OmegaConf.save(config=cfg, f=cfg_path)
 
-        name = cfg.model._target_ + "_" + cfg.get("run_name", timestamp())
+        version = cfg.get("run_name", timestamp())
+        name = f"{cfg.model._target_}_{version}"
 
         args = OmegaConf.create(
             {
@@ -76,15 +77,22 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
                 "handler": str(Path(pkg_root) / cfg.handler_file),
                 "serialized_file": cfg.ckpt_path,
                 "model_name": name,
-                "extra_files": [cfg_path],
-                "export_file_path": cfg.get("export_file_path", Path.cwd() / f"{name}.mar"),
+                "version": version,
+                "extra_files": str(cfg_path),
+                "export_path": cfg.get("export_path", Path.cwd()),
+                # TODO: decide which of the following to make configurable
+                "archive_format": "default",
+                "requirements_file": None,
+                "config_file": None,
+                "runtime": "python",
+                "force": True,
             }
         )
         manifest = ModelExportUtils.generate_manifest_json(args)
         package_model(args, manifest=manifest)
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="config.yaml")
+@hydra.main(version_base="1.3", config_path="../configs", config_name="compile.yaml")
 def main(cfg: DictConfig) -> None:
     with suppress(ValueError):
         OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
