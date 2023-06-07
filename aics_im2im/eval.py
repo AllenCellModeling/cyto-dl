@@ -12,6 +12,10 @@ from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
 
+with suppress(ValueError):
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
+
 
 @utils.task_wrapper
 def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -88,9 +92,6 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
-    with suppress(ValueError):
-        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-        OmegaConf.register_new_resolver("eval", eval)
     evaluate(cfg)
 
 

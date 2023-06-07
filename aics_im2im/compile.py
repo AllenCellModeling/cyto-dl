@@ -22,6 +22,10 @@ def timestamp():
 
 log = utils.get_pylogger(__name__)
 
+with suppress(ValueError):
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
+
 
 @utils.task_wrapper
 def compile(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -94,9 +98,6 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="compile.yaml")
 def main(cfg: DictConfig) -> None:
-    with suppress(ValueError):
-        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-        OmegaConf.register_new_resolver("eval", eval)
     compile(cfg)
 
 
