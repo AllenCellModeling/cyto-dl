@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.dataframe package" href="aics_im2im.dataframe.html" /><link rel="prev" title="aics_im2im.callbacks.model_utils module" href="aics_im2im.callbacks.model_utils.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>Overview - aics-im2im 0.1.0 documentation</title>
+        <title>aics_im2im.callbacks.outlier_detection module - aics-im2im 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -155,17 +155,17 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="using_examples.html">Modifying the Example Configs</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="aics_im2im.html">aics_im2im package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current has-children"><a class="reference internal" href="aics_im2im.callbacks.html">aics_im2im.callbacks package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.callback_utils.html">aics_im2im.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.latent_walk.html">aics_im2im.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.model_utils.html">aics_im2im.callbacks.model_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="aics_im2im.callbacks.outlier_detection.html">aics_im2im.callbacks.outlier_detection module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">aics_im2im.callbacks.outlier_detection module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.dataframe.html">aics_im2im.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -344,66 +344,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">aics_im2im</span></code> aims to implement common image-to-image transformations in a manner that is easy to use for beginners and flexible for those wanting to change parameters and customize the configs for their specific needs. To do so, <code class="docutils literal notranslate"><span class="pre">aics-im2im</span></code> is based on the <a class="reference external" href="https://github.com/ashleve/lightning-hydra-template">lightning-hydra-template</a>, which combines the config-based flexibility of <a class="reference external" href="https://hydra.cc/">hydra</a> and the convenience and multiple levels of abstraction provided by <a class="reference external" href="https://www.pytorchlightning.ai/">pytorch-lightning</a>. Training, testing, and prediction configs and syntax are identical to those in the lightning-hydra-template repo; as such their docs are the best way to become familiar with the mechanics of using this repo. Below are documented the unique features of this repo. If a type of config or topic is not covered here, it is because it is already documented in the <code class="docutils literal notranslate"><span class="pre">lightning-hydra-template</span></code> repo.
-We provide simple example configs to help users get started. These configs rely heavily on OmegaConf’s <a class="reference external" href="https://omegaconf.readthedocs.io/en/2.3_branch/usage.html#variable-interpolation">variable interpolation</a> to keep parameters consistent across configs and limit the complexity exposed to new users.
-An <code class="docutils literal notranslate"><span class="pre">_aux</span></code> section can be provided in any config. This can be used to store reference values for interpolation. Any parameters in this section will not be instantiated.</p>
-<section id="data">
-<h2>data<a class="headerlink" href="#data" title="Permalink to this heading">#</a></h2>
-<p>The provided datamodule is the serotiny <a class="reference external" href="https://github.com/AllenCell/serotiny/blob/32b3811fc1ef013a191e34181b0add1ca145663d/serotiny/datamodules/dataframe/dataframe_datamodule.py">DataFrame Datamodule</a> wraps MONAI’s <a class="reference external" href="https://docs.monai.io/en/stable/data.html#persistentdataset">persistent dataset</a>.
-The data config specifies how to construct <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">valid</span></code>, <code class="docutils literal notranslate"><span class="pre">test</span></code>, and <code class="docutils literal notranslate"><span class="pre">predict</span></code> dataloaders.
-Some important arguments are :</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: references a folder with <code class="docutils literal notranslate"><span class="pre">train.csv</span></code>, <code class="docutils literal notranslate"><span class="pre">test.csv</span></code>, and <code class="docutils literal notranslate"><span class="pre">valid.csv</span></code> or to a single <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with a <code class="docutils literal notranslate"><span class="pre">split</span></code> column</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cache_dir</span></code>: references a location to save cached images to speed up training</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">split_column</span></code>: if a single <code class="docutils literal notranslate"><span class="pre">.csv</span></code> is passed to <code class="docutils literal notranslate"><span class="pre">path</span></code>, <code class="docutils literal notranslate"><span class="pre">split_column</span></code> is used to divide the manifest into <code class="docutils literal notranslate"><span class="pre">train</span></code>/<code class="docutils literal notranslate"><span class="pre">test</span></code>/<code class="docutils literal notranslate"><span class="pre">valid</span></code> splits.</p></li>
-<li><p><cite>transforms</cite>: sequence of transforms that load, preprocess, and augment images for training, testing, and validation. [Monai](<a class="reference external" href="https://docs.monai.io/en/stable/transforms.html">https://docs.monai.io/en/stable/transforms.html</a>) offers a wide array of useful transforms. Often, the selected transforms are the primary differentiators of different tasks. For example, <code class="docutils literal notranslate"><span class="pre">labelfree</span></code> and <code class="docutils literal notranslate"><span class="pre">segmentation</span></code> differ in part due to how the target is normalized (z-score normalized for <code class="docutils literal notranslate"><span class="pre">labelfree</span></code> vs binarized for <code class="docutils literal notranslate"><span class="pre">segmentation</span></code>). When creating your own configs, the transforms are the first thing to change/</p></li>
-<li><p>All additional arguments are assumed to be arguments for the dataloaders, e.g. <code class="docutils literal notranslate"><span class="pre">num_worker</span></code>, <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, <code class="docutils literal notranslate"><span class="pre">pin_memory</span></code>, etc. See <a class="reference external" href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader">here</a> for dataloader arguments.</p></li>
-</ul>
-</section>
-<section id="experiment">
-<h2>experiment<a class="headerlink" href="#experiment" title="Permalink to this heading">#</a></h2>
-<p>This is the workhorse of <code class="docutils literal notranslate"><span class="pre">aics_im2im</span></code> training. These files compile and override defaults for the <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, <code class="docutils literal notranslate"><span class="pre">callbacks</span></code>, <code class="docutils literal notranslate"><span class="pre">trainer</span></code>, and <code class="docutils literal notranslate"><span class="pre">logger</span></code> configs.
-If you are using the example configs, <code class="docutils literal notranslate"><span class="pre">source_col</span></code> and <code class="docutils literal notranslate"><span class="pre">target_col</span></code> are expected to refer to the column names of your input and ground truth images in the provided <code class="docutils literal notranslate"><span class="pre">.csv</span></code> files. <code class="docutils literal notranslate"><span class="pre">experiment_name</span></code> and <code class="docutils literal notranslate"><span class="pre">run_name</span></code> are used to organize the saved log files and log to mlflow. <code class="docutils literal notranslate"><span class="pre">path</span></code> and <code class="docutils literal notranslate"><span class="pre">cache_dir</span></code> arguments passed to the <code class="docutils literal notranslate"><span class="pre">datamodule</span></code> config are also required.</p>
-</section>
-<section id="model">
-<h2>model<a class="headerlink" href="#model" title="Permalink to this heading">#</a></h2>
-<p>The model arrangement that we provide consists of two basic parts:</p>
-<ol class="arabic simple">
-<li><p>backbone
-The backbone is fed the input images and produces an $n$ channel output. This output is then passed to each of the <code class="docutils literal notranslate"><span class="pre">task</span></code> heads.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">task</span></code> heads
-<code class="docutils literal notranslate"><span class="pre">task</span></code> heads transform the backbone output into task-specific outputs. For each <code class="docutils literal notranslate"><span class="pre">task</span></code>, <code class="docutils literal notranslate"><span class="pre">head</span></code> and <code class="docutils literal notranslate"><span class="pre">loss</span></code> keys must be provided.</p></li>
-</ol>
-<ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">head</span></code> function determines how the backbone output is transformed into the task-specific output. If used in a single task case, this can be the <a class="reference external" href="https://github.com/AllenCellModeling/aics-im2im/blob/b19dd56da4adfbaca658dd7ad6128a1bfe42b721/aics_im2im/models/components/aux_head.py#L12">identity head</a>, which simply passes through the backbone output. In multi task cases, these can be more complex, doing <a class="reference external" href="https://github.com/AllenCellModeling/aics-im2im/blob/b19dd56da4adfbaca658dd7ad6128a1bfe42b721/aics_im2im/models/components/aux_head.py#L66">convolution or further upsampling</a>, <a class="reference external" href="https://github.com/AllenCellModeling/aics-im2im/blob/b19dd56da4adfbaca658dd7ad6128a1bfe42b721/aics_im2im/models/components/aux_head.py#L31">3d to 2d projection</a>, or any other task that you can implement in a custom head.</p></li>
-<li><p>The <code class="docutils literal notranslate"><span class="pre">loss</span></code> head determines which loss function is run on the output of a given task head. <a class="reference external" href="https://docs.monai.io/en/stable/losses.html#loss-functions">MONAI</a> and <a class="reference external" href="https://docs.monai.io/en/stable/losses.html#loss-functions">pytorch</a> provide many common loss functions, and we implement custom loss functions.</p></li>
-</ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">generator</span></code> <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> and <code class="docutils literal notranslate"><span class="pre">lr_scheduler</span></code> must always be passed, and GANs requires a <code class="docutils literal notranslate"><span class="pre">discriminator</span></code> <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> as well.</p>
-<p><code class="docutils literal notranslate"><span class="pre">postprocessing</span></code> specifies how images are saved out for visualization during training. For an example segmentation task where the <code class="docutils literal notranslate"><span class="pre">raw</span></code> columns is passed to the model and <code class="docutils literal notranslate"><span class="pre">seg</span></code> head predicts logits, we get</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">postprocessing</span><span class="p">:</span>
-  <span class="nb">input</span><span class="p">:</span>
-    <span class="n">raw</span><span class="p">:</span>
-      <span class="n">_target_</span><span class="p">:</span> <span class="n">aics_im2im</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">postprocessing</span><span class="o">.</span><span class="n">rescale</span>
-      <span class="n">_partial_</span><span class="p">:</span> <span class="kc">True</span>
-    <span class="n">seg</span><span class="p">:</span>
-      <span class="n">_target_</span><span class="p">:</span> <span class="n">aics_im2im</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">postprocessing</span><span class="o">.</span><span class="n">rescale</span>
-      <span class="n">_partial_</span><span class="p">:</span> <span class="kc">True</span>
-  <span class="n">prediction</span><span class="p">:</span>
-    <span class="n">seg</span><span class="p">:</span>
-      <span class="n">_target_</span><span class="p">:</span> <span class="n">aics_im2im</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">postprocessing</span><span class="o">.</span><span class="n">sigmoid_rescale</span>
-      <span class="n">_partial_</span><span class="p">:</span> <span class="kc">True</span>
-</pre></div>
-</div>
-<p>This tells the model to save out the <code class="docutils literal notranslate"><span class="pre">raw</span></code> and <code class="docutils literal notranslate"><span class="pre">seg</span></code> images passed in by rescaling them to 8-bit range, as well as applying <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> to the segmentation prediction and rescaling it to 8-bit. Custom postprocessing code is encouraged for your use case, but a few defaults can be found <a class="reference external" href="https://github.com/AllenCellModeling/aics-im2im/blob/b19dd56da4adfbaca658dd7ad6128a1bfe42b721/aics_im2im/utils/postprocessing.py">here</a></p>
-</section>
+          <section id="aics-im2im-callbacks-outlier-detection-module">
+<h1>aics_im2im.callbacks.outlier_detection module<a class="headerlink" href="#aics-im2im-callbacks-outlier-detection-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -411,8 +359,26 @@ The backbone is fed the input images and produces an $n$ channel output. This ou
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="aics_im2im.dataframe.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">aics_im2im.dataframe package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="aics_im2im.callbacks.model_utils.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">aics_im2im.callbacks.model_utils module</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -431,29 +397,8 @@ The backbone is fed the input images and produces an $n$ channel output. This ou
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Overview</a><ul>
-<li><a class="reference internal" href="#data">data</a></li>
-<li><a class="reference internal" href="#experiment">experiment</a></li>
-<li><a class="reference internal" href="#model">model</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
