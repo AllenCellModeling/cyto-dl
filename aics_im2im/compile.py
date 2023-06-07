@@ -1,14 +1,24 @@
+import datetime
+import os
+import tempfile
 from collections.abc import MutableMapping
 from contextlib import suppress
-from typing import List, Tuple
+from pathlib import Path
+from typing import Tuple
 
 import hydra
-from lightning import Callback, LightningDataModule, LightningModule, Trainer
-from lightning.pytorch.loggers import Logger
+from lightning import LightningDataModule
+from model_archiver.model_packaging import package_model
+from model_archiver.model_packaging_utils import ModelExportUtils
 from omegaconf import DictConfig, ListConfig, OmegaConf
 from torch.utils.data import DataLoader
 
 from aics_im2im import utils
+
+
+def timestamp():
+    return datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
 
 log = utils.get_pylogger(__name__)
 
@@ -18,7 +28,7 @@ with suppress(ValueError):
 
 
 @utils.task_wrapper
-def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
+def compile(cfg: DictConfig) -> Tuple[dict, dict]:
     """Evaluates given checkpoint on a datamodule testset.
 
     This method is wrapped in optional @task_wrapper decorator which applies extra utilities
@@ -31,11 +41,15 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
-    if not cfg.ckpt_path:
-        raise ValueError("Checkpoint path must be included for testing")
+    for key in ("model_file", "handler_file", "ckpt_path", "return"):
+        if key not in cfg:
+            raise ValueError(f"Compilation requires key `{key}` in config")
 
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
+
+    if "return" not in cfg:
+        raise ValueError("You must specify a return method in your config")
 
     # remove aux section after resolving and before instantiating
     utils.remove_aux_key(cfg)
@@ -57,42 +71,38 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
                 "being a DataLoader (or list thereof)"
             )
 
-    log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model, _recursive_=False)
+    pkg_root = os.path.dirname(os.path.abspath(__file__))
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        cfg_path = Path(tmp_dir) / "config.yaml"
+        OmegaConf.save(config=cfg, f=cfg_path)
 
-    log.info("Instantiating loggers...")
-    logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
+        version = cfg.get("run_name", timestamp())
+        name = f"{cfg.model._target_}_{version}"
 
-    log.info("Instantiating callbacks...")
-    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
-
-    log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger, callbacks=callbacks)
-
-    object_dict = {
-        "cfg": cfg,
-        "data": data,
-        "model": model,
-        "logger": logger,
-        "trainer": trainer,
-    }
-
-    if logger:
-        log.info("Logging hyperparameters!")
-        utils.log_hyperparameters(object_dict)
-
-    log.info("Starting testing!")
-    method = trainer.test if cfg.get("test", False) else trainer.predict
-    method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
-
-    metric_dict = trainer.callback_metrics
-
-    return metric_dict, object_dict
+        args = OmegaConf.create(
+            {
+                "model_file": str(Path(pkg_root) / cfg.model_file),
+                "handler": str(Path(pkg_root) / cfg.handler_file),
+                "serialized_file": cfg.ckpt_path,
+                "model_name": name,
+                "version": version,
+                "extra_files": str(cfg_path),
+                "export_path": cfg.get("export_path", Path.cwd()),
+                # TODO: decide which of the following to make configurable
+                "archive_format": "default",
+                "requirements_file": None,
+                "config_file": None,
+                "runtime": "python",
+                "force": True,
+            }
+        )
+        manifest = ModelExportUtils.generate_manifest_json(args)
+        package_model(args, manifest=manifest)
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
+@hydra.main(version_base="1.3", config_path="../configs", config_name="compile.yaml")
 def main(cfg: DictConfig) -> None:
-    evaluate(cfg)
+    compile(cfg)
 
 
 if __name__ == "__main__":

@@ -116,7 +116,7 @@ transforms:
             dimension_order_out: "ZYX"
             C: 5
       - _target_: monai.transforms.AddChanneld
-        keys: ${data.columns}
+        keys: ${source_col}
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd

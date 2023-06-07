@@ -161,8 +161,12 @@ class MultiTaskIm2Im(BaseModel):
 
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        if stage == "predict":
-            return
-        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-        losses = self._sum_losses(losses)
-        return losses, None, None
+
+        if stage != "predict":
+            losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+            losses = self._sum_losses(losses)
+            return losses, None, None
+
+        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
+
+        return None, preds, None

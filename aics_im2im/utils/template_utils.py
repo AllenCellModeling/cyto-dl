@@ -51,7 +51,7 @@ def task_wrapper(task_func: Callable) -> Callable:
         # execute the task
         try:
             start_time = time.time()
-            metric_dict, object_dict = task_func(cfg=cfg)
+            out = task_func(cfg=cfg)
         except Exception as ex:
             log.exception("")  # save exception to `.log` file
             raise ex
@@ -63,7 +63,7 @@ def task_wrapper(task_func: Callable) -> Callable:
 
         log.info(f"Output dir: {cfg.paths.output_dir}")
 
-        return metric_dict, object_dict
+        return out
 
     return wrap
 
