@@ -25,3 +25,12 @@ tags: ["dev"]
 ckpt_path:
 model_file:
 handler_file:
+export_path:
+
+#return:
+#  mode: network
+#
+
+return:
+  mode: path
+  path: /tmp
