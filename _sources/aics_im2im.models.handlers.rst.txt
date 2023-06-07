@@ -1,0 +1,17 @@
+aics\_im2im.models.handlers package
+===================================
+
+.. automodule:: aics_im2im.models.handlers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   aics_im2im.models.handlers.base_handler
+   aics_im2im.models.handlers.image_handler
+   aics_im2im.models.handlers.load_image_patch

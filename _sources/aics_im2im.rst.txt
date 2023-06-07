@@ -27,5 +27,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   aics_im2im.compile
    aics_im2im.eval
    aics_im2im.train

@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   aics_im2im.models.handlers
    aics_im2im.models.im2im
    aics_im2im.models.utils
    aics_im2im.models.vae
