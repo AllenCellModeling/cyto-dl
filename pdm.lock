@@ -737,6 +737,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "gorilla"
+version = "0.4.0"
+summary = "Convenient approach to monkey patching"
+
+[[package]]
 name = "greenlet"
 version = "2.0.2"
 requires_python = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
@@ -2390,7 +2395,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "all", "docs", "equiv", "omnipose", "s3", "spharm", "test", "torchserve"]
-content_hash = "sha256:9f0c97db888b4990d814259b3b2b70d7e37f71e2b21c2be6726e99a71b5615fb"
+content_hash = "sha256:495afcbf4c1de8540281536c3983abbcd1a9d6c3cbe03dfb1c42b5dc82db009f"
 
 [metadata.files]
 "aicscytoparam 0.1.9" = [
@@ -3123,6 +3128,10 @@ content_hash = "sha256:9f0c97db888b4990d814259b3b2b70d7e37f71e2b21c2be6726e99a71
 "gitpython 3.1.31" = [
     {url = "https://files.pythonhosted.org/packages/5f/11/2b0f60686dbda49028cec8c66bd18a5e82c96d92eef4bc34961e35bb3762/GitPython-3.1.31.tar.gz", hash = "sha256:8ce3bcf69adfdf7c7d503e78fd3b1c492af782d58893b650adb2ac8912ddd573"},
     {url = "https://files.pythonhosted.org/packages/9e/8a/d1e02cc111d65b0346f70abb83c51f8593e7134bf694a4a56d1a470caaf7/GitPython-3.1.31-py3-none-any.whl", hash = "sha256:f04893614f6aa713a60cbbe1e6a97403ef633103cdd0ef5eb6efe0deb98dbe8d"},
+]
+"gorilla 0.4.0" = [
+    {url = "https://files.pythonhosted.org/packages/0f/00/0a7f837b9ea8ad3e0a98aa1d6ac52c13db9bc01ce9ccdca4d3072b8ea272/gorilla-0.4.0.tar.gz", hash = "sha256:005ab8853b037162a7c77bb824604c6e081878ee03c09ad01ef41744856019d3"},
+    {url = "https://files.pythonhosted.org/packages/b3/2a/d0eab79744c9bc32b916226e8cb71e275eb1c4e73ed6d682d99f907e5d10/gorilla-0.4.0-py2.py3-none-any.whl", hash = "sha256:25a407c783823db06a90f25303a49b2ab553b8527f4c826878ce5d6d2e25cb5c"},
 ]
 "greenlet 2.0.2" = [
     {url = "https://files.pythonhosted.org/packages/07/ef/6bfa2ea34f76dea02833d66d28ae7cf4729ddab74ee93ee069c7f1d47c4f/greenlet-2.0.2-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:d5508f0b173e6aa47273bdc0a0b5ba055b59662ba7c7ee5119528f466585526b"},
