@@ -41,8 +41,9 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
-    if not cfg.ckpt_path:
-        raise ValueError("Checkpoint path must be included for compiling")
+    for key in ("model_file", "handler_file", "ckpt_path", "return"):
+        if key not in cfg:
+            raise ValueError(f"Compilation requires key `{key}` in config")
 
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
