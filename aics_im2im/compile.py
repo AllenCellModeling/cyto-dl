@@ -47,6 +47,9 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
 
+    if "return" not in cfg:
+        raise ValueError("You must specify a return method in your config")
+
     # remove aux section after resolving and before instantiating
     utils.remove_aux_key(cfg)
 
