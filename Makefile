@@ -76,6 +76,7 @@ requirements/requirements.txt:
 	rm simple.lock
 
 sync-reqs-files: requirements/requirements.txt \
+                 requirements/torchserve-requirements.txt \
                  requirements/equiv-requirements.txt \
                  requirements/spharm-requirements.txt \
                  requirements/omnipose-requirements.txt \
