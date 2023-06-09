@@ -6,7 +6,7 @@ except (ModuleNotFoundError, ImportError):
     OmniposePreprocessd = None
 
 try:
-    from .skoots import SkootsPreprocessd, SkootsCluster, SkootsLoss
+    from .skoots import SkootsCluster, SkootsLoss, SkootsPreprocessd
 except (ModuleNotFoundError, ImportError):
     SkootsCluster = None
     SkootsLoss = None
