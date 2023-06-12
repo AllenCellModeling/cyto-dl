@@ -45,9 +45,9 @@ class Patchify(torch.nn.Module):
     # based on https://github.com/google-research/big_vision/blob/main/big_vision/models/proj/flexi/vit.py
     def __init__(self, base_patch_size, emb_dim, n_patches):
         super().__init__()
-        self.n_patches = n_patches
+        self.n_patches = np.asarray(n_patches)
         self.weight = torch.nn.Parameter(torch.zeros(emb_dim, 1, *base_patch_size))
-        self.norm = torch.nn.LayerNorm([emb_dim, n_patches, n_patches, n_patches])
+        self.norm = torch.nn.LayerNorm([emb_dim, n_patches[0], n_patches[1], n_patches[2]])
         self.emb_dim = emb_dim
 
     def resample_weight(self, length):
@@ -55,7 +55,7 @@ class Patchify(torch.nn.Module):
 
     def forward(self, img):
         # all images in batch assumed to be same resolution
-        patch_size = [int(s / self.n_patches) for s in img.shape[-3:]]
+        patch_size = (np.asarray(img.shape[-3:]) / self.n_patches).astype(int).tolist()
         tokens = torch.nn.functional.conv3d(
             img, weight=self.resample_weight(patch_size), stride=patch_size
         )
@@ -76,7 +76,7 @@ class MAE_Encoder(torch.nn.Module):
         super().__init__()
 
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(num_patches**3, 1, emb_dim))
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
         self.shuffle = PatchShuffle(mask_ratio)
 
         self.patchify = Patchify(base_patch_size, emb_dim, num_patches)
@@ -120,24 +120,20 @@ class MAE_Decoder(torch.nn.Module):
         super().__init__()
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(num_patches**3 + 1, 1, emb_dim))
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
 
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
         )
 
         self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
-        self.num_patches = num_patches
-
-        # n_conv_layers= 16
-        # self.conv = torch.nn.Sequential(UnetBasicBlock(spatial_dims = 3, in_channels = 1, out_channels = n_conv_layers, kernel_size = 3, stride = 1, norm_name = 'instance'),
-        # UnetOutBlock(spatial_dims =3, in_channels = n_conv_layers, out_channels = 1))
+        self.num_patches = torch.as_tensor(num_patches)
 
         self.patch2img = Rearrange(
             "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-            n_patch_z=num_patches,
-            n_patch_y=num_patches,
-            n_patch_x=num_patches,
+            n_patch_z=num_patches[0],
+            n_patch_y=num_patches[1],
+            n_patch_x=num_patches[2],
             patch_size_z=base_patch_size[0],
             patch_size_y=base_patch_size[1],
             patch_size_x=base_patch_size[2],
@@ -180,7 +176,6 @@ class MAE_Decoder(torch.nn.Module):
         mask = torch.zeros_like(patches)
         mask[T:] = 1
         mask = take_indexes(mask, backward_indexes[1:] - 1)
-
         # patches to image
         img = self.patch2img(patches)
         img = torch.nn.functional.interpolate(
@@ -199,16 +194,21 @@ class MAE_Decoder(torch.nn.Module):
 class MAE_ViT(torch.nn.Module):
     def __init__(
         self,
-        num_patches=8,
-        base_patch_size=[10, 20, 20],
-        emb_dim=192,
+        num_patches=[4, 32, 32],
+        base_patch_size=[8, 16, 16],
+        emb_dim=768,
         encoder_layer=12,
-        encoder_head=3,
+        encoder_head=8,
         decoder_layer=4,
-        decoder_head=3,
+        decoder_head=8,
         mask_ratio=0.75,
     ) -> None:
         super().__init__()
+
+        if isinstance(num_patches, int):
+            num_patches = [num_patches] * 3
+        if isinstance(base_patch_size, int):
+            base_patch_size = [base_patch_size] * 3
 
         self.encoder = MAE_Encoder(
             num_patches, base_patch_size, emb_dim, encoder_layer, encoder_head, mask_ratio
