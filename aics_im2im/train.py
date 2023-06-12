@@ -14,6 +14,10 @@ from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
 
+with suppress(ValueError):
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
+
 
 @utils.task_wrapper
 def train(cfg: DictConfig) -> Tuple[dict, dict]:
@@ -115,10 +119,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    with suppress(ValueError):
-        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-        OmegaConf.register_new_resolver("eval", eval)
-
     if cfg.get("persist_cache", False) or cfg.data.get("cache_dir") is None:
         metric_dict, _ = train(cfg)
     else:
