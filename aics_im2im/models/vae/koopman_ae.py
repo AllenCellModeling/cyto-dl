@@ -8,11 +8,6 @@ import torch.nn.functional as F
 from torchmetrics import MeanMetric
 
 from aics_im2im.models.base_model import BaseModel
-from aics_im2im.utils.svd import SVD
-
-
-def _omega(x):
-    return 0.56 * x**3 - 0.95 * x**2 + 1.82 * x + 1.43
 
 
 def _reduce_loss(loss):
