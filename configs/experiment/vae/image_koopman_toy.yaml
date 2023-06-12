@@ -29,11 +29,12 @@ model:
   in_shape: [1, 64, 64, 64]
   channels: [2, 4, 8, 16, 32]
   strides: [2, 2, 2, 2, 2]
-  n_epochs_before_dmd: 0
   latent_dim: 4
 
-  linearity_loss_factor: 1000
-  Areg_factor: 1000
+  linearity_loss_factor: 1
+  K_l2_reg: 0.01
+
+  n_epochs_before_koopman: 0
 
 trainer:
   check_val_every_n_epoch: 1

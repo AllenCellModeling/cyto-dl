@@ -7,8 +7,6 @@ in_shape: [1, 64, 64, 64]
 channels: [2, 4, 8, 16, 32]
 strides: [2, 2, 2, 2, 2]
 
-rank: 0 # 0 means full rank
-
 spatial_dims: 3
 kernel_size: 3
 up_kernel_size: 3

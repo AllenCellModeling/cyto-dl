@@ -18,10 +18,10 @@ tags: ["koopman", "synthetic", "spharm"]
 seed: 42
 
 data:
-  path: /allen/aics/modeling/gui.pires/data/toy_shapes_spharm.csv
+  path: /allen/aics/modeling/gui.pires/data/toy_shapes_spharm_v2_linear.csv
   time_col: T_index
   track_id_col: track_id
-  batch_size: 32
+  batch_size: 64
 
   n_random_chunks: 5
   num_workers: 0
@@ -29,20 +29,19 @@ data:
 model:
   x_label: spharm
   x_dim: 578
-  latent_dim: 4
-  hidden_layers: [32, 16]
+  latent_dim: 32
+  hidden_layers: [64, 32]
 
-  linearity_loss_factor: 100
-  Areg_factor: 10
+  linearity_loss_factor: 10
+  K_l2_reg: 0.1
 
-  rank: 4
-  n_epochs_before_dmd: 0
+  n_epochs_before_koopman: 0
 
 trainer:
   check_val_every_n_epoch: 1
   min_epochs: 10
   max_epochs: 100
-  gradient_clip_val: 0.1
+  #gradient_clip_val: 0.1
 
 callbacks:
   early_stopping:

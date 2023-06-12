@@ -1,14 +1,13 @@
 from typing import Optional
 
-import torch
 from torch import nn
 
 
-def _make_block(input_dim, output_dim):
+def _make_block(input_dim, output_dim, layer_norm=True):
     return nn.Sequential(
         nn.Linear(input_dim, output_dim),
-        nn.BatchNorm1d(output_dim),
-        nn.ReLU(),
+        nn.LayerNorm(output_dim) if layer_norm else nn.Identity(),
+        nn.SiLU(),
     )
 
 
@@ -18,6 +17,7 @@ class MLP(nn.Module):
         *dims,
         hidden_layers=[256],
         scale_output: Optional[int] = 1,
+        layer_norm: bool = True,
     ):
         super().__init__()
 
@@ -28,7 +28,7 @@ class MLP(nn.Module):
 
         self.hidden_layers = hidden_layers
 
-        net = [_make_block(sum(self.input_dims), hidden_layers[0])]
+        net = [_make_block(sum(self.input_dims), hidden_layers[0], layer_norm)]
 
         net += [
             _make_block(input_dim, output_dim)
