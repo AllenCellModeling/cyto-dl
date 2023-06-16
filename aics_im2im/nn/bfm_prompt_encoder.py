@@ -1,8 +1,6 @@
-# Copyright (c) Meta Platforms, Inc. and affiliates.
-# All rights reserved.
-
+# Adapted from : https://github.com/facebookresearch/segment-anything/blob/main/segment_anything/modeling/prompt_encoder.py
 # This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
+# LICENSE file in: https://github.com/facebookresearch/segment-anything/blob/main/LICENSE
 
 from typing import Any, Optional, Tuple, Type
 
