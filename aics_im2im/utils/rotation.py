@@ -32,12 +32,10 @@ class RotationModule:
             R[:, -2:, :] = R[:, -2:, :] * -1
             R[:, :, -2:] = R[:, :, -2:] * -1
 
-        # if self.spatial_dims == 2:
-        #    # assume data comes in -Y X format, to match `escnn`.
-        #    # but this is superfluous, i.e. a rotation matrix for
-        #    # [x, y] is the same as one for [-y, x]
-        #    R[:, -1, :] = R[:, -1, :] * -1
-        #    R[:, :, -1] = R[:, :, -1] * -1
+        if self.spatial_dims == 2:
+            # assume data comes in -Y X format, to match `escnn`.
+            R[:, -1, :] = R[:, -1, :] * -1
+            R[:, :, -1] = R[:, :, -1] * -1
 
         # add a displacement vector of zeros to the rotation matrix
         disp = torch.tensor(0).expand(len(img), self.spatial_dims, 1).type_as(img)
