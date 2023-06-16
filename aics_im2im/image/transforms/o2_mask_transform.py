@@ -47,15 +47,14 @@ class O2Mask(Transform):
 
         self.mask = build_mask(mask_side, margin)
         if spatial_dims == 3:
-            self.mask.unsqueeze(cylinder_axis)
+            self.mask = self.mask.unsqueeze(cylinder_axis)
 
     def __call__(self, img):
+        out = img * self.mask.type_as(img)
         if self.background is not None:
-            return torch.where(
-                self.mask.type_as(img) > 0, img, torch.tensor(self.background).type_as(img)
-            )
+            out = out + self.background * (1 - self.mask.type_as(img))
 
-        return img * self.mask.type_as(img)
+        return out
 
 
 class O2Maskd(Transform):
