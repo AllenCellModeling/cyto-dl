@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Optional, Sequence
 
 import torch
 from escnn import gspaces, nn
@@ -17,21 +17,22 @@ class ImageEncoder(torch.nn.Module):
         channels: Sequence[int],
         strides: Sequence[int],
         maximum_frequency: int,
-        kernel_size: int = 3,
+        kernel_sizes: Optional[Sequence[int]] = None,
         bias: bool = False,
         group: str = "so2",
     ):
         super().__init__()
 
+        if kernel_sizes is None:
+            kernel_sizes = [3] * len(channels)
+
         self.spatial_dims = spatial_dims
-        self.kernel_size = kernel_size
-        self.padding = same_padding(self.kernel_size)
         self.bias = bias
         self.out_dim = out_dim
         self.group = group
 
         if group not in ("so2", "so3", None):
-            raise ValueError(f"`gspace` should be one of ('so2', 'so3', None). Got {group}")
+            raise ValueError(f"`gspace` should be one of ('so2', 'so3', None). Got {group!r}")
 
         if group == "so2":
             self.gspace = (
@@ -52,12 +53,18 @@ class ImageEncoder(torch.nn.Module):
 
         blocks = [
             self.make_block(
-                self.in_type, channels[0], strides[0], out_vector_channels=out_vector_channels
+                self.in_type,
+                channels[0],
+                strides[0],
+                kernel_sizes[0],
+                out_vector_channels=out_vector_channels,
             )
         ]
-        for c, s in zip(channels[1:], strides[1:]):
+        for c, s, k in zip(channels[1:], strides[1:], kernel_sizes[1:]):
             blocks.append(
-                self.make_block(blocks[-1].out_type, c, s, out_vector_channels=out_vector_channels)
+                self.make_block(
+                    blocks[-1].out_type, c, s, k, out_vector_channels=out_vector_channels
+                )
             )
 
         if group == "so2":
@@ -114,9 +121,8 @@ class ImageEncoder(torch.nn.Module):
 
         return scalar_fields, vector_fields, field_type
 
-    def make_conv(self, in_type, out_type, s, k=None, p=None, b=None):
-        k = k if k is not None else self.kernel_size
-        p = p if p is not None else self.padding
+    def make_conv(self, in_type, out_type, s, k, b=None, p=None):
+        p = p if p is not None else same_padding(k)
         b = b if b is not None else self.bias
 
         conv_class = nn.R2Conv if self.spatial_dims == 2 else nn.R3Conv
@@ -124,21 +130,30 @@ class ImageEncoder(torch.nn.Module):
             in_type,
             out_type,
             kernel_size=k,
-            stride=s,
+            stride=1,
             bias=b,
-            padding=(p if s == 1 else same_padding(k)),
+            padding=p,
         )
+
+        if s > 1:
+            pool_class = (
+                nn.PointwiseAvgPoolAntialiased2D
+                if self.spatial_dims == 2
+                else nn.PointwiseAvgPoolAntialiased3D
+            )
+
+            conv = nn.SequentialModule(conv, pool_class(conv.out_type, sigma=0.66, stride=s))
 
         return conv
 
-    def make_block(self, in_type, out_channels, stride, out_vector_channels=None):
+    def make_block(self, in_type, out_channels, stride, kernel_size, out_vector_channels=None):
         out_scalar_fields, out_vector_fields, out_type = self.get_fields(
             out_channels, out_vector_channels
         )
         batch_norm_cls = nn.IIDBatchNorm3d if self.spatial_dims == 3 else nn.IIDBatchNorm2d
 
         return nn.SequentialModule(
-            self.make_conv(in_type, out_type, stride),
+            self.make_conv(in_type, out_type, stride, kernel_size),
             get_batch_norm(out_scalar_fields, out_vector_fields, batch_norm_cls),
             get_non_linearity(out_scalar_fields, out_vector_fields),
         )

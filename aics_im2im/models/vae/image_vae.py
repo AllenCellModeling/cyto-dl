@@ -40,11 +40,11 @@ class ImageVAE(BaseVAE):
         in_shape: Sequence[int],
         channels: Sequence[int],
         strides: Sequence[int],
+        kernel_sizes: Sequence[int],
         group: Optional[str] = None,
         decoder_channels: Optional[Sequence[int]] = None,
         decoder_strides: Optional[Sequence[int]] = None,
         maximum_frequency: int = 8,
-        kernel_size: int = 3,
         background_value: float = 0,
         act: Optional[Union[Sequence[str], str]] = Act.PRELU,
         norm: Union[Sequence[str], str] = Norm.INSTANCE,
@@ -82,20 +82,21 @@ class ImageVAE(BaseVAE):
                     max(in_shape[-2:]),
                     background=background_value,
                 )
-            else:
+            elif group == "so3":
                 self.mask = O3Mask(
                     max(in_shape[-3:]),
                     background=background_value,
                 )
+            else:
+                self.mask = None
+                self.mask_input = None
+                self.mask_output = None
         else:
             self.mask = None
 
-        self.kernel_size = kernel_size
-
-        padding = same_padding(kernel_size)
-
-        for s in strides:
-            self.final_size = calculate_out_shape(self.final_size, kernel_size, s, padding)
+        for k, s in zip(kernel_sizes, strides):
+            padding = same_padding(k)
+            self.final_size = calculate_out_shape(self.final_size, k, s, padding)
 
         if decoder_channels is None:
             _channels = channels[::-1]
@@ -116,7 +117,7 @@ class ImageVAE(BaseVAE):
 
             size = None if not last_block else in_shape
 
-            res_unit = Convolution(
+            pre_conv = Convolution(
                 spatial_dims=spatial_dims,
                 in_channels=c_in,
                 out_channels=c_out,
@@ -133,7 +134,7 @@ class ImageVAE(BaseVAE):
                 scale_factor=s,  # ignored in the last block
                 size=size,
                 kernel_size=3,
-                pre_conv=res_unit,
+                pre_conv=pre_conv,
                 # choices inspired by this article:
                 # https://distill.pub/2016/deconv-checkerboard/
                 mode="nontrainable",
@@ -168,7 +169,7 @@ class ImageVAE(BaseVAE):
             channels=channels,
             strides=strides,
             maximum_frequency=maximum_frequency,
-            kernel_size=kernel_size,
+            kernel_sizes=kernel_sizes,
             bias=bias,
             group=group,
         )
@@ -203,15 +204,19 @@ class ImageVAE(BaseVAE):
 
     def decode(self, z_parts, return_canonical=False):
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
-        base_xhat = base_xhat.clip(self.hparams.get("clip_min"), self.hparams.get("clip_max"))
+        clip_min = self.hparams.get("clip_min")
+        clip_max = self.hparams.get("clip_min")
 
-        if self.mask_output:
-            base_xhat = self.mask(base_xhat)
+        if clip_min is not None or clip_max is not None:
+            base_xhat = base_xhat.clip(clip_min, clip_max)
 
         if self.hparams.group is not None:
             xhat = self.rotation_module(base_xhat, z_parts["pose"])
         else:
             xhat = base_xhat
+
+        if self.mask_output:
+            xhat = self.mask(xhat)
 
         if return_canonical:
             return {self.hparams.x_label: xhat, "canonical": base_xhat}
