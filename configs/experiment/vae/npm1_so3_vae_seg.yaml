@@ -19,8 +19,6 @@ tags: ["so3-equiv", "variance-dataset", "3d", "npm1"]
 
 seed: 42
 
-#data:
-#subsample: { "train": 10000, "valid": 2000, "test": 2000 }
 data:
   batch_size: 64
   cache_dir: /storage/cache

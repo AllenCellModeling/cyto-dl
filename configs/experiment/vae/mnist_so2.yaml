@@ -1,0 +1,86 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/rotated_mnist.yaml
+  - override /model: vae/so2_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: rotated_mnist_so2
+
+tags: ["mnist", "so2", "vae"]
+
+seed: 42
+
+data:
+  _aux:
+    batch_size: 128
+
+model:
+  group: so2
+  spatial_dims: 2
+  in_shape: [1, 32, 32]
+
+  background_value: 0
+
+  mask_input: false
+  mask_output: true
+
+  latent_dim: 32
+
+  kernel_sizes: [3, 3, 3, 3, 3, 3]
+  channels: [4, 8, 16, 16, 32, 64]
+  strides: [1, 2, 1, 2, 1, 1]
+
+  last_act: sigmoid
+  #last_scale: null
+
+  reconstruction_loss:
+    _target_: torch.nn.MSELoss
+    reduction: none
+
+  prior:
+
+  x_label: image
+
+  act: swish
+  norm: null
+  dropout: null
+  bias: true
+  beta: 1.0
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 100
+  max_epochs: 500
+  accelerator: gpu
+  devices: [0]
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 10
+    min_delta: 0.
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: ${experiment_name}
+    run_name:
+
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium
