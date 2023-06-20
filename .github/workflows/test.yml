@@ -29,10 +29,11 @@ jobs:
         shell: bash -el {0}
         run: |
           sudo apt update
-          sudo apt install g++ gfortran libfftw3-dev libblas-dev liblapack-dev
+          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
           conda install -n test pip fftw
           pip install wheel
-          pip install numpy
+          # need numpy for some builds. make sure to install a compatible version
+          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
           # from https://stackoverflow.com/a/14369968
           SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
           pip install .
@@ -66,10 +67,11 @@ jobs:
         shell: bash -el {0}
         run: |
           sudo apt update
-          sudo apt install g++ gfortran libfftw3-dev libblas-dev liblapack-dev
+          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
           conda install -n test pip fftw
           pip install wheel
-          pip install numpy
+          # need numpy for some builds. make sure to install a compatible version
+          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
           # from https://stackoverflow.com/a/14369968
           SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
           pip install .
