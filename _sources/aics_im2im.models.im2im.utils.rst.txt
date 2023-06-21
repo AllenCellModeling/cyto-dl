@@ -22,3 +22,4 @@ Submodules
 
    aics_im2im.models.im2im.utils.noise_annealer
    aics_im2im.models.im2im.utils.omnipose
+   aics_im2im.models.im2im.utils.skoots
