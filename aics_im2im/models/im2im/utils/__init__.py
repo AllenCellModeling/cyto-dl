@@ -6,10 +6,10 @@ except (ModuleNotFoundError, ImportError):
     OmniposePreprocessd = None
 
 try:
-    from .torchvf_utils import TorchvfClustering, TorchvfLoss, TorchvfPreprocessd
+    from .skoots import SkootsCluster, SkootsLoss, SkootsPreprocessd
 except (ModuleNotFoundError, ImportError):
-    TorchvfClustering = None
-    TorchvfLoss = None
-    TorchvfPreprocessd = None
+    SkootsCluster = None
+    SkootsLoss = None
+    SkootsPreprocessd = None
 
 from .postprocessing import ActThreshLabel, DictToIm, detach
