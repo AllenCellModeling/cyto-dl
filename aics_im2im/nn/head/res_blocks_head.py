@@ -3,7 +3,7 @@ from typing import Callable
 
 import numpy as np
 import torch
-from monai.networks.blocks import Convolution, UnetOutBlock, UnetResBlock, UpSample
+from monai.networks.blocks import DenseBlock, UnetOutBlock, UnetResBlock, UpSample
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
 
@@ -26,9 +26,10 @@ class ResBlocksHead(BaseHead):
         spatial_dims=3,
         n_convs=1,
         dropout=0.0,
-        upsample_method="subpixel",
+        upsample_method="pixelshuffle",
         upsample_ratio=None,
         first_layer=torch.nn.Identity(),
+        dense: bool = False,
     ):
         """
         Parameters
@@ -54,12 +55,14 @@ class ResBlocksHead(BaseHead):
             Number of convolutional layers
         dropout=0.0
             Dropout ratio
-        upsample_method="subpixel"
+        upsample_method="pixelshuffle"
             Method of upsampling. See the [monai upsampling docs](https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample) for options
         upsample_ratio=None
             Amount to upsample. If not None, should be array of length `spatial_dims`
         first_layer=torch.nn.Identity()
             Initial layer to apply to backbone outputs. For example, `ConvProjectionLayer` for transforming 3D->2D output.
+        dense=False
+            Whether to use dense connections between convolutional layers
         """
         super().__init__(loss, postprocess, calculate_metric, save_raw)
 
@@ -71,7 +74,7 @@ class ResBlocksHead(BaseHead):
         upsample_ratio = upsample_ratio or [2] * spatial_dims
 
         if resolution == "hr":
-            if upsample_method == "subpixel":
+            if upsample_method == "pixelshuffle":
                 conv_input_channels //= 2**spatial_dims
             assert len(upsample_ratio) == spatial_dims
             upsample = UpSample(
@@ -81,8 +84,10 @@ class ResBlocksHead(BaseHead):
                 scale_factor=upsample_ratio,
                 mode=upsample_method,
             )
-        for _ in range(n_convs):
+        for i in range(n_convs):
             in_channels = conv_input_channels
+            if dense:
+                in_channels = (i + 1) * conv_input_channels
             modules.append(
                 UnetResBlock(
                     spatial_dims=spatial_dims,
@@ -94,6 +99,9 @@ class ResBlocksHead(BaseHead):
                     dropout=dropout,
                 )
             )
+        if dense:
+            # dense convolutions
+            modules = [modules[0]] + [DenseBlock(modules[1:])]
         modules.extend(
             (
                 UnetOutBlock(
