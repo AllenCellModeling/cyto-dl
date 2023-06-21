@@ -227,7 +227,7 @@ class SkootsPreprocessd(Transform):
             cmap = self._get_cmap(skel_edt.squeeze(), im)
             bound = torch.from_numpy(find_boundaries(im_numpy)).unsqueeze(0)
             # image_dict[key]= torch.cat([(skel>0).unsqueeze(0),im>0, embed,  bound, cmap])
-            image_dict[key] = torch.cat([skel_edt, im > 0, embed, bound, cmap])
+            image_dict[key] = torch.cat([skel_edt, im > 0, embed, bound, cmap]).float()
 
             print(time.time() - t0)
         return image_dict

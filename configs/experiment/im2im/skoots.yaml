@@ -25,6 +25,7 @@ raw_im_channels: 1
 
 trainer:
   max_epochs: 100
+  precision: 16
 
 data:
   path: ${paths.data_dir}/example_experiment_data/segmentation
