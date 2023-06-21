@@ -180,7 +180,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.datamodules.html">aics_im2im.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.datamodules.dataframe.html">aics_im2im.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html">aics_im2im.datamodules.dataframe.dataframe_datamodule module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html">aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.datamodules.dataframe.utils.html">aics_im2im.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
@@ -449,10 +449,10 @@
 </li>
         </ul></li>
         <li>
-    aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask
+    aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule
 
         <ul>
-          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask">module</a>
+          <li><a href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html#module-aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule">module</a>
 </li>
         </ul></li>
         <li>
@@ -1156,8 +1156,6 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule">DataframeDatamodule (class in aics_im2im.datamodules.dataframe.dataframe_datamodule)</a>
 </li>
-        <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask">DataframeDatamoduleMultiTask (class in aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask)</a>
-</li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.DatasetFolder">DatasetFolder (class in aics_im2im.datamodules.torchvision)</a>
 </li>
         <li><a href="aics_im2im.models.vae.base_vae.html#aics_im2im.models.vae.base_vae.BaseVAE.decode">decode() (aics_im2im.models.vae.base_vae.BaseVAE method)</a>
@@ -1168,10 +1166,10 @@
           <li><a href="aics_im2im.models.vae.so2_image_vae.so2_image_vae.html#aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE.decode">(aics_im2im.models.vae.so2_image_vae.so2_image_vae.SO2ImageVAE method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#aics_im2im.models.im2im.utils.postprocessing.dict_to_im.detach">detach() (in module aics_im2im.models.im2im.utils.postprocessing.dict_to_im)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.models.vae.priors.gaussian.html#aics_im2im.models.vae.priors.gaussian.DiagonalGaussianPrior">DiagonalGaussianPrior (class in aics_im2im.models.vae.priors.gaussian)</a>
 </li>
         <li><a href="aics_im2im.models.im2im.utils.postprocessing.dict_to_im.html#aics_im2im.models.im2im.utils.postprocessing.dict_to_im.DictToIm">DictToIm (class in aics_im2im.models.im2im.utils.postprocessing.dict_to_im)</a>
@@ -1390,6 +1388,8 @@
 </li>
         <li><a href="aics_im2im.dataframe.transforms.group_cols.html#aics_im2im.dataframe.transforms.group_cols.GroupCols">GroupCols (class in aics_im2im.dataframe.transforms.group_cols)</a>
 </li>
+        <li><a href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html#aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule">GroupedDataframeDatamodule (class in aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule)</a>
+</li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.GTSRB">GTSRB (class in aics_im2im.datamodules.torchvision)</a>
 </li>
     </ul></td>
@@ -1539,7 +1539,7 @@
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.make_dataloader">make_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
-          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask.make_dataloader">(aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.DataframeDatamoduleMultiTask method)</a>
+          <li><a href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html#aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule.make_dataloader">(aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule method)</a>
 </li>
         </ul></li>
         <li><a href="aics_im2im.datamodules.folder.html#aics_im2im.datamodules.folder.make_folder_dataloader">make_folder_dataloader() (in module aics_im2im.datamodules.folder)</a>
@@ -1598,7 +1598,7 @@
 </li>
           <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule">aics_im2im.datamodules.dataframe.dataframe_datamodule</a>
 </li>
-          <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html#module-aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask</a>
+          <li><a href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html#module-aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule">aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule</a>
 </li>
           <li><a href="aics_im2im.datamodules.dataframe.utils.html#module-aics_im2im.datamodules.dataframe.utils">aics_im2im.datamodules.dataframe.utils</a>
 </li>

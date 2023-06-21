@@ -13,5 +13,5 @@ Submodules
    :maxdepth: 4
 
    aics_im2im.datamodules.dataframe.dataframe_datamodule
-   aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask
+   aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule
    aics_im2im.datamodules.dataframe.utils

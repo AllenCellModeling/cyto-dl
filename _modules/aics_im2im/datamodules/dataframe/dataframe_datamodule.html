@@ -181,7 +181,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.datamodules.html">aics_im2im.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.html">aics_im2im.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule.html">aics_im2im.datamodules.dataframe.dataframe_datamodule module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html">aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.utils.html">aics_im2im.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
@@ -394,7 +394,6 @@
         <span class="n">subsample</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">refresh_subsample</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
-        <span class="n">target_columns</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">dataloader_kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -430,9 +429,6 @@
 <span class="sd">            Dictionary with a key per split (&quot;train&quot;, &quot;val&quot;, &quot;test&quot;), and the</span>
 <span class="sd">            number of samples of each split to use per epoch. If `None` (default),</span>
 <span class="sd">            use all the samples in each split per epoch.</span>
-
-<span class="sd">        head_allocation_columm: Optional[str]=None</span>
-<span class="sd">            Column name that dictates which head a row should be passed to</span>
 
 <span class="sd">        dataloader_kwargs:</span>
 <span class="sd">            Additional keyword arguments are passed to the</span>
@@ -480,7 +476,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find specified dataframe path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">target_columns</span> <span class="o">=</span> <span class="n">target_columns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">just_inference</span> <span class="o">=</span> <span class="n">just_inference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataloader_kwargs</span> <span class="o">=</span> <span class="n">dataloader_kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataloaders</span> <span class="o">=</span> <span class="p">{}</span>

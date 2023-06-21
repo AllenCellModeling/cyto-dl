@@ -181,7 +181,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../aics_im2im.datamodules.html">aics_im2im.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.html">aics_im2im.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule.html">aics_im2im.datamodules.dataframe.dataframe_datamodule module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask.html">aics_im2im.datamodules.dataframe.dataframe_datamodule_multitask module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html">aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../aics_im2im.datamodules.dataframe.utils.html">aics_im2im.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
@@ -397,8 +397,9 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="n">Subset</span><span class="p">,</span>
-        <span class="n">target_columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">target_columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">grouping_column</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">drop_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">sampler</span><span class="p">:</span> <span class="n">Sampler</span> <span class="o">=</span> <span class="n">SubsetRandomSampler</span><span class="p">,</span>
@@ -420,9 +421,10 @@
 <span class="sd">        sampler:Sampler=SubsetRandomSampler</span>
 <span class="sd">            Sampler to sample from each column in `target_columns`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">grouping_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">target_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="s2">&quot;Either target column or grouping column must be provided&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">drop_last</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">target_columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;target_columns must be defined if using batch sampler.&quot;</span><span class="p">)</span>
         <span class="c1"># pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided</span>
         <span class="c1"># an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the</span>
         <span class="c1"># subset indices instead of the indices of the original dataframe, we have to reset the index</span>
@@ -431,14 +433,24 @@
         <span class="c1"># order is subset.monai_dataset.dataframewrapper.dataframe</span>
         <span class="n">subset_df</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">subset</span><span class="o">.</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
         <span class="n">samplers</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">target_columns</span><span class="p">:</span>
-            <span class="c1"># returns an index into dataset.indices where head column is not empty</span>
-            <span class="n">head_indices</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">~</span><span class="n">subset_df</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">head_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Dataset must contain examples of head </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Please increase the value of subsample.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">samplers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampler</span><span class="p">(</span><span class="n">head_indices</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">target_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">target_columns</span><span class="p">:</span>
+                <span class="c1"># returns an index into dataset.indices where head column is not empty</span>
+                <span class="n">head_indices</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">~</span><span class="n">subset_df</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">head_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Dataset must contain examples of head </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. Please increase the value of subsample.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">samplers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampler</span><span class="p">(</span><span class="n">head_indices</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grouping_options</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">grouping_column</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">grouping_options</span><span class="p">):</span>
+                <span class="n">group_indices</span> <span class="o">=</span> <span class="n">subset_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">subset_df</span><span class="p">[</span><span class="n">grouping_column</span><span class="p">]</span> <span class="o">==</span> <span class="n">opt</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">group_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Dataset must contain examples of group </span><span class="si">{</span><span class="n">opt</span><span class="si">}</span><span class="s2">. Please increase the value of subsample.&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">samplers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampler</span><span class="p">(</span><span class="n">group_indices</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">samplers</span> <span class="o">=</span> <span class="n">samplers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="n">shuffle</span>
@@ -448,9 +460,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sampler_iterators</span> <span class="o">=</span> <span class="p">[</span><span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samplers</span><span class="p">]</span>
 
         <span class="c1"># for now include equal numbers of all samplers</span>
+        <span class="c1"># worst case shuffle, we get [0,0,0,0,...., 1, 1, 1, 1]. after the 0s are done, stop iteration</span>
+        <span class="c1"># is raised but we&#39;re only halfway through the epoch! this prevents that by never fully exhausting</span>
+        <span class="c1"># the samplers</span>
         <span class="n">samples_per_sampler</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samplers</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">samples_per_sampler</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">samples_per_sampler</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Insufficient examples per task head. Please decrease batch size.&quot;</span><span class="p">)</span>
 
         <span class="n">interleaved_sampler_order</span> <span class="o">=</span> <span class="n">repeat</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">samplers</span><span class="p">)),</span> <span class="n">samples_per_sampler</span><span class="p">)</span>
@@ -464,9 +479,12 @@
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
         <span class="k">for</span> <span class="n">sampler_ix</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler_order</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampler_iterators</span><span class="p">[</span><span class="n">sampler_ix</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sampler_generator</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampler_iterators</span><span class="p">[</span><span class="n">sampler_ix</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)]</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sampler_generator</span><span class="p">()</span>
+                <span class="k">yield</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sampler_iterators</span><span class="p">[</span><span class="n">sampler_ix</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">min_num_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sampler</span><span class="p">)</span> <span class="k">for</span> <span class="n">sampler</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">samplers</span><span class="p">)</span>
