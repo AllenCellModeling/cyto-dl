@@ -47,7 +47,14 @@ class ActThreshLabel:
             self.dtype = self.rescale_dtype
 
     def _get_dtype(self, dtype: DTypeLike) -> DTypeLike:
-        return get_class(dtype) if dtype is not None else dtype
+        if isinstance(dtype, str):
+            return get_class(dtype)
+        elif dtype is None:
+            return dtype
+        elif isinstance(dtype, type):
+            return dtype
+        else:
+            raise ValueError(f"Expected dtype to be DtypeLike, string, or None, got {type(dtype)}")
 
     def __call__(self, img: torch.Tensor) -> np.ndarray:
         img = self.activation(img[self.ch].detach().cpu().float()).numpy()
