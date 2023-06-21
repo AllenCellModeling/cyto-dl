@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.train module" href="aics_im2im.train.html" /><link rel="prev" title="aics_im2im.compile module" href="aics_im2im.compile.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="aics_im2im.image.transforms.so2_random_rotation module" href="aics_im2im.image.transforms.so2_random_rotation.html" /><link rel="prev" title="aics_im2im.image.transforms.resize module" href="aics_im2im.image.transforms.resize.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>aics_im2im.eval module - aics-im2im 0.1.0 documentation</title>
+        <title>aics_im2im.image.transforms.save module - aics-im2im 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -191,20 +191,20 @@
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.torchvision.html">aics_im2im.datamodules.torchvision module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="aics_im2im.image.html">aics_im2im.image package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.numpy_reader.html">aics_im2im.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.transforms.html">aics_im2im.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="aics_im2im.image.transforms.html">aics_im2im.image.transforms package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.bright_sampler.html">aics_im2im.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.multiscale_cropper.html">aics_im2im.image.transforms.multiscale_cropper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.o2_mask_transform.html">aics_im2im.image.transforms.o2_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.project.html">aics_im2im.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.resize.html">aics_im2im.image.transforms.resize module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.save.html">aics_im2im.image.transforms.save module</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">aics_im2im.image.transforms.save module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.transforms.so2_random_rotation.html">aics_im2im.image.transforms.so2_random_rotation module</a></li>
 </ul>
 </li>
@@ -313,7 +313,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.compile.html">aics_im2im.compile module</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">aics_im2im.eval module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aics_im2im.eval.html">aics_im2im.eval module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="aics_im2im.train.html">aics_im2im.train module</a></li>
 </ul>
 </li>
@@ -353,12 +353,37 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-aics_im2im.eval">
-<span id="aics-im2im-eval-module"></span><h1>aics_im2im.eval module<a class="headerlink" href="#module-aics_im2im.eval" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="aics_im2im.eval.main">
-<span class="sig-prename descclassname"><span class="pre">aics_im2im.eval.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DictConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/aics_im2im/eval.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.eval.main" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+          <section id="module-aics_im2im.image.transforms.save">
+<span id="aics-im2im-image-transforms-save-module"></span><h1>aics_im2im.image.transforms.save module<a class="headerlink" href="#module-aics_im2im.image.transforms.save" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="aics_im2im.image.transforms.save.Save">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.image.transforms.save.</span></span><span class="sig-name descname"><span class="pre">Save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/image/transforms/save.html#Save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.image.transforms.save.Save" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>Sequence[str]</em>) – keys to save</p></li>
+<li><p><strong>save_path</strong> (<em>str</em>) – path to save images</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="aics_im2im.image.transforms.save.Saved">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">aics_im2im.image.transforms.save.</span></span><span class="sig-name descname"><span class="pre">Saved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/image/transforms/save.html#Saved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.image.transforms.save.Saved" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<p>Save a batch of images to disk for debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>Sequence[str]</em>) – keys to save</p></li>
+<li><p><strong>save_path</strong> (<em>str</em>) – path to save images</p></li>
+<li><p><strong>allow_missing_keys</strong> (<em>bool</em>) – allow missing keys in batch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -367,23 +392,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="aics_im2im.train.html">
+          <a class="next-page" href="aics_im2im.image.transforms.so2_random_rotation.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">aics_im2im.train module</div>
+                <div class="title">aics_im2im.image.transforms.so2_random_rotation module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="aics_im2im.compile.html">
+          <a class="prev-page" href="aics_im2im.image.transforms.resize.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">aics_im2im.compile module</div>
+                <div class="title">aics_im2im.image.transforms.resize module</div>
                 
               </div>
             </a>
@@ -417,8 +442,9 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">aics_im2im.eval module</a><ul>
-<li><a class="reference internal" href="#aics_im2im.eval.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#">aics_im2im.image.transforms.save module</a><ul>
+<li><a class="reference internal" href="#aics_im2im.image.transforms.save.Save"><code class="docutils literal notranslate"><span class="pre">Save</span></code></a></li>
+<li><a class="reference internal" href="#aics_im2im.image.transforms.save.Saved"><code class="docutils literal notranslate"><span class="pre">Saved</span></code></a></li>
 </ul>
 </li>
 </ul>

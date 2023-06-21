@@ -17,4 +17,5 @@ Submodules
    aics_im2im.image.transforms.o2_mask_transform
    aics_im2im.image.transforms.project
    aics_im2im.image.transforms.resize
+   aics_im2im.image.transforms.save
    aics_im2im.image.transforms.so2_random_rotation
