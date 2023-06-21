@@ -22,3 +22,4 @@ Submodules
 
    aics_im2im.datamodules.czi
    aics_im2im.datamodules.folder
+   aics_im2im.datamodules.torchvision
