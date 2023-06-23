@@ -49,23 +49,16 @@ class ImageEncoder(torch.nn.Module):
 
         self.in_type = nn.FieldType(self.gspace, [self.gspace.trivial_repr])
 
-        out_vector_channels = None if group in ("so2", "so3") else 0
-
         blocks = [
             self.make_block(
                 self.in_type,
                 channels[0],
                 strides[0],
                 kernel_sizes[0],
-                out_vector_channels=out_vector_channels,
             )
         ]
         for c, s, k in zip(channels[1:], strides[1:], kernel_sizes[1:]):
-            blocks.append(
-                self.make_block(
-                    blocks[-1].out_type, c, s, k, out_vector_channels=out_vector_channels
-                )
-            )
+            blocks.append(self.make_block(blocks[-1].out_type, c, s, k))
 
         if group == "so2":
             n_out_vectors = 1
@@ -95,28 +88,29 @@ class ImageEncoder(torch.nn.Module):
 
             if self.group == "so3":
                 # separate two vectors into two channels
-                y_pose = y_pose.reshape(y_pose.shape[0], 2, -1)
+                y_pose = y_pose.reshape(y_pose.shape[0], 2, -1)  # TODO: check this
 
                 # move from y z x (spharm) convention to x y z
                 y_pose = y_pose[:, :, [2, 0, 1]]
 
+            elif self.group == "so2":
+                # move from y x (spharm) convention to x y
+                y_pose = y_pose[:, [1, 0]]
+
             return y_embedding, y_pose
         return y_embedding
 
-    def get_fields(self, n_channels, n_vector_channels=None):
-        if n_vector_channels is None:
-            n_vector_channels = n_channels
+    def get_fields(self, n_channels, n_out_channels=None):
+        if n_out_channels is None:
+            n_out_channels = n_channels
 
         scalar_fields = nn.FieldType(self.gspace, n_channels * [self.gspace.trivial_repr])
 
-        if n_vector_channels > 0:
-            vector_fields = nn.FieldType(self.gspace, n_vector_channels * [self.gspace.irrep(1)])
-        else:
-            vector_fields = []
-
-        if n_vector_channels > 0:
+        if self.group in ("so2", "so3"):
+            vector_fields = nn.FieldType(self.gspace, n_out_channels * [self.gspace.irrep(1)])
             field_type = scalar_fields + vector_fields
         else:
+            vector_fields = []
             field_type = scalar_fields
 
         return scalar_fields, vector_fields, field_type
@@ -135,25 +129,26 @@ class ImageEncoder(torch.nn.Module):
             padding=p,
         )
 
-        if s > 1:
+        return conv
+
+    def make_block(self, in_type, out_channels, stride, kernel_size):
+        out_scalar_fields, out_vector_fields, out_type = self.get_fields(out_channels)
+        batch_norm_cls = nn.IIDBatchNorm3d if self.spatial_dims == 3 else nn.IIDBatchNorm2d
+
+        conv = self.make_conv(in_type, out_type, stride, kernel_size)
+        if stride > 1:
             pool_class = (
                 nn.PointwiseAvgPoolAntialiased2D
                 if self.spatial_dims == 2
                 else nn.PointwiseAvgPoolAntialiased3D
             )
-
-            conv = nn.SequentialModule(conv, pool_class(conv.out_type, sigma=0.66, stride=s))
-
-        return conv
-
-    def make_block(self, in_type, out_channels, stride, kernel_size, out_vector_channels=None):
-        out_scalar_fields, out_vector_fields, out_type = self.get_fields(
-            out_channels, out_vector_channels
-        )
-        batch_norm_cls = nn.IIDBatchNorm3d if self.spatial_dims == 3 else nn.IIDBatchNorm2d
+            pool = pool_class(conv.out_type, sigma=0.66, stride=stride)
+        else:
+            pool = nn.IdentityModule(conv.out_type)
 
         return nn.SequentialModule(
-            self.make_conv(in_type, out_type, stride, kernel_size),
+            conv,
+            pool,
             get_batch_norm(out_scalar_fields, out_vector_fields, batch_norm_cls),
             get_non_linearity(out_scalar_fields, out_vector_fields),
         )
