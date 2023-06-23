@@ -1,11 +1,18 @@
 from pathlib import Path
-from typing import Dict, List, Type, Union
+from typing import Callable, Dict, List, Tuple, Type, Union
 
 import torch
 import torch.nn as nn
-from aics_imi2m.nn.bfm import MaskDecoder, TwoWayTransformer
+from aics_imi2m.nn.bfm import (
+    HungarianMatcher,
+    MaskDecoder,
+    PromptEncoder,
+    TwoWayTransformer,
+)
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
+from monai.losses import DiceFocalLoss
+from torch.nn.modules.loss import _Loss as Loss
 from torchmetrics import MeanMetric, MinMetric
 
 from aics_im2im.models.base_model import BaseModel
@@ -16,17 +23,21 @@ class BFM(BaseModel):
         self,
         *,
         x_key: str,
+        y_key: str,
         encoder_ckpt,
-        num_multimask_outputs: int = 10,
+        num_multimask_outputs: int = 5,
+        num_hungarian_matching_points: int = 1000,
+        image_embedding_size: Tuple[int, int, int],
         # SAM default arguments
+        num_interactive_rounds: int = 8,
         activation: Type[nn.Module] = nn.GELU,
         transformer_dim: int = 256,
-        num_interaction_rounds: int = 8,
         qc_head_depth: int = 3,
         qc_head_hidden_dim: int = 256,
         transformer_depth: int = 2,
         transformer_mlp_dim: int = 2048,
         transformer_num_heads: int = 8,
+        loss: Loss = DiceFocalLoss(),  # TODO: pick default parameters
         **base_kwargs,
     ):
         """
@@ -72,8 +83,16 @@ class BFM(BaseModel):
             qc_head_depth=qc_head_depth,
             qc_head_hidden_dim=qc_head_hidden_dim,
         )
+        self.prompt_encoder = PromptEncoder(
+            embed_dim=transformer_dim,
+            image_embedding_size=image_embedding_size,
+            mask_in_chans=16,
+        )
 
-        def forward(self, batch):
+        self.matcher = HungarianMatcher(1, 1, num_hungarian_matching_points)
+        self.loss = loss
+
+        def forward(self, batch, sparse_prompts=None, dense_prompts=None):
             # TODO: this was copied from segment_anything. adjust
             """
             input_images = torch.stack([self.preprocess(x["image"]) for x in batched_input], dim=0)
@@ -113,9 +132,59 @@ class BFM(BaseModel):
             """
             pass
 
-        def model_step(self, batch):
+        def compute_prompts(self, target, preds):
+            """
+            targets: [N_masks, D, H, W]
+            preds: [N_masks, D, H, W]
+            """
+            return "point", "dense"
+
+        def training_step(self, batch):
             # TODO:
             # training:
             # - do n rounds of predicting, computing loss and backprop, and feeding previous
             #   prediction as dense prompt, and automatically generate simulated sparse prompts
-            pass
+
+            images = batch[self.hparams.x_key]
+            targets = batch[self.hparams.y_key]
+            image_size = images.shape[-3:]
+            image_embeddings = self.encoder(images)
+
+            if self.training:
+                # TODO: make this something other than a list?
+                point_prompts = [None] * images.shape[0]
+                dense_prompts = [None] * images.shape[0]
+            else:
+                raise NotImplementedError
+
+            opt = self.optimizers()
+
+            for _ in range(self.hparams.num_interactive_rounds):
+                loss = 0
+                for ix, (image, embedding, target) in enumerate(
+                    zip(images, image_embeddings, targets)
+                ):
+                    sparse_embeddings, dense_embeddings = self.prompt_encoder(
+                        point_prompts[ix], None, dense_prompts[ix], image_size
+                    )
+
+                    preds = self.decoder(
+                        embedding,
+                        self.prompt_encoder.get_dense_pe(),
+                        sparse_embeddings,
+                        dense_embeddings,
+                    )
+
+                    point_prompts[ix], dense_prompts[ix] = self.compute_prompts(target, preds)
+
+                    with torch.no_grad():
+                        i, j = self.matcher(preds, target)
+
+                    loss = loss + self.loss(preds[i], target[j])
+
+                opt.zero_grad()
+                loss = loss / images.shape[0]
+                self.manual_backward(loss)
+                opt.step()
+
+            return {"loss": loss}, None, None
