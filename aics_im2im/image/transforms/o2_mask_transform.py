@@ -13,7 +13,7 @@ class O2Mask(Transform):
         mask_side: int,
         mask_margin: float = 0.0,
         background: Optional[int] = None,
-        cylinder_axis: int = 2,
+        cylinder_axis: int = 1,  # CZYX
     ):
         """Similar functionality as https://quva-
         lab.github.io/escnn/api/escnn.nn.html#escnn.nn.MaskModule.
@@ -45,14 +45,21 @@ class O2Mask(Transform):
         self.background = background
         margin = mask_margin if background is None else 0
 
-        self.mask = build_mask(mask_side, margin)
-        if spatial_dims == 3:
+        self.mask = build_mask(mask_side, margin).squeeze().unsqueeze(0)
+        if self.spatial_dims == 3:
             self.mask = self.mask.unsqueeze(cylinder_axis)
 
     def __call__(self, img):
-        out = img * self.mask.type_as(img)
+        if self.spatial_dims == 3 and len(img.shape) == 5:
+            mask = self.mask.unsqueeze(0)
+        elif self.spatial_dims == 2 and len(img.shape) == 4:
+            mask = self.mask.unsqueeze(0)
+        else:
+            mask = self.mask
+
+        out = img * mask.type_as(img)
         if self.background is not None:
-            out = out + self.background * (1 - self.mask.type_as(img))
+            out = out + self.background * (1 - mask.type_as(img))
 
         return out
 
@@ -65,12 +72,18 @@ class O2Maskd(Transform):
         mask_side: int,
         mask_margin: float = 0.0,
         background: Optional[float] = None,
-        cylinder_axis: int = 2,
+        cylinder_axis: int = 1,  # CZYX
     ):
         """Dictionary-transform version of O2Mask."""
         super().__init__()
         self.keys = keys
-        self.transform = O2Mask(spatial_dims, mask_side, mask_margin, background, cylinder_axis)
+        self.transform = O2Mask(
+            spatial_dims=spatial_dims,
+            mask_side=mask_side,
+            mask_margin=mask_margin,
+            background=background,
+            cylinder_axis=cylinder_axis,
+        )
 
     def __call__(self, img):
         for key in self.keys:
