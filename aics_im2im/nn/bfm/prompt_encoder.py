@@ -8,6 +8,8 @@ import numpy as np
 import torch
 from torch import nn
 
+from .common import LayerNorm3d
+
 
 class PromptEncoder(nn.Module):
     def __init__(
@@ -16,6 +18,7 @@ class PromptEncoder(nn.Module):
         image_embedding_size: Tuple[int, int, int],
         input_image_size: Tuple[int, int, int],
         mask_in_chans: int,
+        num_masks: int,
         activation: Type[nn.Module] = nn.GELU,
     ) -> None:
         """Encodes prompts for input to SAM's mask decoder.
@@ -37,7 +40,7 @@ class PromptEncoder(nn.Module):
         self.image_embedding_size = image_embedding_size
         self.pe_layer = PositionEmbeddingRandom(embed_dim // 2)
 
-        self.num_point_embeddings: int = 4  # pos/neg point + 2 box corners
+        self.num_point_embeddings: int = 5  # pos/neg point + 2 box corners + wrong obj
         point_embeddings = [nn.Embedding(1, embed_dim) for i in range(self.num_point_embeddings)]
         self.point_embeddings = nn.ModuleList(point_embeddings)
         self.not_a_point_embed = nn.Embedding(1, embed_dim)
@@ -48,7 +51,9 @@ class PromptEncoder(nn.Module):
             4 * image_embedding_size[2],
         )
         self.mask_downscaling = nn.Sequential(
-            nn.Conv3d(1, mask_in_chans // 4, kernel_size=2, stride=2),
+            # the input of the dense prompt encoder is a 0.25x downscaled
+            # version of a per-voxel one-hot encoding of a previous model output
+            nn.Conv3d(num_masks, mask_in_chans // 4, kernel_size=2, stride=2),
             LayerNorm3d(mask_in_chans // 4),
             activation(),
             nn.Conv3d(mask_in_chans // 4, mask_in_chans, kernel_size=2, stride=2),
@@ -86,6 +91,7 @@ class PromptEncoder(nn.Module):
         point_embedding[labels == -1] += self.not_a_point_embed.weight
         point_embedding[labels == 0] += self.point_embeddings[0].weight
         point_embedding[labels == 1] += self.point_embeddings[1].weight
+        point_embedding[labels == 2] += self.point_embeddings[2].weight
         return point_embedding
 
     def _embed_boxes(self, boxes: torch.Tensor) -> torch.Tensor:
@@ -93,8 +99,8 @@ class PromptEncoder(nn.Module):
         boxes = boxes + 0.5  # Shift to center of pixel
         coords = boxes.reshape(-1, 2, 3)
         corner_embedding = self.pe_layer.forward_with_coords(coords, self.input_image_size)
-        corner_embedding[:, 0, :] += self.point_embeddings[2].weight
-        corner_embedding[:, 1, :] += self.point_embeddings[3].weight
+        corner_embedding[:, 0, :] += self.point_embeddings[3].weight
+        corner_embedding[:, 1, :] += self.point_embeddings[4].weight
         return corner_embedding
 
     def _embed_masks(self, masks: torch.Tensor) -> torch.Tensor:
@@ -210,18 +216,3 @@ class PositionEmbeddingRandom(nn.Module):
         coords[:, :, 1] = coords[:, :, 1] / image_size[1]
         coords[:, :, 2] = coords[:, :, 2] / image_size[0]
         return self._pe_encoding(coords.to(torch.float))  # B x N x C
-
-
-class LayerNorm3d(nn.Module):
-    def __init__(self, num_channels: int, eps: float = 1e-6) -> None:
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(num_channels))
-        self.bias = nn.Parameter(torch.zeros(num_channels))
-        self.eps = eps
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        u = x.mean(1, keepdim=True)
-        s = (x - u).pow(2).mean(1, keepdim=True)
-        x = (x - u) / torch.sqrt(s + self.eps)
-        x = self.weight[:, None, None, None] * x + self.bias[:, None, None, None]
-        return x
