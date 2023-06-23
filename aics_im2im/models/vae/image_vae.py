@@ -131,7 +131,7 @@ class ImageVAE(BaseVAE):
                 spatial_dims=spatial_dims,
                 in_channels=c_out,
                 out_channels=c_out,
-                scale_factor=s,  # ignored in the last block
+                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
                 size=size,
                 kernel_size=3,
                 pre_conv=pre_conv,
