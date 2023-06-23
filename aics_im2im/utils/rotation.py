@@ -33,7 +33,9 @@ class RotationModule:
             R[:, :, -2:] = R[:, :, -2:] * -1
 
         if self.spatial_dims == 2:
-            # assume data comes in -Y X format, to match `escnn`.
+            # affine_grid and grid_sample rotate the grid, not the signal.
+            # to rotate the signal by alpha, we want to rotate the grid
+            # by -alpha, so we make that correction here.
             R[:, -1, :] = R[:, -1, :] * -1
             R[:, :, -1] = R[:, :, -1] * -1
 
