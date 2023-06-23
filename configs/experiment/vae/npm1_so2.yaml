@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: vae/variance_3d_npm_nuc_v2.yaml
-  - override /model: vae/so3_equiv_image_vae.yaml
+  - override /model: vae/so2_equiv_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -13,14 +13,17 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: variance_so2_3d_vae
+experiment_name: npm1_so2_sdf
 
-tags: ["so3-equiv", "variance-dataset", "3d", "npm1"]
+tags: ["so2-equiv", "variance-dataset", "3d", "npm1", "sdf"]
 
 seed: 42
 
 data:
-  batch_size: 128
+  _aux:
+    background: 15
+
+  batch_size: 32
   cache_dir: /storage/cache
   transforms:
     - _target_: aics_im2im.dataframe.transforms.GroupCols
@@ -29,16 +32,22 @@ data:
         cell_id: cell_id
     - _target_: aics_im2im.image.io.ReadNumpyFile
       keys: [image]
-      channels: [0] # nuc: 0, npm1: 1
+      # nuc_sdf: 0, npm1_sdf: 1, nuc_seg: 2, npm1_seg: 3
+      channels: [1]
       remote: false
-    - _target_: monai.transforms.NormalizeIntensityd
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: image
+      threshold: ${data._aux.background}
+      above: false
+      cval: ${data._aux.background}
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: image
+      threshold: -10.
+      above: true
+      cval: -10.
+    - _target_: monai.transforms.Resized
       keys: [image]
-      divisor: 100
-      subtrahend: 0
-    - _target_: aics_im2im.image.transforms.Resized
-      keys: [image]
-      # images become [42, 42, 42]
-      scale_factor: 0.25
+      spatial_size: [81, 81, 81] # one voxel smaller than 0.5x
     - _target_: monai.transforms.RandRotated
       keys: [image]
       range_x: 3.14159
@@ -50,25 +59,23 @@ data:
       track_meta: false
 
 model:
-  group: so3
-
+  group: so2
   spatial_dims: 3
-  in_shape: [1, 42, 42, 42]
+  in_shape: [1, 81, 81, 81]
 
-  background_value: 1
+  background_value: ${data._aux.background}
 
   mask_input: true
   mask_output: true
-  clip_min: -1
-  clip_max: 1
 
-  latent_dim: 256
+  latent_dim: 64
 
-  channels: [8, 16, 32, 64, 128, 256]
-  strides: [1, 1, 2, 2, 2, 2]
+  kernel_sizes: [7, 5, 5, 5, 3, 3]
+  channels: [8, 16, 32, 32, 64, 64]
+  strides: [1, 1, 2, 2, 2, 1]
 
-  #last_act: tanh
-  #last_scale: 10
+  #last_act: sigmoid
+  #last_scale: null
 
   reconstruction_loss:
     _target_: torch.nn.MSELoss
@@ -77,26 +84,25 @@ model:
   prior:
 
   x_label: image
-  id_label: cell_id
 
-  kernel_size: 3
-  act: mish
-  norm: batch
+  act: swish
+  norm: null
   dropout: null
   bias: true
   beta: 1.0
 
 trainer:
   check_val_every_n_epoch: 1
-  min_epochs: 1000
-  max_epochs: 2000
+  min_epochs: 500
+  max_epochs: 1000
   accelerator: gpu
-  devices: [2]
+  devices: [1]
 
 callbacks:
   early_stopping:
     monitor: val/loss
     patience: 10
+    min_delta: 0.
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
@@ -106,8 +112,8 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: so3_vae_npm1_sdf
-    run_name: so3_vae_seg
+    experiment_name: ${experiment_name}
+    run_name:
 
 extras:
   precision:

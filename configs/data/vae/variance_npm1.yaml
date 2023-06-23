@@ -9,13 +9,30 @@ num_workers: 10
 multiprocessing_context: spawn
 persistent_workers: true
 
+_aux:
+  background: 6.
+  column: sdf_path_unalign
+
 transforms:
   - _target_: aics_im2im.dataframe.transforms.GroupCols
     groups:
-      image: sdf_path_align_3dnuc
+      image: ${data._aux.column}
       cell_id: CellId
   - _target_: aics_im2im.image.io.ReadNumpyFile
     keys: image
     remote: false
-    clip_min: -2
-    clip_max: 2
+  - _target_: monai.transforms.ThresholdIntensityd
+    keys: image
+    threshold: ${data._aux.background}
+    above: false
+    cval: ${data._aux.background}
+  - _target_: monai.transforms.ThresholdIntensityd
+    keys: image
+    threshold: -2.
+    above: true
+    cval: -2.
+  - _target_: monai.transforms.AddChanneld
+    keys: image
+  - _target_: monai.transforms.ToTensord
+    keys: [image]
+    track_meta: false
