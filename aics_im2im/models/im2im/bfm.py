@@ -3,6 +3,7 @@ from typing import Callable, Dict, List, Tuple, Type, Union
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from aics_imi2m.nn.bfm import (
     HungarianMatcher,
     MaskDecoder,
@@ -137,7 +138,11 @@ class BFM(BaseModel):
             targets: [N_masks, D, H, W]
             preds: [N_masks, D, H, W]
             """
-            return "point", "dense"
+
+            dense = F.interpolate(preds.gt(0).sum(dim=0), scale_factor=0.25)
+            # TODO: compute simulated point prompts from error regions between targets and preds
+
+            return "point", dense
 
         def training_step(self, batch):
             # TODO:
@@ -175,9 +180,8 @@ class BFM(BaseModel):
                         dense_embeddings,
                     )
 
-                    point_prompts[ix], dense_prompts[ix] = self.compute_prompts(target, preds)
-
                     with torch.no_grad():
+                        point_prompts[ix], dense_prompts[ix] = self.compute_prompts(target, preds)
                         i, j = self.matcher(preds, target)
 
                     loss = loss + self.loss(preds[i], target[j])
