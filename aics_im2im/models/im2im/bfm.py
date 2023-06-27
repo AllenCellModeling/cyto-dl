@@ -1,5 +1,6 @@
+import random
 from pathlib import Path
-from typing import Callable, Dict, List, Tuple, Type, Union
+from typing import Dict, List, Tuple, Type, Union
 
 import torch
 import torch.nn as nn
@@ -30,7 +31,7 @@ class BFM(BaseModel):
         num_hungarian_matching_points: int = 1000,
         image_embedding_size: Tuple[int, int, int],
         # SAM default arguments
-        num_interactive_rounds: int = 8,
+        num_interactive_rounds: int = 11,
         activation: Type[nn.Module] = nn.GELU,
         transformer_dim: int = 256,
         qc_head_depth: int = 3,
@@ -66,6 +67,12 @@ class BFM(BaseModel):
             "train/loss": MeanMetric(),
             "val/loss": MeanMetric(),
             "test/loss": MeanMetric(),
+            "train/seg_loss": MeanMetric(),
+            "val/seg_loss": MeanMetric(),
+            "test/seg_loss": MeanMetric(),
+            "train/qc_loss": MeanMetric(),
+            "val/qc_loss": MeanMetric(),
+            "test/qc_loss": MeanMetric(),
         }
 
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
@@ -93,102 +100,140 @@ class BFM(BaseModel):
         self.matcher = HungarianMatcher(1, 1, num_hungarian_matching_points)
         self.loss = loss
 
-        def forward(self, batch, sparse_prompts=None, dense_prompts=None):
-            # TODO: this was copied from segment_anything. adjust
-            """
-            input_images = torch.stack([self.preprocess(x["image"]) for x in batched_input], dim=0)
-            image_embeddings = self.image_encoder(input_images)
-
-            outputs = []
-            for image_record, curr_embedding in zip(batched_input, image_embeddings):
-                if "point_coords" in image_record:
-                    points = (image_record["point_coords"], image_record["point_labels"])
-                else:
-                    points = None
-                sparse_embeddings, dense_embeddings = self.prompt_encoder(
-                    points=points,
-                    boxes=image_record.get("boxes", None),
-                    masks=image_record.get("mask_inputs", None),
-                )
-                low_res_masks, qc_predictions = self.mask_decoder(
-                    image_embeddings=curr_embedding.unsqueeze(0),
-                    image_pe=self.prompt_encoder.get_dense_pe(),
-                    sparse_prompt_embeddings=sparse_embeddings,
-                    dense_prompt_embeddings=dense_embeddings,
-                )
-                masks = self.postprocess_masks(
-                    low_res_masks,
-                    input_size=image_record["image"].shape[-2:],
-                    original_size=image_record["original_size"],
-                )
-                masks = masks > self.mask_threshold
-                outputs.append(
-                    {
-                        "masks": masks,
-                        "qc_predictions": qc_predictions,
-                        "low_res_logits": low_res_masks,
-                    }
-                )
-            return outputs
-            """
-            pass
-
-        def compute_prompts(self, target, preds):
+        def compute_prompts(self, preds, target):
             """
             targets: [N_masks, D, H, W]
             preds: [N_masks, D, H, W]
             """
 
-            dense = F.interpolate(preds.gt(0).sum(dim=0), scale_factor=0.25)
-            # TODO: compute simulated point prompts from error regions between targets and preds
+            # we convert logits to probabilities, to compute a collapsed
+            # version of the prediction, to be used for error region calculation
+            # and for dense prompt calculation
+            collapsed_pred = (preds.sigmoid().sum(dim=0) + 1e-9).logit()
+            collapsed_target = target.sum(dim=0)
 
-            return "point", dense
+            dense = F.interpolate(collapsed_pred, scale_factor=0.25)
 
-        def training_step(self, batch):
-            # TODO:
-            # training:
-            # - do n rounds of predicting, computing loss and backprop, and feeding previous
-            #   prediction as dense prompt, and automatically generate simulated sparse prompts
+            # after we create the dense prompt, we threshold the collapsed
+            # predictions
+            collapsed_pred = collapsed_pred.gt(0)
 
+            overseg_region = collapsed_pred - collapsed_target
+            underseg_region = collapsed_target - collapsed_pred
+
+            overlap_region = torch.zeros_like(collapsed_pred)
+            for ix, pred in enumerate(preds):
+                # compute a collapsed target excluding this index (i.e. all other targets)
+                collapsed_others = target[:ix] + target[ix + 1 :]
+
+                # compute the region where the model predicted the ix-th object
+                # at a location where any other object exists
+                overlap_region += pred * collapsed_others
+
+            point_type = random.choices(  # nosec: B311
+                (0, 1, 2),
+                weights=(overseg_region.sum(), underseg_region.sum(), overlap_region.sum()),
+            )
+
+            sample_from = (overseg_region, underseg_region, overlap_region)[point_type].argwhere()
+            rand_ix = torch.randint(sample_from.shape[0], (1,))[0]
+            point_prompt = sample_from[rand_ix]
+
+            return dense, (point_prompt.unsqueeze(0), point_type)
+
+        def model_step(self, stage, batch, batch_idx):
             images = batch[self.hparams.x_key]
             targets = batch[self.hparams.y_key]
             image_size = images.shape[-3:]
             image_embeddings = self.encoder(images)
 
             if self.training:
-                # TODO: make this something other than a list?
                 point_prompts = [None] * images.shape[0]
                 dense_prompts = [None] * images.shape[0]
-            else:
-                raise NotImplementedError
 
             opt = self.optimizers()
 
-            for _ in range(self.hparams.num_interactive_rounds):
-                loss = 0
-                for ix, (image, embedding, target) in enumerate(
-                    zip(images, image_embeddings, targets)
-                ):
-                    sparse_embeddings, dense_embeddings = self.prompt_encoder(
-                        point_prompts[ix], None, dense_prompts[ix], image_size
-                    )
+            # choosing what types of prompts are generated at each interactive
+            # round. following SAM, there's two rounds where no additional prompts
+            # are added. one of these is always at the end and another one
+            # is randomly inserted
+            rounds = ["points"] * self.hparams.num_interactive_rounds
+            rounds[-1] = "nop"
 
-                    preds = self.decoder(
+            random_ix = random.randint(1, self.hparams.num_interactive_rounds - 2)  # nosec: B311
+            rounds[random_ix] = "nop"
+
+            for round_op in rounds:
+                seg_loss = 0
+                qc_loss = 0
+                for ix, (image, embedding, target, task_index) in enumerate(
+                    zip(images, image_embeddings, targets, batch["task_index"])
+                ):
+                    if round_op == "points":
+                        sparse_embeddings, dense_embeddings = self.prompt_encoder(
+                            point_prompts[ix], None, dense_prompts[ix], image_size
+                        )
+
+                    preds, qc = self.decoder(
                         embedding,
                         self.prompt_encoder.get_dense_pe(),
                         sparse_embeddings,
                         dense_embeddings,
+                        task_index,
+                        image.shape,
                     )
 
                     with torch.no_grad():
-                        point_prompts[ix], dense_prompts[ix] = self.compute_prompts(target, preds)
                         i, j = self.matcher(preds, target)
+                        new_point_prompt, dense_prompts[ix] = self.compute_prompts(
+                            preds[i], target[j]
+                        )
+                        point_prompts[ix] = torch.cat((point_prompts[ix], new_point_prompt), dim=0)
 
-                    loss = loss + self.loss(preds[i], target[j])
+                    seg_loss = seg_loss + self.loss(preds[i], target[j])
+                    with torch.no_grad():
+                        i = (preds[i].gt(0) & target[j]).reshape(images.shape[0], -1).sum(dim=1)
+                        u = (preds[i].gt(0) | target[j]).reshape(images.shape[0], -1).sum(dim=1)
+                        iou = i / (u + 1e-9)
 
-                opt.zero_grad()
-                loss = loss / images.shape[0]
-                self.manual_backward(loss)
-                opt.step()
+                    qc_loss = qc_loss + F.mse_loss(qc, iou)
 
-            return {"loss": loss}, None, None
+                if stage == "train":
+                    opt.zero_grad()
+
+                seg_loss = seg_loss / images.shape[0]
+                qc_loss = qc_loss / images.shape[0]
+
+                loss = seg_loss + qc_loss
+                if stage == "train":
+                    self.manual_backward(loss)
+                    opt.step()
+
+            return {"loss": loss, "seg_loss": seg_loss, "qc_loss": qc_loss}, None, None
+
+        def prediction_step(self, batch, batch_idx):
+            images = batch[self.hparams.x_key]
+            image_size = images.shape[-3:]
+            image_embeddings = self.encoder(images)
+
+            point_prompts = batch.get("point_prompts", None)
+            dense_prompts = batch.get("dense_prompts", None)
+
+            preds = [None] * images.shape[0]
+            for ix, (image, embedding, task_index) in enumerate(
+                zip(images, image_embeddings, batch["task_index"])
+            ):
+                sparse_embeddings, dense_embeddings = self.prompt_encoder(
+                    point_prompts[ix], None, dense_prompts[ix], image_size
+                )
+
+                preds[ix] = self.decoder(
+                    embedding,
+                    self.prompt_encoder.get_dense_pe(),
+                    sparse_embeddings,
+                    dense_embeddings,
+                    task_index,
+                    image.shape,
+                )
+
+            return preds

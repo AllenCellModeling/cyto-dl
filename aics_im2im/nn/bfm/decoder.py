@@ -24,6 +24,7 @@ class MaskDecoder(nn.Module):
         activation: Type[nn.Module] = nn.GELU,
         qc_head_depth: int = 3,
         qc_head_hidden_dim: int = 256,
+        n_tasks: int = 2,
     ) -> None:
         """Predicts masks given an image and prompt embeddings, using a transformer architecture.
 
@@ -43,11 +44,11 @@ class MaskDecoder(nn.Module):
         self.transformer_dim = transformer_dim
         self.transformer = transformer
 
-        self.num_multimask_outputs = num_multimask_outputs
-
         self.qc_token = nn.Embedding(1, transformer_dim)
-        self.num_mask_tokens = num_multimask_outputs + 1
-        self.mask_tokens = nn.Embedding(self.num_mask_tokens, transformer_dim)
+
+        self.num_mask_tokens = num_multimask_outputs
+
+        self.mask_tokens = nn.Embedding(n_tasks * self.num_mask_tokens, transformer_dim)
 
         self.output_upscaling = nn.Sequential(
             nn.ConvTranspose2d(transformer_dim, transformer_dim // 4, kernel_size=2, stride=2),
@@ -75,47 +76,20 @@ class MaskDecoder(nn.Module):
         image_pe: torch.Tensor,
         sparse_prompt_embeddings: torch.Tensor,
         dense_prompt_embeddings: torch.Tensor,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Predict masks given image and prompt embeddings.
-
-        Arguments:
-          image_embeddings (torch.Tensor): the embeddings from the image encoder
-          image_pe (torch.Tensor): positional encoding with the shape of image_embeddings
-          sparse_prompt_embeddings (torch.Tensor): the embeddings of the points and boxes
-          dense_prompt_embeddings (torch.Tensor): the embeddings of the mask inputs
-
-        Returns:
-          torch.Tensor: batched predicted masks
-          torch.Tensor: batched predictions of mask quality
-        """
-        masks, qc_pred = self.predict_masks(
-            image_embeddings=image_embeddings,
-            image_pe=image_pe,
-            sparse_prompt_embeddings=sparse_prompt_embeddings,
-            dense_prompt_embeddings=dense_prompt_embeddings,
-        )
-
-        # Select the correct mask or masks for output
-        mask_slice = slice(1, None)
-        masks = masks[:, mask_slice, :, :]
-        qc_pred = qc_pred[:, mask_slice]
-
-        # Prepare output
-        return masks, qc_pred
-
-    def predict_masks(
-        self,
-        image_embeddings: torch.Tensor,
-        image_pe: torch.Tensor,
-        sparse_prompt_embeddings: torch.Tensor,
-        dense_prompt_embeddings: torch.Tensor,
+        task_index: int,
+        image_shape: Tuple[int, int, int],
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         """Predicts masks.
 
         See 'forward' for more details.
         """
         # Concatenate output tokens
-        output_tokens = torch.cat([self.qc_token.weight, self.mask_tokens.weight], dim=0)
+
+        mask_tokens = self.mask_tokens.weight[
+            task_index * self.num_mask_tokens : (task_index + 1) * self.num_mask_tokens
+        ]
+
+        output_tokens = torch.cat([self.qc_token.weight, mask_tokens], dim=0)
 
         # repeat output tokens across the batch. B x (N_masks + 1) x transformer_dim
         output_tokens = output_tokens.unsqueeze(0).expand(sparse_prompt_embeddings.size(0), -1, -1)
@@ -146,6 +120,7 @@ class MaskDecoder(nn.Module):
 
         # Generate mask quality predictions
         qc_pred = self.qc_prediction_head(qc_token_out)
+        masks = F.interpolate(masks, image_shape, mode="bilinear", align_corners=False)
 
         return masks, qc_pred
 
