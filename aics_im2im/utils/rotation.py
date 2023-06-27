@@ -113,20 +113,17 @@ def get_rotation_matrix_so3(z, eps=1e-6):
     The (batch of) rotation matrix
     """
 
-    # produce two orthogonal vectors
+    # produce  unit vector
     v1 = z[:, 0, :]
+    u1 = v1 / (v1.norm(dim=1, keepdim=True) + eps)
 
-    v1_norm = torch.norm(v1, dim=1, keepdim=True)
-    u1 = v1 / (v1_norm + eps)
-
+    # produce a second unit vector, orthogonal to the first one
     v2 = z[:, 1, :]
     v2 = v2 - (v2 * u1).sum(1, keepdim=True) * u1
+    u2 = v2 / (v2.norm(dim=1, keepdim=True) + eps)
 
-    v2_norm = torch.norm(v2, dim=1, keepdim=True)
-    u2 = v2 / (v2_norm + eps)
-
-    # compute the cross product of the two output vectors
+    # produce a third orthogonal vector, as the cross product of the first two
     u3 = torch.cross(u1, u2)
-    rot = torch.stack([u1, u2, u3], dim=1).transpose(1, 2)
+    rot = torch.stack([u1, u2, u3], dim=1)
 
     return rot
