@@ -16,7 +16,6 @@ prior:
 group: so3
 
 beta: 1.0
-kernel_size: 3
 act: relu
 norm: batch
 dropout: null

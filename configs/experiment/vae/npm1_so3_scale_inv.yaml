@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: vae/variance_3d_npm1.yaml
-  - override /model: vae/so2_equiv_image_vae.yaml
+  - override /model: vae/so3_equiv_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -13,9 +13,9 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: npm1_so2_sdf
+experiment_name: npm1_so3_sdf
 
-tags: ["so2-equiv", "variance-dataset", "3d", "npm1", "sdf"]
+tags: ["so3-equiv", "variance-dataset", "3d", "npm1", "sdf"]
 
 seed: 42
 
@@ -50,21 +50,20 @@ data:
       spatial_size: [33, 33, 33]
     - _target_: monai.transforms.RandRotated
       keys: [image]
-      range_x: 0
-      range_y: 0
+      range_x: 3.14159
+      range_y: 3.14159
       range_z: 3.14159
       prob: 1.0
-    - _target_: aics_im2im.image.transforms.O2Maskd
+    - _target_: aics_im2im.image.transforms.O3Maskd
       keys: [image]
-      mask_side: 33
-      background: 20
-      spatial_dims: 3
+      diameter: 33
+      background: 30
     - _target_: monai.transforms.ToTensord
       keys: [image]
       track_meta: false
 
 model:
-  group: so2
+  group: so3
   spatial_dims: 3
   in_shape: [1, 33, 33, 33]
 
@@ -109,10 +108,10 @@ model:
 
 trainer:
   check_val_every_n_epoch: 1
-  min_epochs: 3000
-  max_epochs: 10000
+  min_epochs: 1500
+  max_epochs: 5000
   accelerator: gpu
-  devices: [1]
+  devices: [0]
 
 callbacks:
   early_stopping:
@@ -123,7 +122,7 @@ callbacks:
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
     monitor: val/loss
-    save_top_k: 10
+    save_top_k: 2
     every_n_epochs: 1
 
 logger:
