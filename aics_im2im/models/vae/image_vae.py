@@ -57,6 +57,8 @@ class ImageVAE(BaseVAE):
         mask_output: bool = False,
         clip_min: Optional[int] = None,
         clip_max: Optional[int] = None,
+        first_conv_padding_mode: str = "replicate",
+        encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
         **base_kwargs
     ):
@@ -94,8 +96,8 @@ class ImageVAE(BaseVAE):
         else:
             self.mask = None
 
-        for k, s in zip(kernel_sizes, strides):
-            padding = same_padding(k)
+        for k, s, p in zip(kernel_sizes, strides, encoder_padding):
+            padding = same_padding(k) if p is None else p
             self.final_size = calculate_out_shape(self.final_size, k, s, padding)
 
         if decoder_channels is None:
@@ -171,7 +173,9 @@ class ImageVAE(BaseVAE):
             maximum_frequency=maximum_frequency,
             kernel_sizes=kernel_sizes,
             bias=bias,
+            padding=encoder_padding,
             group=group,
+            first_conv_padding_mode=first_conv_padding_mode,
         )
 
         if group is not None:

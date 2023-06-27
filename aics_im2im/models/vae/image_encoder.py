@@ -1,4 +1,4 @@
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 import torch
 from escnn import gspaces, nn
@@ -7,6 +7,7 @@ from monai.networks.layers.convutils import (
     same_padding,
     stride_minus_kernel_padding,
 )
+from omegaconf import ListConfig
 
 
 class ImageEncoder(torch.nn.Module):
@@ -19,12 +20,22 @@ class ImageEncoder(torch.nn.Module):
         maximum_frequency: int,
         kernel_sizes: Optional[Sequence[int]] = None,
         bias: bool = False,
+        padding: Optional[Union[int, Sequence[int]]] = None,
         group: str = "so2",
+        first_conv_padding_mode: str = "replicate",
     ):
         super().__init__()
 
         if kernel_sizes is None:
             kernel_sizes = [3] * len(channels)
+
+        if padding is None:
+            padding = [None] * len(channels)
+        elif isinstance(padding, int):
+            padding = [padding] * len(channels)
+        else:
+            assert isinstance(padding, (list, tuple, ListConfig))
+            assert len(padding) == len(channels)
 
         self.spatial_dims = spatial_dims
         self.bias = bias
@@ -55,10 +66,12 @@ class ImageEncoder(torch.nn.Module):
                 channels[0],
                 strides[0],
                 kernel_sizes[0],
+                padding=padding[0],
+                padding_mode=first_conv_padding_mode,
             )
         ]
-        for c, s, k in zip(channels[1:], strides[1:], kernel_sizes[1:]):
-            blocks.append(self.make_block(blocks[-1].out_type, c, s, k))
+        for c, s, k, p in zip(channels[1:], strides[1:], kernel_sizes[1:], padding[1:]):
+            blocks.append(self.make_block(blocks[-1].out_type, c, s, k, padding=p))
 
         if group == "so2":
             n_out_vectors = 1
@@ -115,7 +128,7 @@ class ImageEncoder(torch.nn.Module):
 
         return scalar_fields, vector_fields, field_type
 
-    def make_conv(self, in_type, out_type, s, k, b=None, p=None):
+    def make_conv(self, in_type, out_type, s, k, b=None, p=None, p_mode="zeros"):
         p = p if p is not None else same_padding(k)
         b = b if b is not None else self.bias
 
@@ -127,15 +140,20 @@ class ImageEncoder(torch.nn.Module):
             stride=1,
             bias=b,
             padding=p,
+            padding_mode=p_mode,
         )
 
         return conv
 
-    def make_block(self, in_type, out_channels, stride, kernel_size):
+    def make_block(
+        self, in_type, out_channels, stride, kernel_size, padding=None, padding_mode="zeros"
+    ):
         out_scalar_fields, out_vector_fields, out_type = self.get_fields(out_channels)
         batch_norm_cls = nn.IIDBatchNorm3d if self.spatial_dims == 3 else nn.IIDBatchNorm2d
 
-        conv = self.make_conv(in_type, out_type, stride, kernel_size)
+        conv = self.make_conv(
+            in_type, out_type, stride, kernel_size, p=padding, p_mode=padding_mode
+        )
         if stride > 1:
             pool_class = (
                 nn.PointwiseAvgPoolAntialiased2D
