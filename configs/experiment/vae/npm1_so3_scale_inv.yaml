@@ -91,8 +91,7 @@ model:
     loss_fn:
       reduction: none
       _target_: torch.nn.MSELoss
-      #_target_: monai.losses.DiceLoss
-      #_target_: monai.losses.FocalLoss
+      #_target_: monai.losses.DiceFocalLoss
     above: false
     threshold: 0.0
 
