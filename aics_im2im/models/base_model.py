@@ -189,9 +189,12 @@ class BaseModel(LightningModule, metaclass=BaseModelMeta):
         return loss
 
     def predict_step(self, batch, batch_idx):
-        loss, preds, targets = self.model_step("predict", batch, batch_idx)
-        self.compute_metrics(loss, preds, targets, "predict")
-        return loss
+        """Here you should implement the logic for an inference step.
+
+        In most cases this would simply consist of calling the forward pass of your model, but you
+        might wish to add additional post-processing.
+        """
+        raise NotImplementedError
 
     def configure_optimizers(self):
         optimizer = self.optimizer(self.parameters())
