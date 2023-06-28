@@ -544,9 +544,12 @@
         <span class="k">return</span> <span class="n">loss</span></div>
 
 <div class="viewcode-block" id="BaseModel.predict_step"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.predict_step">[docs]</a>    <span class="k">def</span> <span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">loss</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_step</span><span class="p">(</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_metrics</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Here you should implement the logic for an inference step.</span>
+
+<span class="sd">        In most cases this would simply consist of calling the forward pass of your model, but you</span>
+<span class="sd">        might wish to add additional post-processing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="BaseModel.configure_optimizers"><a class="viewcode-back" href="../../../aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.configure_optimizers">[docs]</a>    <span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>

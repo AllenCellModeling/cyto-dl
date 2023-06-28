@@ -427,7 +427,10 @@ results.update({</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.models.base_model.BaseModel.predict_step">
 <span class="sig-name descname"><span class="pre">predict_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/aics_im2im/models/base_model.html#BaseModel.predict_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#aics_im2im.models.base_model.BaseModel.predict_step" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Here you should implement the logic for an inference step.</p>
+<p>In most cases this would simply consist of calling the forward pass of your model, but you
+might wish to add additional post-processing.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="aics_im2im.models.base_model.BaseModel.test_step">
