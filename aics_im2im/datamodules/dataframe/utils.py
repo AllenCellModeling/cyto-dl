@@ -44,8 +44,9 @@ class AlternatingBatchSampler(BatchSampler):
     def __init__(
         self,
         subset: Subset,
-        target_columns: Sequence[str],
-        batch_size: int,
+        target_columns: Sequence[str] = None,
+        grouping_column: Sequence[str] = None,
+        batch_size: int = 1,
         drop_last: bool = False,
         shuffle: bool = False,
         sampler: Sampler = SubsetRandomSampler,
@@ -67,9 +68,10 @@ class AlternatingBatchSampler(BatchSampler):
         sampler:Sampler=SubsetRandomSampler
             Sampler to sample from each column in `target_columns`
         """
+        assert (
+            grouping_column is not None or target_columns is not None
+        ), "Either target column or grouping column must be provided"
         super().__init__(None, batch_size, drop_last)
-        if target_columns is None:
-            raise ValueError("target_columns must be defined if using batch sampler.")
         # pytorch subsets consist of the original dataset plus a list of `subset_indices`. when provided
         # an index `i` in getitem, subsets return `subset_indices[i]`. Since we are indexing into the
         # subset indices instead of the indices of the original dataframe, we have to reset the index
@@ -78,14 +80,24 @@ class AlternatingBatchSampler(BatchSampler):
         # order is subset.monai_dataset.dataframewrapper.dataframe
         subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
         samplers = []
-        for name in target_columns:
-            # returns an index into dataset.indices where head column is not empty
-            head_indices = subset_df.index[~subset_df[name].isna()].to_list()
-            if len(head_indices) == 0:
-                raise ValueError(
-                    f"Dataset must contain examples of head {name}. Please increase the value of subsample."
-                )
-            samplers.append(sampler(head_indices))
+        if target_columns is not None:
+            for name in target_columns:
+                # returns an index into dataset.indices where head column is not empty
+                head_indices = subset_df.index[~subset_df[name].isna()].to_list()
+                if len(head_indices) == 0:
+                    raise ValueError(
+                        f"Dataset must contain examples of head {name}. Please increase the value of subsample."
+                    )
+                samplers.append(sampler(head_indices))
+        else:
+            grouping_options = subset.dataset.data.df[grouping_column].unique()
+            for i, opt in enumerate(grouping_options):
+                group_indices = subset_df.index[subset_df[grouping_column] == opt].to_list()
+                if len(group_indices) == 0:
+                    raise ValueError(
+                        f"Dataset must contain examples of group {opt}. Please increase the value of subsample."
+                    )
+                samplers.append(sampler(group_indices))
 
         self.samplers = samplers
         self.shuffle = shuffle
@@ -95,9 +107,12 @@ class AlternatingBatchSampler(BatchSampler):
         self.sampler_iterators = [iter(s) for s in self.samplers]
 
         # for now include equal numbers of all samplers
+        # worst case shuffle, we get [0,0,0,0,...., 1, 1, 1, 1]. after the 0s are done, stop iteration
+        # is raised but we're only halfway through the epoch! this prevents that by never fully exhausting
+        # the samplers
         samples_per_sampler = len(self) // len(self.samplers)
 
-        if samples_per_sampler == 0:
+        if samples_per_sampler <= 0:
             raise ValueError("Insufficient examples per task head. Please decrease batch size.")
 
         interleaved_sampler_order = repeat(range(len(self.samplers)), samples_per_sampler)
@@ -111,9 +126,12 @@ class AlternatingBatchSampler(BatchSampler):
 
     def __iter__(self) -> Iterator[List[int]]:
         for sampler_ix in self.sampler_order:
-            yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
 
-        self._sampler_generator()
+            try:
+                yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
+            except StopIteration:
+                self._sampler_generator()
+                yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
 
     def __len__(self) -> int:
         min_num_samples = min(len(sampler) for sampler in self.samplers)

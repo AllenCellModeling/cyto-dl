@@ -6,22 +6,25 @@ import torch
 from monai.networks.blocks import DenseBlock, UnetOutBlock, UnetResBlock, UpSample
 
 from aics_im2im.models.im2im.utils.postprocessing import detach
+from aics_im2im.nn.losses import Pix2PixHD
 
-from .base_head import BaseHead
+from .gan_head import GANHead
 
 
-class ResBlocksHead(BaseHead):
-    """Task head for doing task-specific convolution and optional upsampling."""
+class GANHead_resize(GANHead):
+    """GAN Task head with upsampling."""
 
     def __init__(
         self,
-        loss,
         in_channels: int,
         out_channels: int,
-        final_act: Callable = torch.nn.Identity(),
+        gan_loss=Pix2PixHD(scales=1),
+        reconstruction_loss=torch.nn.MSELoss(),
+        reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
         save_raw=False,
+        final_act: Callable = torch.nn.Identity(),
         resolution="lr",
         spatial_dims=3,
         n_convs=1,
@@ -34,37 +37,27 @@ class ResBlocksHead(BaseHead):
         """
         Parameters
         ----------
-        in_channels:int
-            Number of input channels (same as number of output channels from backbone)
-        out_channels:int
-            Number of output channels
-        final_act:Callable=torch.nn.Identity()
-            Final activation applied to logits
+        gan_loss=Pix2PixHD(scales=1)
+            Loss for optimizing GAN
+        reconstruction_loss=torch.nn.MSELoss()
+            Loss for optimizing generator's image reconstructions
+        reconstruction_loss_weight=100
+            Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
-            Postprocessing functions for ground truth and model predictions
+            Postprocessing for `input` and `predictions` of head
         calculate_metric=False
-            Whether to calculate a metric. Currently not implemented
+            Whether to calculate a metric during training. Not used by GAN head.
         save_raw=False
-            Whether to save raw image examples during training
-        resolution="lr"
-            Resolution of output image. If `lr`, no upsampling is done. If `hr`, `upsample_method` and `upsample_ratio` are used
-            to determine how to perform upsampling.
-        spatial_dims=3
-            Spatial dimension of data after `first_layer`
-        n_convs=1
-            Number of convolutional layers
-        dropout=0.0
-            Dropout ratio
-        upsample_method="pixelshuffle"
-            Method of upsampling. See the [monai upsampling docs](https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample) for options
-        upsample_ratio=None
-            Amount to upsample. If not None, should be array of length `spatial_dims`
-        first_layer=torch.nn.Identity()
-            Initial layer to apply to backbone outputs. For example, `ConvProjectionLayer` for transforming 3D->2D output.
-        dense=False
-            Whether to use dense connections between convolutional layers
+            Whether to save out example input images during training
         """
-        super().__init__(loss, postprocess, calculate_metric, save_raw)
+        super().__init__(
+            gan_loss,
+            reconstruction_loss,
+            reconstruction_loss_weight,
+            postprocess,
+            calculate_metric,
+            save_raw,
+        )
 
         self.resolution = resolution
         conv_input_channels = in_channels
@@ -116,6 +109,26 @@ class ResBlocksHead(BaseHead):
         self.model = torch.nn.ModuleDict(
             {"upsample": upsample, "model": torch.nn.Sequential(*modules)}
         )
+
+    def _ensure_same_shape(self, x, y):
+        min_shape = np.minimum(x.shape, y.shape)
+        x = x[:, :, : min_shape[2], : min_shape[3], : min_shape[4]]
+        y = y[:, :, : min_shape[2], : min_shape[3], : min_shape[4]]
+        return x, y
+
+    def _calculate_loss(self, y_hat, batch, discriminator):
+        # extract intermediate activations from discriminator for real and predicted images
+        y, y_hat = self._ensure_same_shape(batch[self.head_name], y_hat)
+
+        features_discriminator = discriminator(batch[self.x_key], y, y_hat.detach())
+        loss_D = self.gan_loss(features_discriminator, "discriminator")
+
+        # passability of generated images
+        features_generator = discriminator(batch[self.x_key], y, y_hat)
+        loss_G = self.gan_loss(features_generator, "generator")
+        # image reconstruction quality
+        loss_reconstruction = self.reconstruction_loss(y, y_hat)
+        return loss_D, loss_G + loss_reconstruction * self.reconstruction_loss_weight
 
     def forward(self, x):
         if self.resolution == "hr":
