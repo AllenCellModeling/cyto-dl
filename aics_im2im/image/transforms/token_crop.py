@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import List, Sequence
 
 import numpy as np
 from monai.transforms import Transform
@@ -34,7 +34,8 @@ class TokenCropd(Transform):
         self.keys = keys if isinstance(keys, (list, ListConfig)) else [keys]
         self.spatial_dims = spatial_dims
         self.allow_missing_keys = allow_missing_keys
-        self.n_patches = n_patches
+        n_patches = n_patches if isinstance(n_patches, (List, ListConfig)) else [n_patches]
+        self.n_patches = np.asarray(n_patches)
 
     def __call__(self, image_dict):
         available_keys = self.keys
