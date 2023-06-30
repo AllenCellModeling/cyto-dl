@@ -186,11 +186,13 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.czi.html">aics_im2im.datamodules.czi module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.folder.html">aics_im2im.datamodules.folder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.smartcache.html">aics_im2im.datamodules.smartcache module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="aics_im2im.datamodules.torchvision.html">aics_im2im.datamodules.torchvision module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="aics_im2im.image.html">aics_im2im.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="aics_im2im.image.io.html">aics_im2im.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.aicsimage_loader.html">aics_im2im.image.io.aicsimage_loader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.monai_bio_reader.html">aics_im2im.image.io.monai_bio_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.numpy_reader.html">aics_im2im.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="aics_im2im.image.io.ome_zarr_reader.html">aics_im2im.image.io.ome_zarr_reader module</a></li>
@@ -472,6 +474,13 @@
 </li>
         </ul></li>
         <li>
+    aics_im2im.datamodules.smartcache
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#module-aics_im2im.datamodules.smartcache">module</a>
+</li>
+        </ul></li>
+        <li>
     aics_im2im.datamodules.torchvision
 
         <ul>
@@ -497,6 +506,13 @@
 
         <ul>
           <li><a href="aics_im2im.image.io.html#module-aics_im2im.image.io">module</a>
+</li>
+        </ul></li>
+        <li>
+    aics_im2im.image.io.aicsimage_loader
+
+        <ul>
+          <li><a href="aics_im2im.image.io.aicsimage_loader.html#module-aics_im2im.image.io.aicsimage_loader">module</a>
 </li>
         </ul></li>
         <li>
@@ -1068,6 +1084,8 @@
           <li><a href="aics_im2im.utils.template_utils.html#module-aics_im2im.utils.template_utils">module</a>
 </li>
         </ul></li>
+        <li><a href="aics_im2im.image.io.aicsimage_loader.html#aics_im2im.image.io.aicsimage_loader.AICSImageLoaderd">AICSImageLoaderd (class in aics_im2im.image.io.aicsimage_loader)</a>
+</li>
         <li><a href="aics_im2im.datamodules.dataframe.utils.html#aics_im2im.datamodules.dataframe.utils.AlternatingBatchSampler">AlternatingBatchSampler (class in aics_im2im.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="aics_im2im.dataframe.transforms.misc.html#aics_im2im.dataframe.transforms.misc.append_class_weights">append_class_weights() (in module aics_im2im.dataframe.transforms.misc)</a>
@@ -1393,7 +1411,11 @@
         <li><a href="aics_im2im.models.vae.so2_image_vae.so2_encoder.html#aics_im2im.models.vae.so2_image_vae.so2_encoder.get_non_linearity">get_non_linearity() (in module aics_im2im.models.vae.so2_image_vae.so2_encoder)</a>
 </li>
         <li><a href="aics_im2im.datamodules.czi.html#aics_im2im.datamodules.czi.CZIDataset.get_per_file_args">get_per_file_args() (aics_im2im.datamodules.czi.CZIDataset method)</a>
+
+        <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.get_per_file_args">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
 </li>
+        </ul></li>
         <li><a href="aics_im2im.utils.pylogger.html#aics_im2im.utils.pylogger.get_pylogger">get_pylogger() (in module aics_im2im.utils.pylogger)</a>
 </li>
         <li><a href="aics_im2im.models.vae.so2_image_vae.utils.html#aics_im2im.models.vae.so2_image_vae.utils.get_rotation_matrix">get_rotation_matrix() (in module aics_im2im.models.vae.so2_image_vae.utils)</a>
@@ -1561,6 +1583,8 @@
         <ul>
           <li><a href="aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.html#aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule.make_dataloader">(aics_im2im.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule method)</a>
 </li>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.make_dataloader">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
         </ul></li>
         <li><a href="aics_im2im.datamodules.folder.html#aics_im2im.datamodules.folder.make_folder_dataloader">make_folder_dataloader() (in module aics_im2im.datamodules.folder)</a>
 </li>
@@ -1624,6 +1648,8 @@
 </li>
           <li><a href="aics_im2im.datamodules.folder.html#module-aics_im2im.datamodules.folder">aics_im2im.datamodules.folder</a>
 </li>
+          <li><a href="aics_im2im.datamodules.smartcache.html#module-aics_im2im.datamodules.smartcache">aics_im2im.datamodules.smartcache</a>
+</li>
           <li><a href="aics_im2im.datamodules.torchvision.html#module-aics_im2im.datamodules.torchvision">aics_im2im.datamodules.torchvision</a>
 </li>
           <li><a href="aics_im2im.eval.html#module-aics_im2im.eval">aics_im2im.eval</a>
@@ -1631,6 +1657,8 @@
           <li><a href="aics_im2im.image.html#module-aics_im2im.image">aics_im2im.image</a>
 </li>
           <li><a href="aics_im2im.image.io.html#module-aics_im2im.image.io">aics_im2im.image.io</a>
+</li>
+          <li><a href="aics_im2im.image.io.aicsimage_loader.html#module-aics_im2im.image.io.aicsimage_loader">aics_im2im.image.io.aicsimage_loader</a>
 </li>
           <li><a href="aics_im2im.image.io.monai_bio_reader.html#module-aics_im2im.image.io.monai_bio_reader">aics_im2im.image.io.monai_bio_reader</a>
 </li>
@@ -1885,10 +1913,10 @@
 </li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.PCAM">PCAM (class in aics_im2im.datamodules.torchvision)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.PhotoTour">PhotoTour (class in aics_im2im.datamodules.torchvision)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.nn.losses.gan_loss.html#aics_im2im.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in aics_im2im.nn.losses.gan_loss)</a>
 </li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.Places365">Places365 (class in aics_im2im.datamodules.torchvision)</a>
@@ -1898,10 +1926,14 @@
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.predict_dataloader">predict_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.predict_dataloader">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
           <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.predict_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
         <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.predict_step">predict_step() (aics_im2im.models.base_model.BaseModel method)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.prepare_data">prepare_data() (aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
 </li>
         <li><a href="aics_im2im.models.handlers.base_handler.html#aics_im2im.models.handlers.base_handler.BaseHandler.preprocess">preprocess() (aics_im2im.models.handlers.base_handler.BaseHandler method)</a>
 
@@ -2029,6 +2061,8 @@
 </li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.SEMEION">SEMEION (class in aics_im2im.datamodules.torchvision)</a>
 </li>
+        <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.setup">setup() (aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
         <li><a href="aics_im2im.models.im2im.gan.html#aics_im2im.models.im2im.gan.GAN.should_save_image">should_save_image() (aics_im2im.models.im2im.gan.GAN method)</a>
 
         <ul>
@@ -2048,6 +2082,8 @@
         <li><a href="aics_im2im.models.im2im.utils.skoots.html#aics_im2im.models.im2im.utils.skoots.SkootsPreprocessd">SkootsPreprocessd (class in aics_im2im.models.im2im.utils.skoots)</a>
 </li>
         <li><a href="aics_im2im.models.im2im.utils.skoots.html#aics_im2im.models.im2im.utils.skoots.SkootsRandFlipd">SkootsRandFlipd (class in aics_im2im.models.im2im.utils.skoots)</a>
+</li>
+        <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule">SmartcacheDatamodule (class in aics_im2im.datamodules.smartcache)</a>
 </li>
         <li><a href="aics_im2im.models.im2im.utils.skoots.html#aics_im2im.models.im2im.utils.skoots.SkootsPreprocessd.smooth_embedding">smooth_embedding() (aics_im2im.models.im2im.utils.skoots.SkootsPreprocessd method)</a>
 </li>
@@ -2088,6 +2124,8 @@
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.test_dataloader">test_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.test_dataloader">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
           <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.test_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
@@ -2100,6 +2138,8 @@
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.train_dataloader">train_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.train_dataloader">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
           <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.train_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
@@ -2182,19 +2222,21 @@
         <li><a href="aics_im2im.datamodules.dataframe.dataframe_datamodule.html#aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.val_dataloader">val_dataloader() (aics_im2im.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
+          <li><a href="aics_im2im.datamodules.smartcache.html#aics_im2im.datamodules.smartcache.SmartcacheDatamodule.val_dataloader">(aics_im2im.datamodules.smartcache.SmartcacheDatamodule method)</a>
+</li>
           <li><a href="aics_im2im.utils.dummy_dataset.html#aics_im2im.utils.dummy_dataset.DummyDatamodule.val_dataloader">(aics_im2im.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
         <li><a href="aics_im2im.models.base_model.html#aics_im2im.models.base_model.BaseModel.validation_step">validation_step() (aics_im2im.models.base_model.BaseModel method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.image.io.monai_bio_reader.html#aics_im2im.image.io.monai_bio_reader.MonaiBioReader.verify_suffix">verify_suffix() (aics_im2im.image.io.monai_bio_reader.MonaiBioReader method)</a>
 
         <ul>
           <li><a href="aics_im2im.image.io.ome_zarr_reader.html#aics_im2im.image.io.ome_zarr_reader.OmeZarrReader.verify_suffix">(aics_im2im.image.io.ome_zarr_reader.OmeZarrReader method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.VisionDataset">VisionDataset (class in aics_im2im.datamodules.torchvision)</a>
 </li>
         <li><a href="aics_im2im.datamodules.torchvision.html#aics_im2im.datamodules.torchvision.VOCDetection">VOCDetection (class in aics_im2im.datamodules.torchvision)</a>

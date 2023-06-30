@@ -1,0 +1,7 @@
+aics\_im2im.image.io.aicsimage\_loader module
+=============================================
+
+.. automodule:: aics_im2im.image.io.aicsimage_loader
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -12,6 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   aics_im2im.image.io.aicsimage_loader
    aics_im2im.image.io.monai_bio_reader
    aics_im2im.image.io.numpy_reader
    aics_im2im.image.io.ome_zarr_reader
