@@ -1,17 +1,5 @@
 """ADAPTED FROM https://github.com/MMV-Lab/mmv_im2im/"""
 
-import logging
-
-logging.getLogger("ome_zarr").setLevel(logging.WARNING)
-logging.getLogger("ome_zarr.reader").setLevel(logging.WARNING)
-logging.getLogger("bfio.init").setLevel(logging.ERROR)
-logging.getLogger("bfio.backends").setLevel(logging.ERROR)
-logging.getLogger("xmlschema").setLevel(logging.ERROR)
-
-import warnings
-
-warnings.filterwarnings("ignore")
-
 from typing import Dict, List, Sequence, Tuple, Union
 
 import numpy as np

@@ -20,23 +20,16 @@ experiment_name: YOUR_EXPERIMENT_NAME_HERE
 run_name: YOUR_RUN_NAME_HERE
 source_col: raw
 target_col: seg
-spatial_dims: 2
-img_load_dims: "CYX"
-raw_im_channels: 3
+spatial_dims: 3
+raw_im_channels: 1
 
 trainer:
   max_epochs: 100
-  check_val_every_n_epoch: 1
-
-model:
-  patch_shape: [256, 256]
 
 data:
-  path: ${paths.data_dir}/example_experiment_data/omnipose/2d
-  cache_dir: ${paths.data_dir}/example_experiment_data/omnipose/2d/cache
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1
 
-  # if epochs are very fast,setting a subsample >> training set size can reduce
-  # the overhead of running full epochs by running lots of steps of same images in single epoch
-  subsample:
-    train: 1000
+  _aux:
+    patch_shape: [16, 32, 32]

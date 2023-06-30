@@ -2,7 +2,6 @@ _target_: aics_im2im.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 x_key: ${source_col}
-patch_shape:
 save_dir: ${paths.output_dir}
 
 backbone:
@@ -10,10 +9,9 @@ backbone:
   spatial_dims: ${spatial_dims}
   in_channels: ${raw_im_channels}
   out_channels: 5
-  strides: [1, 2, 2]
-  kernel_size: [3, 3, 3]
-  upsample_kernel_size: [2, 2]
-  filters: [64, 128, 256]
+  strides: [1, 2, 2, 2]
+  kernel_size: [3, 3, 3, 3]
+  upsample_kernel_size: [2, 2, 2]
   dropout: 0.0
   res_block: True
 
@@ -34,13 +32,13 @@ lr_scheduler:
 
 inference_args:
   sw_batch_size: 1
-  roi_size: ${model.patch_shape}
+  roi_size: ${data._aux.patch_shape}
 
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseAuxHead
+      - _target_: aics_im2im.nn.BaseHead
         loss:
-          _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
+          _target_: aics_im2im.models.im2im.utils.OmniposeLoss
           dim: ${spatial_dims}
         save_raw: True

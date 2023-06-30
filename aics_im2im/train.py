@@ -5,14 +5,18 @@ from tempfile import TemporaryDirectory
 from typing import List, Optional, Tuple
 
 import hydra
-import pytorch_lightning as pl
+import lightning
+from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning import Callback, LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers.logger import Logger
 
 from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
+
+with suppress(ValueError):
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
 
 
 @utils.task_wrapper
@@ -32,13 +36,13 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
-        pl.seed_everything(cfg.seed, workers=True)
+        lightning.seed_everything(cfg.seed, workers=True)
 
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating
-    cfg = utils.remove_aux_key(cfg)
+    utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
     data = hydra.utils.instantiate(cfg.data)
@@ -52,7 +56,8 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
             )
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+
+    model: LightningModule = hydra.utils.instantiate(cfg.model, _recursive_=False)
 
     log.info("Instantiating callbacks...")
     callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
@@ -114,10 +119,6 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
 def main(cfg: DictConfig) -> Optional[float]:
-    with suppress(ValueError):
-        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-        OmegaConf.register_new_resolver("eval", eval)
-
     if cfg.get("persist_cache", False) or cfg.data.get("cache_dir") is None:
         metric_dict, _ = train(cfg)
     else:
@@ -125,9 +126,6 @@ def main(cfg: DictConfig) -> Optional[float]:
         with TemporaryDirectory(dir=cfg.data.cache_dir) as temp_dir:
             cfg.data.cache_dir = temp_dir
             metric_dict, _ = train(cfg)
-
-    # train the model
-    metric_dict, _ = train(cfg)
 
     # safely retrieve metric value for hydra-based hyperparameter optimization
     metric_value = utils.get_metric_value(

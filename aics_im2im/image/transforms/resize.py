@@ -12,7 +12,7 @@ class Resized(Transform):
     def __init__(
         self,
         keys: Sequence[str],
-        scale_factor: int,
+        scale_factor: Union[float, Sequence[float]],
         spatial_dims: int = 3,
         mode: str = "nearest",
         align_corners: Union[bool, None] = None,
@@ -43,6 +43,12 @@ class Resized(Transform):
         assert spatial_dims in (2, 3), f"Patch must be 2D or 3D, got {spatial_dims}"
         self.keys = keys
         self.scale_factor = np.asarray(scale_factor)
+        assert self.scale_factor.size in (
+            1,
+            spatial_dims,
+        ), f"Scale factor must have length 1 or {spatial_dims}, got {len(self.scale_factor)}"
+        if self.scale_factor.size == 1:
+            self.scale_factor = np.tile(self.scale_factor, spatial_dims)
         self.spatial_dims = spatial_dims
         self.mode = mode
         self.align_corners = align_corners

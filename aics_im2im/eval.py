@@ -3,14 +3,18 @@ from contextlib import suppress
 from typing import List, Tuple
 
 import hydra
+from lightning import Callback, LightningDataModule, LightningModule, Trainer
+from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from pytorch_lightning import LightningDataModule, LightningModule, Trainer
-from pytorch_lightning.loggers import Logger
 from torch.utils.data import DataLoader
 
 from aics_im2im import utils
 
 log = utils.get_pylogger(__name__)
+
+with suppress(ValueError):
+    OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
+    OmegaConf.register_new_resolver("eval", eval)
 
 
 @utils.task_wrapper
@@ -34,7 +38,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating
-    cfg = utils.remove_aux_key(cfg)
+    utils.remove_aux_key(cfg)
 
     data = hydra.utils.instantiate(cfg.data)
     if not isinstance(data, (LightningDataModule, DataLoader)):
@@ -54,13 +58,16 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
             )
 
     log.info(f"Instantiating model <{cfg.model._target_}>")
-    model: LightningModule = hydra.utils.instantiate(cfg.model)
+    model: LightningModule = hydra.utils.instantiate(cfg.model, _recursive_=False)
 
     log.info("Instantiating loggers...")
     logger: List[Logger] = utils.instantiate_loggers(cfg.get("logger"))
 
+    log.info("Instantiating callbacks...")
+    callbacks: List[Callback] = utils.instantiate_callbacks(cfg.get("callbacks"))
+
     log.info(f"Instantiating trainer <{cfg.trainer._target_}>")
-    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger)
+    trainer: Trainer = hydra.utils.instantiate(cfg.trainer, logger=logger, callbacks=callbacks)
 
     object_dict = {
         "cfg": cfg,
@@ -85,9 +92,6 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
 def main(cfg: DictConfig) -> None:
-    with suppress(ValueError):
-        OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
-        OmegaConf.register_new_resolver("eval", eval)
     evaluate(cfg)
 
 

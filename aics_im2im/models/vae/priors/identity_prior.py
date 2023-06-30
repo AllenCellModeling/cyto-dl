@@ -13,3 +13,7 @@ class IdentityPrior(Prior):
         if mode == "kl":
             return torch.tensor(0.0).type_as(z)
         return z
+
+    @property
+    def param_size(self):
+        return self.dimensionality

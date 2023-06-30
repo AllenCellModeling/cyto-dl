@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamoduleMultiTask
 
 path:
 cache_dir:
@@ -8,7 +8,6 @@ batch_size: 1
 pin_memory: True
 persistent_workers: False
 split_column:
-use_alternating_batch_sampler: True
 
 columns:
   - ${source_col}

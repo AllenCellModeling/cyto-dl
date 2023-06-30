@@ -10,10 +10,14 @@ def compute_tc_penalty(logvar):
 
 
 class IsotropicGaussianPrior(Prior):
-    def __init__(self, dimensionality=None, clamp_logvar=8, tc_penalty_weight=None):
+    def __init__(self, *, dimensionality, clamp_logvar=8, tc_penalty_weight=None):
         self.tc_penalty_weight = tc_penalty_weight
         self.clamp_logvar = float(clamp_logvar)
         super().__init__(dimensionality)
+
+    @property
+    def param_size(self):
+        return 2 * self.dimensionality
 
     @classmethod
     def kl_divergence(cls, mean, logvar, tc_penalty_weight=None, reduction="sum"):
@@ -119,6 +123,10 @@ class DiagonalGaussianPrior(IsotropicGaussianPrior):
 
         self.mean = mean
         self.tc_penalty_weight = tc_penalty_weight
+
+    @property
+    def param_size(self):
+        return 2 * self.dimensionality
 
     @classmethod
     def kl_divergence(cls, mu1, mu2, logvar1, logvar2, tc_penalty_weight=None, reduction="sum"):

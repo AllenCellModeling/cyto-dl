@@ -7,10 +7,12 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import hydra
+from lightning import Callback
+from lightning.pytorch.loggers import Logger
+from lightning.pytorch.utilities import rank_zero_only
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning import Callback
-from pytorch_lightning.loggers import Logger
-from pytorch_lightning.utilities import rank_zero_only
+
+from aics_im2im.loggers import MLFlowLogger
 
 from . import pylogger, rich_utils
 
@@ -49,7 +51,7 @@ def task_wrapper(task_func: Callable) -> Callable:
         # execute the task
         try:
             start_time = time.time()
-            metric_dict, object_dict = task_func(cfg=cfg)
+            out = task_func(cfg=cfg)
         except Exception as ex:
             log.exception("")  # save exception to `.log` file
             raise ex
@@ -61,7 +63,7 @@ def task_wrapper(task_func: Callable) -> Callable:
 
         log.info(f"Output dir: {cfg.paths.output_dir}")
 
-        return metric_dict, object_dict
+        return out
 
     return wrap
 
@@ -188,7 +190,10 @@ def log_hyperparameters(object_dict: dict) -> None:
 
     # send hparams to all loggers
     for logger in trainer.loggers:
-        logger.log_hyperparams(hparams, mode=cfg.task_name)
+        if isinstance(logger, MLFlowLogger):
+            logger.log_hyperparams(hparams, mode=cfg.task_name)
+        else:
+            logger.log_hyperparams(hparams)
 
 
 def get_metric_value(metric_dict: dict, metric_name: str) -> float:

@@ -1,4 +1,4 @@
-_target_: pytorch_lightning.Trainer
+_target_: lightning.Trainer
 
 default_root_dir: ${paths.output_dir}
 
@@ -17,4 +17,4 @@ check_val_every_n_epoch: 1
 # set True to to ensure deterministic results
 # makes training slower but gives more reproducibility than just setting seeds
 deterministic: False
-detect_anomaly: True
+detect_anomaly: False

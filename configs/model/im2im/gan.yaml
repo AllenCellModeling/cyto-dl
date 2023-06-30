@@ -1,78 +1,66 @@
-_target_: aics_im2im.models.im2im.MultiTaskIm2Im
+_target_: aics_im2im.models.im2im.GAN
 
-save_images_every_n_epochs: 10
-save_dir: ${paths.output_dir}/gan
-x_key: dim_caax
-patch_shape: [12, 128, 128]
+save_images_every_n_epochs: 1
+save_dir: ${paths.output_dir}
+
+x_key: ${source_col}
 
 backbone:
   _target_: monai.networks.nets.DynUNet
-  spatial_dims: 3
-  in_channels: 1
-  out_channels: 32
-  strides: [1, 1, 2, 1, 2]
+  spatial_dims: ${spatial_dims}
+  in_channels: ${raw_im_channels}
+  out_channels: 1
+  strides: [1, 2, 2, 2, 2]
   kernel_size: [3, 3, 3, 3, 3]
-  upsample_kernel_size: [1, 2, 1, 2]
-  filters: [32, 64, 128, 256, 512]
+  upsample_kernel_size: [2, 2, 2, 2]
   dropout: 0.0
   res_block: True
 
+task_heads: ${kv_to_dict:${model._aux._tasks}}
+
 discriminator:
-  _target_: aics_im2im.nn.NLayerDiscriminator
-  input_nc: 2
-  keys: [bright_caax]
+  _target_: aics_im2im.nn.discriminators.MultiScaleDiscriminator
+  n_scales: 1
+  input_nc: 2 #conditioning image+real/fake image
   n_layers: 2
-
-tasks:
-  bright_caax:
-    head:
-      _target_: aics_im2im.nn.AuxHead
-      resolution: lr
-      in_channels: 32
-      out_channels: 1
-      spatial_dims: 3
-      dropout: 0.0
-      final_act:
-        _target_: torch.nn.Tanh
-
-    loss:
-      _target_: torch.nn.MSELoss
-
-gan_loss:
-  _target_: aics_im2im.nn.losses.GANLoss
-  gan_mode: "vanilla"
 
 optimizer:
   generator:
     _partial_: True
     _target_: torch.optim.Adam
-    lr: 0.0003
-    weight_decay: 0.000
+    lr: 0.0001
+    weight_decay: 0.0001
+    betas: [0.5, 0.999]
   discriminator:
     _partial_: True
     _target_: torch.optim.Adam
-    lr: 0.0003
-    weight_decay: 0.001
+    lr: 0.0001
+    weight_decay: 0.0001
+    betas: [0.5, 0.999]
 
 lr_scheduler:
   generator:
     _partial_: True
     _target_: torch.optim.lr_scheduler.ExponentialLR
-    gamma: 0.97
+    gamma: 0.998
   discriminator:
     _partial_: True
     _target_: torch.optim.lr_scheduler.ExponentialLR
-    gamma: 0.97
+    gamma: 0.998
 
-postprocessing:
-  input:
-    dim_caax:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
-      _partial_: True
-    bright_caax:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
-      _partial_: True
-  prediction:
-    bright_caax:
-      _target_: aics_im2im.models.im2im.utils.postprocessing.rescale
-      _partial_: True
+inference_args:
+  sw_batch_size: 1
+  roi_size: ${data._aux.patch_shape}
+  overlap: 0.25
+  mode: "gaussian"
+
+_aux:
+  _tasks:
+    - - ${target_col}
+      - _target_: aics_im2im.nn.GANHead
+        gan_loss:
+          _target_: aics_im2im.nn.losses.Pix2PixHD
+          scales: 1
+        reconstruction_loss:
+          _target_: torch.nn.MSELoss
+        save_raw: True

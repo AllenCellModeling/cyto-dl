@@ -21,13 +21,10 @@ class TabularVAE(BaseVAE):
         hidden_layers: Sequence[int],
         x_label: str,
         id_label: Optional[str] = None,
-        loss_mask_label: Optional[str] = None,
-        optimizer=torch.optim.Adam,
-        beta: float = 1.0,
         priors: Optional[Sequence[Prior]] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         reconstruction_reduce: str = "sum",
-        cache_outputs: Sequence = ("test",),
+        **base_kwargs
     ):
         encoder = MLP(
             x_dim,
@@ -45,13 +42,10 @@ class TabularVAE(BaseVAE):
             encoder=encoder,
             decoder=decoder,
             latent_dim=latent_dim,
-            optimizer=optimizer,
             x_label=x_label,
             id_label=id_label,
-            loss_mask_label=loss_mask_label,
-            beta=beta,
             priors=priors,
-            cache_outputs=cache_outputs,
             reconstruction_loss=reconstruction_loss,
             reconstruction_reduce=reconstruction_reduce,
+            **base_kwargs
         )

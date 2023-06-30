@@ -29,13 +29,7 @@ class LatentLossVAE(BaseVAE):
         latent_loss_optimizer: torch.optim.Optimizer = torch.optim.Adam,
         latent_loss_scheduler: LRScheduler = torch.optim.lr_scheduler.StepLR,
         beta: float = 1.0,
-        id_label: Optional[str] = None,
-        optimizer: torch.optim.Optimizer = torch.optim.Adam,
-        lr_scheduler: LRScheduler = torch.optim.lr_scheduler.StepLR,
-        loss_mask_label: Optional[str] = None,
-        reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
-        cache_outputs: Sequence = ("test",),
-        **kwargs,
+        **base_kwargs,
     ):
         super().__init__(
             encoder=encoder,
@@ -43,14 +37,8 @@ class LatentLossVAE(BaseVAE):
             latent_dim=latent_dim,
             x_label=x_label,
             beta=beta,
-            id_label=id_label,
-            optimizer=optimizer,
-            lr_scheduler=lr_scheduler,
-            loss_mask_label=loss_mask_label,
-            reconstruction_loss=reconstruction_loss,
             prior=prior,
-            cache_outputs=cache_outputs,
-            **kwargs,
+            **base_kwargs,
         )
 
         self.continuous_labels = continuous_labels
@@ -127,7 +115,7 @@ class LatentLossVAE(BaseVAE):
         latent_basal = latent_basal + latent_covariate
         return latent_basal
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def model_step(self, stage, batch, batch_idx):
 
         (
             x_hat,
@@ -228,9 +216,9 @@ class LatentLossVAE(BaseVAE):
                 }
             )
 
-        self.log_metrics(stage, results, logger, x_hat.shape[0])
+        # self.log_metrics(stage, results, x_hat.shape[0])
 
-        return results
+        return results, None, None
 
     def configure_optimizers(self):
         def get_params(obj):

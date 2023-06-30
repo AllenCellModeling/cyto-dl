@@ -16,11 +16,28 @@ transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
-        keys: ${data.columns}
+        keys: ${source_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: ${img_load_dims}
+            dimension_order_out: "ZYX"
+            C: 4
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${data.columns}
+      - _target_: aics_im2im.image.transforms.Resized
+        keys:
+          - ${source_col}
+          - ${target_col}
+        scale_factor: 0.25
+        spatial_dims: ${spatial_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
@@ -31,10 +48,10 @@ transforms:
         channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
-        patch_shape: ${model.patch_shape}
+        patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
-        scales_dict:
-          1: ${data.columns}
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        x_key: ${source_col}
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
         keys: ${source_col}
@@ -53,11 +70,28 @@ transforms:
   test:
     _target_: monai.transforms.Compose
     transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
-        keys: ${data.columns}
+        keys: ${source_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: ${img_load_dims}
+            dimension_order_out: "ZYX"
+            C: 5
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${data.columns}
+      - _target_: aics_im2im.image.transforms.Resized
+        keys:
+          - ${source_col}
+          - ${target_col}
+        scale_factor: 0.25
+        spatial_dims: ${spatial_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
@@ -70,11 +104,15 @@ transforms:
   predict:
     _target_: monai.transforms.Compose
     transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: ${img_load_dims}
+            dimension_order_out: "ZYX"
+            C: 5
+      - _target_: monai.transforms.AddChanneld
+        keys: ${data.columns}
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -84,11 +122,29 @@ transforms:
   valid:
     _target_: monai.transforms.Compose
     transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
-        keys: ${data.columns}
+        keys: ${source_col}
         reader:
           - _target_: aics_im2im.image.io.MonaiBioReader
-            dimension_order_out: ${img_load_dims}
+            dimension_order_out: "ZYX"
+            C: 5
+        expand_user: False
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${data.columns}
+      - _target_: aics_im2im.image.transforms.Resized
+        keys:
+          - ${source_col}
+          - ${target_col}
+        scale_factor: 0.25
+        spatial_dims: ${spatial_dims}
       - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
@@ -99,7 +155,14 @@ transforms:
         channel_wise: True
       - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
-        patch_shape: ${model.patch_shape}
+        patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
-        scales_dict:
-          1: ${data.columns}
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        x_key: ${source_col}
+
+_aux:
+  _scales_dict:
+    - - ${target_col}
+      - [1]
+    - - ${source_col}
+      - [1]

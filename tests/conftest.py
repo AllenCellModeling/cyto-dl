@@ -7,37 +7,23 @@ from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, OmegaConf, open_dict
 
 from aics_im2im.utils.config import kv_to_dict
+from scripts.download_test_data import delete_test_data, download_test_data
 
 OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
 # Experiment configs to test
-experiments = [
-    # Segmentation
-    {
-        "exp_path": "im2im/segmentation.yaml",
-        "data_path": "test/segmentation.yaml",
-        "model_path": "test/simple_segmentation.yaml",
-    },
-    # Omnipose
-    {
-        "exp_path": "im2im/omnipose.yaml",
-        "data_path": "test/omnipose.yaml",
-        "model_path": "test/omnipose.yaml",
-    },
-]
+experiment_types = ["gan", "segmentation", "omnipose", "labelfree", "skoots"]
 
 
-@pytest.fixture(scope="package", params=experiments)
+@pytest.fixture(scope="package", params=experiment_types)
 def cfg_train_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
             config_name="train.yaml",
             return_hydra_config=True,
             overrides=[
-                f"experiment={request.param['exp_path']}",
-                f"data={request.param['data_path']}",
-                f"model={request.param['model_path']}",
+                f"experiment=im2im/{request.param}.yaml",
                 "trainer=cpu.yaml",
             ],
         )
@@ -56,13 +42,11 @@ def cfg_train_global(request) -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-            cfg.source_col = "raw"
-            cfg.target_col = "seg"
-            cfg.model.patch_shape = [16, 16, 16]
+
     return cfg
 
 
-@pytest.fixture(scope="package", params=experiments)
+@pytest.fixture(scope="package", params=experiment_types)
 def cfg_eval_global(request) -> DictConfig:
     with initialize(version_base="1.2", config_path="../configs"):
         cfg = compose(
@@ -70,10 +54,7 @@ def cfg_eval_global(request) -> DictConfig:
             return_hydra_config=True,
             overrides=[
                 "ckpt_path=.",
-                f"experiment={request.param['exp_path']}",
-                f"data={request.param['data_path']}",
-                f"model={request.param['model_path']}",
-                "+test=True",
+                f"experiment=im2im/{request.param}.yaml",
                 "trainer=cpu.yaml",
             ],
         )
@@ -90,10 +71,6 @@ def cfg_eval_global(request) -> DictConfig:
             cfg.extras.print_config = False
             cfg.extras.enforce_tags = False
             cfg.logger = None
-            cfg.source_col = "raw"
-            cfg.target_col = "seg"
-            cfg.model.patch_shape = [16, 16, 16]
-
     return cfg
 
 
@@ -106,6 +83,7 @@ def cfg_train(cfg_train_global, tmp_path) -> Generator[DictConfig, None, None]:
     with open_dict(cfg):
         cfg.paths.output_dir = str(tmp_path)
         cfg.paths.log_dir = str(tmp_path)
+        cfg.data.cache_dir = str(tmp_path / "cache")
 
     yield cfg
 
@@ -121,7 +99,17 @@ def cfg_eval(cfg_eval_global, tmp_path) -> Generator[DictConfig, None, None]:
     with open_dict(cfg):
         cfg.paths.output_dir = str(tmp_path)
         cfg.paths.log_dir = str(tmp_path)
+        cfg.data.cache_dir = str(tmp_path / "cache")
 
     yield cfg
 
     GlobalHydra.instance().clear()
+
+
+def pytest_sessionstart(session):
+    download_test_data()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    delete_test_data()
+    return exitstatus

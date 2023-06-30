@@ -1,10 +1,10 @@
 from typing import Dict, Optional, Sequence, Union
 
 import numpy as np
-import pytorch_lightning as pl
 import torch
+from lightning import LightningDataModule
+from lightning.pytorch.utilities.exceptions import MisconfigurationException
 from monai.data import DataLoader
-from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from upath import UPath as Path
 
 from .utils import (
@@ -16,7 +16,7 @@ from .utils import (
 )
 
 
-class DataframeDatamodule(pl.LightningDataModule):
+class DataframeDatamodule(LightningDataModule):
     """A pytorch lightning datamodule based on dataframes. It can either use a single dataframe
     file, which contains a column based on which a train- val- test split can be made; or it can
     use three dataframe files, one for each fold (train, val, test).
@@ -39,8 +39,8 @@ class DataframeDatamodule(pl.LightningDataModule):
         just_inference: bool = False,
         cache_dir: Optional[Union[Path, str]] = None,
         subsample: Optional[Dict] = None,
+        refresh_subsample: bool = False,
         seed: int = 42,
-        target_columns: str = None,
         **dataloader_kwargs,
     ):
         """
@@ -76,9 +76,6 @@ class DataframeDatamodule(pl.LightningDataModule):
             Dictionary with a key per split ("train", "val", "test"), and the
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
-
-        head_allocation_columm: Optional[str]=None
-            Column name that dictates which head a row should be passed to
 
         dataloader_kwargs:
             Additional keyword arguments are passed to the
@@ -126,12 +123,13 @@ class DataframeDatamodule(pl.LightningDataModule):
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
 
-        self.target_columns = target_columns
         self.just_inference = just_inference
         self.dataloader_kwargs = dataloader_kwargs
         self.dataloaders = {}
         self.rng = np.random.default_rng(seed=seed)
         self.subsample = subsample or {}
+        self.refresh_subsample = refresh_subsample
+
         for key in list(self.subsample.keys()):
             self.subsample[get_canonical_split_name(key)] = self.subsample[key]
 
@@ -156,26 +154,12 @@ class DataframeDatamodule(pl.LightningDataModule):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         subset = self.get_dataset(split)
-        if kwargs.get("use_alternating_batch_sampler"):
-            batch_sampler = AlternatingBatchSampler(
-                subset,
-                batch_size=kwargs.pop("batch_size"),
-                drop_last=True,
-                shuffle=kwargs.pop("shuffle"),
-                target_columns=self.target_columns,
-            )
-            for key in ("batch_sampler", "sampler", "drop_last", "use_alternating_batch_sampler"):
-                if key in kwargs:
-                    del kwargs[key]
-            return DataLoader(dataset=subset, batch_sampler=batch_sampler, **kwargs)
-
         return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
 
-        # if (split not in self.dataloaders) or (sample_size != -1):
-        if split not in self.dataloaders:
+        if (split not in self.dataloaders) or (sample_size != -1 and self.refresh_subsample):
             # if we want to use a subsample per epoch, we need to remake the
             # dataloader, to refresh the sample
             self.dataloaders[split] = self.make_dataloader(split)

@@ -4,11 +4,11 @@ defaults:
 task_heads: ${kv_to_dict:${model._aux._tasks}}
 inference_args:
   sw_batch_size: 1
-  roi_size: ${model.patch_shape}
+  roi_size: ${data._aux.patch_shape}
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseAuxHead
+      - _target_: aics_im2im.nn.BaseHead
         loss:
           _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
           dim: 3

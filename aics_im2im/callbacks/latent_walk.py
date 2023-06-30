@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import torch
-from pytorch_lightning import Callback, LightningModule, Trainer
+from lightning import Callback, LightningModule, Trainer
 from skimage import measure as skmeasure
 from skimage import morphology as skmorpho
 

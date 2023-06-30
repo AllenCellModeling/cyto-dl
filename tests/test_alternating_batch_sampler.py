@@ -2,12 +2,10 @@ from collections import defaultdict
 
 import monai
 import numpy as np
-import pandas as pd
 import pyrootutils
 import pytest
 from torch.utils.data import SubsetRandomSampler
 
-from aics_im2im.datamodules.dataframe import DataframeDatamodule
 from aics_im2im.datamodules.dataframe.utils import (
     AlternatingBatchSampler,
     RemoveNaNKeysd,

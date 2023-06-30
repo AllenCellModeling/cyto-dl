@@ -18,31 +18,34 @@ jobs:
       matrix:
         python-version: [3.8, 3.9, "3.10"]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v3
+      - uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
+          miniconda-version: latest
           python-version: ${{ matrix.python-version }}
 
-      - name: Setup GNU Fortran
-        uses: modflowpy/install-gfortran-action@v1
-
       - name: Install dependencies
+        shell: bash -el {0}
         run: |
-          python -m pip install --upgrade pip
+          sudo apt update
+          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
+          conda install -n test pip fftw
           pip install wheel
-          pip install numpy
-          pip install -r requirements/test-requirements.txt
+          # need numpy for some builds. make sure to install a compatible version
+          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
+          # from https://stackoverflow.com/a/14369968
+          SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
           pip install .
           pip install sh
 
       - name: List dependencies
+        shell: bash -el {0}
         run: |
           python -m pip list
 
       - name: Run pytest
+        shell: bash -el {0}
         run: |
           python -m pytest -v
 
@@ -54,23 +57,27 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v2
+      - uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
+          miniconda-version: latest
           python-version: "3.10"
 
-      - name: Setup GNU Fortran
-        uses: modflowpy/install-gfortran-action@v1
-
       - name: Install dependencies
+        shell: bash -el {0}
         run: |
-          python -m pip install --upgrade pip
+          sudo apt update
+          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
+          conda install -n test pip fftw
           pip install wheel
-          pip install numpy
-          pip install -r requirements/test-requirements.txt
+          # need numpy for some builds. make sure to install a compatible version
+          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
+          # from https://stackoverflow.com/a/14369968
+          SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
           pip install .
 
       - name: Run tests and collect coverage
+        shell: bash -el {0}
         run: pytest --cov aics_im2im
 
       - name: Upload coverage to Codecov

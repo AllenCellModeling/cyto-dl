@@ -1,7 +1,7 @@
 import torch
+from lightning import LightningDataModule
 from monai.data import DataLoader
 from omegaconf import DictConfig, OmegaConf
-from pytorch_lightning import LightningDataModule
 from torch.utils.data import Dataset
 
 

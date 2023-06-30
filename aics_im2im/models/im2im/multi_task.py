@@ -1,10 +1,11 @@
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Union
 
 import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
+from torchmetrics import MeanMetric, MinMetric
 
 from aics_im2im.models.base_model import BaseModel
 
@@ -18,18 +19,56 @@ class MultiTaskIm2Im(BaseModel):
         x_key: str,
         save_dir="./",
         save_images_every_n_epochs=1,
-        optimizer=torch.optim.Adam,
-        automatic_optimization: bool = True,
         inference_args: Dict = {},
-        **kwargs,
+        inference_heads: Union[List, None] = None,
+        **base_kwargs,
     ):
-        super().__init__(
-            **kwargs,
-        )
+        """
+        Parameters
+        ----------
+        backbone: nn.Module
+            backbone network, parameters are shared between task heads
+        task_heads: Dict
+            task-specific heads
+        x_key: str
+            key of input image in batch
+        save_dir="./"
+            directory to save images during training and validation
+        save_images_every_n_epochs=1
+            Frequency to save out images during training
+        inference_args: Dict = {}
+            Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        inference_heads: Union[List, None] = None
+            Optional list of heads to run during inference. Defaults to running all heads.
+        **base_kwargs:
+            Additional arguments passed to BaseModel
+        """
+
+        _DEFAULT_METRICS = {
+            "train/loss": MeanMetric(),
+            "val/loss": MeanMetric(),
+            "test/loss": MeanMetric(),
+        }
+
+        for head in task_heads.keys():
+            _DEFAULT_METRICS.update(
+                {
+                    f"train/loss/{head}": MeanMetric(),
+                    f"val/loss/{head}": MeanMetric(),
+                    f"test/loss/{head}": MeanMetric(),
+                }
+            )
+
+        metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
+        super().__init__(metrics=metrics, **base_kwargs)
+
+        self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.backbone = backbone
-        self.task_heads = torch.nn.ModuleDict(task_heads)
+        self.backbone = torch.compile(backbone)
+        self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
+        self.inference_heads = inference_heads or self.task_heads.keys()
+
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -37,14 +76,14 @@ class MultiTaskIm2Im(BaseModel):
         opts = []
         scheds = []
         for key in ("generator", "discriminator"):
-            if key in self.hparams.optimizer.keys():
+            if key in self.optimizer.keys():
                 if key == "generator":
-                    opt = self.hparams.optimizer[key](
+                    opt = self.optimizer[key](
                         list(self.backbone.parameters()) + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
-                    opt = self.hparams.optimizer[key](self.discriminator.parameters())
-                scheduler = self.hparams.lr_scheduler[key](optimizer=opt)
+                    opt = self.optimizer[key](self.discriminator.parameters())
+                scheduler = self.lr_scheduler[key](optimizer=opt)
                 opts.append(opt)
                 scheds.append(scheduler)
         return (opts, scheds)
@@ -77,7 +116,7 @@ class MultiTaskIm2Im(BaseModel):
                 **self.hparams.inference_args,
             )
         return {
-            head_name: head.run_head(
+            head_name: self.task_heads[head_name].run_head(
                 None,
                 batch,
                 stage,
@@ -86,7 +125,7 @@ class MultiTaskIm2Im(BaseModel):
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
             )
-            for head_name, head in self.task_heads.items()
+            for head_name in run_heads
         }
 
     def run_forward(self, batch, stage, save_image, run_heads):
@@ -96,7 +135,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def should_save_image(self, batch_idx, stage):
         return stage in ("test", "predict") or (
-            batch_idx == 0  # noqa: FURB124
+            batch_idx < len(self.task_heads)  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
 
@@ -111,10 +150,10 @@ class MultiTaskIm2Im(BaseModel):
         if stage not in ("test", "predict"):
             run_heads = [key for key in self.task_heads.keys() if key in batch]
         else:
-            run_heads = self.task_heads.keys()
+            run_heads = self.inference_heads
         return run_heads
 
-    def _step(self, stage, batch, batch_idx, logger, optimizer_idx=0):
+    def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -122,15 +161,12 @@ class MultiTaskIm2Im(BaseModel):
 
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        if stage == "predict":
-            return
-        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-        losses = self._sum_losses(losses)
-        self.log_dict(
-            {f"{stage}_{k}": v for k, v in losses.items()},
-            logger=True,
-            sync_dist=True,
-            on_step=False,
-            on_epoch=True,
-        )
-        return losses
+
+        if stage != "predict":
+            losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+            losses = self._sum_losses(losses)
+            return losses, None, None
+
+        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
+
+        return None, preds, None
