@@ -45,6 +45,7 @@ class ImageVAE(BaseVAE):
         use_sigmoid: bool = True,
         encoder_out_size: Optional[int] = None,
         decoder_pixelshuffle: bool = True,
+        **base_kwargs,
     ):
         self.in_channels, *self.in_shape = in_shape
         self.use_sigmoid = use_sigmoid

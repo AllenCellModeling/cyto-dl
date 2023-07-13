@@ -12,7 +12,9 @@ from upath import UPath as Path
 
 class ReadPointCloud(MapTransform):
     def __init__(
-        self, keys: Union[str, Sequence[str]], remote: bool = False, sample: Optional[int] = None
+        self, keys: Union[str, Sequence[str]], remote: bool = False, 
+        sample: Optional[int] = None, scale: int = 1,
+        num_cols: int = 3,
     ):
         """
         Parameters
@@ -27,6 +29,8 @@ class ReadPointCloud(MapTransform):
         self.keys = [keys] if isinstance(keys, str) else keys
         self.remote = remote
         self.sample = sample
+        self.scale = scale
+        self.num_cols = num_cols
 
     def __call__(self, row):
         res = dict(**row)
@@ -47,8 +51,12 @@ class ReadPointCloud(MapTransform):
                     path = str(row[key])
 
                 res[key] = torch.tensor(
-                    PyntCloud.from_file(path).points.values, dtype=torch.get_default_dtype()
-                )
+                    PyntCloud.from_file(path).points.values[:,:self.num_cols], dtype=torch.get_default_dtype()
+                )*self.scale
+
+                if self.num_cols > 3:
+                    res[key][:,self.num_cols-1:] = res[key][:, self.num_cols-1:]*0.1
+                    
                 if self.sample:
                     self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
                     res[key] = res[key][self.sample_idx]

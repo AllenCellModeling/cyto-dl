@@ -37,4 +37,4 @@ def load_model_from_checkpoint(tracking_uri, run_id, strict=True, path="checkpoi
         model_class = model_conf.pop("_target_")
         model_conf = instantiate(model_conf)
         model_class = _locate(model_class)
-        return model_class.load_from_checkpoint(ckpt_path, **model_conf, strict=strict).eval()
+        return model_class.load_from_checkpoint(ckpt_path, **model_conf, strict=strict, map_location='cuda:0').eval()

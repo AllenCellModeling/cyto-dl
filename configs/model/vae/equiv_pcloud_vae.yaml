@@ -5,19 +5,20 @@ x_label: pcloud
 
 latent_dim: 10
 num_points: 256
-# hidden_encoder_features: [64, 64, 128, 256, 512]
-hidden_dim: 8
+# hidden_encoder_features: [64, 128, 128, 128, 128, 128]
+hidden_encoder_features: 64
 hidden_decoder_dim: 512
 k: 20
 
-mode: scalar
-get_rotation: false
-include_cross: false
+mode: vector
+get_rotation: true
+include_cross: true
 include_coords: true
-shape: 'gaussian'
+shape: 'plane'
+symmetry_breaking_axis: 0
 
 beta: 1.0
-embedding_prior: "identity"
+embedding_prior: "gaussian"
 
 eps: 1e-6
 

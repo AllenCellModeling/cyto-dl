@@ -145,15 +145,6 @@ pytorch-lightning==2.0.2
 pytorch-ranger==0.1.1
 pytz==2023.3
 PyWavelets==1.4.1
-<<<<<<< HEAD
-scikit-image==0.20.0
-scikit-learn==1.2.1
-scipy==1.9.1
-setuptools==67.4.0
-threadpoolctl==3.1.0
-tifffile==2023.2.28
-torch==1.13.1
-=======
 PyYAML==6.0
 querystring-parser==1.2.4
 readchar==4.0.5
@@ -184,7 +175,6 @@ threadpoolctl==3.1.0
 tifffile==2023.4.12
 toolz==0.12.0
 torch==2.0.1
->>>>>>> 5fe1c3ca45e42f2c35b1878e2687125fbd7f6055
 torch-optimizer==0.3.0
 torchmetrics==0.11.4
 torchvf==0.1.2

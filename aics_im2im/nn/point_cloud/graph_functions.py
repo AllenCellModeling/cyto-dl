@@ -21,7 +21,7 @@ def knn(x, k):
 
     idx_base = torch.arange(0, batch_size).view(-1, 1, 1) * num_points
     if idx_base.device != idx.device:
-        idx_base = idx.to(idx.device)
+        idx_base = idx_base.to(idx.device)
 
     idx = idx + idx_base
     idx = idx.view(-1)
@@ -29,7 +29,7 @@ def knn(x, k):
     return idx
 
 
-def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, include_input=True):
+def get_graph_features(x, k=20, idx=None, mode="scalar", scalar_inds=None,include_cross=True, include_input=True):
     batch_size = x.shape[0]
     num_points = x.shape[-1]
     assert len(x.shape) in (3, 4)
@@ -41,6 +41,12 @@ def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, inc
             x = x.unsqueeze(1)  # [B, 1, 3, num_points]
 
     x = x.view(batch_size, -1, num_points)
+
+    if scalar_inds:
+        scals = x[:,scalar_inds-1:,: ]
+        x = x[:,:scalar_inds-1,:]
+        num_scalar_points = scal.size(1)
+
     if idx is None:
         idx = knn(x, k=k)
 
@@ -75,4 +81,14 @@ def get_graph_features(x, k=20, idx=None, mode="scalar", include_cross=True, inc
     if include_input:
         feature = torch.cat((feature, x), dim=3)
 
-    return feature.permute(*permute_dims).contiguous()
+    feature = feature.permute(*permute_dims).contiguous()
+
+    if scalar_inds:
+        feature_unit_vector = feature/torch.norm(feature, dim=1).unsqueeze(dim=1)
+        scal = scal.transpose(2,1).contiguous()
+        scal = scal.view(batch_size, num_points, 1, num_scalar_points, 1).repeat(1, 1, k, 1, 1)
+        scal = scal.permute(0,3,4,1,2).contiguous()
+        scal = scal*feature_unit_vector
+        feature = torch.cat((feature, scal), dim=1)
+        
+    return feature

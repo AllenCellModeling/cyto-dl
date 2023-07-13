@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 
 
-from pytorch_lightning import LightningDataModule
+from lightning import LightningDataModule
 
 
 

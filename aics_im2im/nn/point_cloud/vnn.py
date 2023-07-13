@@ -10,40 +10,53 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+EPS = 1e-12
+
 
 class VNLinear(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
-        linear = nn.Linear(in_channels, out_channels, bias=False)
-        self.weight = nn.Parameter(linear.weight.data)
+        self.linear = nn.Linear(in_channels, out_channels, bias=False)
+        # self.weight = nn.Parameter(linear.weight.data)
         self.in_channels = in_channels
         self.out_channels = out_channels
+
+    # def forward(self, x):
+    #     """
+    #     x: point features of shape [B, N_feat, 3, N_samples, ...]
+    #     """
+    #     import ipdb
+    #     ipdb.set_trace()
+    #     self.weight = self.weight.type_as(x)
+    #     n_squeeze = 0
+    #     if len(x.shape) == 3:
+    #         x = x.unsqueeze(-1).unsqueeze(-1)
+    #         n_squeeze = 2
+    #     elif len(x.shape) == 4:
+    #         x = x.unsqueeze(-1)
+    #         n_squeeze = 1
+
+    #     orig_shape = x.shape
+    #     stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
+
+    #     out = F.conv2d(
+    #         stacked,
+    #         torch.kron(self.weight, torch.eye(3).type_as(x)).unsqueeze(-1).unsqueeze(-1),
+    #         bias=None,
+    #     )
+
+    #     out = out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
+
+    #     for _ in range(n_squeeze):
+    #         out = out.squeeze(-1)
+
+    #     return out
 
     def forward(self, x):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
-
-        n_squeeze = 0
-        if len(x.shape) == 3:
-            x = x.unsqueeze(-1).unsqueeze(-1)
-            n_squeeze = 2
-        elif len(x.shape) == 4:
-            x = x.unsqueeze(-1)
-            n_squeeze = 1
-
-        orig_shape = x.shape
-        stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
-        out = F.conv2d(
-            stacked,
-            torch.kron(self.weight, torch.eye(3)).unsqueeze(-1).unsqueeze(-1),
-            bias=None,
-        )
-
-        out = out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
-
-        for _ in range(n_squeeze):
-            out = out.squeeze(-1)
+        out = self.linear(x.transpose(1, -1)).transpose(1, -1)
 
         return out
 
@@ -61,7 +74,7 @@ class VNBatchNorm(nn.Module):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
-        norm = torch.norm(x, dim=2)
+        norm = torch.norm(x, dim=2) + EPS
         norm_bn = self.bn(norm)
         norm = norm.unsqueeze(2)
         norm_bn = norm_bn.unsqueeze(2)
@@ -69,36 +82,29 @@ class VNBatchNorm(nn.Module):
 
         return x
 
-
 class VNLeakyReLU(nn.Module):
     def __init__(
-        self, in_channels, out_channels, share_nonlinearity=False, negative_slope=0.2, eps=1e-6
+        self, in_channels, share_nonlinearity=False, negative_slope=0.2
     ):
-        super().__init__()
-        if share_nonlinearity:
-            self.map_to_dir = VNLinear(in_channels, 1)
+        super(VNLeakyReLU, self).__init__()
+        if share_nonlinearity == True:
+            self.map_to_dir = nn.Linear(in_channels, 1, bias=False)
         else:
-            self.map_to_dir = VNLinear(in_channels, out_channels)
-
+            self.map_to_dir = nn.Linear(in_channels, in_channels, bias=False)
         self.negative_slope = negative_slope
-        self.in_channels = in_channels
-        self.eps = eps
 
-    def forward(self, x, x_dir=None):
+    def forward(self, x):
         """
         x: point features of shape [B, N_feat, 3, N_samples, ...]
         """
-
-        x_dir = x if x_dir is None else x_dir
-        d = self.map_to_dir(x_dir)
-
+        d = self.map_to_dir(x.transpose(1, -1)).transpose(1, -1)
         dotprod = (x * d).sum(2, keepdim=True)
+        mask = (dotprod >= 0).float()
         d_norm_sq = (d * d).sum(2, keepdim=True)
-
-        return torch.where(
-            dotprod >= 0, x, x - (1 - self.negative_slope) * (dotprod / (d_norm_sq + self.eps)) * d
+        x_out = self.negative_slope * x + (1 - self.negative_slope) * (
+            mask * x + (1 - mask) * (x - (dotprod / (d_norm_sq + EPS)) * d)
         )
-
+        return x_out
 
 class VNLinearLeakyReLU(nn.Module):
     def __init__(
@@ -109,7 +115,7 @@ class VNLinearLeakyReLU(nn.Module):
         share_nonlinearity=False,
         use_batchnorm=True,
         negative_slope=0.2,
-        eps=1e-6,
+        eps=1e-12,
     ):
         super().__init__()
         self.eps = eps
@@ -126,9 +132,10 @@ class VNLinearLeakyReLU(nn.Module):
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
 
-        self.leaky_relu = VNLeakyReLU(
-            in_channels, out_channels, share_nonlinearity, negative_slope, eps
-        )
+        if share_nonlinearity == True:
+            self.map_to_dir = VNLinear(in_channels, 1)
+        else:
+            self.map_to_dir = VNLinear(in_channels, out_channels)
 
     def forward(self, x):
         """
@@ -142,7 +149,14 @@ class VNLinearLeakyReLU(nn.Module):
             p = self.batchnorm(p)
 
         # LeakyReLU
-        return self.leaky_relu(p, x)
+        d = self.map_to_dir(x)
+        dotprod = (p * d).sum(2, keepdims=True)
+        mask = (dotprod >= 0).float()
+        d_norm_sq = (d * d).sum(2, keepdims=True)
+        x_out = self.negative_slope * p + (1 - self.negative_slope) * (
+            mask * p + (1 - mask) * (p - (dotprod / (d_norm_sq + self.eps)) * d)
+        )
+        return x_out
 
 
 class VNRotationMatrix(nn.Module):
@@ -150,17 +164,20 @@ class VNRotationMatrix(nn.Module):
         self,
         in_channels,
         share_nonlinearity=False,
-        use_batchnorm=True,
-        eps=1e-6,
+        use_batchnorm=False,
+        eps=1e-12,
+        dim=4,
+        return_rotated=True,
     ):
         super().__init__()
         self.eps = eps
         self.use_batchnorm = use_batchnorm
+        self.dim = dim
 
         self.vn1 = VNLinearLeakyReLU(
             in_channels,
             in_channels // 2,
-            dim=4,
+            dim=self.dim,
             share_nonlinearity=share_nonlinearity,
             use_batchnorm=use_batchnorm,
             eps=eps,
@@ -168,12 +185,13 @@ class VNRotationMatrix(nn.Module):
         self.vn2 = VNLinearLeakyReLU(
             in_channels // 2,
             in_channels // 4,
-            dim=4,
+            dim=self.dim,
             share_nonlinearity=share_nonlinearity,
             use_batchnorm=use_batchnorm,
             eps=eps,
         )
         self.vn_lin = VNLinear(in_channels // 4, 2)
+        self.return_rotated = return_rotated
 
     def forward(self, x):
         """
@@ -186,17 +204,26 @@ class VNRotationMatrix(nn.Module):
         # produce two orthogonal vectors
         v1 = z[:, 0, :]
 
-        v1_norm = torch.norm(v1, dim=1, keepdim=True)
+        v1_norm = torch.sqrt((v1 * v1).sum(1, keepdims=True))
         u1 = v1 / (v1_norm + self.eps)
 
         v2 = z[:, 1, :]
         v2 = v2 - (v2 * u1).sum(1, keepdim=True) * u1
 
-        v2_norm = torch.norm(v2, dim=1, keepdim=True)
+        v2_norm = torch.sqrt((v2 * v2).sum(1, keepdims=True))
         u2 = v2 / (v2_norm + self.eps)
 
         # compute the cross product of the two output vectors
         u3 = torch.cross(u1, u2)
         rot = torch.stack([u1, u2, u3], dim=1).transpose(1, 2)
 
-        return rot
+        if self.return_rotated:
+            if self.dim == 4:
+                x_std = torch.einsum("bijm,bjkm->bikm", x, rot)
+            elif self.dim == 3:
+                x_std = torch.einsum("bij,bjk->bik", x, rot)
+            elif self.dim == 5:
+                x_std = torch.einsum("bijmn,bjkmn->bikmn", x, rot)
+            return x_std, rot
+        else:
+            return z0

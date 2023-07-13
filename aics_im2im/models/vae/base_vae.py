@@ -208,7 +208,6 @@ class BaseVAE(BaseModel):
             return z
 
         xhat = self.decode(z)
-
         if return_params:
             return xhat, z, z_params
 
