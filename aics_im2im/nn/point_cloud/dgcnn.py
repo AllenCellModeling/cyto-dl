@@ -76,7 +76,7 @@ class DGCNN(nn.Module):
         include_symmetry = 0
         if self.symmetry_breaking_axis is not None:
             include_symmetry=1
-
+        print('include symmetry', include_symmetry)
         # if self.break_symmetry:
         #     _features = [2] + hidden_features[:-1]
         #     if mode == "scalar":

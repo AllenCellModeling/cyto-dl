@@ -15,7 +15,7 @@ get_rotation: true
 include_cross: true
 include_coords: true
 shape: 'plane'
-symmetry_breaking_axis: 0
+symmetry_breaking_axis: 
 
 beta: 1.0
 embedding_prior: "gaussian"
