@@ -46,6 +46,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
     data = hydra.utils.instantiate(cfg.data)
+
     if not isinstance(data, LightningDataModule):
         if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
             raise ValueError(

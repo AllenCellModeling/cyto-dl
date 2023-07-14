@@ -1,12 +1,12 @@
 _target_: aics_im2im.datamodules.dataframe.GeometricShapesDataModule
 batch_size: 32
-num_workers: 0 
+num_workers: 0
 num_points: 256
 rotate: False
 jitter: False
 num_samples_per_class: 20
 eval_samples_per_class: 10
 num_classes: 10
-cond_class: 
-couple_rot: 
+cond_class:
+couple_rot:
 path: "/allen/aics/modeling/ritvik/projects/PointGPT/data/GeometricShapes-34/geometricshapes_pc/"

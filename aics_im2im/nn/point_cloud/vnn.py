@@ -82,12 +82,11 @@ class VNBatchNorm(nn.Module):
 
         return x
 
+
 class VNLeakyReLU(nn.Module):
-    def __init__(
-        self, in_channels, share_nonlinearity=False, negative_slope=0.2
-    ):
-        super(VNLeakyReLU, self).__init__()
-        if share_nonlinearity == True:
+    def __init__(self, in_channels, share_nonlinearity=False, negative_slope=0.2):
+        super().__init__()
+        if share_nonlinearity:
             self.map_to_dir = nn.Linear(in_channels, 1, bias=False)
         else:
             self.map_to_dir = nn.Linear(in_channels, in_channels, bias=False)
@@ -105,6 +104,7 @@ class VNLeakyReLU(nn.Module):
             mask * x + (1 - mask) * (x - (dotprod / (d_norm_sq + EPS)) * d)
         )
         return x_out
+
 
 class VNLinearLeakyReLU(nn.Module):
     def __init__(
@@ -132,7 +132,7 @@ class VNLinearLeakyReLU(nn.Module):
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
 
-        if share_nonlinearity == True:
+        if share_nonlinearity:
             self.map_to_dir = VNLinear(in_channels, 1)
         else:
             self.map_to_dir = VNLinear(in_channels, out_channels)
@@ -226,4 +226,4 @@ class VNRotationMatrix(nn.Module):
                 x_std = torch.einsum("bijmn,bjkmn->bikmn", x, rot)
             return x_std, rot
         else:
-            return z0
+            return rot

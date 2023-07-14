@@ -4,8 +4,8 @@ _convert_: all
 path: /allen/aics/assay-dev/users/Alex/handoff/ritvik/npm_manifest_with_sdfs.csv
 split_column: split
 
-batch_size: 64
-num_workers: 10
+batch_size: 16
+num_workers: 16
 multiprocessing_context: spawn
 persistent_workers: true
 
@@ -18,6 +18,11 @@ transforms:
     keys: image
     remote: false
     clip_min: -2
-    clip_max: 2
-    read_center: True
-    resize: True
+    clip_max: 2 
+    read_center: False
+    resize: False
+  - _target_: aics_im2im.image.transforms.SO2RandomRotated
+    keys: [image]
+    spatial_dims: 3
+    rotations: 1
+

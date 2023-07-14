@@ -15,6 +15,7 @@ def make_parallelepipeds(input_dims, batch_size=0):
         return ppiped.unsqueeze(0).repeat(batch_size, *repeats)
     return ppiped
 
+
 class ConvBlock(nn.Module):
     def __init__(
         self,
@@ -66,6 +67,7 @@ class ConvBlock(nn.Module):
             return res + nn.functional.interpolate(x, res.shape[2:])
         else:
             return res
+
 
 def conv_block(
     in_c: int,

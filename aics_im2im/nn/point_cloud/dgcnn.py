@@ -14,19 +14,31 @@ from torch.nn import functional as F
 from aics_im2im import utils
 
 from .graph_functions import get_graph_features
-from .vnn import VNLinear, VNLinearLeakyReLU, VNRotationMatrix, VNLeakyReLU
+from .vnn import VNLeakyReLU, VNLinear, VNLinearLeakyReLU, VNRotationMatrix
 
 log = utils.get_pylogger(__name__)
 
 
-def _make_conv(in_features, out_features, mode="scalar", scale_in=1, include_symmetry=0, scale_out=1, final=False):
+def _make_conv(
+    in_features,
+    out_features,
+    mode="scalar",
+    scale_in=1,
+    include_symmetry=0,
+    scale_out=1,
+    final=False,
+):
     in_features = in_features * scale_in + include_symmetry
     out_features = out_features * scale_out
 
     if mode == "vector":
 
         return VNLinearLeakyReLU(
-            in_features, out_features, use_batchnorm=False, negative_slope=0, dim=(4 if final else 5)
+            in_features,
+            out_features,
+            use_batchnorm=False,
+            negative_slope=0,
+            dim=(4 if final else 5),
         )
 
     conv = nn.Conv1d if final else nn.Conv2d
@@ -41,6 +53,7 @@ def _make_conv(in_features, out_features, mode="scalar", scale_in=1, include_sym
         nn.LeakyReLU(negative_slope=0.2),
     )
 
+
 def maxpool(x, dim=-1, keepdim=False):
     out, _ = x.max(dim=dim, keepdim=keepdim)
     return out
@@ -49,6 +62,7 @@ def maxpool(x, dim=-1, keepdim=False):
 def meanpool(x, dim=-1, keepdim=False):
     out = x.mean(dim=dim, keepdim=keepdim)
     return out
+
 
 class DGCNN(nn.Module):
     def __init__(
@@ -75,8 +89,8 @@ class DGCNN(nn.Module):
         self.symmetry_breaking_axis = symmetry_breaking_axis
         include_symmetry = 0
         if self.symmetry_breaking_axis is not None:
-            include_symmetry=1
-        print('include symmetry', include_symmetry)
+            include_symmetry = 1
+        print("include symmetry", include_symmetry)
         # if self.break_symmetry:
         #     _features = [2] + hidden_features[:-1]
         #     if mode == "scalar":
@@ -87,34 +101,44 @@ class DGCNN(nn.Module):
 
         self.mode = mode
         self.init_features = 1 if self.mode == "vector" else 3
-        convs = [_make_conv(self.init_features, self.hidden_dim, self.mode, scale_in=1+include_coords+include_cross, include_symmetry=include_symmetry)]
-        
-        if self.mode == 'scalar':
-            convs += [_make_conv(self.hidden_dim*2, self.hidden_dim)]
-            convs += [_make_conv(self.hidden_dim*2, self.hidden_dim*2)]
-            convs += [_make_conv(self.hidden_dim*4, self.hidden_dim*4)]
-
-            self.final_len = self.hidden_dim*2 + self.hidden_dim*2 + self.hidden_dim*4
-            self.final_conv = _make_conv(self.final_len, self.final_len, final=True)
-            self.embedding = nn.Linear(
-                self.final_len, self.num_features, bias=False
+        convs = [
+            _make_conv(
+                self.init_features,
+                self.hidden_dim,
+                self.mode,
+                scale_in=1 + include_coords + include_cross,
+                include_symmetry=include_symmetry,
             )
+        ]
+
+        if self.mode == "scalar":
+            convs += [_make_conv(self.hidden_dim * 2, self.hidden_dim)]
+            convs += [_make_conv(self.hidden_dim * 2, self.hidden_dim * 2)]
+            convs += [_make_conv(self.hidden_dim * 4, self.hidden_dim * 4)]
+
+            self.final_len = self.hidden_dim * 2 + self.hidden_dim * 2 + self.hidden_dim * 4
+            self.final_conv = _make_conv(self.final_len, self.final_len, final=True)
+            self.embedding = nn.Linear(self.final_len, self.num_features, bias=False)
             self.pool = maxpool
         else:
-            convs += [nn.Sequential(
-                VNLinear(self.hidden_dim, self.hidden_dim*2), 
-                VNLeakyReLU(2*self.hidden_dim, negative_slope=0.0, share_nonlinearity=False),
-                VNLinear(2*self.hidden_dim, self.hidden_dim)
-            )]
+            convs += [
+                nn.Sequential(
+                    VNLinear(self.hidden_dim, self.hidden_dim * 2),
+                    VNLeakyReLU(2 * self.hidden_dim, negative_slope=0.0, share_nonlinearity=False),
+                    VNLinear(2 * self.hidden_dim, self.hidden_dim),
+                )
+            ]
             for i in range(3):
-                convs += [nn.Sequential(
-                    VNLeakyReLU(2*hidden_dim, negative_slope=0.0, share_nonlinearity=False),
-                    VNLinear(2*hidden_dim, hidden_dim),
-                )]
-        
+                convs += [
+                    nn.Sequential(
+                        VNLeakyReLU(2 * hidden_dim, negative_slope=0.0, share_nonlinearity=False),
+                        VNLinear(2 * hidden_dim, hidden_dim),
+                    )
+                ]
+
             self.final_conv = nn.Sequential(
-                    VNLeakyReLU(hidden_dim, negative_slope=0.0, share_nonlinearity=False),
-                    VNLinear(hidden_dim, self.num_features),
+                VNLeakyReLU(hidden_dim, negative_slope=0.0, share_nonlinearity=False),
+                VNLinear(hidden_dim, self.num_features),
             )
             self.pool = meanpool
             self.rotation = VNRotationMatrix(self.num_features, dim=3, return_rotated=True)
@@ -161,7 +185,7 @@ class DGCNN(nn.Module):
 
         intermediate_outs = []
         for idx, conv in enumerate(self.convs):
-            if (idx == 0 and self.mode == 'vector') or (self.mode == 'scalar'):
+            if (idx == 0 and self.mode == "vector") or (self.mode == "scalar"):
                 x = self.get_graph_features(x, idx)
 
             if idx == 0 and self.symmetry_breaking_axis is not None:
@@ -170,8 +194,8 @@ class DGCNN(nn.Module):
                 assert x.size(1) == 4
             pre_x = conv(x)
 
-            if (len(pre_x.size()) < 5) and (self.mode == 'vector') and (idx > 0):
-                if (idx > 0) & (idx < len(self.convs)-1):
+            if (len(pre_x.size()) < 5) and (self.mode == "vector") and (idx > 0):
+                if (idx > 0) & (idx < len(self.convs) - 1):
                     x = self.pool(pre_x, dim=-1, keepdim=True).expand(pre_x.size())
                     x = torch.cat([x, pre_x], dim=1)
                 else:
@@ -181,7 +205,7 @@ class DGCNN(nn.Module):
 
             intermediate_outs.append(x)
 
-        if self.mode == 'scalar':
+        if self.mode == "scalar":
             x = torch.cat(intermediate_outs, dim=1)
             x = self.final_conv(x)
             x = x.max(dim=-1, keepdim=False)[0]
@@ -191,8 +215,7 @@ class DGCNN(nn.Module):
         # import ipdb
         # ipdb.set_trace()
 
-
-        if self.mode == 'vector':
+        if self.mode == "vector":
             embedding, rot = self.rotation(x)
             embedding = self.vn_inv(embedding)
             rot = rot.mT

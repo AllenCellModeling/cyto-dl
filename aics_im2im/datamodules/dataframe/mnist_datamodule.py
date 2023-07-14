@@ -1,14 +1,20 @@
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
-
-
 from lightning import LightningDataModule
-
+from torch.utils.data import DataLoader, Dataset
 
 
 class MNISTDataModule(LightningDataModule):
-    def __init__(self, batch_size, num_workers, num_eval_samples, file_path, x_label=None, y_label=None, transform=None):
+    def __init__(
+        self,
+        batch_size,
+        num_workers,
+        num_eval_samples,
+        file_path,
+        x_label=None,
+        y_label=None,
+        transform=None,
+    ):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
@@ -23,7 +29,9 @@ class MNISTDataModule(LightningDataModule):
         self.transform = transform
 
     def train_dataloader(self):
-        dataset = MNISTDataset(self.data[self.num_eval_samples:], self.x_label, self.y_label, self.transform)
+        dataset = MNISTDataset(
+            self.data[self.num_eval_samples :], self.x_label, self.y_label, self.transform
+        )
         dataloader = self.loader_fnc(
             dataset=dataset,
             batch_size=self.batch_size,
@@ -33,7 +41,9 @@ class MNISTDataModule(LightningDataModule):
         return dataloader
 
     def val_dataloader(self):
-        dataset = MNISTDataset(self.data[:self.num_eval_samples], self.x_label, self.y_label, self.transform)
+        dataset = MNISTDataset(
+            self.data[: self.num_eval_samples], self.x_label, self.y_label, self.transform
+        )
         dataloader = self.loader_fnc(
             dataset=dataset,
             batch_size=self.batch_size,

@@ -28,7 +28,7 @@ transforms:
     reader:
       _target_: aics_im2im.image.io.OmeZarrReader
       level: 0
-      channels: ['labelfree_npm1_segmentation']
+      channels: ["labelfree_npm1_segmentation"]
     expanduser: false
   - _target_: monai.transforms.ToTensord
     keys: [image]

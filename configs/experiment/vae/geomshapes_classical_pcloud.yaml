@@ -40,7 +40,7 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: 
+    experiment_name:
     run_name:
 
 ##### ONLY USE WITH A100s

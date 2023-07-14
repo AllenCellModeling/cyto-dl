@@ -34,7 +34,7 @@ class PointCloudVAE(BaseVAE):
         beta: float = 1.0,
         embedding_prior: str = "identity",
         eps: float = 1e-6,
-        shape: str = 'sphere',
+        shape: str = "sphere",
         num_coords: int = 3,
         std: float = 0.3,
         sphere_path: str = "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/sphere.npy",
@@ -64,7 +64,16 @@ class PointCloudVAE(BaseVAE):
             symmetry_breaking_axis=symmetry_breaking_axis,
         )
 
-        decoder = FoldingNet(latent_dim, num_points, hidden_decoder_dim, std, shape, sphere_path, gaussian_path, num_coords)
+        decoder = FoldingNet(
+            latent_dim,
+            num_points,
+            hidden_decoder_dim,
+            std,
+            shape,
+            sphere_path,
+            gaussian_path,
+            num_coords,
+        )
 
         encoder = {x_label: encoder}
         decoder = {x_label: decoder}
@@ -111,9 +120,8 @@ class PointCloudVAE(BaseVAE):
             xhat = torch.einsum("bij,bjk->bik", base_xhat, rotation)
         else:
             xhat = base_xhat
-        
+
         if return_canonical:
             return {self.hparams.x_label: xhat}, base_xhat
         else:
             return {self.hparams.x_label: xhat}
-

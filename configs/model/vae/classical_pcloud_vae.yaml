@@ -14,7 +14,7 @@ mode: scalar
 get_rotation: false
 include_cross: false
 include_coords: true
-shape: 'gaussian'
+shape: "gaussian"
 
 beta: 1.0
 embedding_prior: "identity"

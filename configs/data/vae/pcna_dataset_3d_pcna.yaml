@@ -27,11 +27,11 @@ transforms:
     reader:
       _target_: aics_im2im.image.io.OmeZarrReader
       level: 0
-      channels: ['PCNA_segmentation']
+      channels: ["PCNA_segmentation"]
     expanduser: false
   - _target_: monai.transforms.SpatialPadd
     keys: [image]
-    spatial_size: [181, 181, 181]# set to [-1, -1, -1] to bypass
+    spatial_size: [181, 181, 181]
   - _target_: torchio.transforms.Resize
     keys:
       - image

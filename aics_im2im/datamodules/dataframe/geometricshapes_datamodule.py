@@ -1,31 +1,30 @@
 import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
-
 import torch_geometric.transforms as T
-from torch_geometric.datasets import GeometricShapes
 from lightning import LightningDataModule
-
+from torch.utils.data import DataLoader, Dataset
+from torch_geometric.datasets import GeometricShapes
 
 
 class GeometricShapesDataModule(LightningDataModule):
     def __init__(
-        self, 
-        batch_size: int, 
-        num_workers: int, 
-        num_points: int, 
-        rotate: bool, 
-        jitter: bool, 
-        cond_class: int, 
-        couple_rot: bool, 
-        num_samples_per_class: int, 
-        eval_samples_per_class: int, 
-        num_classes: int, 
+        self,
+        batch_size: int,
+        num_workers: int,
+        num_points: int,
+        rotate: bool,
+        jitter: bool,
+        cond_class: int,
+        couple_rot: bool,
+        num_samples_per_class: int,
+        eval_samples_per_class: int,
+        num_classes: int,
         path="/allen/aics/modeling/ritvik/projects/PointGPT/data/GeometricShapes-34/geometricshapes_pc/",
         return_id=False,
-        x_label=None, 
-        y_label=None, 
-        cond_label=None):
+        x_label=None,
+        y_label=None,
+        cond_label=None,
+    ):
         """
         num_points: number of points sampled from PC
         rotate: whether to apply random rotations during training
@@ -58,8 +57,16 @@ class GeometricShapesDataModule(LightningDataModule):
 
     def train_dataloader(self):
         self.train_dataset = RotGeometricShapes(
-            self.num_points, False, False, self.num_samples_per_class,
-            self.num_classes, self.cond_class, self.couple_rot, self.return_id, self.path, True
+            self.num_points,
+            False,
+            False,
+            self.num_samples_per_class,
+            self.num_classes,
+            self.cond_class,
+            self.couple_rot,
+            self.return_id,
+            self.path,
+            True,
         )
         dataloader = self.loader_fnc(
             dataset=self.train_dataset,
@@ -72,8 +79,16 @@ class GeometricShapesDataModule(LightningDataModule):
 
     def val_dataloader(self):
         self.val_dataset = RotGeometricShapes(
-            self.num_points, False, False, self.eval_samples_per_class,
-            self.num_classes, self.cond_class, self.couple_rot, self.return_id, self.path, False
+            self.num_points,
+            False,
+            False,
+            self.eval_samples_per_class,
+            self.num_classes,
+            self.cond_class,
+            self.couple_rot,
+            self.return_id,
+            self.path,
+            False,
         )
         dataloader = self.loader_fnc(
             dataset=self.val_dataset,
@@ -86,8 +101,16 @@ class GeometricShapesDataModule(LightningDataModule):
 
     def test_dataloader(self):
         self.test_dataset = RotGeometricShapes(
-            self.num_points, False, False, self.eval_samples_per_class,
-            self.num_classes, self.cond_class, self.couple_rot, self.return_id, self.path, False
+            self.num_points,
+            False,
+            False,
+            self.eval_samples_per_class,
+            self.num_classes,
+            self.cond_class,
+            self.couple_rot,
+            self.return_id,
+            self.path,
+            False,
         )
         dataloader = self.loader_fnc(
             dataset=self.test_dataset,
@@ -167,8 +190,22 @@ class GeometricShapesDataModule(LightningDataModule):
 #         else:
 #             return {self.x_label: x, self.y_label: y, 'rotation': theta}
 
+
 class RotGeometricShapes(Dataset):
-    def __init__(self, num_points, rotate, jitter, num_samples_per_class, num_classes, cond_class=None, couple_rot=False, return_id=False, path=None, train=True, conditional=False):
+    def __init__(
+        self,
+        num_points,
+        rotate,
+        jitter,
+        num_samples_per_class,
+        num_classes,
+        cond_class=None,
+        couple_rot=False,
+        return_id=False,
+        path=None,
+        train=True,
+        conditional=False,
+    ):
         self.path = path
         self.num_points = num_points
         self.rotate = rotate
@@ -187,16 +224,16 @@ class RotGeometricShapes(Dataset):
             self.data = []
             # self.items = os.listdir(self.path)
             if train:
-                self.items = [str(i) + '.npy' for i in range(1200)]
+                self.items = [str(i) + ".npy" for i in range(1200)]
                 scale = 200
             else:
-                self.items = [str(i + 1300) + '.npy' for i in range(120)]
+                self.items = [str(i + 1300) + ".npy" for i in range(120)]
                 scale = 20
             self.len = len(self.items)
             self.label = []
             for i in range(len(self.items)):
                 self.data.append(torch.from_numpy(np.load(self.path + self.items[i])))
-                self.label.append(torch.tensor(int(i/scale)))
+                self.label.append(torch.tensor(int(i / scale)))
 
             if self.conditional:
                 pass
@@ -204,9 +241,9 @@ class RotGeometricShapes(Dataset):
             self.len = self.num_classes * self.num_samples_per_class
             self.data = []
             self.label = []
-            dataset = GeometricShapes(root='/tmp/GeomShapes', transform=self.transform)
+            dataset = GeometricShapes(root="/tmp/GeomShapes", transform=self.transform)
             for i in range(self.num_classes):
-                this_i = dataset[i].pos*10
+                this_i = dataset[i].pos * 10
                 for j in range(self.num_samples_per_class):
                     self.data.append(this_i)
                     self.label.append(dataset[i].y)
@@ -216,12 +253,11 @@ class RotGeometricShapes(Dataset):
                 for i in range(self.num_classes * self.num_samples_per_class):
                     self.ref.append(dataset[self.cond_class].pos)
 
-
     def __len__(self):
         return self.len
 
     def pc_norm(self, pc):
-        """ pc: NxC, return NxC """
+        """pc: NxC, return NxC"""
         centroid = np.mean(pc, axis=0)
         pc = pc - centroid
         m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
@@ -230,7 +266,7 @@ class RotGeometricShapes(Dataset):
 
     def __getitem__(self, item):
         x = self.data[item].float().numpy()
-        x = self.pc_norm(x)*2
+        x = self.pc_norm(x) * 2
         x = torch.from_numpy(x).float()
         y = self.label[item].float()
         # import ipdb
@@ -249,17 +285,24 @@ class RotGeometricShapes(Dataset):
                 c = rotate_pointcloud(c.numpy(), rotation_matrix, False)
                 theta_c = theta
             else:
-                c, rotation_matrix_c, theta_c= rotate_pointcloud(c.numpy(), None, True)
+                c, rotation_matrix_c, theta_c = rotate_pointcloud(c.numpy(), None, True)
             c = torch.from_numpy(c)
             if self.return_id:
-                return {'pcloud': x, 'cond': c, 'class': y, 'rotation': theta, 'rotation_c': theta_c}
+                return {
+                    "pcloud": x,
+                    "cond": c,
+                    "class": y,
+                    "rotation": theta,
+                    "rotation_c": theta_c,
+                }
             else:
-                return {'pcloud': x, 'cond': c}
+                return {"pcloud": x, "cond": c}
         else:
             if self.return_id:
-                return {'pcloud': x, 'class': y, 'rotation': theta}
+                return {"pcloud": x, "class": y, "rotation": theta}
             else:
-                return {'pcloud': x}
+                return {"pcloud": x}
+
 
 def jitter_pointcloud(pointcloud, sigma=0.01, clip=0.02):
     N, C = pointcloud.shape

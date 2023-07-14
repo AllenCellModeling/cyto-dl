@@ -11,11 +11,12 @@ from torch.nn import functional as F
 
 class FoldingNet(nn.Module):
     def __init__(
-        self, input_dim: int, 
-        num_output_points: int, 
-        hidden_dim: int = 512, 
+        self,
+        input_dim: int,
+        num_output_points: int,
+        hidden_dim: int = 512,
         std: float = 0.3,
-        shape: str = 'plane',
+        shape: str = "plane",
         sphere_path: str = "",
         gaussian_path: str = "",
         num_coords: int = 3,
@@ -34,7 +35,7 @@ class FoldingNet(nn.Module):
         self.gaussian_path = gaussian_path
 
         # make grid
-        if self.shape == 'plane':
+        if self.shape == "plane":
             self.grid_dim = 2
             grid_side = np.sqrt(num_output_points).astype(int)
             range_x = torch.linspace(-std, std, grid_side)
@@ -43,16 +44,13 @@ class FoldingNet(nn.Module):
             # xy = torch.cat(xy, axis=0)
             # self.grid = nn.Parameter(xy.float().reshape(-1, 2), requires_grad=False)
             x_coor, y_coor = torch.meshgrid(range_x, range_y, indexing="ij")
-            self.grid = (
-                torch.stack([x_coor, y_coor], axis=-1).float().reshape(-1, 2)
-            )
-        elif self.shape == 'sphere':
+            self.grid = torch.stack([x_coor, y_coor], axis=-1).float().reshape(-1, 2)
+        elif self.shape == "sphere":
             self.grid_dim = 3
             self.grid = torch.tensor(np.load(self.sphere_path)).float()
-        elif self.shape == 'gaussian':
+        elif self.shape == "gaussian":
             self.grid_dim = 3
             self.grid = torch.tensor(np.load(self.gaussian_path)).float()
-
 
         self.hidden_dim = hidden_dim
 
