@@ -182,8 +182,7 @@ class Encoder(Module):
 
         if return_sizes:
             return x, sizes, hidden_channels
-        else:
-            return x
+        return x
 
     def forward(self, x: torch.Tensor):
 

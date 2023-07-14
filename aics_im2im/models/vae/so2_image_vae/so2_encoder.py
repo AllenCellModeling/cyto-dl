@@ -37,7 +37,7 @@ class SO2ImageEncoder(torch.nn.Module):
             else gspaces.rot2dOnR3(n=-1, maximum_frequency=maximum_frequency)
         )
         self.in_type = nn.FieldType(self.gspace, [self.gspace.trivial_repr])
-        self.input_type = in_type
+        self.input_type = self.in_type
 
         blocks = [self.make_block(self.in_type, channels[0], strides[0])]
         for c, s in zip(channels[1:], strides[1:]):

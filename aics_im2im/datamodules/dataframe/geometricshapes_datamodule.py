@@ -324,5 +324,5 @@ def rotate_pointcloud(pointcloud, rotation_matrix=None, return_rot=False):
     # ipdb.set_trace()
     if return_rot:
         return pointcloud_rotated, rotation_matrix, theta
-    else:
-        return pointcloud_rotated
+
+    return pointcloud_rotated

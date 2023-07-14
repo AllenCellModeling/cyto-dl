@@ -65,8 +65,7 @@ class ConvBlock(nn.Module):
         res = self.block(x)
         if self.skip_connection and (res.shape[1] == x.shape[1]):
             return res + nn.functional.interpolate(x, res.shape[2:])
-        else:
-            return res
+        return res
 
 
 def conv_block(

@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Any, List, Tuple
 
 import torch
-from escnn.gspaces import *
+from escnn.gspaces import GSpace
 from escnn.nn import EquivariantModule, FieldType, GeometricTensor
 from torch.nn import Parameter
 
@@ -86,7 +86,7 @@ class NormBatchNorm(EquivariantModule):
         for i, r in enumerate(self.in_type.representations):
 
             if r.size != last_size:
-                if not r.size in self._contiguous:
+                if r.size not in self._contiguous:
                     self._contiguous[r.size] = True
                 else:
                     self._contiguous[r.size] = False

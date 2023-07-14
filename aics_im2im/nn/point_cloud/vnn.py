@@ -225,5 +225,4 @@ class VNRotationMatrix(nn.Module):
             elif self.dim == 5:
                 x_std = torch.einsum("bijmn,bjkmn->bikmn", x, rot)
             return x_std, rot
-        else:
-            return rot
+        return rot

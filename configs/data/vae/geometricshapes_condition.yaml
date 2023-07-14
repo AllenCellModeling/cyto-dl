@@ -1,7 +1,7 @@
 _target_: aics_im2im.datamodules.dataframe.GeometricShapesDataModule
 batch_size: 32
-num_workers: 0 
-num_points: 2048 
+num_workers: 0
+num_points: 2048
 rotate: true
 jitter: true
 cond_class: 5
@@ -9,6 +9,6 @@ couple_rot: False
 num_samples_per_class: 50
 eval_samples_per_class: 10
 num_classes: 10
-x_label: 'pcloud'
-y_label: 'class'
-cond_label: 'ref'
+x_label: "pcloud"
+y_label: "class"
+cond_label: "ref"

@@ -18,4 +18,4 @@ transforms:
     keys: image
     remote: false
     clip_min: -2
-    clip_max: 2 
+    clip_max: 2

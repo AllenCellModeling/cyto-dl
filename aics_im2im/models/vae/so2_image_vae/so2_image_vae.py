@@ -212,5 +212,4 @@ class SO2ImageVAE(BaseVAE):
             xhat = self.mask(xhat)
         if return_canonical:
             return {self.hparams.x_label: xhat}, z_parts, base_xhat
-        else:
-            return {self.hparams.x_label: xhat}, z_parts
+        return {self.hparams.x_label: xhat}, z_parts

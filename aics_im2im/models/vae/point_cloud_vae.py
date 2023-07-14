@@ -123,5 +123,5 @@ class PointCloudVAE(BaseVAE):
 
         if return_canonical:
             return {self.hparams.x_label: xhat}, base_xhat
-        else:
-            return {self.hparams.x_label: xhat}
+
+        return {self.hparams.x_label: xhat}
