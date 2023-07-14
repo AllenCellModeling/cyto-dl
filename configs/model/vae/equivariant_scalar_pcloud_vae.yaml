@@ -1,20 +1,27 @@
 _target_: aics_im2im.models.vae.PointCloudVAE
 
 x_label: pcloud
-id_label: cell_id
+# id_label: cell_id
 
-latent_dim: 128
-num_points: 4096
-hidden_encoder_features: [64, 128, 256, 512]
+latent_dim: 256
+num_points: 2048
+hidden_encoder_features: [64, 64, 128, 256, 512]
 hidden_decoder_dim: 512
 k: 20
 
 mode: scalar
-equivariant: false
-include_cross: false
+get_rotation: False
+include_cross: False
 include_coords: true
+scalar_inds:
 
 beta: 1.0
-embedding_prior: "gaussian"
+embedding_prior: "identity"
+shape: "sphere"
 
 eps: 1e-6
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002
