@@ -6,7 +6,7 @@ x_label: pcloud
 latent_dim: 10
 num_points: 256
 # hidden_encoder_features: [64, 64, 128, 256, 512]
-hidden_dim: 8
+hidden_dim: 64
 hidden_decoder_dim: 512
 k: 20
 
