@@ -13,4 +13,5 @@ Submodules
    :maxdepth: 4
 
    aics_im2im.models.im2im.utils.postprocessing.act_thresh_label
+   aics_im2im.models.im2im.utils.postprocessing.auto_thresh
    aics_im2im.models.im2im.utils.postprocessing.dict_to_im
