@@ -13,16 +13,13 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: npm1_so3_sdf
+experiment_name: lattice_nuc_sdf
 
-tags: ["so3-equiv", "variance-dataset", "3d", "npm1", "sdf"]
+tags: ["so2-equiv", "lattice", "3d", "nuc", "sdf"]
 
 seed: 42
 
 data:
-  #  _aux:
-  #    background: 15
-
   batch_size: 64
   cache_dir: /storage/cache
   transforms:

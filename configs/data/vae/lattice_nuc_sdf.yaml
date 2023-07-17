@@ -1,7 +1,7 @@
 _target_: aics_im2im.datamodules.DataframeDatamodule
 _convert_: all
 
-path: /allen/aics/asay-dev/users/Alex/pod/lattice123_manifest.csv
+path: /allen/aics/assay-dev/users/Alex/pod/lattice123_manifest.csv
 split_column: split
 
 batch_size: 64
