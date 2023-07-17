@@ -1,4 +1,4 @@
-_target_: cyto_ml.datamodules.dataframe.DataframeDatamoduleMultiTask
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamoduleMultiTask
 
 path:
 cache_dir:
@@ -22,5 +22,5 @@ transforms:
     - ${target_col}
     - ${target2_col}
   reader:
-    - _target_: cyto_ml.image.io.MonaiBioReader
+    - _target_: cyto_dl.image.io.MonaiBioReader
       dimension_order_out: "CZYX"

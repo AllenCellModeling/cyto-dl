@@ -1,4 +1,4 @@
-_target_: cyto_ml.models.vae.SO2ImageVAE
+_target_: cyto_dl.models.vae.SO2ImageVAE
 
 latent_dim: 32
 spatial_dims:

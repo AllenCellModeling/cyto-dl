@@ -1,4 +1,4 @@
-_target_: cyto_ml.utils.dummy_dataset.DummyDatamodule
+_target_: cyto_dl.utils.dummy_dataset.DummyDatamodule
 num_samples: 10
 batch_size: 5
 

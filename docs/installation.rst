@@ -5,8 +5,8 @@ Installation
 ============
 
 ``
-git clone https://github.com/AllenCellModeling/cyto-ml
-cd cyto-ml
+git clone https://github.com/AllenCellModeling/cyto-dl
+cd cyto-dl
 
 # [OPTIONAL] create conda environment
 conda create -n myenv python=3.9

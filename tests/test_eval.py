@@ -4,8 +4,8 @@ import pytest
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import OmegaConf, open_dict
 
-from cyto_ml.eval import evaluate
-from cyto_ml.train import train
+from cyto_dl.eval import evaluate
+from cyto_dl.train import train
 
 from .conftest import experiment_types
 from .utils import resolve_readonly

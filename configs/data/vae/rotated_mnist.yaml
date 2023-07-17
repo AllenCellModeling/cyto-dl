@@ -6,7 +6,7 @@ train_dataloaders:
   batch_size: ${data._aux.batch_size}
   num_workers: 20
   dataset:
-    _target_: cyto_ml.datamodules.torchvision.MNIST
+    _target_: cyto_dl.datamodules.torchvision.MNIST
     root: /tmp/mnist
     download: true
     train: true
@@ -27,7 +27,7 @@ val_dataloaders:
   batch_size: ${data._aux.batch_size}
   num_workers: 10
   dataset:
-    _target_: cyto_ml.datamodules.torchvision.MNIST
+    _target_: cyto_dl.datamodules.torchvision.MNIST
     root: /tmp/mnist
     download: true
     train: false

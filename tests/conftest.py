@@ -6,7 +6,7 @@ from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, OmegaConf, open_dict
 
-from cyto_ml.utils.config import kv_to_dict
+from cyto_dl.utils.config import kv_to_dict
 from scripts.download_test_data import delete_test_data, download_test_data
 
 OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
