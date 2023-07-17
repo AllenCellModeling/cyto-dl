@@ -7,7 +7,7 @@ import torch
 import yaml
 from fire import Fire
 
-from cyto_ml.transforms.dataframe import split_dataframe
+from cyto_dl.transforms.dataframe import split_dataframe
 
 root = pyrootutils.setup_root(
     search_from=__file__,
@@ -16,7 +16,7 @@ root = pyrootutils.setup_root(
     dotenv=True,
 )
 
-from cyto_ml.utils.spharm import batched_rotate_spharm, get_band_indices
+from cyto_dl.utils.spharm import batched_rotate_spharm, get_band_indices
 
 BASE_VARIANCE = (
     "/allen/aics/modeling/VariancePlayground/orgmanifests/variance_dataset_07082022.csv"

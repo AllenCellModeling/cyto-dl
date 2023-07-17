@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = cyto_ml
+SPHINXPROJ    = cyto_dl
 SOURCEDIR     = .
 BUILDDIR      = _build
 # DOCS          = ../../gh-pages

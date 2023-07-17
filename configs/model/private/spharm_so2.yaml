@@ -1,7 +1,7 @@
 defaults:
   - reconstruction_loss: spharm_gaussian
 
-_target_: cyto_ml.models.vae.O2SpharmVAE
+_target_: cyto_dl.models.vae.O2SpharmVAE
 
 x_dim: 289
 latent_dim: 16

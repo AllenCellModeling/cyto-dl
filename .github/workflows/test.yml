@@ -78,7 +78,7 @@ jobs:
 
       - name: Run tests and collect coverage
         shell: bash -el {0}
-        run: pytest --cov cyto_ml
+        run: pytest --cov cyto_dl
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

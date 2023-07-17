@@ -7,4 +7,4 @@ _target_: giae.so2.data.MNISTDataModule
 batch_size: 128
 num_workers: 4
 num_eval_samples: 200
-file_path: "/allen/aics/modeling/ritvik/projects/cyto-ml/giae/mnist_all_rotation_normalized_float_train_valid.amat"
+file_path: "/allen/aics/modeling/ritvik/projects/cyto-dl/giae/mnist_all_rotation_normalized_float_train_valid.amat"

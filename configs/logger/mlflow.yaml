@@ -1,5 +1,5 @@
 mlflow:
-  _target_: cyto_ml.loggers.MLFlowLogger
+  _target_: cyto_dl.loggers.MLFlowLogger
   tracking_uri: https://mlflow.a100.int.allencell.org/
   experiment_name: ${experiment_name}
   run_name: ${run_name}

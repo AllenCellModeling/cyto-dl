@@ -2400,7 +2400,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "all", "docs", "equiv", "omnipose", "s3", "spharm", "test", "torchserve"]
-content_hash = "sha256:4098160168a7185714285c539f3e0033736635ecb65da2b68f644283835099e1"
+content_hash = "sha256:c2c19cae10ca798b1e7e1f0c7f95d05ded3c169dd4a96ce552453ddd418392f7"
 
 [metadata.files]
 "aicscytoparam 0.1.9" = [

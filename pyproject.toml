@@ -3,7 +3,7 @@ requires = ["pdm-pep517>=1.0.0", "numpy>=1.23.5"]
 build-backend = "pdm.pep517.api"
 
 [project]
-name = "cyto-ml"
+name = "cyto-dl"
 version = "0.0.0"
 description = """\
   Collection of representation learning models, techniques, callbacks, utils, \
@@ -72,17 +72,17 @@ torchserve = [
     "gorilla>=0.4.0",
 ]
 all = [
-    "cyto-ml[equiv,spharm,omnipose,s3,torchserve]",
+    "cyto-dl[equiv,spharm,omnipose,s3,torchserve]",
 ]
 test = [
-    "cyto-ml[all]",
+    "cyto-dl[all]",
     "pyrootutils~=1.0",
     "pytest~=7.2",
     "sh~=1.14",
     "pytest-cov[toml]~=4.0",
 ]
 docs = [
-    "cyto-ml[all]",
+    "cyto-dl[all]",
     "furo<=2023.3.23",
     "m2r2<=0.3.3.post2",
     "sphinx<=6.1.3",
@@ -90,10 +90,10 @@ docs = [
 
 
 [project.urls]
-Homepage = "https://github.com/AllenCellModeling/cyto-ml"
+Homepage = "https://github.com/AllenCellModeling/cyto-dl"
 
 [tool.pdm.build]
-includes = ["cyto_ml", "README.md", "LICENSE", "**/*.yaml" ]
+includes = ["cyto_dl", "README.md", "LICENSE", "**/*.yaml" ]
 excludes = ["**/*.pyc", "**/__pycache__"]
 
 [tool.flake8]

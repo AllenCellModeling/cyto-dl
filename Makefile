@@ -45,9 +45,9 @@ clean-logs: ## Clean logs
 	rm -rf logs/**
 
 gen-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/cyto_ml*.rst
+	rm -f docs/cyto_dl*.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -Me -o docs/ cyto_ml **/tests/ cyto_ml/cli cyto_ml/config
+	sphinx-apidoc -Me -o docs/ cyto_dl **/tests/ cyto_dl/cli cyto_dl/config
 	touch docs/*.rst
 	$(MAKE) -C docs html
 

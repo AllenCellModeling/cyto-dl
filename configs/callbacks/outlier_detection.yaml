@@ -1,5 +1,5 @@
 outlier_detection:
-  _target_: cyto_ml.callbacks.outlier_detection.OutlierDetection
+  _target_: cyto_dl.callbacks.outlier_detection.OutlierDetection
   n_epochs: 2
   layer_names: ["bottleneck"]
   save_dir: ${paths.output_dir}

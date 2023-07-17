@@ -1,4 +1,4 @@
-_target_: cyto_ml.models.im2im.GAN
+_target_: cyto_dl.models.im2im.GAN
 
 save_images_every_n_epochs: 1
 save_dir: ${paths.output_dir}
@@ -19,7 +19,7 @@ backbone:
 task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 discriminator:
-  _target_: cyto_ml.nn.discriminators.MultiScaleDiscriminator
+  _target_: cyto_dl.nn.discriminators.MultiScaleDiscriminator
   n_scales: 1
   input_nc: 2 #conditioning image+real/fake image
   n_layers: 2
@@ -57,9 +57,9 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: cyto_ml.nn.GANHead
+      - _target_: cyto_dl.nn.GANHead
         gan_loss:
-          _target_: cyto_ml.nn.losses.Pix2PixHD
+          _target_: cyto_dl.nn.losses.Pix2PixHD
           scales: 1
         reconstruction_loss:
           _target_: torch.nn.MSELoss

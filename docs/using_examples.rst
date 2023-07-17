@@ -33,13 +33,13 @@ The model config specifies neural network architecture and optimization paramete
         For multi-task learning, it is important to increase the number of `out_channels` so that the task heads are not bottlenecked by the number of `out_channels` in the backbone.
     b. Modifying the `task_heads`
         `task_heads` can be modified by changing their loss function (suggested if you are changing e.g. from labelfree to segmentation), postprocessing (if you are changing from segmentation to omnipose), and `task-head` type (if you are changing from a segmentation network to a GAN).
-        `torch <https://pytorch.org/docs/stable/nn.html#loss-functions>`_ and `monai <https://docs.monai.io/en/stable/losses.html>`_ provide many loss functions. We provide basic [postprocessing](cyto_ml/models/utils/postprocessing) functions.
+        `torch <https://pytorch.org/docs/stable/nn.html#loss-functions>`_ and `monai <https://docs.monai.io/en/stable/losses.html>`_ provide many loss functions. We provide basic [postprocessing](cyto_dl/models/utils/postprocessing) functions.
         Additional `task_heads` can be added for multi-task learning. The name of each `task_head` should line up with the name of an image in your training batch. For example, if our batch looks like `{'raw':torch.Tensor, 'segmentation':torch.Tensor, 'distance':torch.Tensor}` and `raw` is our input image,
         we should provide `task_heads`  for `segmentation` and `distance` that predict a segmentation and distance map respectively.
 
 3. Memory considerations
 GPU memory is often a limiting factor in neural network training. Here, GPU memory use is primarily determined by combination of `model.patch_shape` x `data.batch_size`. As a rule of thumb, the `model.patch_shape` should be large enough to contain one instance of the entity that you are trying to predict.
-Once `model.patch_size` is established, `data.batch_size` can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the [Resized Transform](cyto_ml/image/transforms/resized.py) can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.
+Once `model.patch_size` is established, `data.batch_size` can be increased until GPU memory is exceeded. Alternatively, if 1 patch is too large for GPU memory, the [Resized Transform](cyto_dl/image/transforms/resized.py) can be used to downsample images for training. Model size can also be decreased to decrease GPU memory usage.
 
 +++++++++++++++
 Testing/Prediction

@@ -1,4 +1,4 @@
-_target_: cyto_ml.models.vae.ImageVAE
+_target_: cyto_dl.models.vae.ImageVAE
 
 latent_dim: 32
 spatial_dims:
@@ -25,7 +25,7 @@ reconstruction_loss:
 
 encoder_out_size: 64
 prior:
-  _target_: cyto_ml.models.vae.priors.IsotropicGaussianPrior
+  _target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior
   dimensionality: 32
 
 use_sigmoid: true
