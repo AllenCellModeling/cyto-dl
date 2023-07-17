@@ -1,0 +1,7 @@
+cyto\_dl.image.transforms.multiscale\_cropper module
+====================================================
+
+.. automodule:: cyto_dl.image.transforms.multiscale_cropper
+   :members:
+   :undoc-members:
+   :show-inheritance:

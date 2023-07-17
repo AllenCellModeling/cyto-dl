@@ -1,7 +1,0 @@
-cyto\_ml.models.vae.priors.joint\_prior module
-==============================================
-
-.. automodule:: cyto_ml.models.vae.priors.joint_prior
-   :members:
-   :undoc-members:
-   :show-inheritance:

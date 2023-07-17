@@ -1,0 +1,19 @@
+cyto\_dl.nn.head package
+========================
+
+.. automodule:: cyto_dl.nn.head
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.head.base_head
+   cyto_dl.nn.head.conv_proj_layer
+   cyto_dl.nn.head.gan_head
+   cyto_dl.nn.head.gan_head_superres
+   cyto_dl.nn.head.res_blocks_head

@@ -1,0 +1,27 @@
+cyto\_dl.nn package
+===================
+
+.. automodule:: cyto_dl.nn
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.discriminators
+   cyto_dl.nn.head
+   cyto_dl.nn.losses
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.hr_skip
+   cyto_dl.nn.mlp
+   cyto_dl.nn.spatial_transformer

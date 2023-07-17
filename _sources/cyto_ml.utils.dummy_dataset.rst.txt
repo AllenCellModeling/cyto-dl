@@ -1,7 +1,0 @@
-cyto\_ml.utils.dummy\_dataset module
-====================================
-
-.. automodule:: cyto_ml.utils.dummy_dataset
-   :members:
-   :undoc-members:
-   :show-inheritance:

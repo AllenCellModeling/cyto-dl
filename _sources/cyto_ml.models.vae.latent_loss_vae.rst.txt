@@ -1,7 +1,0 @@
-cyto\_ml.models.vae.latent\_loss\_vae module
-============================================
-
-.. automodule:: cyto_ml.models.vae.latent_loss_vae
-   :members:
-   :undoc-members:
-   :show-inheritance:

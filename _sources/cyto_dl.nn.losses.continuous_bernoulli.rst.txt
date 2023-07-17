@@ -1,0 +1,7 @@
+cyto\_dl.nn.losses.continuous\_bernoulli module
+===============================================
+
+.. automodule:: cyto_dl.nn.losses.continuous_bernoulli
+   :members:
+   :undoc-members:
+   :show-inheritance:

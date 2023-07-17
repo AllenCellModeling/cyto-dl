@@ -1,0 +1,7 @@
+cyto\_dl.models.im2im.utils.noise\_annealer module
+==================================================
+
+.. automodule:: cyto_dl.models.im2im.utils.noise_annealer
+   :members:
+   :undoc-members:
+   :show-inheritance:

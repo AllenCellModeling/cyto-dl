@@ -1,7 +1,0 @@
-cyto\_ml.nn.head.gan\_head\_superres module
-===========================================
-
-.. automodule:: cyto_ml.nn.head.gan_head_superres
-   :members:
-   :undoc-members:
-   :show-inheritance:

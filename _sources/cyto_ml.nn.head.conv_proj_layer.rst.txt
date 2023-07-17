@@ -1,7 +1,0 @@
-cyto\_ml.nn.head.conv\_proj\_layer module
-=========================================
-
-.. automodule:: cyto_ml.nn.head.conv_proj_layer
-   :members:
-   :undoc-members:
-   :show-inheritance:

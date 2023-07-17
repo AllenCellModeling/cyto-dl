@@ -1,7 +1,0 @@
-cyto\_ml.datamodules.folder module
-==================================
-
-.. automodule:: cyto_ml.datamodules.folder
-   :members:
-   :undoc-members:
-   :show-inheritance:

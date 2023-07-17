@@ -1,0 +1,7 @@
+cyto\_dl.datamodules.czi module
+===============================
+
+.. automodule:: cyto_dl.datamodules.czi
+   :members:
+   :undoc-members:
+   :show-inheritance:

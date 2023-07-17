@@ -1,0 +1,7 @@
+cyto\_dl.nn.head.res\_blocks\_head module
+=========================================
+
+.. automodule:: cyto_dl.nn.head.res_blocks_head
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+cyto\_dl.nn.losses.gaussian\_nll\_loss module
+=============================================
+
+.. automodule:: cyto_dl.nn.losses.gaussian_nll_loss
+   :members:
+   :undoc-members:
+   :show-inheritance:

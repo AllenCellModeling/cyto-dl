@@ -1,0 +1,7 @@
+cyto\_dl.nn.spatial\_transformer module
+=======================================
+
+.. automodule:: cyto_dl.nn.spatial_transformer
+   :members:
+   :undoc-members:
+   :show-inheritance:

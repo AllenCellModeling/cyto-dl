@@ -1,7 +1,0 @@
-cyto\_ml.utils.spharm.rotation module
-=====================================
-
-.. automodule:: cyto_ml.utils.spharm.rotation
-   :members:
-   :undoc-members:
-   :show-inheritance:

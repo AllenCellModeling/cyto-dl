@@ -1,7 +1,7 @@
-cyto_ml
+cyto_dl
 =======
 
 .. toctree::
    :maxdepth: 4
 
-   cyto_ml
+   cyto_dl

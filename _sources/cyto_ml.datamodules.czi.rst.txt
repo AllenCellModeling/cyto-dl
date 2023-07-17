@@ -1,7 +1,0 @@
-cyto\_ml.datamodules.czi module
-===============================
-
-.. automodule:: cyto_ml.datamodules.czi
-   :members:
-   :undoc-members:
-   :show-inheritance:

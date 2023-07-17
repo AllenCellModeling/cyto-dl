@@ -1,0 +1,7 @@
+cyto\_dl.nn.discriminators.n\_layer\_discriminator module
+=========================================================
+
+.. automodule:: cyto_dl.nn.discriminators.n_layer_discriminator
+   :members:
+   :undoc-members:
+   :show-inheritance:

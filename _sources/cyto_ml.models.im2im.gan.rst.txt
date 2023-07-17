@@ -1,7 +1,0 @@
-cyto\_ml.models.im2im.gan module
-================================
-
-.. automodule:: cyto_ml.models.im2im.gan
-   :members:
-   :undoc-members:
-   :show-inheritance:

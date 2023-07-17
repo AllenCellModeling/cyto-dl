@@ -1,7 +1,0 @@
-cyto\_ml.callbacks.latent\_walk module
-======================================
-
-.. automodule:: cyto_ml.callbacks.latent_walk
-   :members:
-   :undoc-members:
-   :show-inheritance:

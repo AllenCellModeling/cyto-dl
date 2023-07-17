@@ -1,7 +1,0 @@
-cyto\_ml.image.transforms.project module
-========================================
-
-.. automodule:: cyto_ml.image.transforms.project
-   :members:
-   :undoc-members:
-   :show-inheritance:

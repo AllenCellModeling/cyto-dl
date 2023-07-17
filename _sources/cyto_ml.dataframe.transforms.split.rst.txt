@@ -1,7 +1,0 @@
-cyto\_ml.dataframe.transforms.split module
-==========================================
-
-.. automodule:: cyto_ml.dataframe.transforms.split
-   :members:
-   :undoc-members:
-   :show-inheritance:

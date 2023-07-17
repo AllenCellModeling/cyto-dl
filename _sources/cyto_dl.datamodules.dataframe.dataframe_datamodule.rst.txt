@@ -1,0 +1,7 @@
+cyto\_dl.datamodules.dataframe.dataframe\_datamodule module
+===========================================================
+
+.. automodule:: cyto_dl.datamodules.dataframe.dataframe_datamodule
+   :members:
+   :undoc-members:
+   :show-inheritance:

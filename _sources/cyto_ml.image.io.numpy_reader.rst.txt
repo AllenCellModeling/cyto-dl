@@ -1,7 +1,0 @@
-cyto\_ml.image.io.numpy\_reader module
-======================================
-
-.. automodule:: cyto_ml.image.io.numpy_reader
-   :members:
-   :undoc-members:
-   :show-inheritance:

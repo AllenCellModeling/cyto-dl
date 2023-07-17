@@ -1,7 +1,0 @@
-cyto\_ml.models.vae.so2\_image\_vae.utils module
-================================================
-
-.. automodule:: cyto_ml.models.vae.so2_image_vae.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,7 +1,0 @@
-cyto\_ml.image.transforms.save module
-=====================================
-
-.. automodule:: cyto_ml.image.transforms.save
-   :members:
-   :undoc-members:
-   :show-inheritance:

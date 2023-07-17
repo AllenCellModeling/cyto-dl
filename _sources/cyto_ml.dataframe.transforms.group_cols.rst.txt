@@ -1,7 +1,0 @@
-cyto\_ml.dataframe.transforms.group\_cols module
-================================================
-
-.. automodule:: cyto_ml.dataframe.transforms.group_cols
-   :members:
-   :undoc-members:
-   :show-inheritance:

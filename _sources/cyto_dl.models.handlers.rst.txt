@@ -1,0 +1,17 @@
+cyto\_dl.models.handlers package
+================================
+
+.. automodule:: cyto_dl.models.handlers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.models.handlers.base_handler
+   cyto_dl.models.handlers.image_handler
+   cyto_dl.models.handlers.load_image_patch

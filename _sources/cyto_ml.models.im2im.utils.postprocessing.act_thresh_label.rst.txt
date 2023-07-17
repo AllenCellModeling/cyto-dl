@@ -1,7 +1,0 @@
-cyto\_ml.models.im2im.utils.postprocessing.act\_thresh\_label module
-====================================================================
-
-.. automodule:: cyto_ml.models.im2im.utils.postprocessing.act_thresh_label
-   :members:
-   :undoc-members:
-   :show-inheritance:

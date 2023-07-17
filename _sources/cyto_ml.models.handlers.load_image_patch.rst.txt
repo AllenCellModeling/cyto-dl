@@ -1,7 +1,0 @@
-cyto\_ml.models.handlers.load\_image\_patch module
-==================================================
-
-.. automodule:: cyto_ml.models.handlers.load_image_patch
-   :members:
-   :undoc-members:
-   :show-inheritance:

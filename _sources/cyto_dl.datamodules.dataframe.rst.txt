@@ -1,0 +1,17 @@
+cyto\_dl.datamodules.dataframe package
+======================================
+
+.. automodule:: cyto_dl.datamodules.dataframe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.datamodules.dataframe.dataframe_datamodule
+   cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule
+   cyto_dl.datamodules.dataframe.utils

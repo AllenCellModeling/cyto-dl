@@ -1,0 +1,7 @@
+cyto\_dl.models.vae.tabular\_vae module
+=======================================
+
+.. automodule:: cyto_dl.models.vae.tabular_vae
+   :members:
+   :undoc-members:
+   :show-inheritance:

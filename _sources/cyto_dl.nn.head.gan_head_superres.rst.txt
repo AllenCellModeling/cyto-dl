@@ -1,0 +1,7 @@
+cyto\_dl.nn.head.gan\_head\_superres module
+===========================================
+
+.. automodule:: cyto_dl.nn.head.gan_head_superres
+   :members:
+   :undoc-members:
+   :show-inheritance:

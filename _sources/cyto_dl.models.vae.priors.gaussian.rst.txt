@@ -1,0 +1,7 @@
+cyto\_dl.models.vae.priors.gaussian module
+==========================================
+
+.. automodule:: cyto_dl.models.vae.priors.gaussian
+   :members:
+   :undoc-members:
+   :show-inheritance:

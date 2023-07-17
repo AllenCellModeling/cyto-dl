@@ -1,0 +1,7 @@
+cyto\_dl.nn.head.gan\_head module
+=================================
+
+.. automodule:: cyto_dl.nn.head.gan_head
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+cyto\_dl.models.vae.priors.identity\_prior module
+=================================================
+
+.. automodule:: cyto_dl.models.vae.priors.identity_prior
+   :members:
+   :undoc-members:
+   :show-inheritance:

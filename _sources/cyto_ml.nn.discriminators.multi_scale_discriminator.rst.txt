@@ -1,7 +1,0 @@
-cyto\_ml.nn.discriminators.multi\_scale\_discriminator module
-=============================================================
-
-.. automodule:: cyto_ml.nn.discriminators.multi_scale_discriminator
-   :members:
-   :undoc-members:
-   :show-inheritance:

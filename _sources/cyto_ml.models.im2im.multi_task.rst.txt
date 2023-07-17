@@ -1,7 +1,0 @@
-cyto\_ml.models.im2im.multi\_task module
-========================================
-
-.. automodule:: cyto_ml.models.im2im.multi_task
-   :members:
-   :undoc-members:
-   :show-inheritance:
