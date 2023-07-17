@@ -23,7 +23,7 @@ data:
   #  _aux:
   #    background: 15
 
-  batch_size: 128
+  batch_size: 64
   cache_dir: /storage/cache
   transforms:
     - _target_: aics_im2im.dataframe.transforms.GroupCols
@@ -59,10 +59,10 @@ data:
     #      range_y: 3.14159
     #      range_z: 3.14159
     #      prob: 1.0
-    #    - _target_: aics_im2im.image.transforms.O3Maskd
-    #      keys: [image]
-    #      diameter: 33
-    #      background: 2
+    - _target_: aics_im2im.image.transforms.O3Maskd
+      keys: [image]
+      diameter: 33
+      background: 2
     - _target_: monai.transforms.ToTensord
       keys: [image]
       track_meta: false
