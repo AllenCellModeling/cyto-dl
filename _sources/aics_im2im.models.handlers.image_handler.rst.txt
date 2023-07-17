@@ -1,7 +1,0 @@
-aics\_im2im.models.handlers.image\_handler module
-=================================================
-
-.. automodule:: aics_im2im.models.handlers.image_handler
-   :members:
-   :undoc-members:
-   :show-inheritance:

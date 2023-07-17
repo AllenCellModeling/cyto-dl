@@ -1,0 +1,18 @@
+cyto\_ml.dataframe.transforms package
+=====================================
+
+.. automodule:: cyto_ml.dataframe.transforms
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_ml.dataframe.transforms.filter
+   cyto_ml.dataframe.transforms.group_cols
+   cyto_ml.dataframe.transforms.misc
+   cyto_ml.dataframe.transforms.split

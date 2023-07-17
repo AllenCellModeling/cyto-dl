@@ -1,0 +1,7 @@
+cyto\_ml.nn.mlp module
+======================
+
+.. automodule:: cyto_ml.nn.mlp
+   :members:
+   :undoc-members:
+   :show-inheritance:

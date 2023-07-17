@@ -1,7 +1,0 @@
-aics\_im2im.models.handlers.load\_image\_patch module
-=====================================================
-
-.. automodule:: aics_im2im.models.handlers.load_image_patch
-   :members:
-   :undoc-members:
-   :show-inheritance:

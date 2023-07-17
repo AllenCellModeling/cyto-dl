@@ -1,0 +1,16 @@
+cyto\_ml.nn.discriminators package
+==================================
+
+.. automodule:: cyto_ml.nn.discriminators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_ml.nn.discriminators.multi_scale_discriminator
+   cyto_ml.nn.discriminators.n_layer_discriminator

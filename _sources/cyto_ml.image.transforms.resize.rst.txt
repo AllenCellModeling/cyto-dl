@@ -1,0 +1,7 @@
+cyto\_ml.image.transforms.resize module
+=======================================
+
+.. automodule:: cyto_ml.image.transforms.resize
+   :members:
+   :undoc-members:
+   :show-inheritance:

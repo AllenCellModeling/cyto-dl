@@ -1,7 +1,0 @@
-aics\_im2im.image.io.numpy\_reader module
-=========================================
-
-.. automodule:: aics_im2im.image.io.numpy_reader
-   :members:
-   :undoc-members:
-   :show-inheritance:

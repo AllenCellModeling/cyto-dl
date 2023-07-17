@@ -1,7 +1,0 @@
-aics\_im2im.datamodules.smartcache module
-=========================================
-
-.. automodule:: aics_im2im.datamodules.smartcache
-   :members:
-   :undoc-members:
-   :show-inheritance:

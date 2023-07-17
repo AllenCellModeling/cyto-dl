@@ -1,0 +1,7 @@
+cyto\_ml.datamodules.torchvision module
+=======================================
+
+.. automodule:: cyto_ml.datamodules.torchvision
+   :members:
+   :undoc-members:
+   :show-inheritance:

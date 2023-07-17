@@ -1,0 +1,7 @@
+cyto\_ml.callbacks.outlier\_detection module
+============================================
+
+.. automodule:: cyto_ml.callbacks.outlier_detection
+   :members:
+   :undoc-members:
+   :show-inheritance:

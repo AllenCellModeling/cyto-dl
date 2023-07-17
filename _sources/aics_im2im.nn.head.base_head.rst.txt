@@ -1,7 +1,0 @@
-aics\_im2im.nn.head.base\_head module
-=====================================
-
-.. automodule:: aics_im2im.nn.head.base_head
-   :members:
-   :undoc-members:
-   :show-inheritance:

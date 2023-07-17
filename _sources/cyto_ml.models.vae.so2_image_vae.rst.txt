@@ -1,0 +1,17 @@
+cyto\_ml.models.vae.so2\_image\_vae package
+===========================================
+
+.. automodule:: cyto_ml.models.vae.so2_image_vae
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_ml.models.vae.so2_image_vae.so2_encoder
+   cyto_ml.models.vae.so2_image_vae.so2_image_vae
+   cyto_ml.models.vae.so2_image_vae.utils

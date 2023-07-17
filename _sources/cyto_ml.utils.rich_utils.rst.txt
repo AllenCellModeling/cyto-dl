@@ -1,0 +1,7 @@
+cyto\_ml.utils.rich\_utils module
+=================================
+
+.. automodule:: cyto_ml.utils.rich_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

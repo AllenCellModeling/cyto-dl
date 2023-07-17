@@ -5,8 +5,8 @@ Installation
 ============
 
 ``
-git clone https://github.com/AllenCellModeling/aics-im2im
-cd aics-im2im
+git clone https://github.com/AllenCellModeling/cyto-ml
+cd cyto-ml
 
 # [OPTIONAL] create conda environment
 conda create -n myenv python=3.9

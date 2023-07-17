@@ -1,7 +1,7 @@
-aics_im2im
-==========
+cyto_ml
+=======
 
 .. toctree::
    :maxdepth: 4
 
-   aics_im2im
+   cyto_ml

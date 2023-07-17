@@ -1,0 +1,7 @@
+cyto\_ml.image.transforms.bright\_sampler module
+================================================
+
+.. automodule:: cyto_ml.image.transforms.bright_sampler
+   :members:
+   :undoc-members:
+   :show-inheritance:

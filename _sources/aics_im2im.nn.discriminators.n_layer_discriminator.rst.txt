@@ -1,7 +1,0 @@
-aics\_im2im.nn.discriminators.n\_layer\_discriminator module
-============================================================
-
-.. automodule:: aics_im2im.nn.discriminators.n_layer_discriminator
-   :members:
-   :undoc-members:
-   :show-inheritance:

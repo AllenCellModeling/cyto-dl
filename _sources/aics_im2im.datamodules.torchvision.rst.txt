@@ -1,7 +1,0 @@
-aics\_im2im.datamodules.torchvision module
-==========================================
-
-.. automodule:: aics_im2im.datamodules.torchvision
-   :members:
-   :undoc-members:
-   :show-inheritance:

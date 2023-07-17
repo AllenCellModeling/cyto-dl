@@ -1,0 +1,7 @@
+cyto\_ml.models.vae.image\_vae module
+=====================================
+
+.. automodule:: cyto_ml.models.vae.image_vae
+   :members:
+   :undoc-members:
+   :show-inheritance:

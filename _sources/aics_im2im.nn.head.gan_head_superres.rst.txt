@@ -1,7 +1,0 @@
-aics\_im2im.nn.head.gan\_head\_superres module
-==============================================
-
-.. automodule:: aics_im2im.nn.head.gan_head_superres
-   :members:
-   :undoc-members:
-   :show-inheritance:

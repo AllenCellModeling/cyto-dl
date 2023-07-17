@@ -1,0 +1,28 @@
+cyto\_ml.models.vae package
+===========================
+
+.. automodule:: cyto_ml.models.vae
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_ml.models.vae.o2_spharm_vae
+   cyto_ml.models.vae.priors
+   cyto_ml.models.vae.so2_image_vae
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_ml.models.vae.base_vae
+   cyto_ml.models.vae.image_vae
+   cyto_ml.models.vae.latent_loss_vae
+   cyto_ml.models.vae.tabular_vae
