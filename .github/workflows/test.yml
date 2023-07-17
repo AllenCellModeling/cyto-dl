@@ -7,7 +7,7 @@ on:
 
 # Cancel actions when new commits are pushed to PR
 concurrency:
-  group: ${{ github.head_ref }}
+  group: ${{ github.head_ref | "manual" }}
   cancel-in-progress: true
 
 jobs:
