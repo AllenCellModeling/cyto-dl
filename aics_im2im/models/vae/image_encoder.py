@@ -1,4 +1,4 @@
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence, Tuple, Union
 
 import torch
 from escnn import gspaces, nn
@@ -23,6 +23,7 @@ class ImageEncoder(torch.nn.Module):
         padding: Optional[Union[int, Sequence[int]]] = None,
         group: str = "so2",
         first_conv_padding_mode: str = "replicate",
+        num_res_units: int = 2,
     ):
         super().__init__()
 
@@ -41,6 +42,7 @@ class ImageEncoder(torch.nn.Module):
         self.bias = bias
         self.out_dim = out_dim
         self.group = group
+        self.num_res_units = num_res_units
 
         if group not in ("so2", "so3", None):
             raise ValueError(f"`gspace` should be one of ('so2', 'so3', None). Got {group!r}")
@@ -80,11 +82,61 @@ class ImageEncoder(torch.nn.Module):
         else:
             n_out_vectors = 0
 
-        _, _, out_type = self.get_fields(out_dim, n_out_vectors)
-
-        blocks.append(self.make_conv(blocks[-1].out_type, out_type, s=1, k=1, p=0, b=False))
+        blocks.append(
+            self.make_block(
+                blocks[-1].out_type,
+                out_channels=out_dim,
+                stride=1,
+                kernel_size=1,
+                padding=0,
+                batch_norm=False,
+                activation=False,
+                out_vector_channels=n_out_vectors,
+            )
+        )
 
         self.net = nn.SequentialModule(*blocks)
+
+    def make_block(
+        self,
+        in_type,
+        out_channels,
+        stride,
+        kernel_size,
+        padding,
+        padding_mode="zeros",
+        bias=True,
+        batch_norm=True,
+        activation=True,
+        last_conv=False,
+        out_vector_channels=None,
+    ):
+        if self.num_res_units > 0 and not last_conv:
+            return ResBlock(
+                spatial_dims=self.spatial_dims,
+                in_type=in_type,
+                out_channels=out_channels,
+                stride=stride,
+                kernel_size=kernel_size,
+                padding=padding,
+                padding_mode=padding_mode,
+                subunits=self.num_res_units,
+                bias=bias,
+            )
+
+        return Convolution(
+            spatial_dims=self.spatial_dims,
+            in_type=in_type,
+            out_channels=out_channels,
+            stride=stride,
+            kernel_size=kernel_size,
+            padding=padding,
+            padding_mode=padding_mode,
+            bias=bias,
+            batch_norm=batch_norm and not last_conv,
+            activation=activation and not last_conv,
+            out_vector_channels=out_vector_channels,
+        )
 
     def forward(self, x):
         x = nn.GeometricTensor(x, self.in_type)
@@ -113,63 +165,162 @@ class ImageEncoder(torch.nn.Module):
             return y_embedding, y_pose
         return y_embedding
 
-    def get_fields(self, n_channels, n_out_channels=None):
-        if n_out_channels is None:
-            n_out_channels = n_channels
 
-        scalar_fields = nn.FieldType(self.gspace, n_channels * [self.gspace.trivial_repr])
+class ResBlock(nn.EquivariantModule):
+    def __init__(
+        self,
+        spatial_dims,
+        in_type,
+        out_channels,
+        stride,
+        kernel_size,
+        padding=None,
+        padding_mode="zeros",
+        subunits=2,
+        bias=True,
+    ):
+        super().__init__()
 
-        if self.group in ("so2", "so3"):
-            vector_fields = nn.FieldType(self.gspace, n_out_channels * [self.gspace.irrep(1)])
-            field_type = scalar_fields + vector_fields
+        self.spatial_dims = spatial_dims
+        self.in_type = in_type
+
+        if padding is None:
+            padding = same_padding(kernel_size)
+
+        subunits = max(1, subunits)
+        conv = []
+
+        prev_out_type = in_type
+        sstride = stride
+        spadding = padding
+        for su in range(subunits):
+            unit = Convolution(
+                spatial_dims=spatial_dims,
+                in_type=prev_out_type,
+                out_channels=out_channels,
+                stride=sstride,
+                kernel_size=kernel_size,
+                bias=bias,
+                padding=spadding,
+                padding_mode=padding_mode,
+                batch_norm=True,
+                activation=True,
+            )
+
+            sstride = 1
+            spadding = same_padding(kernel_size)
+            conv.append(unit)
+            prev_out_type = unit.out_type
+        self.conv = nn.SequentialModule(*conv)
+
+        if stride != 1 or in_type != self.conv.out_type:
+            rkernel_size = kernel_size
+            rpadding = padding
+
+            # if only adapting number of channels a 1x1 kernel is used with no padding
+            if stride == 1:
+                rkernel_size = 1
+                rpadding = 0
+
+            self.residual = Convolution(
+                spatial_dims=spatial_dims,
+                in_type=in_type,
+                out_channels=out_channels,
+                stride=stride,
+                kernel_size=rkernel_size,
+                bias=bias,
+                padding=rpadding,
+                padding_mode=padding_mode,
+                batch_norm=False,
+                activation=False,
+            )
+        self.out_type = self.conv.out_type
+
+    def forward(self, x):
+        return self.residual(x) + self.conv(x)
+
+    def evaluate_output_shape(self, input_shape: Tuple[int, ...]) -> Tuple[int, ...]:
+        if self.in_type != self.out_type:
+            return input_shape[:1] + (self.out_type.size,) + input_shape[2:]
+        return input_shape
+
+
+class Convolution(nn.EquivariantModule):
+    def __init__(
+        self,
+        spatial_dims,
+        in_type,
+        out_channels,
+        stride,
+        kernel_size,
+        bias=None,
+        padding=None,
+        padding_mode="zeros",
+        batch_norm=True,
+        activation=True,
+        out_vector_channels=None,
+    ):
+        super().__init__()
+
+        self.spatial_dims = spatial_dims
+        self.in_type = in_type
+        gspace = in_type.gspace
+        group = in_type.gspace.fibergroup
+        out_vector_channels = (
+            out_vector_channels if out_vector_channels is not None else out_channels
+        )
+
+        scalar_fields = nn.FieldType(gspace, out_channels * [gspace.trivial_repr])
+        if type(group).__name__ in ("SO2", "SO3"):
+            vector_fields = nn.FieldType(gspace, out_vector_channels * [gspace.irrep(1)])
+            out_type = scalar_fields + vector_fields
         else:
             vector_fields = []
-            field_type = scalar_fields
+            out_type = scalar_fields
 
-        return scalar_fields, vector_fields, field_type
-
-    def make_conv(self, in_type, out_type, s, k, b=None, p=None, p_mode="zeros"):
-        p = p if p is not None else same_padding(k)
-        b = b if b is not None else self.bias
-
-        conv_class = nn.R2Conv if self.spatial_dims == 2 else nn.R3Conv
+        conv_class = nn.R3Conv if spatial_dims == 3 else nn.R2Conv
         conv = conv_class(
             in_type,
             out_type,
-            kernel_size=k,
+            kernel_size=kernel_size,
             stride=1,
-            bias=b,
-            padding=p,
-            padding_mode=p_mode,
+            bias=bias,
+            padding=padding,
+            padding_mode=padding_mode,
         )
 
-        return conv
-
-    def make_block(
-        self, in_type, out_channels, stride, kernel_size, padding=None, padding_mode="zeros"
-    ):
-        out_scalar_fields, out_vector_fields, out_type = self.get_fields(out_channels)
-        batch_norm_cls = nn.IIDBatchNorm3d if self.spatial_dims == 3 else nn.IIDBatchNorm2d
-
-        conv = self.make_conv(
-            in_type, out_type, stride, kernel_size, p=padding, p_mode=padding_mode
-        )
         if stride > 1:
             pool_class = (
                 nn.PointwiseAvgPoolAntialiased2D
                 if self.spatial_dims == 2
                 else nn.PointwiseAvgPoolAntialiased3D
             )
-            pool = pool_class(conv.out_type, sigma=0.66, stride=stride)
+            pool = pool_class(conv.out_type, sigma=0.33, stride=stride)
         else:
             pool = nn.IdentityModule(conv.out_type)
 
-        return nn.SequentialModule(
-            conv,
-            pool,
-            get_batch_norm(out_scalar_fields, out_vector_fields, batch_norm_cls),
-            get_non_linearity(out_scalar_fields, out_vector_fields),
-        )
+        if spatial_dims == 3 and batch_norm:
+            batch_norm = get_batch_norm(scalar_fields, vector_fields, nn.IIDBatchNorm3d)
+        elif spatial_dims == 2 and batch_norm:
+            batch_norm = get_batch_norm(scalar_fields, vector_fields, nn.IIDBatchNorm2d)
+        else:
+            batch_norm = nn.IdentityModule(pool.out_type)
+
+        if activation:
+            activation = get_non_linearity(scalar_fields, vector_fields)
+        else:
+            activation = nn.IdentityModule(pool.out_type)
+
+        self.net = nn.SequentialModule(conv, pool, batch_norm, activation)
+        self.out_type = self.net.out_type
+
+    def forward(self, x):
+        return self.net(x)
+
+    def evaluate_output_shape(self, input_shape: Tuple[int, ...]) -> Tuple[int, ...]:
+        if self.in_type != self.out_type:
+            return input_shape[:1] + (self.out_type.size,) + input_shape[2:]
+        return input_shape
 
 
 def get_non_linearity(scalar_fields, vector_fields):

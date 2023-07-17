@@ -4,8 +4,7 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from monai.networks.blocks import Convolution, SubpixelUpsample, UpSample
+from monai.networks.blocks import Convolution, ResidualUnit, UpSample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
 from monai.networks.layers.simplelayers import Flatten, Reshape
@@ -57,6 +56,8 @@ class ImageVAE(BaseVAE):
         mask_output: bool = False,
         clip_min: Optional[int] = None,
         clip_max: Optional[int] = None,
+        num_res_units: int = 2,
+        up_kernel_size: int = 3,
         first_conv_padding_mode: str = "replicate",
         encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
@@ -64,7 +65,14 @@ class ImageVAE(BaseVAE):
     ):
         in_channels, *in_shape = in_shape
 
+        self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
+        self.up_kernel_size = up_kernel_size
+        self.num_res_units = num_res_units
+        self.act = act
+        self.norm = norm
+        self.bias = bias
+        self.dropout = dropout
 
         self.mask_input = mask_input
         self.mask_output = mask_output
@@ -119,7 +127,22 @@ class ImageVAE(BaseVAE):
 
             size = None if not last_block else in_shape
 
-            pre_conv = Convolution(
+            upsample = UpSample(
+                spatial_dims=spatial_dims,
+                in_channels=c_in,
+                out_channels=c_in,
+                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
+                size=size,
+                kernel_size=3,
+                pre_conv=None,
+                # choices inspired by this article:
+                # https://distill.pub/2016/deconv-checkerboard/
+                mode="nontrainable",
+                interp_mode="nearest",
+                align_corners=None,
+            )
+
+            res = ResidualUnit(
                 spatial_dims=spatial_dims,
                 in_channels=c_in,
                 out_channels=c_out,
@@ -128,31 +151,23 @@ class ImageVAE(BaseVAE):
                 act=act,
                 norm=norm,
                 dropout=dropout,
+                subunits=1,
+                padding=1,
             )
-            upsample = UpSample(
-                spatial_dims=spatial_dims,
-                in_channels=c_out,
-                out_channels=c_out,
-                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
-                size=size,
-                kernel_size=3,
-                pre_conv=pre_conv,
-                # choices inspired by this article:
-                # https://distill.pub/2016/deconv-checkerboard/
-                mode="nontrainable",
-                interp_mode="nearest",
-                align_corners=None,
-            )
-            decode_blocks.append(upsample)
+
+            decode_blocks.append(nn.Sequential(upsample, res))
 
         first_upsample = nn.Sequential(
             nn.Linear(latent_dim, _channels[0] * int(np.product(self.final_size))),
             Reshape(_channels[0], *self.final_size),
         )
 
+        # decoder = self._get_decode_module(_channels[0], _channels, _strides)
+
         decoder = nn.Sequential(
             first_upsample,
             *decode_blocks,
+            # decoder,
             last_act if last_act is not None else nn.Identity(),
             _Scale(last_scale)
         )
@@ -176,6 +191,7 @@ class ImageVAE(BaseVAE):
             padding=encoder_padding,
             group=group,
             first_conv_padding_mode=first_conv_padding_mode,
+            num_res_units=num_res_units,
         )
 
         if group is not None:
@@ -226,3 +242,61 @@ class ImageVAE(BaseVAE):
             return {self.hparams.x_label: xhat, "canonical": base_xhat}
 
         return {self.hparams.x_label: xhat}
+
+    # from MONAI's AutoEncoder class
+    def _get_decode_module(
+        self, in_channels: int, channels: Sequence[int], strides: Sequence[int]
+    ):
+        """Returns the decode part of the network by building up a sequence of layers returned by
+        `_get_decode_layer`."""
+        decode = nn.Sequential()
+        layer_channels = in_channels
+
+        for i, (c, s) in enumerate(zip(channels, strides)):
+            layer = self._get_decode_layer(layer_channels, c, s, i == (len(strides) - 1))
+            decode.add_module("decode_%i" % i, layer)
+            layer_channels = c
+
+        return decode
+
+    # from MONAI's AutoEncoder class
+    def _get_decode_layer(
+        self, in_channels: int, out_channels: int, strides: int, is_last: bool
+    ) -> nn.Sequential:
+        """Returns a single layer of the decoder part of the network."""
+        decode = nn.Sequential()
+
+        conv = Convolution(
+            spatial_dims=self.spatial_dims,
+            in_channels=in_channels,
+            out_channels=out_channels,
+            strides=strides,
+            kernel_size=self.up_kernel_size,
+            act=self.act,
+            norm=self.norm,
+            dropout=self.dropout,
+            bias=self.bias,
+            conv_only=is_last and self.num_res_units == 0,
+            is_transposed=True,
+        )
+
+        decode.add_module("conv", conv)
+
+        if self.num_res_units > 0:
+            ru = ResidualUnit(
+                spatial_dims=self.spatial_dims,
+                in_channels=out_channels,
+                out_channels=out_channels,
+                strides=1,
+                kernel_size=self.up_kernel_size,
+                subunits=1,
+                act=self.act,
+                norm=self.norm,
+                dropout=self.dropout,
+                bias=self.bias,
+                last_conv_only=is_last,
+            )
+
+            decode.add_module("resunit", ru)
+
+        return decode
