@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.DataframeDatamodule
+_target_: cyto_ml.datamodules.DataframeDatamodule
 _convert_: all
 
 path: /allen/aics/modeling/gui.pires/data/ascb_2022_spharm/...
@@ -7,7 +7,7 @@ split_column: split
 batch_size: 16
 num_workers: 1
 transforms:
-  _target_: aics_im2im.dataframe.transforms.GroupCols
+  _target_: cyto_ml.dataframe.transforms.GroupCols
   groups:
     shcoeff:
       columns:

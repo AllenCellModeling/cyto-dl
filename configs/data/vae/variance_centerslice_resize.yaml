@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.DataframeDatamodule
+_target_: cyto_ml.datamodules.DataframeDatamodule
 _convert_: all
 
 # path: s3://allencell-cytodata-variance-data/processed/hackathon_manifest_09292022.parquet
@@ -9,7 +9,7 @@ batch_size: 64
 num_workers: 20
 
 transforms:
-  - _target_: aics_im2im.dataframe.transforms.GroupCols
+  - _target_: cyto_ml.dataframe.transforms.GroupCols
     groups:
       image: center_slice
       cell_id: CellId
@@ -19,7 +19,7 @@ transforms:
   - _target_: monai.transforms.LoadImaged
     keys: [image]
     reader:
-      _target_: aics_im2im.image.io.MonaiBioReader
+      _target_: cyto_ml.image.io.MonaiBioReader
       dimension_order_out: "CYX"
       C: 0
     expanduser: false

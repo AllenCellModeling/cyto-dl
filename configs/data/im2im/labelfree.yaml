@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+_target_: cyto_ml.datamodules.dataframe.DataframeDatamodule
 
 path:
 cache_dir:
@@ -20,19 +20,19 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 4
       # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_ml.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
@@ -43,7 +43,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${data.columns}
         channel_wise: True
-      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+      - _target_: cyto_ml.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
@@ -71,19 +71,19 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_ml.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
@@ -101,7 +101,7 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
       - _target_: monai.transforms.AddChanneld
@@ -119,7 +119,7 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
         expand_user: False
@@ -127,12 +127,12 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_ml.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_ml.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
@@ -143,7 +143,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${data.columns}
         channel_wise: True
-      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+      - _target_: cyto_ml.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1

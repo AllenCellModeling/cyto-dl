@@ -29,7 +29,7 @@ data:
   train_dataloaders:
     _target_: torch.utils.data.DataLoader
     dataset:
-      _target_: aics_im2im.utils.DummyDataset
+      _target_: cyto_ml.utils.DummyDataset
       num_samples: 1000
       image: [1, 32, 96, 96]
     num_workers: 0
@@ -37,7 +37,7 @@ data:
   val_dataloaders:
     _target_: torch.utils.data.DataLoader
     dataset:
-      _target_: aics_im2im.utils.DummyDataset
+      _target_: cyto_ml.utils.DummyDataset
       num_samples: 1000
       image: [1, 32, 96, 96]
     num_workers: 0

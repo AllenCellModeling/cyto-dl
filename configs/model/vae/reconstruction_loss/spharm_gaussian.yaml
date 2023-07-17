@@ -1,4 +1,4 @@
 shcoeff:
-  _target_: aics_im2im.nn.losses.GaussianNLLLoss
+  _target_: cyto_ml.nn.losses.GaussianNLLLoss
   var: [0.1]
   reduction: none

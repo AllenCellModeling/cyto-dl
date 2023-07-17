@@ -1,6 +1,6 @@
 <div align="center">
 
-# aics-im2im
+# cyto-ml
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
 <a href="https://pytorchlightning.ai/"><img alt="Lightning" src="https://img.shields.io/badge/-Lightning-792ee5?logo=pytorchlightning&logoColor=white"></a>
@@ -20,7 +20,7 @@
 
 In an effort to spend more work on methods development, simplify maintenance,
 and create a unified framework for all of AICS's deep learning tools, we have
-created `aics-im2im`. As the underlying framework is based on [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template), we recommend that you familiarize yourself with their (short) docs for detailed instructions on running training, overrides, etc.
+created `cyto-ml`. As the underlying framework is based on [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template), we recommend that you familiarize yourself with their (short) docs for detailed instructions on running training, overrides, etc.
 
 ## How to run
 
@@ -28,8 +28,8 @@ Install dependencies
 
 ```bash
 # clone project
-git clone https://github.com/AllenCellModeling/aics-im2im
-cd aics-im2im
+git clone https://github.com/AllenCellModeling/cyto-ml
+cd cyto-ml
 
 # [OPTIONAL] create conda environment
 conda create -n myenv python=3.9
@@ -51,15 +51,15 @@ Train model with chosen experiment configuration from [configs/experiment/](conf
 
 ```bash
 #gpu
-python aics_im2im/train.py experiment=im2im/experiment_name.yaml trainer=gpu
+python cyto_ml/train.py experiment=im2im/experiment_name.yaml trainer=gpu
 
 #cpu
-python aics_im2im/train.py experiment=im2im/experiment_name.yaml trainer=cpu
+python cyto_ml/train.py experiment=im2im/experiment_name.yaml trainer=cpu
 
 ```
 
 You can override any parameter from command line like this
 
 ```bash
-python aics_im2im/train.py trainer.max_epochs=20 datamodule.batch_size=64
+python cyto_ml/train.py trainer.max_epochs=20 datamodule.batch_size=64
 ```

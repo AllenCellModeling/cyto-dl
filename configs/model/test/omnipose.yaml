@@ -8,14 +8,14 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseHead
+      - _target_: cyto_ml.nn.BaseHead
         loss:
-          _target_: aics_im2im.models.im2im.utils.omnipose.OmniposeLoss
+          _target_: cyto_ml.models.im2im.utils.omnipose.OmniposeLoss
           dim: 3
         postprocess:
           input:
-            _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+            _target_: cyto_ml.models.im2im.utils.postprocessing.detach
             _partial_: True
           prediction:
-            _target_: aics_im2im.models.im2im.utils.postprocessing.detach
+            _target_: cyto_ml.models.im2im.utils.postprocessing.detach
             _partial_: True
