@@ -1,4 +1,4 @@
-name: dispatch private workflow
+name: dispatch public workflow
 
 on:
   pull_request:
