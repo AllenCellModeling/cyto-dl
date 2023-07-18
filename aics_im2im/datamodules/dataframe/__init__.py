@@ -1,3 +1,2 @@
 from .dataframe_datamodule import DataframeDatamodule
-from .geometricshapes_datamodule import GeometricShapesDataModule
 from .grouped_dataframe_datamodule import GroupedDataframeDatamodule
