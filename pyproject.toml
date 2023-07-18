@@ -55,7 +55,7 @@ equiv = [
 spharm = [
     "vtk~=9.2",
     "aicscytoparam~=0.1",
-    "aicsshparam~=0.1"
+    "pyshtools~=4.9",
 ]
 omnipose = [
     "edt>=0.56.4",

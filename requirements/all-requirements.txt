@@ -3,7 +3,7 @@
 
 aicscytoparam==0.1.9
 aicsimageio==4.11.0
-aicsshparam==0.1.6
+aicsshparam==0.1.7
 aiobotocore==2.4.2
 aiohttp==3.8.4
 aioitertools==0.11.0
@@ -52,7 +52,7 @@ edt==2.3.1
 einops==0.6.1
 elementpath==4.1.4
 entrypoints==0.4
-escnn==1.0.10
+escnn==1.0.11
 exceptiongroup==1.1.2
 fastapi==0.100.0
 fasteners==0.18
@@ -127,7 +127,7 @@ nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
 oauthlib==3.2.2
-ome-types==0.3.4
+ome-types==0.4.0
 ome-zarr==0.8.0
 omegaconf==2.3.0
 omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@ce2e9aa
@@ -143,7 +143,6 @@ partd==1.4.0
 pbr==5.11.1
 peakdetect==1.2
 pillow==10.0.0
-pint==0.21.1
 platformdirs==3.9.1
 pooch==1.7.0
 PrettyTable==3.8.0
@@ -152,7 +151,6 @@ psutil==5.9.5
 py3nj==0.1.2
 pyarrow==10.0.1
 pydantic==1.10.11
-pydantic==1.10.11
 pyerfa==2.0.0.3
 pygments==2.15.1
 pyjwt==2.7.0
@@ -160,7 +158,7 @@ pymanopt==2.1.1
 pynvml==11.5.0
 pyparsing==3.0.9
 pyperclip==1.8.2
-pyshtools==4.9.1
+pyshtools==4.10.3
 python-dateutil==2.8.2
 python-editor==1.0.4
 python-multipart==0.0.6
@@ -168,7 +166,7 @@ pytorch-lightning==2.0.5
 pytorch-ranger==0.1.1
 pytz==2023.3
 PyWavelets==1.4.1
-PyYAML==6.0
+PyYAML==6.0.1
 querystring-parser==1.2.4
 readchar==4.0.5
 requests==2.31.0
@@ -211,7 +209,7 @@ triton==2.0.0
 typing-extensions==4.7.1
 universal-pathlib==0.0.23
 urllib3==1.26.16
-uvicorn==0.23.0
+uvicorn==0.23.1
 vtk==9.2.6
 wcwidth==0.2.6
 websocket-client==1.6.1
@@ -221,6 +219,7 @@ wheel==0.40.0
 wrapt==1.15.0
 xarray==2023.1.0
 xmlschema==2.3.1
+xsdata==23.6
 yarl==1.9.2
 zarr==2.15.0
 zict==3.0.0

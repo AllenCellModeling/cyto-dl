@@ -1,11 +1,12 @@
 from contextlib import suppress
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
+import pyshtools
 import vtk
 from aicscytoparam import cytoparam
-from aicsshparam import shtools
-from vtk.util.numpy_support import numpy_to_vtk, vtk_to_numpy
+from vtk.util.numpy_support import vtk_to_numpy
 
 
 def get_image_from_shcoeffs(x, spharm_cols_filter, spharm_cols):
@@ -54,5 +55,131 @@ def get_mesh_from_series(row, alias, lmax):
                 coeffs[1, l, m] = row[
                     [f for f in row.keys() if f"{alias}_shcoeffs_L{l}M{m}S" in f]
                 ]
-    mesh, _ = shtools.get_reconstruction_from_coeffs(coeffs)
+    mesh, _ = get_reconstruction_from_coeffs(coeffs)
     return mesh
+
+
+# the functions below have been taken from
+# https://github.com/AllenCell/aics-shparam/blob/main/aicsshparam/shtools.py
+def get_reconstruction_from_grid(grid: np.array, centroid: Tuple = (0, 0, 0)):
+    """Converts a parametric 2D grid of type (lon,lat,rad) into a 3d mesh. lon in [0,2pi], lat in.
+
+    [0,pi].
+
+    Parameters
+    ----------
+    grid : np.array
+        Input grid where the element grid[i,j] represents the
+        radial coordinate at longitude i*2pi/grid.shape[0] and
+        latitude j*pi/grid.shape[1].
+
+    Returns
+    -------
+    mesh : vtkPolyData
+        Mesh that represents the input parametric grid.
+
+    Other parameters
+    ----------------
+    centroid : tuple of floats, optional
+        x, y and z coordinates of the centroid where the mesh
+        will be translated to, default is (0,0,0).
+    """
+
+    res_lat = grid.shape[0]
+    res_lon = grid.shape[1]
+
+    # Creates an initial spherical mesh with right dimensions.
+    rec = vtk.vtkSphereSource()
+    rec.SetPhiResolution(res_lat + 2)
+    rec.SetThetaResolution(res_lon)
+    rec.Update()
+    rec = rec.GetOutput()
+
+    grid_ = grid.T.flatten()
+
+    # Update the points coordinates of the spherical mesh according to the input grid
+    for j, lon in enumerate(np.linspace(0, 2 * np.pi, num=res_lon, endpoint=False)):
+        for i, lat in enumerate(
+            np.linspace(np.pi / (res_lat + 1), np.pi, num=res_lat, endpoint=False)
+        ):
+            theta = lat
+            phi = lon - np.pi
+            k = j * res_lat + i
+            x = centroid[0] + grid_[k] * np.sin(theta) * np.cos(phi)
+            y = centroid[1] + grid_[k] * np.sin(theta) * np.sin(phi)
+            z = centroid[2] + grid_[k] * np.cos(theta)
+            rec.GetPoints().SetPoint(k + 2, x, y, z)
+    # Update coordinates of north and south pole points
+    north = grid_[::res_lat].mean()
+    south = grid_[(res_lat - 1) :: res_lat].mean()
+    rec.GetPoints().SetPoint(0, centroid[0] + 0, centroid[1] + 0, centroid[2] + north)
+    rec.GetPoints().SetPoint(1, centroid[0] + 0, centroid[1] + 0, centroid[2] - south)
+
+    # Compute normal vectors
+    normals = vtk.vtkPolyDataNormals()
+    normals.SetInputData(rec)
+    # Set splitting off to avoid output mesh from having different number of
+    # points compared to input
+    normals.SplittingOff()
+    normals.Update()
+
+    mesh = normals.GetOutput()
+
+    return mesh
+
+
+def get_reconstruction_from_coeffs(coeffs: np.array, lrec: int = 0):
+    """Converts a set of spherical harmonic coefficients into a 3d mesh.
+
+    Parameters
+    ----------
+    coeffs : np.array
+        Input array of spherical harmonic coefficients. These
+        array has dimensions 2xLxM, where the first dimension
+        is 0 for cosine-associated coefficients and 1 for
+        sine-associated coefficients. Second and third dimensions
+        represent the expansion parameters (l,m).
+
+    Returns
+    -------
+    mesh : vtkPolyData
+        Mesh that represents the input parametric grid.
+
+    Other parameters
+    ----------------
+    lrec : int, optional
+        Degree of the reconstruction. If lrec<l, then only
+        coefficients l<lrec will be used for creating the mesh.
+        If lrec>l, then the mesh will be oversampled.
+        Default is 0 meaning all coefficients
+        available in the matrix coefficients will be used.
+
+    Notes
+    -----
+        The mesh resolution is set by the size of the coefficients
+        matrix and therefore not affected by lrec.
+    """
+
+    # Degree of the expansion
+    lmax = coeffs.shape[1]
+
+    if lrec == 0:
+        lrec = lmax
+
+    # Create array (oversampled if lrec>lrec)
+    coeffs_ = np.zeros((2, lrec, lrec), dtype=np.float32)
+
+    # Adjust lrec to the expansion degree
+    if lrec > lmax:
+        lrec = lmax
+
+    # Copy coefficients
+    coeffs_[:, :lrec, :lrec] = coeffs[:, :lrec, :lrec]
+
+    # Expand into a grid
+    grid = pyshtools.expand.MakeGridDH(coeffs_, sampling=2)
+
+    # Get mesh
+    mesh = get_reconstruction_from_grid(grid)
+
+    return mesh, grid

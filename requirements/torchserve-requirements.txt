@@ -109,7 +109,7 @@ nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
 oauthlib==3.2.2
-ome-types==0.3.4
+ome-types==0.4.0
 ome-zarr==0.8.0
 omegaconf==2.3.0
 optuna==2.10.1
@@ -120,12 +120,10 @@ pandas==1.5.3
 partd==1.4.0
 pbr==5.11.1
 pillow==10.0.0
-pint==0.21.1
 PrettyTable==3.8.0
 protobuf==3.20.1
 psutil==5.9.5
 pyarrow==10.0.1
-pydantic==1.10.11
 pydantic==1.10.11
 pygments==2.15.1
 pyjwt==2.7.0
@@ -138,7 +136,7 @@ python-multipart==0.0.6
 pytorch-lightning==2.0.5
 pytz==2023.3
 PyWavelets==1.4.1
-PyYAML==6.0
+PyYAML==6.0.1
 querystring-parser==1.2.4
 readchar==4.0.5
 requests==2.31.0
@@ -176,7 +174,7 @@ triton==2.0.0
 typing-extensions==4.7.1
 universal-pathlib==0.0.23
 urllib3==1.26.16
-uvicorn==0.23.0
+uvicorn==0.23.1
 wcwidth==0.2.6
 websocket-client==1.6.1
 websockets==11.0.3
@@ -185,6 +183,7 @@ wheel==0.40.0
 wrapt==1.15.0
 xarray==2023.1.0
 xmlschema==2.3.1
+xsdata==23.6
 yarl==1.9.2
 zarr==2.15.0
 zict==3.0.0
