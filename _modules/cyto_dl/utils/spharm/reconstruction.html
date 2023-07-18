@@ -357,13 +357,14 @@
         <article role="main">
           <h1>Source code for cyto_dl.utils.spharm.reconstruction</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pyshtools</span>
 <span class="kn">import</span> <span class="nn">vtk</span>
 <span class="kn">from</span> <span class="nn">aicscytoparam</span> <span class="kn">import</span> <span class="n">cytoparam</span>
-<span class="kn">from</span> <span class="nn">aicsshparam</span> <span class="kn">import</span> <span class="n">shtools</span>
-<span class="kn">from</span> <span class="nn">vtk.util.numpy_support</span> <span class="kn">import</span> <span class="n">numpy_to_vtk</span><span class="p">,</span> <span class="n">vtk_to_numpy</span>
+<span class="kn">from</span> <span class="nn">vtk.util.numpy_support</span> <span class="kn">import</span> <span class="n">vtk_to_numpy</span>
 
 
 <div class="viewcode-block" id="get_image_from_shcoeffs"><a class="viewcode-back" href="../../../../cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_image_from_shcoeffs">[docs]</a><span class="k">def</span> <span class="nf">get_image_from_shcoeffs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">spharm_cols_filter</span><span class="p">,</span> <span class="n">spharm_cols</span><span class="p">):</span>
@@ -412,8 +413,134 @@
                 <span class="n">coeffs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span>
                     <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">row</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">_shcoeffs_L</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">M</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">S&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
                 <span class="p">]</span>
-    <span class="n">mesh</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">shtools</span><span class="o">.</span><span class="n">get_reconstruction_from_coeffs</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+    <span class="n">mesh</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_reconstruction_from_coeffs</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">mesh</span></div>
+
+
+<span class="c1"># the functions below have been taken from</span>
+<span class="c1"># https://github.com/AllenCell/aics-shparam/blob/main/aicsshparam/shtools.py</span>
+<div class="viewcode-block" id="get_reconstruction_from_grid"><a class="viewcode-back" href="../../../../cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_grid">[docs]</a><span class="k">def</span> <span class="nf">get_reconstruction_from_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">centroid</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a parametric 2D grid of type (lon,lat,rad) into a 3d mesh. lon in [0,2pi], lat in.</span>
+
+<span class="sd">    [0,pi].</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    grid : np.array</span>
+<span class="sd">        Input grid where the element grid[i,j] represents the</span>
+<span class="sd">        radial coordinate at longitude i*2pi/grid.shape[0] and</span>
+<span class="sd">        latitude j*pi/grid.shape[1].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mesh : vtkPolyData</span>
+<span class="sd">        Mesh that represents the input parametric grid.</span>
+
+<span class="sd">    Other parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    centroid : tuple of floats, optional</span>
+<span class="sd">        x, y and z coordinates of the centroid where the mesh</span>
+<span class="sd">        will be translated to, default is (0,0,0).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">res_lat</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">res_lon</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Creates an initial spherical mesh with right dimensions.</span>
+    <span class="n">rec</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkSphereSource</span><span class="p">()</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">SetPhiResolution</span><span class="p">(</span><span class="n">res_lat</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">SetThetaResolution</span><span class="p">(</span><span class="n">res_lon</span><span class="p">)</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+    <span class="n">rec</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">()</span>
+
+    <span class="n">grid_</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+    <span class="c1"># Update the points coordinates of the spherical mesh according to the input grid</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">lon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">res_lon</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">res_lat</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">res_lat</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">lat</span>
+            <span class="n">phi</span> <span class="o">=</span> <span class="n">lon</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="n">res_lat</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">grid_</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">grid_</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">grid_</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+            <span class="n">rec</span><span class="o">.</span><span class="n">GetPoints</span><span class="p">()</span><span class="o">.</span><span class="n">SetPoint</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="c1"># Update coordinates of north and south pole points</span>
+    <span class="n">north</span> <span class="o">=</span> <span class="n">grid_</span><span class="p">[::</span><span class="n">res_lat</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">south</span> <span class="o">=</span> <span class="n">grid_</span><span class="p">[(</span><span class="n">res_lat</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">::</span> <span class="n">res_lat</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">GetPoints</span><span class="p">()</span><span class="o">.</span><span class="n">SetPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">north</span><span class="p">)</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">GetPoints</span><span class="p">()</span><span class="o">.</span><span class="n">SetPoint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">0</span><span class="p">,</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">south</span><span class="p">)</span>
+
+    <span class="c1"># Compute normal vectors</span>
+    <span class="n">normals</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyDataNormals</span><span class="p">()</span>
+    <span class="n">normals</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+    <span class="c1"># Set splitting off to avoid output mesh from having different number of</span>
+    <span class="c1"># points compared to input</span>
+    <span class="n">normals</span><span class="o">.</span><span class="n">SplittingOff</span><span class="p">()</span>
+    <span class="n">normals</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">normals</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">mesh</span></div>
+
+
+<div class="viewcode-block" id="get_reconstruction_from_coeffs"><a class="viewcode-back" href="../../../../cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_coeffs">[docs]</a><span class="k">def</span> <span class="nf">get_reconstruction_from_coeffs</span><span class="p">(</span><span class="n">coeffs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">lrec</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a set of spherical harmonic coefficients into a 3d mesh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coeffs : np.array</span>
+<span class="sd">        Input array of spherical harmonic coefficients. These</span>
+<span class="sd">        array has dimensions 2xLxM, where the first dimension</span>
+<span class="sd">        is 0 for cosine-associated coefficients and 1 for</span>
+<span class="sd">        sine-associated coefficients. Second and third dimensions</span>
+<span class="sd">        represent the expansion parameters (l,m).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mesh : vtkPolyData</span>
+<span class="sd">        Mesh that represents the input parametric grid.</span>
+
+<span class="sd">    Other parameters</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    lrec : int, optional</span>
+<span class="sd">        Degree of the reconstruction. If lrec&lt;l, then only</span>
+<span class="sd">        coefficients l&lt;lrec will be used for creating the mesh.</span>
+<span class="sd">        If lrec&gt;l, then the mesh will be oversampled.</span>
+<span class="sd">        Default is 0 meaning all coefficients</span>
+<span class="sd">        available in the matrix coefficients will be used.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">        The mesh resolution is set by the size of the coefficients</span>
+<span class="sd">        matrix and therefore not affected by lrec.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Degree of the expansion</span>
+    <span class="n">lmax</span> <span class="o">=</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">lrec</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lrec</span> <span class="o">=</span> <span class="n">lmax</span>
+
+    <span class="c1"># Create array (oversampled if lrec&gt;lrec)</span>
+    <span class="n">coeffs_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="n">lrec</span><span class="p">,</span> <span class="n">lrec</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="c1"># Adjust lrec to the expansion degree</span>
+    <span class="k">if</span> <span class="n">lrec</span> <span class="o">&gt;</span> <span class="n">lmax</span><span class="p">:</span>
+        <span class="n">lrec</span> <span class="o">=</span> <span class="n">lmax</span>
+
+    <span class="c1"># Copy coefficients</span>
+    <span class="n">coeffs_</span><span class="p">[:,</span> <span class="p">:</span><span class="n">lrec</span><span class="p">,</span> <span class="p">:</span><span class="n">lrec</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[:,</span> <span class="p">:</span><span class="n">lrec</span><span class="p">,</span> <span class="p">:</span><span class="n">lrec</span><span class="p">]</span>
+
+    <span class="c1"># Expand into a grid</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">pyshtools</span><span class="o">.</span><span class="n">expand</span><span class="o">.</span><span class="n">MakeGridDH</span><span class="p">(</span><span class="n">coeffs_</span><span class="p">,</span> <span class="n">sampling</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Get mesh</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">get_reconstruction_from_grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">grid</span></div>
 </pre></div>
         </article>
       </div>

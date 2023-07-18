@@ -369,6 +369,61 @@
 <span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.spharm.reconstruction.</span></span><span class="sig-name descname"><span class="pre">get_mesh_from_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/spharm/reconstruction.html#get_mesh_from_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.spharm.reconstruction.get_mesh_from_series" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_coeffs">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.spharm.reconstruction.</span></span><span class="sig-name descname"><span class="pre">get_reconstruction_from_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lrec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/spharm/reconstruction.html#get_reconstruction_from_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_coeffs" title="Permalink to this definition">#</a></dt>
+<dd><p>Converts a set of spherical harmonic coefficients into a 3d mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coeffs</strong> (<em>np.array</em>) – Input array of spherical harmonic coefficients. These
+array has dimensions 2xLxM, where the first dimension
+is 0 for cosine-associated coefficients and 1 for
+sine-associated coefficients. Second and third dimensions
+represent the expansion parameters (l,m).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mesh</strong> – Mesh that represents the input parametric grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>vtkPolyData</p>
+</dd>
+<dt class="field-even">Other Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lrec</strong> (<em>int, optional</em>) – Degree of the reconstruction. If lrec&lt;l, then only
+coefficients l&lt;lrec will be used for creating the mesh.
+If lrec&gt;l, then the mesh will be oversampled.
+Default is 0 meaning all coefficients
+available in the matrix coefficients will be used.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The mesh resolution is set by the size of the coefficients
+matrix and therefore not affected by lrec.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_grid">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.spharm.reconstruction.</span></span><span class="sig-name descname"><span class="pre">get_reconstruction_from_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/spharm/reconstruction.html#get_reconstruction_from_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_grid" title="Permalink to this definition">#</a></dt>
+<dd><p>Converts a parametric 2D grid of type (lon,lat,rad) into a 3d mesh. lon in [0,2pi], lat in.</p>
+<p>[0,pi].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grid</strong> (<em>np.array</em>) – Input grid where the element grid[i,j] represents the
+radial coordinate at longitude i*2pi/grid.shape[0] and
+latitude j*pi/grid.shape[1].</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mesh</strong> – Mesh that represents the input parametric grid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>vtkPolyData</p>
+</dd>
+<dt class="field-even">Other Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>centroid</strong> (<em>tuple of floats, optional</em>) – x, y and z coordinates of the centroid where the mesh
+will be translated to, default is (0,0,0).</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -429,6 +484,8 @@
 <li><a class="reference internal" href="#">cyto_dl.utils.spharm.reconstruction module</a><ul>
 <li><a class="reference internal" href="#cyto_dl.utils.spharm.reconstruction.get_image_from_shcoeffs"><code class="docutils literal notranslate"><span class="pre">get_image_from_shcoeffs()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.utils.spharm.reconstruction.get_mesh_from_series"><code class="docutils literal notranslate"><span class="pre">get_mesh_from_series()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_coeffs"><code class="docutils literal notranslate"><span class="pre">get_reconstruction_from_coeffs()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_grid"><code class="docutils literal notranslate"><span class="pre">get_reconstruction_from_grid()</span></code></a></li>
 </ul>
 </li>
 </ul>
