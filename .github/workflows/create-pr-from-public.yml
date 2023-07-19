@@ -23,7 +23,7 @@ jobs:
           curl -o ../public-pr.patch \
               -L \
               -H "Accept: application/vnd.github.patch" \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Authorization: Bearer ${{ secrets.CYTO_DL_TOKEN }}" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
               "https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER"
 
@@ -33,7 +33,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.PULL_REQUEST_TOKEN }}
+          token: ${{ secrets.AUTO_PR_TOKEN }}
           branch: pr-from-public-repo/${{ github.event.inputs.public_pr_number}}
           commit-message: |
             Applying changes from https://github.com/colobas/dummy-public-repo/pull/${{ github.event.inputs.public_pr_number }}

@@ -20,7 +20,7 @@ jobs:
 
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.WORKFLOW_TRIGGER_TOKEN }}
+          github-token: ${{ secrets.CYTO_DL_TOKEN }}
           script: |
             const result = await github.rest.actions.createWorkflowDispatch({
               owner: 'AllenCell',
