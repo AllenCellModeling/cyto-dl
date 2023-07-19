@@ -29,40 +29,43 @@ data:
     - _target_: aics_im2im.dataframe.transforms.GroupCols
       groups:
         image: sdf_path_unalign
+        #image: sdf_path_align_3dnuc
         cell_id: CellId
     - _target_: aics_im2im.image.io.ReadNumpyFile
       keys: [image]
       remote: false
     - _target_: monai.transforms.AddChanneld
       keys: image
-    #    - _target_: monai.transforms.NormalizeIntensityd
-    #      keys: [image]
-    #      subtrahend: 6.9681635
-    #      divisor: 4.18568
-    - _target_: monai.transforms.ThresholdIntensityd
-      keys: [image]
-      threshold: 2
-      above: false
-      cval: 2
-    - _target_: monai.transforms.ThresholdIntensityd
-      keys: [image]
-      threshold: -2
-      above: true
-      cval: -2
+    - _target_: monai.transforms.NormalizeIntensityd
+      keys: image
+      subtrahend: 6.96816
+      divisor: 4.18568
+    #- _target_: monai.transforms.ThresholdIntensityd
+    #  keys: [image]
+    #  threshold: 2
+    #  above: false
+    #  cval: 2
+    #- _target_: monai.transforms.ThresholdIntensityd
+    #  keys: [image]
+    #  threshold: -2
+    #  above: true
+    #  cval: -2
     - _target_: monai.transforms.SpatialPadd
       keys: [image]
       spatial_size: [33, 33, 33]
-      value: 2
+      value: 2.5
     #    - _target_: monai.transforms.RandRotated
     #      keys: [image]
     #      range_x: 3.14159
     #      range_y: 3.14159
     #      range_z: 3.14159
     #      prob: 1.0
-    - _target_: aics_im2im.image.transforms.O3Maskd
+    - _target_: aics_im2im.image.transforms.RotationMaskd
       keys: [image]
-      diameter: 33
-      background: 2
+      group: so3
+      spatial_dims: 3
+      mask_side: 33
+      background: 2.5
     - _target_: monai.transforms.ToTensord
       keys: [image]
       track_meta: false
@@ -72,26 +75,27 @@ model:
   spatial_dims: 3
   in_shape: [1, 33, 33, 33]
 
-  background_value: 2
+  background_value: 2.5
 
   mask_input: false
-  mask_output: false
+  mask_output: true
 
   latent_dim: 256
   prior: gaussian
   beta: 1.0
 
   #kernel_sizes: [7, 7, 7, 5, 5, 3, 3]
-  kernel_sizes: [3, 3, 3, 3, 3, 3, 3]
-  channels: [2, 4, 8, 16, 32, 64, 128]
-  strides: [1, 1, 1, 1, 2, 2, 2]
-  encoder_padding: [null, null, null, null, null, null, null]
+  kernel_sizes: [3, 3, 3, 3, 3, 3, 3, 3]
+  channels: [16, 16, 32, 32, 64, 64, 128, 128]
+  strides: [1, 1, 2, 2, 2, 1, 1, 1]
+  encoder_padding: [null, null, null, null, null, null, null, null]
   first_conv_padding_mode: replicate
-  num_res_units: 1
+  num_res_units: 2
 
+  decoder_channels: [128, 64, 32, 16, 8, 4, 2]
+  decoder_strides: [2, 2, 2, 1, 1, 1, 1]
   #decoder_channels: [128, 128, 64, 64, 32, 16]
-  decoder_channels: [128, 64, 32, 16, 8]
-  decoder_strides: [2, 2, 2, 1, 1]
+  #decoder_strides: [2, 2, 2, 1, 1, 1]
 
   #last_act: sigmoid
   #last_scale: null
@@ -105,11 +109,12 @@ model:
     #  #_target_: monai.losses.DiceFocalLoss
     #  _target_: torch.nn.MSELoss
     #above: false
-    #threshold: -1.6647625953250131  # -mean/std i.e. where 0 goes after normalization
+    # -mean/std i.e. where 0 goes after normalization
+    #threshold: -1.6647625953250131
 
   x_label: image
 
-  act: relu
+  act: swish
   norm: batch
   dropout: null
   bias: true
@@ -124,13 +129,13 @@ trainer:
 callbacks:
   early_stopping:
     monitor: val/loss
-    patience: 10
+    patience: 100
     min_delta: 0.
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
     monitor: val/loss
-    save_top_k: 2
+    save_top_k: 10
     every_n_epochs: 1
 
 logger:

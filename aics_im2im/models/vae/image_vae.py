@@ -11,7 +11,7 @@ from monai.networks.layers.simplelayers import Flatten, Reshape
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
 
-from aics_im2im.image.transforms import O2Mask, O3Mask
+from aics_im2im.image.transforms import RotationMask
 from aics_im2im.models.vae.base_vae import BaseVAE
 from aics_im2im.utils.rotation import RotationModule
 
@@ -86,15 +86,11 @@ class ImageVAE(BaseVAE):
                 raise ValueError("`last_act` must be either 'sigmoid' or 'tanh'")
 
         if mask_input or mask_output:
-            if group == "so2":
-                self.mask = O2Mask(
+            if group is not None:
+                self.mask = RotationMask(
+                    group,
                     spatial_dims,
                     max(in_shape[-2:]),
-                    background=background_value,
-                )
-            elif group == "so3":
-                self.mask = O3Mask(
-                    max(in_shape[-3:]),
                     background=background_value,
                 )
             else:
@@ -161,8 +157,6 @@ class ImageVAE(BaseVAE):
             nn.Linear(latent_dim, _channels[0] * int(np.product(self.final_size))),
             Reshape(_channels[0], *self.final_size),
         )
-
-        # decoder = self._get_decode_module(_channels[0], _channels, _strides)
 
         decoder = nn.Sequential(
             first_upsample,
@@ -242,61 +236,3 @@ class ImageVAE(BaseVAE):
             return {self.hparams.x_label: xhat, "canonical": base_xhat}
 
         return {self.hparams.x_label: xhat}
-
-    # from MONAI's AutoEncoder class
-    def _get_decode_module(
-        self, in_channels: int, channels: Sequence[int], strides: Sequence[int]
-    ):
-        """Returns the decode part of the network by building up a sequence of layers returned by
-        `_get_decode_layer`."""
-        decode = nn.Sequential()
-        layer_channels = in_channels
-
-        for i, (c, s) in enumerate(zip(channels, strides)):
-            layer = self._get_decode_layer(layer_channels, c, s, i == (len(strides) - 1))
-            decode.add_module("decode_%i" % i, layer)
-            layer_channels = c
-
-        return decode
-
-    # from MONAI's AutoEncoder class
-    def _get_decode_layer(
-        self, in_channels: int, out_channels: int, strides: int, is_last: bool
-    ) -> nn.Sequential:
-        """Returns a single layer of the decoder part of the network."""
-        decode = nn.Sequential()
-
-        conv = Convolution(
-            spatial_dims=self.spatial_dims,
-            in_channels=in_channels,
-            out_channels=out_channels,
-            strides=strides,
-            kernel_size=self.up_kernel_size,
-            act=self.act,
-            norm=self.norm,
-            dropout=self.dropout,
-            bias=self.bias,
-            conv_only=is_last and self.num_res_units == 0,
-            is_transposed=True,
-        )
-
-        decode.add_module("conv", conv)
-
-        if self.num_res_units > 0:
-            ru = ResidualUnit(
-                spatial_dims=self.spatial_dims,
-                in_channels=out_channels,
-                out_channels=out_channels,
-                strides=1,
-                kernel_size=self.up_kernel_size,
-                subunits=1,
-                act=self.act,
-                norm=self.norm,
-                dropout=self.dropout,
-                bias=self.bias,
-                last_conv_only=is_last,
-            )
-
-            decode.add_module("resunit", ru)
-
-        return decode

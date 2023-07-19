@@ -30,6 +30,9 @@ data:
     - _target_: aics_im2im.image.io.ReadNumpyFile
       keys: [image]
       remote: false
+    - _target_: monai.transforms.Transposed
+      keys: [image]
+      indices: [2, 1, 0]
     - _target_: monai.transforms.AddChanneld
       keys: image
     - _target_: monai.transforms.ThresholdIntensityd
@@ -46,11 +49,11 @@ data:
       keys: [image]
       spatial_size: [33, 33, 33]
       value: 2
-    #    - _target_: aics_im2im.image.transforms.O2Maskd
-    #      keys: [image]
-    #      spatial_dims: 3
-    #      mask_side: 33
-    #      background: 2
+    - _target_: aics_im2im.image.transforms.O2Maskd
+      keys: [image]
+      spatial_dims: 3
+      mask_side: 33
+      background: 2
     - _target_: monai.transforms.ToTensord
       keys: [image]
       track_meta: false

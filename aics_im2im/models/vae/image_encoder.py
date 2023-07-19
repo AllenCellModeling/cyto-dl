@@ -234,6 +234,8 @@ class ResBlock(nn.EquivariantModule):
                 batch_norm=False,
                 activation=False,
             )
+        else:
+            self.residual = nn.IdentityModule(in_type)
         self.out_type = self.conv.out_type
 
     def forward(self, x):
