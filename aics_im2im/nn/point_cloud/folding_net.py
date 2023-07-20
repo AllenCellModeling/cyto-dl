@@ -6,7 +6,6 @@ License: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud
 import numpy as np
 import torch
 from torch import nn
-from torch.nn import functional as F
 
 
 class FoldingNet(nn.Module):
@@ -21,7 +20,6 @@ class FoldingNet(nn.Module):
         gaussian_path: str = "",
         num_coords: int = 3,
     ):
-
         super().__init__()
 
         # if np.sqrt(num_output_points) ** 2 != num_output_points:

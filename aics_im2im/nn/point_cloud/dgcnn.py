@@ -6,15 +6,19 @@
   LICENSE: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_AnTao
 """
 
-import numpy as np
 import torch
 from torch import nn
-from torch.nn import functional as F
 
 from aics_im2im import utils
 
 from .graph_functions import get_graph_features
 from .vnn import VNLeakyReLU, VNLinear, VNLinearLeakyReLU, VNRotationMatrix
+from aics_im2im.datamodules.shapenet_dataset.utils import (
+    normalize_3d_coordinate,
+    normalize_coordinate,
+    coordinate2index,
+)
+from torch_scatter import scatter_mean, scatter_max
 
 log = utils.get_pylogger(__name__)
 
@@ -24,21 +28,26 @@ def _make_conv(
     out_features,
     mode="scalar",
     scale_in=1,
+    add_in=0,
     include_symmetry=0,
     scale_out=1,
     final=False,
 ):
-    in_features = in_features * scale_in + include_symmetry
+    in_features = in_features * scale_in + include_symmetry + add_in
     out_features = out_features * scale_out
 
     if mode == "vector":
-
         return VNLinearLeakyReLU(
             in_features,
             out_features,
             use_batchnorm=False,
             negative_slope=0,
             dim=(4 if final else 5),
+        )
+    elif mode == "vector2":
+        return nn.Sequential(
+            VNLeakyReLU(in_features, negative_slope=0.0, share_nonlinearity=False),
+            VNLinear(in_features, out_features),
         )
 
     conv = nn.Conv1d if final else nn.Conv2d
@@ -71,36 +80,56 @@ class DGCNN(nn.Module):
         hidden_dim=64,
         k=20,
         mode="scalar",
+        hidden_conv2d_channels=[
+            64,
+            64,
+            64,
+            64,
+        ],  # [64, 64, 64, 64] for vector and scalar
+        hidden_conv1d_channels=[
+            512,
+            512,
+        ],  # [512, 1024, 512, num_features] for dgcnn cls (where 1024 is latent dim) and [512, 512] for normal dgcnn, [64, num_feats] for vector
         scalar_inds=None,
         include_cross=True,
         include_coords=True,
-        get_rotation=False,
         symmetry_breaking_axis=None,
+        padding=0.1,
+        reso_plane=64,
+        reso_grid=None,
+        plane_type=["xz", "xy", "yz"],
+        generate_grid_feats=False,
+        scatter_type="max",
     ):
         super().__init__()
         self.k = k
         self.num_features = num_features
+        self.scatter_type = scatter_type
         self.include_coords = include_coords
+        self.hidden_conv2d_channels = hidden_conv2d_channels
+        self.hidden_conv1d_channels = hidden_conv1d_channels
         self.include_cross = include_cross
         self.hidden_dim = hidden_dim
         self.scalar_inds = scalar_inds
         self.mode = mode
-
+        self.padding = padding
+        self.reso_plane = reso_plane
+        self.reso_grid = reso_grid
+        self.plane_type = plane_type
+        self.generate_grid_feats = generate_grid_feats
+        self.unet3d = None
+        self.unet = None
         self.symmetry_breaking_axis = symmetry_breaking_axis
+
         include_symmetry = 0
         if self.symmetry_breaking_axis is not None:
             include_symmetry = 1
-        print("include symmetry", include_symmetry)
-        # if self.break_symmetry:
-        #     _features = [2] + hidden_features[:-1]
-        #     if mode == "scalar":
-        #         log.warn("Overriding `mode` to `vector` because symmetry breaking is on.")
-        #         mode = "vector"
-        # else:
-        #     _features = [1 if mode == "vector" else 3] + hidden_features[:-1]
 
         self.mode = mode
         self.init_features = 1 if self.mode == "vector" else 3
+        self.final_conv = []
+
+        # first conv
         convs = [
             _make_conv(
                 self.init_features,
@@ -111,41 +140,74 @@ class DGCNN(nn.Module):
             )
         ]
 
-        if self.mode == "scalar":
-            convs += [_make_conv(self.hidden_dim * 2, self.hidden_dim)]
-            convs += [_make_conv(self.hidden_dim * 2, self.hidden_dim * 2)]
-            convs += [_make_conv(self.hidden_dim * 4, self.hidden_dim * 4)]
-
-            self.final_len = self.hidden_dim * 2 + self.hidden_dim * 2 + self.hidden_dim * 4
-            self.final_conv = _make_conv(self.final_len, self.final_len, final=True)
-            self.embedding = nn.Linear(self.final_len, self.num_features, bias=False)
-            self.pool = maxpool
-        else:
+        if self.mode == "vector":
             convs += [
                 nn.Sequential(
                     VNLinear(self.hidden_dim, self.hidden_dim * 2),
-                    VNLeakyReLU(2 * self.hidden_dim, negative_slope=0.0, share_nonlinearity=False),
+                    VNLeakyReLU(
+                        2 * self.hidden_dim,
+                        negative_slope=0.0,
+                        share_nonlinearity=False,
+                    ),
                     VNLinear(2 * self.hidden_dim, self.hidden_dim),
                 )
             ]
-            for i in range(3):
-                convs += [
-                    nn.Sequential(
-                        VNLeakyReLU(2 * hidden_dim, negative_slope=0.0, share_nonlinearity=False),
-                        VNLinear(2 * hidden_dim, hidden_dim),
-                    )
-                ]
-
-            self.final_conv = nn.Sequential(
-                VNLeakyReLU(hidden_dim, negative_slope=0.0, share_nonlinearity=False),
-                VNLinear(hidden_dim, self.num_features),
-            )
+            _scale_in_list = [2 for i in range(len(hidden_conv2d_channels) - 1)]
+            _scale_out_list = [1 for i in range(len(hidden_conv2d_channels) - 1)]
+            _mode = "vector2"
+            _prev_slice = -1
             self.pool = meanpool
-            self.rotation = VNRotationMatrix(self.num_features, dim=3, return_rotated=True)
-            self.vn_inv = VNLinear(self.num_features, self.num_features)
+            # rotation module
+            self.rotation = VNRotationMatrix(
+                self.num_features, dim=3, return_rotated=True
+            )
+            # final embedding
+            self.embedding_head = VNLinear(self.num_features, self.num_features)
+        else:
+            _scale_in_list = [2] + [
+                (i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)
+            ]
+            _scale_out_list = [1] + [
+                (i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)
+            ]
+            _prev_slice = -3
+            _mode = "scalar"
+            self.pool = maxpool
+            self.embedding_head = nn.Linear(
+                self.hidden_conv1d_channels[-1], self.num_features
+            )
+
+        for j, (c_1, c_2) in enumerate(
+            zip(self.hidden_conv2d_channels[:-1], self.hidden_conv2d_channels[1:])
+        ):
+            convs += [
+                _make_conv(
+                    c_1,
+                    c_2,
+                    mode=_mode,
+                    scale_in=_scale_in_list[j],
+                    scale_out=_scale_out_list[j],
+                )
+            ]
+
+        for j, (c_1, c_2) in enumerate(
+            zip(self.hidden_conv1d_channels[:-1], self.hidden_conv1d_channels[1:])
+        ):
+            if j == 1:
+                self.final_conv += _make_conv(
+                    c_1, c_2, final=True, add_in=_prev_in, mode=_mode
+                )
+            else:
+                self.final_conv += _make_conv(c_1, c_2, final=True, mode=_mode)
+            _prev_in = self.final_conv[_prev_slice].in_channels
 
         self.convs = nn.ModuleList(convs)
-        self.embedding_head = nn.Linear(self.num_features, self.num_features)
+        self.final_conv = nn.ModuleList(self.final_conv)
+
+        if self.scatter_type == "max":
+            self.scatter = scatter_max
+        else:
+            self.scatter = scatter_mean
 
     def get_graph_features(self, x, idx):
         return get_graph_features(
@@ -177,12 +239,79 @@ class DGCNN(nn.Module):
 
         return torch.cat((x, _axis), dim=1)
 
+    def _generate_plane_features(self, points, cond, plane="xz"):
+        view_dims1 = (points.size(0), self.num_features, self.reso_plane**2)
+        view_dims2 = (
+            points.size(0),
+            self.num_features,
+            self.reso_plane,
+            self.reso_plane,
+        )
+
+        permute_dims1 = (0, 2, 1)
+        # acquire indices of features in plane
+        xy = normalize_coordinate(
+            points.clone(), plane=plane, padding=self.padding
+        )  # normalize to the range of (0, 1)
+        index = coordinate2index(xy, self.reso_plane)
+
+        # scatter plane features from points
+        fea_plane = cond.new_zeros(*view_dims1)
+        cond = cond.permute(*permute_dims1)  # B x 512 x T
+        fea_plane = scatter_mean(cond, index, out=fea_plane)  # B x 512 x reso^2
+        fea_plane = fea_plane.reshape(
+            *view_dims2
+        )  # sparce matrix (B x 512 x reso x reso)
+
+        # process the plane features with UNet
+        if self.unet is not None:
+            fea_plane = self.unet(fea_plane)
+
+        return fea_plane
+
+    def _generate_grid_features(self, p, c):
+        p_nor = normalize_3d_coordinate(p.clone(), padding=self.padding)
+        index = coordinate2index(p_nor, self.reso_grid, coord_type="3d")
+        # scatter grid features from points
+        fea_grid = c.new_zeros(p.size(0), self.num_features, self.reso_grid**3)
+        c = c.permute(0, 2, 1)
+        fea_grid = scatter_mean(c, index, out=fea_grid)  # B x C x reso^3
+        fea_grid = fea_grid.reshape(
+            p.size(0), self.num_features, self.reso_grid, self.reso_grid, self.reso_grid
+        )  # sparce matrix (B x 512 x reso x reso)
+
+        if self.unet3d is not None:
+            fea_grid = self.unet3d(fea_grid)
+
+        return fea_grid
+
+    def _pool_local(self, xy, index, c):
+        _, fea_dim = c.size(0), c.size(2)
+        keys = xy.keys()
+
+        c_out = 0
+        for key in keys:
+            # scatter plane features from points
+            if key == "grid":
+                fea = self.scatter(
+                    c.permute(0, 2, 1), index[key], dim_size=self.reso_grid**3
+                )
+            else:
+                fea = self.scatter(
+                    c.permute(0, 2, 1), index[key], dim_size=self.reso_plane**2
+                )
+            if self.scatter == scatter_max:
+                fea = fea[0]
+            # gather feature back to points
+            fea = fea.gather(dim=2, index=index[key].expand(-1, fea_dim, -1))
+            c_out += fea
+        return c_out.permute(0, 2, 1)
+
     def forward(self, x, get_rotation=False):
+        input_pc = x.clone()
         # x is [B, N, 3]
         x = x.transpose(2, 1)  # [B, 3, N]
-
-        batch_size = x.size(0)
-
+        num_points = x.shape[-1]
         intermediate_outs = []
         for idx, conv in enumerate(self.convs):
             if (idx == 0 and self.mode == "vector") or (self.mode == "scalar"):
@@ -192,6 +321,7 @@ class DGCNN(nn.Module):
                 if isinstance(self.symmetry_breaking_axis, int):
                     x = self.concat_axis(x, self.symmetry_breaking_axis)
                 assert x.size(1) == 4
+
             pre_x = conv(x)
 
             if (len(pre_x.size()) < 5) and (self.mode == "vector") and (idx > 0):
@@ -205,27 +335,52 @@ class DGCNN(nn.Module):
 
             intermediate_outs.append(x)
 
+        x = torch.cat(intermediate_outs, dim=1)
         if self.mode == "scalar":
-            x = torch.cat(intermediate_outs, dim=1)
-            x = self.final_conv(x)
-            x = x.max(dim=-1, keepdim=False)[0]
+            _pool_ind = 2
         else:
-            x = self.final_conv(x)
-            x = self.pool(x, dim=-1)
-        # import ipdb
-        # ipdb.set_trace()
+            _pool_ind = 1
+
+        for j, conv in enumerate(self.final_conv):
+            x = conv(x)
+            if (j == _pool_ind) and (self.generate_grid_feats):
+                x = self.pool(x, dim=-1, keepdim=True)
+                pre_repeat = x.clone()  # this is batch_size, feat dims
+                if len(x.shape) == 3:
+                    x = x.repeat(1, 1, num_points)
+                else:
+                    x = x.repeat(1, 1, 1, num_points)
+                x = torch.cat((x, *intermediate_outs), dim=1)
+            elif (j == _pool_ind) and (not self.generate_grid_feats):
+                x = self.pool(x, dim=-1)
+
+        rot = None
+        if self.generate_grid_feats:
+            if len(x.shape) == 4:
+                x = torch.norm(x, dim=-2)
+            x = x.permute(0, 2, 1).contiguous()
+
+            fea = {}
+            if "grid" in self.plane_type:
+                fea["grid"] = self._generate_grid_features(input_pc, x)
+            if "xz" in self.plane_type:
+                fea["xz"] = self._generate_plane_features(input_pc, x, plane="xz")
+            if "xy" in self.plane_type:
+                fea["xy"] = self._generate_plane_features(input_pc, x, plane="xy")
+            if "yz" in self.plane_type:
+                fea["yz"] = self._generate_plane_features(input_pc, x, plane="yz")
+            return pre_repeat, rot, fea
 
         if self.mode == "vector":
-            embedding, rot = self.rotation(x)
-            embedding = self.vn_inv(embedding)
+            x, rot = self.rotation(x)
+            x = self.embedding_head(x)
+            x = torch.norm(x, dim=-1)
             rot = rot.mT
-            embedding = torch.norm(embedding, dim=-1)
-        else:
-            embedding = self.embedding(x)
 
-        embedding = self.embedding_head(embedding)
+        if self.mode == "scalar":
+            x = self.embedding_head(x)
 
         if get_rotation:
-            return embedding, rot
+            return x, rot
 
-        return embedding
+        return x
