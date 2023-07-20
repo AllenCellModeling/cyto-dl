@@ -1,9 +1,5 @@
 import os
-import glob
-import random
-from PIL import Image
 import numpy as np
-import trimesh
 from .core import Field
 
 

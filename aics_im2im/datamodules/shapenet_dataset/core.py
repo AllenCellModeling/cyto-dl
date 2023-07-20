@@ -8,71 +8,6 @@ import torch
 logger = logging.getLogger(__name__)
 
 
-def rotate_pointcloud(pointcloud, points, points_iou=None):
-    theta = np.pi * 2 * np.random.choice(24) / 24
-    rotation_matrix = np.array(
-        [[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]]
-    )
-    pointcloud[:, [0, 2]] = pointcloud[:, [0, 2]].dot(
-        rotation_matrix
-    )  # random rotation (x,z)
-    points[:, [0, 2]] = points[:, [0, 2]].dot(rotation_matrix)
-
-    if points_iou is not None:
-        points_iou[:, [0, 2]] = points_iou[:, [0, 2]].dot(rotation_matrix)
-
-    return pointcloud, points, points_iou
-
-
-def translate_pointcloud(pointcloud, points, points_iou=None):
-    xyz1 = np.random.uniform(low=2.0 / 3.0, high=3.0 / 2.0, size=[3])
-    xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
-
-    pointcloud = np.add(np.multiply(pointcloud, xyz1), xyz2).astype("float32")
-
-    points = np.add(np.multiply(points, xyz1), xyz2).astype("float32")
-
-    if points_iou is not None:
-        points_iou = np.add(np.multiply(points_iou, xyz1), xyz2).astype("float32")
-
-    return pointcloud, points, points_iou
-
-
-def single_translate_pointcloud(
-    pointcloud, points, points_iou=None, points_df=None, points_iou_df=None
-):
-    xyz1 = np.random.uniform(low=2.0 / 3.0, high=3.0 / 2.0, size=[1])
-    xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
-
-    translated_pointcloud = np.add(np.multiply(pointcloud, xyz1), xyz2).astype(
-        "float32"
-    )
-
-    translated_points = np.add(np.multiply(points, xyz1), xyz2).astype("float32")
-
-    translated_points_df = None
-    if points_df is not None:
-        translated_points_df = np.multiply(points_df, xyz1)
-
-    translated_points_iou_df = None
-    if points_iou_df is not None:
-        translated_points_iou_df = np.multiply(points_iou_df, xyz1)
-
-    if points_iou is not None:
-        translated_points_iou = np.add(np.multiply(points_iou, xyz1), xyz2).astype(
-            "float32"
-        )
-        return (
-            translated_pointcloud,
-            translated_points,
-            translated_points_iou,
-            translated_points_df,
-            translated_points_iou_df,
-        )
-    else:
-        return translated_pointcloud, translated_points, translated_points_df
-
-
 # Fields
 class Field(object):
     """Data fields class."""
@@ -134,7 +69,7 @@ class Shapes3dDataset(data.Dataset):
 
         if os.path.exists(metadata_file):
             with open(metadata_file, "r") as f:
-                self.metadata = yaml.load(f,  Loader=yaml.Loader)
+                self.metadata = yaml.load(f, Loader=yaml.Loader)
         else:
             self.metadata = {c: {"id": c, "name": "n/a"} for c in categories}
 
@@ -314,3 +249,68 @@ def worker_init_fn(worker_id):
     random_data = os.urandom(4)
     base_seed = int.from_bytes(random_data, byteorder="big")
     np.random.seed(base_seed + worker_id)
+
+
+def rotate_pointcloud(pointcloud, points, points_iou=None):
+    theta = np.pi * 2 * np.random.choice(24) / 24
+    rotation_matrix = np.array(
+        [[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]]
+    )
+    pointcloud[:, [0, 2]] = pointcloud[:, [0, 2]].dot(
+        rotation_matrix
+    )  # random rotation (x,z)
+    points[:, [0, 2]] = points[:, [0, 2]].dot(rotation_matrix)
+
+    if points_iou is not None:
+        points_iou[:, [0, 2]] = points_iou[:, [0, 2]].dot(rotation_matrix)
+
+    return pointcloud, points, points_iou
+
+
+def translate_pointcloud(pointcloud, points, points_iou=None):
+    xyz1 = np.random.uniform(low=2.0 / 3.0, high=3.0 / 2.0, size=[3])
+    xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
+
+    pointcloud = np.add(np.multiply(pointcloud, xyz1), xyz2).astype("float32")
+
+    points = np.add(np.multiply(points, xyz1), xyz2).astype("float32")
+
+    if points_iou is not None:
+        points_iou = np.add(np.multiply(points_iou, xyz1), xyz2).astype("float32")
+
+    return pointcloud, points, points_iou
+
+
+def single_translate_pointcloud(
+    pointcloud, points, points_iou=None, points_df=None, points_iou_df=None
+):
+    xyz1 = np.random.uniform(low=2.0 / 3.0, high=3.0 / 2.0, size=[1])
+    xyz2 = np.random.uniform(low=-0.2, high=0.2, size=[3])
+
+    translated_pointcloud = np.add(np.multiply(pointcloud, xyz1), xyz2).astype(
+        "float32"
+    )
+
+    translated_points = np.add(np.multiply(points, xyz1), xyz2).astype("float32")
+
+    translated_points_df = None
+    if points_df is not None:
+        translated_points_df = np.multiply(points_df, xyz1)
+
+    translated_points_iou_df = None
+    if points_iou_df is not None:
+        translated_points_iou_df = np.multiply(points_iou_df, xyz1)
+
+    if points_iou is not None:
+        translated_points_iou = np.add(np.multiply(points_iou, xyz1), xyz2).astype(
+            "float32"
+        )
+        return (
+            translated_pointcloud,
+            translated_points,
+            translated_points_iou,
+            translated_points_df,
+            translated_points_iou_df,
+        )
+    else:
+        return translated_pointcloud, translated_points, translated_points_df

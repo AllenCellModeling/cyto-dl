@@ -1,16 +1,13 @@
-from torchvision import transforms
 from lightning import LightningDataModule
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from typing import Optional
 from aics_im2im.datamodules.shapenet_dataset import (
     Shapes3dDataset,
-    SubsamplePoints,
-    PointsField,
-    PointcloudNoise,
-    SubsamplePointcloud,
-    PointCloudField,
-    PartialPointCloudField,
     IndexField,
+)
+from aics_im2im.datamodules.shapenet_dataset.utils import (
+    get_data_fields,
+    get_inputs_field,
 )
 
 
@@ -151,81 +148,3 @@ class ShapenetDataModule(LightningDataModule):
             shuffle=False,
         )
         return dataloader
-
-
-def get_data_fields(
-    mode, points_subsample, input_type, points_file, multi_files, points_iou_file
-):
-    """Returns the data fields.
-
-    Args:
-        mode (str): the mode which is used
-        cfg (dict): imported yaml config
-    """
-    points_transform = SubsamplePoints(points_subsample)
-
-    input_type = input_type
-    fields = {}
-    if points_file is not None:
-        fields["points"] = PointsField(
-            points_file,
-            points_transform,
-            unpackbits=False,
-            multi_files=multi_files,
-        )
-
-    if mode in ("val", "test"):
-        if points_iou_file is not None:
-            fields["points_iou"] = PointsField(
-                points_iou_file,
-                unpackbits=False,
-                multi_files=multi_files,
-            )
-
-    return fields
-
-
-def get_inputs_field(
-    mode,
-    input_type,
-    pointcloud_n,
-    pointcloud_noise,
-    pointcloud_file,
-    multi_files,
-    part_ratio,
-    partial_type,
-):
-    """Returns the inputs fields.
-
-    Args:
-        mode (str): the mode which is used
-        cfg (dict): config dictionary
-    """
-    if input_type is None:
-        inputs_field = None
-    elif input_type == "pointcloud":
-        transform = transforms.Compose(
-            [SubsamplePointcloud(pointcloud_n), PointcloudNoise(pointcloud_noise)]
-        )
-        inputs_field = PointCloudField(
-            pointcloud_file, transform, multi_files=multi_files
-        )
-    elif input_type == "partial_pointcloud":
-        transform = transforms.Compose(
-            [
-                SubsamplePointcloud(pointcloud_n),
-                PointcloudNoise(pointcloud_noise),
-            ]
-        )
-        inputs_field = PartialPointCloudField(
-            pointcloud_file,
-            transform,
-            multi_files=multi_files,
-            part_ratio=part_ratio,
-            partial_type=partial_type,
-        )
-    elif input_type == "idx":
-        inputs_field = IndexField()
-    else:
-        raise ValueError("Invalid input type (%s)" % input_type)
-    return inputs_field
