@@ -8,8 +8,8 @@ from torch import nn
 
 from aics_im2im.models.vae.base_vae import BaseVAE
 from aics_im2im.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
-from aics_im2im.nn.losses import ChamferLoss
-from aics_im2im.nn.point_cloud import DGCNN, FoldingNet
+from aics_im2im.nn.losses import ChamferLoss, L1Loss
+from aics_im2im.nn.point_cloud import DGCNN, FoldingNet, LocalDecoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -33,6 +33,8 @@ class PointCloudVAE(BaseVAE):
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
         beta: float = 1.0,
         embedding_prior: str = "identity",
+        decoder_type: str = "foldingnet",
+        loss_type: str = "chamfer",
         eps: float = 1e-6,
         shape: str = "sphere",
         num_coords: int = 3,
@@ -41,11 +43,20 @@ class PointCloudVAE(BaseVAE):
         gaussian_path: str = "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/gaussian.npy",
         symmetry_breaking_axis: Optional[Union[str, int]] = None,
         scalar_inds: Optional[int] = None,
+        generate_grid_feats: Optional[bool] = False,
+        padding: Optional[float] = 0.1,
+        reso_plane: Optional[int] = 64,
+        plane_type: Optional[list] = ["xz", "xy", "yz"],
+        scatter_type: Optional[str] = "max",
+        point_label: Optional[str] = "points",
         **base_kwargs,
     ):
         self.get_rotation = get_rotation or mode == "vector"
         self.symmetry_breaking_axis = symmetry_breaking_axis
         self.scalar_inds = scalar_inds
+        self.decoder_type = decoder_type
+        self.generate_grid_feats = generate_grid_feats
+        self.point_label = point_label
 
         if embedding_prior == "gaussian":
             self.encoder_out_size = 2 * latent_dim
@@ -61,22 +72,32 @@ class PointCloudVAE(BaseVAE):
             include_cross=include_cross,
             include_coords=include_coords,
             symmetry_breaking_axis=symmetry_breaking_axis,
+            generate_grid_feats=generate_grid_feats,
+            padding=padding,
+            reso_plane=reso_plane,
+            plane_type=plane_type,
+            scatter_type=scatter_type,
         )
-
-        decoder = FoldingNet(
-            latent_dim,
-            num_points,
-            hidden_decoder_dim,
-            std,
-            shape,
-            sphere_path,
-            gaussian_path,
-            num_coords,
-        )
+        if decoder_type == "foldingnet":
+            decoder = FoldingNet(
+                latent_dim,
+                num_points,
+                hidden_decoder_dim,
+                std,
+                shape,
+                sphere_path,
+                gaussian_path,
+                num_coords,
+            )
+        elif decoder_type == "localdecoder":
+            decoder = LocalDecoder(latent_dim, hidden_decoder_dim)
 
         encoder = {x_label: encoder}
         decoder = {x_label: decoder}
-        reconstruction_loss = {x_label: ChamferLoss()}
+        if loss_type == "chamfer":
+            reconstruction_loss = {x_label: ChamferLoss()}
+        elif loss_type == "L1":
+            reconstruction_loss = {x_label: L1Loss()}
 
         prior = {
             "embedding": (
@@ -109,10 +130,25 @@ class PointCloudVAE(BaseVAE):
             )
             return {"embedding": embedding, "rotation": rotation}
 
+        if self.generate_grid_feats:
+            embedding, rotation, grid_feats = self.encoder[self.hparams.x_label](
+                x, get_rotation=self.get_rotation
+            )
+            return {
+                "embedding": embedding,
+                "rotation": rotation,
+                "grid_feats": grid_feats,
+            }
+
         return {"embedding": self.encoder[self.hparams.x_label](x)}
 
-    def decode(self, z_parts, return_canonical=False):
-        base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
+    def decode(self, z_parts, return_canonical=False, batch=None):
+        if self.generate_grid_feats:
+            base_xhat = self.decoder[self.hparams.x_label](
+                batch[self.point_label], z_parts["grid_feats"]
+            )
+        else:
+            base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -124,3 +160,22 @@ class PointCloudVAE(BaseVAE):
             return {self.hparams.x_label: xhat}, base_xhat
 
         return {self.hparams.x_label: xhat}
+
+    def forward(self, batch, decode=False, inference=True, return_params=False):
+        is_inference = inference or not self.training
+
+        z_params = self.encode(batch)
+        z = self.sample_z(z_params, inference=inference)
+
+        if not decode:
+            return z
+
+        if self.generate_grid_feats:
+            xhat = self.decode(z, batch=batch)
+        else:
+            xhat = self.decode(z)
+
+        if return_params:
+            return xhat, z, z_params
+
+        return xhat, z

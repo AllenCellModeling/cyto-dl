@@ -357,6 +357,8 @@ class DGCNN(nn.Module):
         rot = None
         if self.generate_grid_feats:
             if len(x.shape) == 4:
+                _, rot = self.rotation(pre_repeat.squeeze(dim=-1))
+                rot = rot.mT
                 x = torch.norm(x, dim=-2)
             x = x.permute(0, 2, 1).contiguous()
 
