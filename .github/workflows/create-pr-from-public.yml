@@ -17,7 +17,7 @@ jobs:
       - name: Get PR patch
         run: |
           PR_NUMBER=${{ github.event.inputs.public_pr_number }}
-          OWNER=AllenCellModeling
+          OWNER=AllenCell
           REPO=cyto-dl
 
           curl -o ../public-pr.patch \
@@ -36,4 +36,4 @@ jobs:
           token: ${{ secrets.AUTO_PR_TOKEN }}
           branch: pr-from-public-repo/${{ github.event.inputs.public_pr_number}}
           commit-message: |
-            Applying changes from https://github.com/colobas/dummy-public-repo/pull/${{ github.event.inputs.public_pr_number }}
+            Applying changes from https://github.com/AllenCell/cyto-dl/pull/${{ github.event.inputs.public_pr_number }}
