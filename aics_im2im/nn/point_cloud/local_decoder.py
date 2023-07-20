@@ -112,7 +112,6 @@ class LocalDecoder(nn.Module):
         for i in range(self.n_blocks):
             if self.num_features != 0:
                 net = net + self.fc_c[i](c)
-
             net = self.blocks[i](net)
 
         out = self.fc_out(self.actvn(net))

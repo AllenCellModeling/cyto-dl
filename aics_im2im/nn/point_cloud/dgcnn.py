@@ -128,6 +128,10 @@ class DGCNN(nn.Module):
         self.mode = mode
         self.init_features = 1 if self.mode == "vector" else 3
         self.final_conv = []
+        if self.scalar_inds:
+            _scalar_scale = 2
+        else:
+            _scalar_scale = 1
 
         # first conv
         convs = [
@@ -135,7 +139,7 @@ class DGCNN(nn.Module):
                 self.init_features,
                 self.hidden_dim,
                 self.mode,
-                scale_in=1 + include_coords + include_cross,
+                scale_in=(1 + include_coords + include_cross) * _scalar_scale,
                 include_symmetry=include_symmetry,
             )
         ]

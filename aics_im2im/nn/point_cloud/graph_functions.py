@@ -30,7 +30,13 @@ def knn(x, k):
 
 
 def get_graph_features(
-    x, k=20, idx=None, mode="scalar", scalar_inds=None, include_cross=True, include_input=True
+    x,
+    k=20,
+    idx=None,
+    mode="scalar",
+    scalar_inds=None,
+    include_cross=True,
+    include_input=True,
 ):
     batch_size = x.shape[0]
     num_points = x.shape[-1]
@@ -88,7 +94,9 @@ def get_graph_features(
     if scalar_inds:
         feature_unit_vector = feature / torch.norm(feature, dim=1).unsqueeze(dim=1)
         scal = scal.transpose(2, 1).contiguous()
-        scal = scal.view(batch_size, num_points, 1, num_scalar_points, 1).repeat(1, 1, k, 1, 1)
+        scal = scal.view(batch_size, num_points, 1, num_scalar_points, 1).repeat(
+            1, 1, k, 1, 1
+        )
         scal = scal.permute(0, 3, 4, 1, 2).contiguous()
         scal = scal * feature_unit_vector
         feature = torch.cat((feature, scal), dim=1)

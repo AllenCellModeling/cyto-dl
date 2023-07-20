@@ -54,7 +54,7 @@ class PointCloudVAE(BaseVAE):
         occupancy_label: Optional[str] = "points.df",
         **base_kwargs,
     ):
-        self.get_rotation = get_rotation or mode == "vector"
+        self.get_rotation = get_rotation
         self.symmetry_breaking_axis = symmetry_breaking_axis
         self.scalar_inds = scalar_inds
         self.decoder_type = decoder_type
@@ -130,7 +130,7 @@ class PointCloudVAE(BaseVAE):
     def encode(self, batch):
         x = batch[self.hparams.x_label]
 
-        if self.get_rotation:
+        if (self.get_rotation) and (not self.generate_grid_feats):
             embedding, rotation = self.encoder[self.hparams.x_label](
                 x, get_rotation=self.get_rotation
             )
@@ -158,7 +158,9 @@ class PointCloudVAE(BaseVAE):
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
-            xhat = torch.einsum("bij,bjk->bik", base_xhat, rotation)
+            xhat = torch.einsum("bij,bjk->bik", base_xhat[:, :, :3], rotation)
+            if xhat.shape[-1] != base_xhat.shape[-1]:
+                xhat = torch.cat([xhat, base_xhat[:, :, -1:]], dim=-1)
         else:
             xhat = base_xhat
 
