@@ -94,9 +94,6 @@ class LocalDecoder(nn.Module):
         return c
 
     def forward(self, p, c_plane, **kwargs):
-        import ipdb
-
-        ipdb.set_trace()
         if self.num_features != 0:
             plane_type = list(c_plane.keys())
             c = 0

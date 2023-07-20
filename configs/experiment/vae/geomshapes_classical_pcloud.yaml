@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: vae/geometricshapes.yaml
-  - override /model: vae/classical_pcloud_vae.yaml
+  - override /model: vae/classical_pcloud_ae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -23,14 +23,14 @@ data:
 
 trainer:
   # check_val_every_n_epoch: 1
-  min_epochs: 400
+  # min_epochs: 400
   max_epochs: 5000
   accelerator: gpu
   devices: [3]
 
 callbacks:
-  # early_stopping:
-  #   monitor: val/loss
+#   early_stopping:
+#   #   monitor: val/loss
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
