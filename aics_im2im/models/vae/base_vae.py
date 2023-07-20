@@ -126,7 +126,9 @@ class BaseVAE(BaseModel):
         self.latent_dim = latent_dim
 
         if decoder_latent_parts is None:
-            self.decoder_latent_parts = {key: self.prior.keys() for key in self.decoder.keys()}
+            self.decoder_latent_parts = {
+                key: self.prior.keys() for key in self.decoder.keys()
+            }
         else:
             self.decoder_latent_parts = decoder_latent_parts
             for key in self.decoder.keys():
@@ -160,10 +162,13 @@ class BaseVAE(BaseModel):
                 rcl_reduced[key] = rcl_per_input_dimension[key]
 
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
+            part: prior(z[part], mode="kl", reduction="none")
+            for part, prior in self.prior.items()
         }
 
-        kld_per_part_summed = {part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()}
+        kld_per_part_summed = {
+            part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()
+        }
 
         total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
@@ -179,7 +184,9 @@ class BaseVAE(BaseModel):
         z = {}
         for part, part_params in z_parts_params.items():
             if part in self.prior:
-                z[part] = self.prior[part](part_params, mode="sample", inference=inference)
+                z[part] = self.prior[part](
+                    part_params, mode="sample", inference=inference
+                )
             else:
                 # if prior for this part isn't in the dict, assume dirac prior
                 # i.e. just return the params, and it won't contribute to kl

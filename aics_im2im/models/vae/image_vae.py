@@ -76,7 +76,9 @@ class ImageVAE(BaseVAE):
         padding = same_padding(kernel_size)
 
         for s in strides:
-            self.final_size = calculate_out_shape(self.final_size, self.kernel_size, s, padding)
+            self.final_size = calculate_out_shape(
+                self.final_size, self.kernel_size, s, padding
+            )
 
         linear_size = int(np.product(self.final_size)) * _full_net.encoded_channels
 

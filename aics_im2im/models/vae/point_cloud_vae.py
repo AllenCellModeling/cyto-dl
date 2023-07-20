@@ -60,7 +60,6 @@ class PointCloudVAE(BaseVAE):
             scalar_inds=scalar_inds,
             include_cross=include_cross,
             include_coords=include_coords,
-            get_rotation=get_rotation,
             symmetry_breaking_axis=symmetry_breaking_axis,
         )
 

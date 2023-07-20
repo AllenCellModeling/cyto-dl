@@ -116,7 +116,6 @@ class LatentLossVAE(BaseVAE):
         return latent_basal
 
     def model_step(self, stage, batch, batch_idx):
-
         (
             x_hat,
             z_parts,
@@ -139,10 +138,16 @@ class LatentLossVAE(BaseVAE):
         weighted_adv_loss = 0
         adv_loss = 0
         for part in self.latent_loss.keys():
-            if isinstance(self.latent_loss[part].loss, torch.nn.modules.loss.BCEWithLogitsLoss):
-                batch[self.latent_loss_target[part]] = batch[self.latent_loss_target[part]].gt(0)
+            if isinstance(
+                self.latent_loss[part].loss, torch.nn.modules.loss.BCEWithLogitsLoss
+            ):
+                batch[self.latent_loss_target[part]] = batch[
+                    self.latent_loss_target[part]
+                ].gt(0)
 
-            _loss[part] = self.latent_loss[part](mu, batch[self.latent_loss_target[part]])
+            _loss[part] = self.latent_loss[part](
+                mu, batch[self.latent_loss_target[part]]
+            )
             adv_loss += _loss[part]
             weighted_adv_loss += _loss[part] * self.latent_loss_weights.get(part, 1.0)
 
@@ -161,8 +166,9 @@ class LatentLossVAE(BaseVAE):
                 non_main_lr_scheds.append(lr_schedulers.pop(0))
 
             adversarial_flag = False
-            for optim_ix, (optim, lr_sched) in enumerate(zip(optimizers, lr_schedulers)):
-
+            for optim_ix, (optim, lr_sched) in enumerate(
+                zip(optimizers, lr_schedulers)
+            ):
                 group_key = self.latent_loss_optimizer_map[optim_ix]
                 mod = self.latent_loss_backprop_when.get(group_key) or 3
 
@@ -242,23 +248,33 @@ class LatentLossVAE(BaseVAE):
 
         if len(non_main_key) > 0:
             non_main_key = non_main_key[0]
-            _parameters2 = get_params(self.encoder[self.optimizer[non_main_key]["keys"][0]])
+            _parameters2 = get_params(
+                self.encoder[self.optimizer[non_main_key]["keys"][0]]
+            )
             if len(self.optimizer[non_main_key]["keys"]) > 1:
                 for key in self.optimizer[non_main_key]["keys"][1:]:
                     _parameters2.extend(
-                        get_params(self.encoder[self.optimizer[non_main_key]["keys"][key]])
+                        get_params(
+                            self.encoder[self.optimizer[non_main_key]["keys"][key]]
+                        )
                     )
             optimizers.append(self.optimizer[non_main_key]["opt"](_parameters2))
-            lr_schedulers.append(self.lr_scheduler[non_main_key](optimizer=optimizers[-1]))
+            lr_schedulers.append(
+                self.lr_scheduler[non_main_key](optimizer=optimizers[-1])
+            )
 
         self.latent_loss_optimizer_map = {}
-        for optim_ix, (group_key, group) in enumerate(self.latent_loss_optimizer.items()):
+        for optim_ix, (group_key, group) in enumerate(
+            self.latent_loss_optimizer.items()
+        ):
             self.latent_loss_optimizer_map[optim_ix] = group_key
             _parameters3 = get_params(self.latent_loss[group["keys"][0]])
             if len(group["keys"]) > 1:
                 for key in group["keys"][1:]:
                     _parameters3.extend(get_params(self.latent_loss[key]))
             optimizers.append(group["opt"](_parameters3))
-            lr_schedulers.append(self.latent_loss_scheduler[group_key](optimizer=optimizers[-1]))
+            lr_schedulers.append(
+                self.latent_loss_scheduler[group_key](optimizer=optimizers[-1])
+            )
 
         return optimizers, lr_schedulers

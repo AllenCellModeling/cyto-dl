@@ -60,7 +60,9 @@ class BaseModelMeta(type):
         # instantiate class with instantiated `init_args`
         # hydra doesn't change the original dict, so we can use it after this
         # with `save_hyperparameters`
-        obj = type.__call__(cls, **instantiate(init_args, _recursive_=True, _convert_=True))
+        obj = type.__call__(
+            cls, **instantiate(init_args, _recursive_=True, _convert_=True)
+        )
 
         # make sure only primitives get stored in the ckpt
         ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]
@@ -142,7 +144,10 @@ class BaseModel(LightningModule, metaclass=BaseModelMeta):
                         metric.update(preds, targets)
 
             self.log(
-                metric_key + "/step", metric.value.detach().item(), on_step=True, on_epoch=False
+                metric_key + "/step",
+                metric.value.detach().item(),
+                on_step=True,
+                on_epoch=False,
             )
             self.log(metric_key, metric, on_step=False, on_epoch=True, prog_bar=True)
 
