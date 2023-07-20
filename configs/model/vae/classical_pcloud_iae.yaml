@@ -1,33 +1,36 @@
 _target_: aics_im2im.models.vae.PointCloudVAE
 
-x_label: pcloud
-occupancy_label: 
+x_label: inputs
+point_label: points
 # id_label: cell_id
-
 
 k: 20
 latent_dim: 20
-num_points: 256
+num_points: 2048
 hidden_dim: 64
 hidden_conv2d_channels: [64, 64, 64, 64]
-hidden_conv1d_channels: [512, 20]
+hidden_conv1d_channels: [512, 20, 512, 20]
 
 
-mode: vector
+mode: scalar
 scalar_inds: 
 get_rotation: false
-include_cross: true
+include_cross: false
 include_coords: true
 symmetry_breaking_axis: 
-generate_grid_feats: False
 
-decoder_type: 'foldingnet'
-shape: "plane"
+generate_grid_feats: True
 
-loss_type: 'chamfer'
+decoder_type: 'localdecoder'
+padding: 0.1
+reso_plane: 64
+plane_type: ['xz', 'xy', 'yz']
+scatter_type: 'max'
+
+loss_type: 'L1'
 
 beta: 1.0
-embedding_prior: "gaussian"
+embedding_prior: "identity"
 
 eps: 1e-6
 

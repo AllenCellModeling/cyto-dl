@@ -139,15 +139,19 @@ class BaseVAE(BaseModel):
                         "latent parts it uses."
                     )
 
-    def calculate_rcl(self, x, xhat, key):
-        rcl_per_input_dimension = self.reconstruction_loss[key](x[key], xhat[key])
+    def calculate_rcl(self, x, xhat, input_key, target_key=None):
+        if not target_key:
+            target_key = input_key
+        rcl_per_input_dimension = self.reconstruction_loss[input_key](
+            x[target_key], xhat[input_key]
+        )
         return rcl_per_input_dimension
 
-    def calculate_elbo(self, x, xhat, z):
+    def calculate_rcl_dict(self, x, xhat, target_key=None):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key)
+            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, target_key)
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -160,6 +164,10 @@ class BaseVAE(BaseModel):
                 rcl_reduced[key] = rcl.mean()
             else:
                 rcl_reduced[key] = rcl_per_input_dimension[key]
+        return rcl_reduced
+
+    def calculate_elbo(self, x, xhat, z):
+        rcl_reduced = self.calculate_rcl_dict(x, xhat)
 
         kld_per_part = {
             part: prior(z[part], mode="kl", reduction="none")
@@ -245,9 +253,11 @@ class BaseVAE(BaseModel):
             loss[f"reconstruction_{part}"] = recon_part.detach()
 
         preds = {}
+
         for part, z_part in z.items():
-            preds[f"z/{part}"] = z_part.detach()
-            preds[f"z_params/{part}"] = z_params[part].detach()
+            if not isinstance(z_part, dict):
+                preds[f"z/{part}"] = z_part.detach()
+                preds[f"z_params/{part}"] = z_params[part].detach()
 
         for part in self.prior:
             loss[f"kld_{part}"] = kld_per_part[part].detach()

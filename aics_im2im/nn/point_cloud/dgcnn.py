@@ -354,7 +354,7 @@ class DGCNN(nn.Module):
             elif (j == _pool_ind) and (not self.generate_grid_feats):
                 x = self.pool(x, dim=-1)
 
-        rot = None
+        rot = torch.zeros(1).type_as(x)
         if self.generate_grid_feats:
             if len(x.shape) == 4:
                 _, rot = self.rotation(pre_repeat.squeeze(dim=-1))

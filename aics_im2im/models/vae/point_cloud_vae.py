@@ -51,6 +51,7 @@ class PointCloudVAE(BaseVAE):
         plane_type: Optional[list] = ["xz", "xy", "yz"],
         scatter_type: Optional[str] = "max",
         point_label: Optional[str] = "points",
+        occupancy_label: Optional[str] = "points.df",
         **base_kwargs,
     ):
         self.get_rotation = get_rotation or mode == "vector"
@@ -58,6 +59,7 @@ class PointCloudVAE(BaseVAE):
         self.scalar_inds = scalar_inds
         self.decoder_type = decoder_type
         self.generate_grid_feats = generate_grid_feats
+        self.occupancy_label = occupancy_label
         self.point_label = point_label
 
         if embedding_prior == "gaussian":
@@ -164,6 +166,28 @@ class PointCloudVAE(BaseVAE):
             return {self.hparams.x_label: xhat}, base_xhat
 
         return {self.hparams.x_label: xhat}
+
+    def calculate_elbo(self, x, xhat, z):
+        rcl_reduced = self.calculate_rcl_dict(x, xhat, self.occupancy_label)
+
+        kld_per_part = {
+            part: prior(z[part], mode="kl", reduction="none")
+            for part, prior in self.prior.items()
+        }
+
+        kld_per_part_summed = {
+            part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()
+        }
+
+        total_kld = sum(kld_per_part_summed.values())
+        total_recon = sum(rcl_reduced.values())
+        return (
+            total_recon + self.beta * total_kld,
+            total_recon,
+            rcl_reduced,
+            total_kld,
+            kld_per_part,
+        )
 
     def forward(self, batch, decode=False, inference=True, return_params=False):
         is_inference = inference or not self.training
