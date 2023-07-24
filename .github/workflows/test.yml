@@ -7,7 +7,7 @@ on:
 
 # Cancel actions when new commits are pushed to PR
 concurrency:
-  group: ${{ github.head_ref }}
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -78,7 +78,7 @@ jobs:
 
       - name: Run tests and collect coverage
         shell: bash -el {0}
-        run: pytest --cov aics_im2im
+        run: pytest --cov cyto_dl
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

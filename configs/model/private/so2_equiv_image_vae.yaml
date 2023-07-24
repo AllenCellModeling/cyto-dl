@@ -1,0 +1,40 @@
+<<<<<<< HEAD:configs/model/vae/so2_equiv_image_vae.yaml
+_target_: aics_im2im.models.vae.so2_image_vae.SO2ImageVAE
+=======
+_target_: cyto_dl.models.vae.SO2ImageVAE
+>>>>>>> 743284fd3e3960f50abe48b16c3dc227b7f714df:configs/model/private/so2_equiv_image_vae.yaml
+
+latent_dim: 1024
+spatial_dims: 2
+in_shape: [1, 28, 28]
+out_channels: 1
+channels: [2, 2, 2, 2]
+strides: [1, 1, 1, 1]
+
+x_label: image
+id_label: null
+
+kernel_size: 3
+up_kernel_size: 3
+num_res_units: 0
+act: relu
+norm: batch
+dropout: null
+bias: false
+beta: 1.0
+
+reconstruction_loss:
+  _target_: torch.nn.modules.loss.MSELoss
+  reduction: sum
+
+encoder_out_size: 2048
+embedding_prior: gaussian
+
+use_sigmoid: False
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.001
+mask_input: False
+mask_output: False

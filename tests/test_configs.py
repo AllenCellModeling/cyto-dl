@@ -2,7 +2,7 @@ import hydra
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 
-from aics_im2im.utils.config import remove_aux_key
+from cyto_dl.utils.config import remove_aux_key
 
 from .utils import resolve_readonly
 

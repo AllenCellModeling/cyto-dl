@@ -1,0 +1,41 @@
+_target_: cyto_dl.models.vae.ImageVAE
+
+latent_dim: 256
+spatial_dims: 2
+in_shape: [1, 28, 28]
+out_channels: 1
+channels: [2, 2, 2, 2]
+strides: [1, 1, 1, 1]
+
+x_label: image
+id_label: null
+
+kernel_size: 3
+up_kernel_size: 3
+num_res_units: 0
+act: relu
+norm: batch
+dropout: null
+bias: false
+beta: 1.0
+
+reconstruction_loss:
+  _target_: torch.nn.modules.loss.MSELoss
+  reduction: sum
+
+encoder_out_size: 512
+prior:
+<<<<<<< HEAD:configs/model/vae/classical_image_vae.yaml
+  _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior
+  dimensionality: 256
+=======
+  _target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior
+  dimensionality: 32
+>>>>>>> 743284fd3e3960f50abe48b16c3dc227b7f714df:configs/model/private/classical_image_vae.yaml
+
+use_sigmoid: False
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.001

@@ -1,0 +1,15 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+path: /allen/aics/modeling/gui.pires/data/ascb_2022_spharm/...
+
+split_column: split
+batch_size: 16
+num_workers: 1
+transforms:
+  _target_: cyto_dl.dataframe.transforms.GroupCols
+  groups:
+    shcoeff:
+      columns:
+  dtypes:
+    shcoeff: float32

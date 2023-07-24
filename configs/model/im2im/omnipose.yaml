@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.im2im.MultiTaskIm2Im
+_target_: cyto_dl.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 x_key: ${source_col}
@@ -37,8 +37,8 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseHead
+      - _target_: cyto_dl.nn.BaseHead
         loss:
-          _target_: aics_im2im.models.im2im.utils.OmniposeLoss
+          _target_: cyto_dl.models.im2im.utils.OmniposeLoss
           dim: ${spatial_dims}
         save_raw: True

@@ -1,0 +1,10 @@
+# See here for more info on this class:
+# https://lightning-bolts.readthedocs.io/en/latest/datamodules/vision.html#mnist
+# NOTE: to use this config yaml, you'll have to install the lightning-bolts package
+
+_target_: giae.so2.data.MNISTDataModule
+
+batch_size: 128
+num_workers: 4
+num_eval_samples: 200
+file_path: "/allen/aics/modeling/ritvik/projects/cyto-dl/giae/mnist_all_rotation_normalized_float_train_valid.amat"
