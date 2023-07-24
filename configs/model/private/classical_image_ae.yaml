@@ -25,7 +25,7 @@ reconstruction_loss:
 
 encoder_out_size: 256
 prior:
-  _target_: aics_im2im.models.vae.priors.IdentityPrior
+  _target_: cyto_dl.models.vae.priors.IdentityPrior
   dimensionality: 256
 
 use_sigmoid: False

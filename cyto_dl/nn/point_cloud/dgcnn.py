@@ -9,11 +9,11 @@
 import torch
 from torch import nn
 
-from aics_im2im import utils
+from cyto_dl import utils
 
 from .graph_functions import get_graph_features
 from .vnn import VNLeakyReLU, VNLinear, VNLinearLeakyReLU, VNRotationMatrix
-from aics_im2im.datamodules.shapenet_dataset.utils import (
+from cyto_dl.datamodules.shapenet_dataset.utils import (
     normalize_3d_coordinate,
     normalize_coordinate,
     coordinate2index,

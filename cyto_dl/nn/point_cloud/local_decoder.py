@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from aics_im2im.datamodules.shapenet_dataset.utils import (
+from cyto_dl.datamodules.shapenet_dataset.utils import (
     normalize_3d_coordinate,
     normalize_coordinate,
 )

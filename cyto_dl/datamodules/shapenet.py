@@ -1,11 +1,11 @@
 from lightning import LightningDataModule
 from torch.utils.data import DataLoader
 from typing import Optional
-from aics_im2im.datamodules.shapenet_dataset import (
+from cyto_dl.datamodules.shapenet_dataset import (
     Shapes3dDataset,
     IndexField,
 )
-from aics_im2im.datamodules.shapenet_dataset.utils import (
+from cyto_dl.datamodules.shapenet_dataset.utils import (
     get_data_fields,
     get_inputs_field,
 )

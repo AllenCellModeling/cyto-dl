@@ -6,10 +6,10 @@ import torch
 from omegaconf import DictConfig
 from torch import nn
 
-from aics_im2im.models.vae.base_vae import BaseVAE
-from aics_im2im.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
-from aics_im2im.nn.losses import ChamferLoss, L1Loss
-from aics_im2im.nn.point_cloud import DGCNN, FoldingNet, LocalDecoder
+from cyto_dl.models.vae.base_vae import BaseVAE
+from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
+from cyto_dl.nn.losses import ChamferLoss, L1Loss
+from cyto_dl.nn.point_cloud import DGCNN, FoldingNet, LocalDecoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
