@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.DataframeDatamodule
+_target_: cyto_dl.datamodules.DataframeDatamodule
 _convert_: all
 
 path: /allen/aics/modeling/ritvik/pcna_center_dna2/register/manifest.csv
@@ -18,14 +18,14 @@ persistent_workers: true
 # 2: [ 32,  60,  94]
 
 transforms:
-  - _target_: aics_im2im.dataframe.transforms.GroupCols
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
     groups:
       image: registered_path
       cell_id: CellId
   - _target_: monai.transforms.LoadImaged
     keys: [image]
     reader:
-      _target_: aics_im2im.image.io.OmeZarrReader
+      _target_: cyto_dl.image.io.OmeZarrReader
       level: 0
       channels: ["dna_segmentation"]
     expanduser: false

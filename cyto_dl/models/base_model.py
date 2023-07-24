@@ -143,17 +143,7 @@ class BaseModel(LightningModule, metaclass=BaseModelMeta):
                     if not isinstance(preds, MutableMapping):
                         metric.update(preds, targets)
 
-<<<<<<< HEAD:aics_im2im/models/base_model.py
-            self.log(
-                metric_key + "/step",
-                metric.value.detach().item(),
-                on_step=True,
-                on_epoch=False,
-            )
-            self.log(metric_key, metric, on_step=False, on_epoch=True, prog_bar=True)
-=======
             self.log(metric_key, metric, on_step=True, on_epoch=True, prog_bar=True)
->>>>>>> 743284fd3e3960f50abe48b16c3dc227b7f714df:cyto_dl/models/base_model.py
 
     def model_step(self, stage, batch, batch_idx):
         """Here you should implement the logic for a step in the training/validation/test process.

@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.ShapenetDataModule
+_target_: cyto_dl.datamodules.ShapenetDataModule
 dataset_folder: "/allen/aics/modeling/ritvik/projects/occupancy_networks/data/ShapeNet"
 method: "shapenet_dfnet"
 dataset_type: "partial_pointcloud"

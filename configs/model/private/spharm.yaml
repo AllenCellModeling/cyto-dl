@@ -1,11 +1,7 @@
 defaults:
   - reconstruction_loss: spharm_gaussian
 
-<<<<<<< HEAD:configs/model/vae/spharm.yaml
-_target_: aics_im2im.models.vae.BaseVAE
-=======
 _target_: cyto_dl.models.vae.BaseVase
->>>>>>> 743284fd3e3960f50abe48b16c3dc227b7f714df:configs/model/private/spharm.yaml
 x_dim: 289
 beta: 1.0
 x_label: shcoeff

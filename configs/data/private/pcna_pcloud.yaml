@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.DataframeDatamodule
+_target_: cyto_dl.datamodules.DataframeDatamodule
 _convert_: all
 
 path: /allen/aics/modeling/ritvik/pcna/one_step/manifest.parquet
@@ -12,12 +12,12 @@ shuffle: false
 # multiprocessing_context: spawn
 
 transforms:
-  - _target_: aics_im2im.dataframe.transforms.GroupCols
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
     groups:
       pcloud: pcloud_path
       cell_id: CellId
 
-  - _target_: aics_im2im.point_cloud.io.ReadPointCloud
+  - _target_: cyto_dl.point_cloud.io.ReadPointCloud
     keys: pcloud
     remote: false
     scale: 0.1

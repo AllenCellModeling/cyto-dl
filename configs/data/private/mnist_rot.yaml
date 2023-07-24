@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.dataframe.MNISTDataModule
+_target_: cyto_dl.datamodules.dataframe.MNISTDataModule
 
 batch_size: 128
 num_workers: 4

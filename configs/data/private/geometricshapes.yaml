@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.GeometricShapesDataModule
+_target_: cyto_dl.datamodules.GeometricShapesDataModule
 batch_size: 32
 num_workers: 0
 num_points: 256

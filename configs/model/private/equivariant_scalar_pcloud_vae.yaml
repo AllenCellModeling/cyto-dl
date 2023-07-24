@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.vae.PointCloudVAE
+_target_: cyto_dl.models.vae.PointCloudVAE
 
 x_label: pcloud
 # id_label: cell_id

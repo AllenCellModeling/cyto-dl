@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.DataframeDatamodule
+_target_: cyto_dl.datamodules.DataframeDatamodule
 _convert_: all
 
 path: /allen/aics/assay-dev/users/Alex/handoff/ritvik/npm_manifest_with_sdfs.csv
@@ -10,11 +10,11 @@ multiprocessing_context: spawn
 persistent_workers: true
 
 transforms:
-  - _target_: aics_im2im.dataframe.transforms.GroupCols
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
     groups:
       image: sdf_path_xyalign_maxproj_32
       cell_id: CellId
-  - _target_: aics_im2im.image.io.ReadNumpyFile
+  - _target_: cyto_dl.image.io.ReadNumpyFile
     keys: image
     remote: false
     clip_min: -2

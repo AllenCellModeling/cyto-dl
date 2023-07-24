@@ -25,13 +25,8 @@ reconstruction_loss:
 
 encoder_out_size: 512
 prior:
-<<<<<<< HEAD:configs/model/vae/classical_image_vae.yaml
-  _target_: aics_im2im.models.vae.priors.IsotropicGaussianPrior
-  dimensionality: 256
-=======
   _target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior
   dimensionality: 32
->>>>>>> 743284fd3e3960f50abe48b16c3dc227b7f714df:configs/model/private/classical_image_vae.yaml
 
 use_sigmoid: False
 

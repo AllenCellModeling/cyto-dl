@@ -17,7 +17,7 @@ def make_folder_dataloader(
     endswith: Optional[str] = None,
     contains: Optional[str] = None,
     excludes: Optional[str] = None,
-    **dataloader_kwargs
+    **dataloader_kwargs,
 ):
     """Create a dataloader based on a folder of samples. If no transforms are applied, each sample
     is a dictionary with a key "input" containing the corresponding path and a key "orig_fname"

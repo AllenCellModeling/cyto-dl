@@ -118,7 +118,9 @@ class SmartcacheDatamodule(LightningDataModule):
         """Parallelize getting the image loading arguments enumerating all
         timepoints/channels/scenes for each file in the dataframe."""
         with ProgressBar():
-            img_data = dask.compute(*[self._get_file_args(row) for row in df.itertuples()])
+            img_data = dask.compute(
+                *[self._get_file_args(row) for row in df.itertuples()]
+            )
         img_data = [item for sublist in img_data for item in sublist]
         return img_data
 
@@ -128,12 +130,15 @@ class SmartcacheDatamodule(LightningDataModule):
     def setup(self, stage=None):
         if stage == "fit":
             # split df into train/test/val
-            self.df_train, self.df_val = train_test_split(self.df, test_size=self.val_size)
+            self.df_train, self.df_val = train_test_split(
+                self.df, test_size=self.val_size
+            )
             # update img_data
             self.img_data["train"] = self.get_per_file_args(self.df_train)
             self.img_data["val"] = self.get_per_file_args(self.df_val)
             pd.DataFrame(self.img_data["train"]).to_csv(
-                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv", index=False
+                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv",
+                index=False,
             )
             pd.DataFrame(self.img_data["val"]).to_csv(
                 f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv", index=False
@@ -154,7 +159,9 @@ class SmartcacheDatamodule(LightningDataModule):
 
         elif stage in ("test", "predict"):
             self.img_data[stage] = self.get_per_file_args(self.df)
-            self.datasets[stage] = Dataset(self.img_data[stage], transform=self.transforms[stage])
+            self.datasets[stage] = Dataset(
+                self.img_data[stage], transform=self.transforms[stage]
+            )
 
     def make_dataloader(self, split):
         # smartcachedataset can't have persistent workers

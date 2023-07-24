@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.vae.so2_image_vae.SO2ImageVAE
+_target_: cyto_dl.models.vae.so2_image_vae.SO2ImageVAE
 
 latent_dim: 1024
 spatial_dims: 2

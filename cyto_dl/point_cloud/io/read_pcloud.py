@@ -62,10 +62,14 @@ class ReadPointCloud(MapTransform):
                 )
 
                 if self.num_cols > 3:
-                    res[key][:, self.num_cols - 1 :] = res[key][:, self.num_cols - 1 :] * 0.1
+                    res[key][:, self.num_cols - 1 :] = (
+                        res[key][:, self.num_cols - 1 :] * 0.1
+                    )
 
                 if self.sample:
-                    self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
+                    self.sample_idx = np.random.randint(
+                        res[key].shape[0], size=self.sample
+                    )
                     res[key] = res[key][self.sample_idx]
 
         return res
