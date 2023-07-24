@@ -1,7 +1,8 @@
 from .base_vae import BaseVAE
 from .image_vae import ImageVAE
 from .latent_loss_vae import LatentLossVAE
-from .so2_image_vae import SO2ImageVAE
+
+# from .so2_image_vae import SO2ImageVAE
 from .tabular_vae import TabularVAE
 
 # compartmentalize imports so that only the relevant packages

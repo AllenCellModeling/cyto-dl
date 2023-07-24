@@ -16,10 +16,10 @@ from cyto_dl.image.transforms import O2Mask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 
-from .modules_2d import Decoder as Decoder2D
-from .modules_2d import Encoder as Encoder2D
-from .modules_3d import Decoder as Decoder3D
-from .modules_3d import Encoder as Encoder3D
+# from .modules_2d import Decoder as Decoder2D
+# from .modules_2d import Encoder as Encoder2D
+# from .modules_3d import Decoder as Decoder3D
+# from .modules_3d import Encoder as Encoder3D
 from .so2_encoder import SO2ImageEncoder
 from .utils import get_rotation_matrix, rotate_img
 
@@ -106,7 +106,9 @@ class SO2ImageVAE(BaseVAE):
         padding = same_padding(kernel_size)
 
         for s in strides:
-            self.final_size = calculate_out_shape(self.final_size, kernel_size, s, padding)
+            self.final_size = calculate_out_shape(
+                self.final_size, kernel_size, s, padding
+            )
 
         linear_size = int(np.product(self.final_size)) * channels[-1]
 
