@@ -41,6 +41,8 @@ class ImageVAE(BaseVAE):
         strides: Sequence[int],
         kernel_sizes: Sequence[int],
         group: Optional[str] = None,
+        out_channels: int = None,
+        decoder_initial_shape: Optional[Sequence[int]] = None,
         decoder_channels: Optional[Sequence[int]] = None,
         decoder_strides: Optional[Sequence[int]] = None,
         maximum_frequency: int = 8,
@@ -64,6 +66,8 @@ class ImageVAE(BaseVAE):
         **base_kwargs
     ):
         in_channels, *in_shape = in_shape
+
+        self.out_channels = out_channels if out_channels is not None else in_channels
 
         self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
@@ -108,7 +112,7 @@ class ImageVAE(BaseVAE):
             _channels = channels[::-1]
         else:
             _channels = decoder_channels
-        _channels += [in_channels]
+        _channels += [self.out_channels]
 
         if decoder_strides is None:
             _strides = strides[::-1]
@@ -147,15 +151,17 @@ class ImageVAE(BaseVAE):
                 act=act,
                 norm=norm,
                 dropout=dropout,
-                subunits=1,
+                subunits=num_res_units,
                 padding=1,
             )
 
             decode_blocks.append(nn.Sequential(upsample, res))
 
+        init_shape = self.final_size if decoder_initial_shape is None else decoder_initial_shape
+
         first_upsample = nn.Sequential(
-            nn.Linear(latent_dim, _channels[0] * int(np.product(self.final_size))),
-            Reshape(_channels[0], *self.final_size),
+            nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
+            Reshape(_channels[0], *init_shape),
         )
 
         decoder = nn.Sequential(
