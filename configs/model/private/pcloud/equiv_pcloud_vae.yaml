@@ -29,7 +29,7 @@ prior:
 
 beta: 1.0
 
-get_rotation: false
+get_rotation: true
 
 optimizer:
   _partial_: true

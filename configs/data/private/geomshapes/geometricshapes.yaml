@@ -9,4 +9,5 @@ eval_samples_per_class: 10
 num_classes: 10
 cond_class:
 couple_rot:
+return_id: True
 path: "/allen/aics/modeling/ritvik/projects/PointGPT/data/GeometricShapes-34/geometricshapes_pc/"

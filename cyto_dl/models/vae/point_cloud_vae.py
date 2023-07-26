@@ -170,10 +170,13 @@ class PointCloudVAE(BaseVAE):
     def encoder_compose_function(self, z_parts):
         if self.condition_keys:
             for j, key in enumerate([self.hparams.x_label] + self.condition_keys):
+                this_z_parts = z_parts[key]
+                if len(this_z_parts.shape) == 3:
+                    this_z_parts = this_z_parts.argmax(dim=1)
                 if j == 0:
-                    cond_feats = z_parts[key]
+                    cond_feats = this_z_parts
                 else:
-                    cond_feats = torch.cat((cond_feats, z_parts[key]), dim=1)
+                    cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
             z_parts[self.hparams.x_label] = self.condition_encoder[
                 self.hparams.x_label
             ](cond_feats)
@@ -183,10 +186,12 @@ class PointCloudVAE(BaseVAE):
         if self.condition_keys:
             for j, key in enumerate(self.condition_keys):
                 if j == 0:
-                    cond_feats = z_parts[key]
+                    cond_inputs = batch[key]
                 else:
-                    cond_feats = torch.cat((cond_feats, z_parts[key]), dim=1)
-                cond_feats = torch.cat((cond_feats, batch[key]), dim=1)
+                    cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
+                cond_feats = torch.cat(
+                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
+                )
             z_parts[self.hparams.x_label] = self.condition_decoder[
                 self.hparams.x_label
             ](cond_feats)
