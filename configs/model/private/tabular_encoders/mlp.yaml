@@ -1,0 +1,6 @@
+_target_: cyto_dl.nn.MLP
+scale_output: 1
+hidden_layers: [20, 20]
+_args_: 
+- 3
+- 20

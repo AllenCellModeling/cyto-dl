@@ -1,0 +1,7 @@
+_target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior
+dimensionality: 20
+
+
+
+
+

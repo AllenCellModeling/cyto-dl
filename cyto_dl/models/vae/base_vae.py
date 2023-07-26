@@ -7,6 +7,7 @@ from torch.nn.modules.loss import _Loss as Loss
 from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
+import inspect
 
 from .priors import IdentityPrior, IsotropicGaussianPrior, Prior
 
@@ -138,6 +139,9 @@ class BaseVAE(BaseModel):
                         f"`decoder_latent_parts`, so we don't know which "
                         "latent parts it uses."
                     )
+        self.encoder_args = {}
+        for part, enc in self.encoder.items():
+            self.encoder_args[part] = inspect.getfullargspec(enc.forward).args
 
     def calculate_rcl(self, x, xhat, input_key, target_key=None):
         if not target_key:
@@ -147,11 +151,11 @@ class BaseVAE(BaseModel):
         )
         return rcl_per_input_dimension
 
-    def calculate_rcl_dict(self, x, xhat, target_key=None):
+    def calculate_rcl_dict(self, x, xhat):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, target_key)
+            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key)
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -202,8 +206,19 @@ class BaseVAE(BaseModel):
 
         return z
 
-    def encode(self, batch):
-        return {part: encoder(batch[part]) for part, encoder in self.encoder.items()}
+    def encode(self, batch, **kwargs):
+        ret_dict = {}
+        for part, encoder in self.encoder.items():
+            this_ret = encoder(
+                batch[part],
+                **{k: v for k, v in kwargs.items() if k in self.encoder_args[part]},
+            )
+            if isinstance(this_ret, dict):  # deal with multiple outputs for an encoder
+                for key in this_ret.keys():
+                    ret_dict[key] = this_ret[key]
+            else:
+                ret_dict[part] = this_ret
+        return ret_dict
 
     def decode(self, z):
         # for each decoder key, get the latent parts it uses from `self.decoder_latent_keys`
@@ -213,10 +228,12 @@ class BaseVAE(BaseModel):
             for part, decoder in self.decoder.items()
         }
 
-    def forward(self, batch, decode=False, inference=True, return_params=False):
+    def forward(
+        self, batch, decode=False, inference=True, return_params=False, **kwargs
+    ):
         is_inference = inference or not self.training
 
-        z_params = self.encode(batch)
+        z_params = self.encode(batch, **kwargs)
         z = self.sample_z(z_params, inference=inference)
 
         if not decode:

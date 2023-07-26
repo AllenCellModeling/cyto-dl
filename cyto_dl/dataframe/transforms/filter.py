@@ -6,7 +6,9 @@ import numpy as np
 import pandas as pd
 
 
-def filter_rows(dataframe: pd.DataFrame, column: str, values: Sequence, exclude: bool = False):
+def filter_rows(
+    dataframe: pd.DataFrame, column: str, values: Sequence, exclude: bool = False
+):
     """Filter a dataframe, keeping only the rows where a given column's value is contained in a
     list of values.
 
@@ -117,16 +119,14 @@ def filter_columns(
     regex: Optional[str] = None
         A string containing a regular expression to be matched
     """
-
     if columns is None:
         if isinstance(input, pd.DataFrame):
             columns = input.columns.tolist()
         elif isinstance(input, MutableMapping):
-            columns = input.keys()
+            columns = [*input]
         else:
             columns = input
-
-        columns = _filter_columns(columns, regex, startswith, endswith, contains, excludes)
+    columns = _filter_columns(columns, regex, startswith, endswith, contains, excludes)
 
     if isinstance(input, pd.DataFrame):
         return input[columns]

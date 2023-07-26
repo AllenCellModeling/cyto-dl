@@ -1,0 +1,13 @@
+_target_: cyto_dl.nn.point_cloud.DGCNN
+num_features: 20
+hidden_dim: 64
+hidden_conv2d_channels:  [64, 64, 64, 64]
+hidden_conv1d_channels: [512, ${model.latent_dim}]
+k: 20
+mode: vector
+scalar_inds: 4
+num_coords: 4
+include_cross: true
+include_coords: True
+symmetry_breaking_axis:
+generate_grid_feats: False

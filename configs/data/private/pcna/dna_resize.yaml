@@ -1,7 +1,7 @@
 _target_: cyto_dl.datamodules.DataframeDatamodule
 _convert_: all
 
-path: /allen/aics/modeling/ritvik/pcna/one_step/manifest.parquet
+path: /allen/aics/modeling/ritvik/pcna/manifest.parquet
 split_column: split
 
 batch_size: 32
@@ -14,8 +14,12 @@ shuffle: false
 transforms:
   - _target_: cyto_dl.dataframe.transforms.GroupCols
     groups:
-      pcloud: pcloud_path_dna
+      pcloud: pcloud_path_dna_resize
       cell_id: CellId
+      shcoeff: 
+        contains: 'shcoeffs_'
+    dtypes:
+      shcoeff: float32
 
   - _target_: cyto_dl.point_cloud.io.ReadPointCloud
     keys: pcloud

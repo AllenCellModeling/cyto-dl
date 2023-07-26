@@ -100,9 +100,11 @@ class DGCNN(nn.Module):
         plane_type=["xz", "xy", "yz"],
         generate_grid_feats=False,
         scatter_type="max",
+        x_label="pcloud",
     ):
         super().__init__()
         self.k = k
+        self.x_label = x_label
         self.num_features = num_features
         self.scatter_type = scatter_type
         self.include_coords = include_coords
@@ -387,6 +389,6 @@ class DGCNN(nn.Module):
             x = self.embedding_head(x)
 
         if get_rotation:
-            return x, rot
+            return {self.x_label: x, "rotation": rot}
 
-        return x
+        return {self.x_label: x}
