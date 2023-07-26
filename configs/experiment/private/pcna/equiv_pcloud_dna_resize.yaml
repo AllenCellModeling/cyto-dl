@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/geomshapes/geometricshapes.yaml
-  - override /model: private/pcloud/classical_pcloud_ae_resize.yaml
+  - override /data: private/pcna/dna_resize.yaml
+  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -13,24 +13,28 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: pcloud_test
-tags: ["equivariance", "point-cloud"]
+experiment_name: pcloud
+tags: ["equivariance", "pcna-dataset", "point-cloud"]
 
 seed: 42
+
+model:
+  num_points: 2048
+  x_label: pcloud
 
 data:
   batch_size: 32
 
 trainer:
-  # check_val_every_n_epoch: 1
-  # min_epochs: 400
-  max_epochs: 5000
+  check_val_every_n_epoch: 1
+  min_epochs: 400
+  max_epochs: 2000
   accelerator: gpu
-  devices: [3]
+  devices: [2]
 
 callbacks:
-#   early_stopping:
-#   #   monitor: val/loss
+  early_stopping:
+    monitor: val/loss
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
@@ -40,7 +44,7 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name:
+    experiment_name: pcna_classical_pcloud
     run_name:
 
 ##### ONLY USE WITH A100s

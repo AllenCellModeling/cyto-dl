@@ -52,10 +52,11 @@ class ReadPointCloud(MapTransform):
                     path = fifo_path
                 else:
                     path = str(row[key])
-
+                points = PyntCloud.from_file(path).points.values[:, : self.num_cols]
+                points = points[:, -1::-1].copy()
                 res[key] = (
                     torch.tensor(
-                        PyntCloud.from_file(path).points.values[:, : self.num_cols],
+                        points,
                         dtype=torch.get_default_dtype(),
                     )
                     * self.scale

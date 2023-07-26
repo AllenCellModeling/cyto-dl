@@ -2,7 +2,7 @@ _target_: cyto_dl.nn.point_cloud.DGCNN
 num_features: 20
 hidden_dim: 64
 hidden_conv2d_channels:  [64, 64, 64, 64]
-hidden_conv1d_channels: [512, ${model.latent_dim}]
+hidden_conv1d_channels: [512, 20]
 k: 20
 mode: vector
 scalar_inds:
