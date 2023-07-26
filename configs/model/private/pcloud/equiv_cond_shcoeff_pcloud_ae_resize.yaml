@@ -1,0 +1,65 @@
+defaults:
+  - private/pcloud_encoders@encoder.pcloud: equiv.yaml
+  - private/tabular_encoders@encoder.shcoeff: mlp.yaml
+  - private/tabular_encoders@condition_encoder.pcloud: mlp.yaml
+  - private/tabular_encoders@condition_decoder.pcloud: mlp.yaml
+  - private/pcloud_decoders@decoder.pcloud: foldingnet.yaml
+  - private/priors@prior.pcloud: identity.yaml
+  - private/reconstruction_loss@reconstruction_loss.pcloud: chamfer.yaml
+
+_target_: cyto_dl.models.vae.PointCloudVAE
+
+x_label: pcloud
+condition_keys: ['shcoeff']
+occupancy_label: 
+
+latent_dim: 128
+scale: 1
+num_output_points: 256
+cond_dim: 289
+
+encoder:
+  pcloud:
+    num_features: ${eval:${model.latent_dim}*${model.scale}}
+    hidden_conv1d_channels: [512, 128]
+  
+  shcoeff:
+    hidden_layers: [256]
+    _args_: 
+    - ${model.cond_dim}
+    - ${model.latent_dim}
+
+condition_encoder:
+  pcloud: 
+    hidden_layers: [256]
+    _args_: 
+    - ${eval:${model.latent_dim}*2}
+    - ${model.latent_dim}
+
+condition_decoder:
+  pcloud: 
+    hidden_layers: [256]
+    _args_: 
+    - ${eval:${model.latent_dim}+${model.cond_dim}}
+    - ${model.latent_dim}
+
+
+decoder:
+  pcloud:
+    input_dim: ${eval:${model.latent_dim}*${model.scale}}
+    num_output_points: ${model.num_output_points}
+
+
+prior:
+  pcloud:
+    dimensionality: ${model.latent_dim}
+
+beta: 1.0
+
+get_rotation: false
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002
+
