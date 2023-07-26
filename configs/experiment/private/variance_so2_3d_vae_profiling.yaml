@@ -1,0 +1,74 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: null
+  - override /model: vae/so2_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: variance_so2_3d_vae_profiling
+
+tags: ["so2-equiv", "variance-dataset", "3d"]
+
+seed: 42
+
+model:
+  spatial_dims: 3
+  in_shape: [1, 32, 96, 96]
+  strides: [2, 2, 2, 2]
+  channels: [8, 16, 32, 64]
+
+data:
+  train_dataloaders:
+    _target_: torch.utils.data.DataLoader
+    dataset:
+      _target_: cyto_dl.utils.DummyDataset
+      num_samples: 1000
+      image: [1, 32, 96, 96]
+    num_workers: 0
+
+  val_dataloaders:
+    _target_: torch.utils.data.DataLoader
+    dataset:
+      _target_: cyto_dl.utils.DummyDataset
+      num_samples: 1000
+      image: [1, 32, 96, 96]
+    num_workers: 0
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu
+  devices:
+  profiler:
+    _target_: lightning.profilers.PyTorchProfiler
+    dirpath: ${paths.output_dir}
+    filename: profile.out
+    with_stack: true
+    sort_by_key: cuda_time_total
+
+callbacks:
+  early_stopping:
+    monitor: val loss
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: variance_3d_vae
+    run_name: debug
+
+zarr_level: 2
+padded_size: [-1, 96, 96]

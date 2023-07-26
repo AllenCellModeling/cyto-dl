@@ -1,0 +1,136 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_3d_npm1.yaml
+  - override /model: vae/so3_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: npm1_so3_sdf
+
+tags: ["so3-equiv", "variance-dataset", "3d", "npm1", "sdf"]
+
+seed: 42
+
+data:
+  batch_size: 64
+  cache_dir: /storage/cache
+  transforms:
+    - _target_: cyto_dl.dataframe.transforms.GroupCols
+      groups:
+        image: sdf_path_unalign
+        cell_id: CellId
+    - _target_: cyto_dl.image.io.ReadNumpyFile
+      keys: [image]
+      remote: false
+    - _target_: monai.transforms.AddChanneld
+      keys: image
+    - _target_: monai.transforms.NormalizeIntensityd
+      keys: image
+      subtrahend: 6.96816
+      divisor: 4.18568
+    - _target_: monai.transforms.SpatialPadd
+      keys: [image]
+      spatial_size: [33, 33, 33]
+      value: 2.5
+    - _target_: monai.transforms.RandRotated
+      keys: [image]
+      range_x: 3.14159
+      range_y: 3.14159
+      range_z: 3.14159
+      prob: 1.0
+    - _target_: cyto_dl.image.transforms.RotationMaskd
+      keys: [image]
+      group: so3
+      spatial_dims: 3
+      mask_side: 33
+      background: 2.5
+    - _target_: monai.transforms.ToTensord
+      keys: [image]
+      track_meta: false
+
+model:
+  optimizer:
+    _target_: torch.optim.Adam
+    lr: 0.001
+  group: so3
+  spatial_dims: 3
+  in_shape: [1, 33, 33, 33]
+
+  background_value: 2.5
+
+  mask_input: false
+  mask_output: true
+
+  latent_dim: 512
+  prior: gaussian
+  beta: 1.0
+
+  kernel_sizes: [3, 3, 3, 5]
+  channels: [16, 16, 16, 16]
+  strides: [1, 2, 2, 2]
+  encoder_padding: [null, null, null, 0]
+  first_conv_padding_mode: replicate
+  num_res_units: 2
+
+  decoder_initial_shape: [5, 5, 5]
+  decoder_channels: [16, 16, 16, 16]
+  decoder_strides: [2, 2, 1.65, 1]
+
+  #decoder_channels: [128, 128, 64, 32, 16, 8]
+  #decoder_strides: [2, 2, 2, 2, 2, 1]
+  #decoder_channels: [128, 128, 64, 64, 32, 16]
+  #decoder_strides: [2, 2, 2, 1, 1, 1]
+
+  #last_act: sigmoid
+  #last_scale: null
+
+  reconstruction_loss:
+    #_target_: torch.nn.MSELoss
+    _target_: cyto_dl.nn.losses.GaussianNLLLoss
+    mean_dims: [0]
+
+  x_label: image
+
+  act: swish
+  norm: batch
+  dropout: null
+  bias: true
+
+trainer:
+  check_val_every_n_epoch: 1
+  num_sanity_val_steps: 0
+  min_epochs: 100
+  max_epochs: 500
+  accelerator: gpu
+  devices: [0]
+  gradient_clip_val: 10
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 100
+    min_delta: 0.
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 10
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: ${experiment_name}
+    run_name:
+
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

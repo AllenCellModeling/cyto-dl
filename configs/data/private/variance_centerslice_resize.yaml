@@ -1,0 +1,28 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+# path: s3://allencell-cytodata-variance-data/processed/hackathon_manifest_09292022.parquet
+path: /allen/aics/modeling/bvae_analysis/data/cytodata/variance_full.csv
+split_column: split
+
+batch_size: 64
+num_workers: 20
+
+transforms:
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
+    groups:
+      image: center_slice
+      cell_id: CellId
+    dtypes:
+      image:
+      cell_id:
+  - _target_: monai.transforms.LoadImaged
+    keys: [image]
+    reader:
+      _target_: cyto_dl.image.io.MonaiBioReader
+      dimension_order_out: "CYX"
+      C: 0
+    expanduser: false
+  - _target_: monai.transforms.Resized
+    keys: [image]
+    spatial_size: [28, 28]

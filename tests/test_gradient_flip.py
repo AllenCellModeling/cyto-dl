@@ -2,7 +2,7 @@ import pytest
 import torch
 from monai.transforms import Flip
 
-from aics_im2im.models.im2im.utils.omnipose import OmniposeRandFlipd
+from cyto_dl.models.im2im.utils.omnipose import OmniposeRandFlipd
 
 
 @pytest.mark.parametrize("spatial_axis", [0, 1, 2])

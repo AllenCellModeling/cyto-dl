@@ -1,4 +1,4 @@
-_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 
 path:
 cache_dir:
@@ -20,25 +20,25 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 4
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_dl.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
+      - _target_: cyto_dl.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -46,7 +46,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
-      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
@@ -74,25 +74,25 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_dl.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
+      - _target_: cyto_dl.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -108,7 +108,7 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
       - _target_: monai.transforms.AddChanneld
@@ -126,7 +126,7 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
         expand_user: False
@@ -134,18 +134,18 @@ transforms:
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: aics_im2im.image.io.MonaiBioReader
+          - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: aics_im2im.image.transforms.Resized
+      - _target_: cyto_dl.image.transforms.Resized
         keys:
           - ${source_col}
           - ${target_col}
         scale_factor: 0.25
         spatial_dims: ${spatial_dims}
-      - _target_: aics_im2im.models.im2im.utils.omnipose.OmniposePreprocessd
+      - _target_: cyto_dl.models.im2im.utils.omnipose.OmniposePreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -153,7 +153,7 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
-      - _target_: aics_im2im.image.transforms.RandomMultiScaleCropd
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1

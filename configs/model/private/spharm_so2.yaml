@@ -1,0 +1,31 @@
+defaults:
+  - reconstruction_loss: spharm_gaussian
+
+_target_: cyto_dl.models.vae.O2SpharmVAE
+
+x_dim: 289
+latent_dim: 16
+
+encoder_hidden_layers: [64]
+decoder_hidden_layers: [64]
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.001
+
+#lr_scheduler:
+#  _partial_: true
+#  _target_: torch.optim.lr_scheduler.OneCycleLR
+#  max_lr: 1e-1
+#  epochs: 20
+#  steps_per_epoch: 2300
+
+columns:
+max_spharm_band: 16
+max_hidden_band: 6
+reflections: true
+grid_size: 64
+
+x_label: shcoeff
+beta: 1.0

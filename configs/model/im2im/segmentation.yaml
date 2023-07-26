@@ -1,4 +1,4 @@
-_target_: aics_im2im.models.im2im.MultiTaskIm2Im
+_target_: cyto_dl.models.im2im.MultiTaskIm2Im
 
 save_images_every_n_epochs: 1
 save_dir: ${paths.output_dir}
@@ -38,16 +38,16 @@ inference_args:
 _aux:
   _tasks:
     - - ${target_col}
-      - _target_: aics_im2im.nn.BaseHead
+      - _target_: cyto_dl.nn.BaseHead
         loss:
           _target_: monai.losses.DiceCELoss
           sigmoid: True
         postprocess:
           input:
-            _target_: aics_im2im.models.im2im.utils.postprocessing.ActThreshLabel
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
             rescale_dtype: numpy.uint8
           prediction:
-            _target_: aics_im2im.models.im2im.utils.postprocessing.ActThreshLabel
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
             activation:
               _target_: torch.nn.Sigmoid
             rescale_dtype: numpy.uint8
