@@ -213,12 +213,18 @@ class ResBlock(nn.EquivariantModule):
             prev_out_type = unit.out_type
         self.conv = nn.SequentialModule(*conv)
 
-        if stride != 1 or in_type != self.conv.out_type:
+        need_res_conv = (
+            stride != 1
+            or in_type != self.conv.out_type
+            or (stride == 1 and padding < same_padding(kernel_size))
+        )
+
+        if need_res_conv:
             rkernel_size = kernel_size
             rpadding = padding
 
             # if only adapting number of channels a 1x1 kernel is used with no padding
-            if stride == 1:
+            if stride == 1 and padding == same_padding(kernel_size):
                 rkernel_size = 1
                 rpadding = 0
 
