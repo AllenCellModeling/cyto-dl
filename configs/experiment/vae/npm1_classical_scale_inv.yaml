@@ -25,7 +25,7 @@ data:
   transforms:
     - _target_: aics_im2im.dataframe.transforms.GroupCols
       groups:
-        image: sdf_path_unalign
+        image: sdf_path_align_3dnuc
         cell_id: CellId
     - _target_: aics_im2im.image.io.ReadNumpyFile
       keys: [image]
@@ -40,12 +40,6 @@ data:
       keys: [image]
       spatial_size: [33, 33, 33]
       value: 2.5
-    - _target_: monai.transforms.RandRotated
-      keys: [image]
-      range_x: 3.14159
-      range_y: 3.14159
-      range_z: 3.14159
-      prob: 1.0
     - _target_: aics_im2im.image.transforms.RotationMaskd
       keys: [image]
       group: so3
@@ -60,7 +54,7 @@ model:
   optimizer:
     _target_: torch.optim.Adam
     lr: 0.001
-  group: so3
+  group: null
   spatial_dims: 3
   in_shape: [1, 33, 33, 33]
 

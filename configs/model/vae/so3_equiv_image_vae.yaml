@@ -25,5 +25,5 @@ mask_output: false
 
 optimizer:
   _partial_: true
-  _target_: torch.optim.adam.Adam
+  _target_: torch.optim.Adam
   lr: 0.001
