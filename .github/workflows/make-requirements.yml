@@ -24,15 +24,15 @@ jobs:
 
       - name:
         run: |
-          case ${{ matrix.os }} in
+          case "${{ matrix.os }}" in
               "ubuntu-latest")
-                  PLATFORM="linux"
+                  export PLATFORM="linux"
                   ;;
               "macOS-latest")
-                  PLATFORM="macos"
+                  export PLATFORM="macos"
                   ;;
               "windows-latest")
-                  PLATFORM="windows"
+                  export PLATFORM="windows"
                   ;;
           esac
 
