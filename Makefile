@@ -74,7 +74,7 @@ requirements/$(PLATFORM)/%-requirements.txt: requirements/$(PLATFORM)/pdm.lock
 	pdm export -L requirements/$(PLATFORM)/pdm.lock -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
 
 requirements/$(PLATFORM)/requirements.txt:
-	pdm lock -L --no-cross-platform simple.lock
+	pdm lock --no-cross-platform -L simple.lock
 	pdm export -L simple.lock -f requirements --without-hashes -o requirements/$(PLATFORM)/requirements.txt
 	rm simple.lock
 
