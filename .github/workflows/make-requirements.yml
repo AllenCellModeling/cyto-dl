@@ -1,0 +1,49 @@
+name: Make requirements files
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    types: [closed]
+    paths:
+      - "pyproject.toml"
+
+jobs:
+  make-requirements:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up PDM
+        uses: pdm-project/setup-pdm@v2
+        with:
+          python-version: '3.10'
+
+      - name:
+        run: |
+          case ${{ matrix.os }} in
+              "ubuntu-latest")
+                  PLATFORM="linux"
+                  ;;
+              "macOS-latest")
+                  PLATFORM="macos"
+                  ;;
+              "windows-latest")
+                  PLATFORM="windows"
+                  ;;
+          esac
+
+          make sync-reqs-files
+
+      - name: Get timestamp
+        id: timestamp
+        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d_%H:%M')"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.AUTO_PR_TOKEN }}
+          branch: admin/${{ matrix.os }}-requirements-update_${{ steps.timestamp.outputs.timestamp }}
+          commit-message: Updating $${ matrix.os }} lock file and requirements
