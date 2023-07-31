@@ -135,6 +135,39 @@ def main(cfg: DictConfig) -> Optional[float]:
     # return optimized metric
     return metric_value
 
+######This works:
+# if __name__ == "__main__":
+#     import sys
+#     sys.argv.append("experiment=im2im/segmentation.yaml")
+#     sys.argv.append("trainer=cpu")
+#     sys.argv.append("++data.path=")
 
+#     main()
+
+####This doesn't work:
 if __name__ == "__main__":
-    main()
+    from hydra import initialize, compose
+    from hydra.core.hydra_config import HydraConfig
+
+    initialize(version_base="1.2", config_path="../configs", job_name="train")
+    cfg = compose(config_name="train", return_hydra_config=True, overrides=["experiment=im2im/segmentation.yaml"])
+    HydraConfig.instance().set_config(cfg)
+
+    #### Notice how output_dir is undefined:
+    #hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
+    #hydra_cfg['runtime']['output_dir']
+    #### The correct value can be found here though:
+    #cfg.paths.output_dir = cfg['hydra']['run']['dir']
+    # OmegaConf.resolve(cfg)
+    
+    main(cfg)
+
+####Same problem when initiating a hydra context:
+# if __name__ == "__main__":
+#     from hydra import initialize, compose
+#     from hydra.core.hydra_config import HydraConfig
+
+#     with initialize(version_base="1.2", config_path="../configs", job_name="train"):
+#         cfg = compose(config_name="train", return_hydra_config=True, overrides=["experiment=im2im/segmentation.yaml"])
+#         HydraConfig.instance().set_config(cfg)
+#         main(cfg)
