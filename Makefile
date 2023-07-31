@@ -68,7 +68,7 @@ test-full: ## Run all tests
 # to handle different platforms, specially for pytorch we can use these
 # in Github Actions
 requirements/$(PLATFORM)/pdm.lock: pyproject.toml
-	pdm lock -G :all --no-cross-platform requirements/$(PLATFORM)/pdm.lock
+	pdm lock -G :all --no-cross-platform -L requirements/$(PLATFORM)/pdm.lock
 
 requirements/$(PLATFORM)/%-requirements.txt: requirements/$(PLATFORM)/pdm.lock
 	pdm export -L requirements/$(PLATFORM)/pdm.lock -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
