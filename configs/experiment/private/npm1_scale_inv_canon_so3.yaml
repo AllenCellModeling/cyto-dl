@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: private/variance_3d_npm1.yaml
-  - override /model: private/so3_equiv_image_vae.yaml
+  - override /model: private/so3_canon_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -72,11 +72,10 @@ model:
   prior: gaussian
   beta: 1.0
 
-  kernel_sizes: [3, 3, 3, 5]
-  channels: [16, 16, 16, 16]
-  strides: [1, 2, 2, 2]
-  encoder_padding: [null, null, null, 0]
-  first_conv_padding_mode: replicate
+  kernel_sizes: [7, 5, 3, 3, 5]
+  channels: [8, 8, 16, 16, 16]
+  strides: [1, 1, 2, 2, 1]
+  encoder_padding: [0, 0, 0, 0, 0]
   num_res_units: 2
 
   decoder_initial_shape: [5, 5, 5]
