@@ -4,16 +4,20 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 import torch.nn as nn
-from monai.networks.blocks import ResidualUnit, UpSample
+from escnn import gspaces
+from escnn import nn as enn
+
+from monai.networks.blocks import UpSample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
 from monai.networks.layers.simplelayers import Flatten, Reshape
-from omegaconf import DictConfig
-from torch.nn.modules.loss import _Loss as Loss
 
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
+from cyto_dl.nn import ResidualUnit
+
+from .image_encoder import Convolution as EqConvolution
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -40,6 +44,7 @@ class ImageCanonicalVAE(BaseVAE):
         kernel_sizes: Sequence[int],
         group: Optional[str] = None,
         background_value: float = 0,
+        maximum_frequency: int = 8,
         out_channels: int = None,
         decoder_initial_shape: Optional[Sequence[int]] = None,
         decoder_channels: Optional[Sequence[int]] = None,
@@ -64,6 +69,7 @@ class ImageCanonicalVAE(BaseVAE):
 
         self.out_channels = out_channels if out_channels is not None else in_channels
 
+        self.group = group
         self.spatial_dims = spatial_dims
         self.up_kernel_size = up_kernel_size
         self.num_res_units = num_res_units
@@ -97,8 +103,9 @@ class ImageCanonicalVAE(BaseVAE):
 
         final_size = np.asarray(in_shape, dtype=int)
         encode_blocks = []
+        _channels = [in_channels] + channels
         for k, s, p, c_in, c_out in zip(
-            kernel_sizes, strides, encoder_padding, channels[:-1], channels[1:]
+            kernel_sizes, strides, encoder_padding, _channels[:-1], _channels[1:]
         ):
             padding = same_padding(k) if p is None else p
             final_size = calculate_out_shape(final_size, k, s, padding)
@@ -127,7 +134,7 @@ class ImageCanonicalVAE(BaseVAE):
             encoder_out_size = prior.param_size
 
         encoder = nn.Sequential(
-            *encode_blocks, Flatten(), nn.Linear(final_size * channels[-1], encoder_out_size)
+            *encode_blocks, Flatten(), nn.Linear(np.prod(final_size) * channels[-1], encoder_out_size)
         )
 
         if decoder_channels is None:
@@ -198,13 +205,65 @@ class ImageCanonicalVAE(BaseVAE):
             encoder=encoder, decoder=decoder, latent_dim=latent_dim, prior=prior, **base_kwargs
         )
 
-    def canonicalize(self, x):
-        pose = self.canonicalization(x).tensor
+        self.make_canon_net(maximum_frequency)
 
-        if self.hparams.group == "so2":
+    def make_canon_net(self, maximum_frequency):
+        group = self.group
+        spatial_dims = self.spatial_dims
+
+        if group not in ("so2", "so3", None):
+            raise ValueError(f"`group` should be one of ('so2', 'so3', None). Got {group!r}")
+
+        if group == "so2":
+            self.gspace = (
+                gspaces.rot2dOnR2(N=-1, maximum_frequency=maximum_frequency)
+                if self.spatial_dims == 2
+                else gspaces.rot2dOnR3(n=-1, maximum_frequency=maximum_frequency)
+            )
+        elif group == "so3":
+            if self.spatial_dims != 3:
+                raise ValueError("The SO3 group only works for spatial_dims=3")
+            gspace = gspaces.rot3dOnR3(maximum_frequency=maximum_frequency)
+        else:
+            gspace = gspaces.trivialOnR2() if spatial_dims == 2 else gspaces.trivialOnR3()
+
+        in_type = enn.FieldType(gspace, [gspace.trivial_repr])
+
+        if group == "so2":
+            n_out_vectors = 1
+        else:
+            n_out_vectors = 2
+
+        conv1 = EqConvolution(spatial_dims, in_type, 64, 1, 7, padding=0)
+        conv_class = enn.R3Conv if spatial_dims == 3 else enn.R2Conv
+        conv2 = conv_class(
+            conv1.out_type,
+            enn.FieldType(gspace, n_out_vectors*[gspace.irrep(1)]),
+            kernel_size=7,
+            stride=1
+        )
+        self.canonicalization = enn.SequentialModule(conv1, conv2)
+
+    def canonicalize(self, x):
+        _x = self.canonicalization.in_type(x)
+        pose = self.canonicalization(_x).tensor
+
+        pool_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
+        pose = pose.mean(dim=pool_dims)
+
+        if self.group == "so3":
+            # separate two vectors into two channels
+            pose = pose.reshape(pose.shape[0], 2, -1)
+
+            # move from y z x (spharm) convention to x y z
+            pose = pose[:, :, [2, 0, 1]]
+
+        elif self.group == "so2":
+            # move from y x (spharm) convention to x y
+            pose = pose[:, [1, 0]]
             pose = pose / (torch.norm(pose, dim=-1, keepdim=True) + self.hparams.eps)
 
-        x = self.rotation_module(x, pose)
+        pose = self.rotation_module.compute_rotation_matrix(pose)
 
         return x, pose
 
@@ -216,7 +275,7 @@ class ImageCanonicalVAE(BaseVAE):
         x, pose = self.canonicalize(x)
 
         if self.hparams.group is not None:
-            base_x = self.rotation_module(x, pose.transpose(1, 2))
+            base_x = self.rotation_module(x, None, R=pose.transpose(1, 2))
             z = self.encoder["embedding"](base_x)
             parts = {"embedding": z, "pose": pose}
         else:
@@ -225,7 +284,7 @@ class ImageCanonicalVAE(BaseVAE):
 
         return parts
 
-    def decode(self, z, return_canonical=False):
+    def decode(self, z, return_corrected=False):
         base_xhat = self.decoder[self.hparams.x_label](z["embedding"])
         clip_min = self.hparams.get("clip_min")
         clip_max = self.hparams.get("clip_min")
@@ -233,15 +292,22 @@ class ImageCanonicalVAE(BaseVAE):
         if clip_min is not None or clip_max is not None:
             base_xhat = base_xhat.clip(clip_min, clip_max)
 
-        if self.hparams.group is not None:
-            xhat = self.rotation_module(base_xhat, z["pose"])
-        else:
-            xhat = base_xhat
-
         if self.mask is not None:
-            xhat = self.mask(xhat)
+            base_xhat = self.mask(base_xhat)
 
-        if return_canonical:
-            return {self.hparams.x_label: xhat, "canonical": base_xhat}
+        if return_corrected:
+            if self.hparams.group is not None:
+                xhat = self.rotation_module(base_xhat, None, R=z["pose"])
+            else:
+                xhat = base_xhat
+            return {self.hparams.x_label: base_xhat, "corrected": xhat}
 
-        return {self.hparams.x_label: xhat}
+        return {self.hparams.x_label: base_xhat}
+
+    def calculate_elbo(self, x, xhat, z):
+        with torch.no_grad():
+            base_x = {self.hparams.x_label:
+                      self.rotation_module(x[self.hparams.x_label],
+                                           None, R=z["pose"].transpose(1, 2))}
+
+        return super().calculate_elbo(base_x, xhat, z)
