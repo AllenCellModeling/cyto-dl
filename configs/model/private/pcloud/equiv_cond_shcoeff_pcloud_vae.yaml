@@ -1,28 +1,30 @@
 defaults:
-  - private/pcloud_encoders@encoder.pcloud: classical.yaml
-  - private/tabular_encoders@encoder.class: embedding.yaml
+  - private/pcloud_encoders@encoder.pcloud: equiv.yaml
+  - private/tabular_encoders@encoder.shcoeff: mlp.yaml
   - private/tabular_encoders@condition_encoder.pcloud: mlp.yaml
   - private/tabular_encoders@condition_decoder.pcloud: mlp.yaml
-  - private/pcloud_decoders@decoder.pcloud: foldingnet.yaml
-  - private/priors@prior.pcloud: identity.yaml
+  - private/pcloud_decoders@decoder.pcloud: foldingnet_sphere.yaml
+  - private/priors@prior.pcloud: gaussian.yaml
   - private/reconstruction_loss@reconstruction_loss.pcloud: chamfer.yaml
 
 _target_: cyto_dl.models.vae.PointCloudVAE
 
 x_label: pcloud
-condition_keys: ['class']
+condition_keys: ['shcoeff']
 occupancy_label: 
 
-latent_dim: 128
-scale: 1
-num_output_points: 256
-cond_dim: 10
+latent_dim: 256
+scale: 2
+num_output_points: 2048
+cond_dim: 289
 
 encoder:
   pcloud:
-    num_features: ${eval:${model.latent_dim}*${model.scale}}
+    num_features: ${model.latent_dim}
+    hidden_conv1d_channels: [512, 256]
   
-  class:
+  shcoeff:
+    hidden_layers: [256]
     _args_: 
     - ${model.cond_dim}
     - ${model.latent_dim}
@@ -32,7 +34,7 @@ condition_encoder:
     hidden_layers: [256]
     _args_: 
     - ${eval:${model.latent_dim}*2}
-    - ${model.latent_dim}
+    - ${eval:${model.latent_dim}*${model.scale}}
 
 condition_decoder:
   pcloud: 
@@ -54,7 +56,7 @@ prior:
 
 beta: 1.0
 
-get_rotation: false
+get_rotation: true
 
 optimizer:
   _partial_: true

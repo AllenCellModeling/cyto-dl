@@ -1,0 +1,4 @@
+_target_: cyto_dl.nn.losses.GeomLoss
+name: 'energy'
+p: 2
+blur: 0.05

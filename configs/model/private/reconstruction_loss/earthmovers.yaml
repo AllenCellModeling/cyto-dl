@@ -1,0 +1,3 @@
+_target_: cyto_dl.nn.losses.GeomLoss
+p: 1
+blur: 0.01

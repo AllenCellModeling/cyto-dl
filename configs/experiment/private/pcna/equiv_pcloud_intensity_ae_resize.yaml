@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/dna_resize.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
+  - override /data: private/pcna/pcna_intensity_resize.yaml
+  - override /model: private/pcloud/equiv_pcloud_ae_scalar_resize.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml

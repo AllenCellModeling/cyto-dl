@@ -1,0 +1,9 @@
+_target_: cyto_dl.nn.point_cloud.FoldingNet
+input_dim: 20
+num_output_points: 2048
+hidden_dim: 512
+std: 0.3
+shape: 'sphere'
+sphere_path: "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/sphere.npy"
+gaussian_path: "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/gaussian.npy"
+num_coords: 3

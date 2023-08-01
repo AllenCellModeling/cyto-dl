@@ -1,0 +1,4 @@
+_target_: cyto_dl.nn.losses.GeomLoss
+name: 'sinkhorn'
+p: 1
+blur: 0.1

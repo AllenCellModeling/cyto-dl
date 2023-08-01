@@ -1,7 +1,7 @@
 defaults:
-  - private/pcloud_encoders@encoder.pcloud: equiv.yaml
-  - private/pcloud_decoders@decoder.pcloud: foldingnet_sphere.yaml
-  - private/priors@prior.pcloud: gaussian.yaml
+  - private/pcloud_encoders@encoder.pcloud: equiv_scalar.yaml
+  - private/pcloud_decoders@decoder.pcloud: foldingnet_scalar.yaml
+  - private/priors@prior.pcloud: identity.yaml
   - private/reconstruction_loss@reconstruction_loss.pcloud: chamfer.yaml
 
 _target_: cyto_dl.models.vae.PointCloudVAE
@@ -10,13 +10,14 @@ x_label: pcloud
 occupancy_label: 
 
 latent_dim: 256
-scale: 2
-num_output_points: 2048
+scale: 1
+num_output_points: 256
+hidden_conv1_dim: 512
 
 encoder:
   pcloud:
     num_features: ${eval:${model.latent_dim}*${model.scale}}
-    hidden_conv1d_channels: [512, 512]
+    hidden_conv1d_channels: [512, 256]
 
 decoder:
   pcloud:

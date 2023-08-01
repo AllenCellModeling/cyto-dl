@@ -19,7 +19,6 @@ tags: ["equivariance", "pcna-dataset", "point-cloud"]
 seed: 42
 
 model:
-  num_points: 2048
   x_label: pcloud
 
 data:

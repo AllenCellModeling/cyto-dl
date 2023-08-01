@@ -26,3 +26,5 @@ transforms:
     remote: false
     scale: 0.1
     num_cols: 4
+    norm: false
+    flip_dims: true

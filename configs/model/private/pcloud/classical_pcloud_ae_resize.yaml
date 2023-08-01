@@ -19,7 +19,7 @@ encoder:
 
 decoder:
   pcloud:
-    input_dim: ${eval:${model.latent_dim}*${model.scale}}
+    input_dim: ${model.latent_dim}
     num_output_points: ${model.num_output_points}
 
 prior:
