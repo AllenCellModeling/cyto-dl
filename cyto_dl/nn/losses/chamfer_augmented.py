@@ -34,16 +34,18 @@ class ChamferAugmented(nn.Module):
         self.p = torch.ones(self.range_x.shape)
 
     def batch_pairwise_dist(self, x, y):
-        P = torch.cdist(x, y, p=self.p_norm)
+        P = torch.cdist(x, y, p=2)
         return P
 
     def forward(self, gts, preds):
         bs, _, _ = gts.size()
 
-        idx = self.p.multinomial(num_samples=self.n_samples, replacement=self.replace)
-        range_x = self.range_x[idx].unsqueeze(dim=-1)
-        range_y = self.range_y[idx].unsqueeze(dim=-1)
-        range_z = self.range_z[idx].unsqueeze(dim=-1)
+        idx_x = self.p.multinomial(num_samples=self.n_samples, replacement=self.replace)
+        idx_y = self.p.multinomial(num_samples=self.n_samples, replacement=self.replace)
+        idx_z = self.p.multinomial(num_samples=self.n_samples, replacement=self.replace)
+        range_x = self.range_x[idx_x].unsqueeze(dim=-1)
+        range_y = self.range_y[idx_y].unsqueeze(dim=-1)
+        range_z = self.range_z[idx_z].unsqueeze(dim=-1)
 
         grid_points = (
             torch.cat([range_x, range_y, range_z], axis=1)
@@ -58,7 +60,12 @@ class ChamferAugmented(nn.Module):
         P = self.batch_pairwise_dist(grid_points, gts)
         mins2, _ = torch.min(P, 2)
 
-        diff = torch.abs(mins - mins2)
+        if self.p_norm == 1:
+            diff = torch.abs(mins - mins2)
+
+        if self.p_norm == 2:
+            diff = torch.abs(mins - mins2) ** 2
+
         diff = torch.mean(diff, dim=1)
 
         return diff
