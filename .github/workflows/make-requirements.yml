@@ -46,6 +46,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
+          base: main
           title: admin/${{ matrix.os }}-requirements-update_${{ steps.timestamp.outputs.timestamp }}
           body: Updating ${{ matrix.os }} lock file and requirements
           token: ${{ secrets.AUTO_PR_TOKEN }}
