@@ -18,9 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up PDM
-        uses: pdm-project/setup-pdm@v2
+        uses: pdm-project/setup-pdm@v3
         with:
           python-version: '3.10'
+          version: 2.7.4
 
       - name:
         shell: bash
@@ -41,10 +42,14 @@ jobs:
 
       - name: Get timestamp
         id: timestamp
-        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d_%H:%M')"
+        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d_%H-%M')"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.AUTO_PR_TOKEN }}
+          base: main
+          title: admin/${{ matrix.os }}-requirements-update_${{ steps.timestamp.outputs.timestamp }}
+          body: Updating ${{ matrix.os }} lock file and requirements
           branch: admin/${{ matrix.os }}-requirements-update_${{ steps.timestamp.outputs.timestamp }}
-          commit-message: Updating $${ matrix.os }} lock file and requirements
+          commit-message: Updating ${{ matrix.os }} lock file and requirements
+          delete-branch: true
+          #token: ${{ secrets.AUTO_PR_TOKEN }}
