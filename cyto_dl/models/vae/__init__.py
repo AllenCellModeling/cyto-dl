@@ -13,7 +13,7 @@ try:  # noqa: FURB107
 except ModuleNotFoundError:
     pass
 
-try:  # noqa: FURB107
-    from .point_cloud_vae import PointCloudVAE
-except ModuleNotFoundError:
-    pass
+# try:  # noqa: FURB107
+from .point_cloud_vae import PointCloudVAE
+# except ModuleNotFoundError:
+#     pass

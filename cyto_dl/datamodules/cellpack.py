@@ -30,6 +30,7 @@ class CellPackDataModule(LightningDataModule):
         ref_label=None,
         rotation_augmentations: Optional[int] = None,
         jitter_augmentations: Optional[int] = None,
+        max_ids: Optional[int] = None,
     ):
         """ """
         super().__init__()
@@ -47,6 +48,7 @@ class CellPackDataModule(LightningDataModule):
         self.ref_label = ref_label
         self.structure_path = structure_path
         self.ref_path = ref_path
+        self.max_ids = max_ids
 
     def _get_dataset(self, split):
         return CellPackDataset(
@@ -62,6 +64,7 @@ class CellPackDataModule(LightningDataModule):
             self.ref_label,
             self.rotation_augmentations,
             self.jitter_augmentations,
+            self.max_ids
         )
 
     def train_dataloader(self):
@@ -117,6 +120,7 @@ class CellPackDataset(Dataset):
         ref_label: str = "nuc",
         rotation_augmentations: Optional[int] = None,
         jitter_augmentations: Optional[int] = None,
+        max_ids: Optional[int] = None,
     ):
         self.x_label = x_label
         self.ref_label = ref_label
@@ -128,6 +132,9 @@ class CellPackDataset(Dataset):
         self.rotation_augmentations = rotation_augmentations
         self.jitter_augmentations = jitter_augmentations
         self.num_points_ref = num_points_ref
+        self.max_ids = max_ids
+
+        self.ref_csv = pd.read_csv(ref_path + 'manifest.csv')
 
         self.return_id = return_id
         self.split = split
@@ -137,6 +144,8 @@ class CellPackDataset(Dataset):
         self._all_ids = list(
             set([i.split(".")[0].split("_")[-2].split("deg")[-1] for i in items])
         )
+        if self.max_ids:
+            self._all_ids = self._all_ids[:self.max_ids]
 
         _splits = {
             "train": self._all_ids[: int(0.7 * len(self._all_ids))],
@@ -156,6 +165,9 @@ class CellPackDataset(Dataset):
         self.rot = []
         self.jitter = []
 
+        # import ipdb
+        # ipdb.set_trace()
+
         for this_id in self.ids:
             for rule in packing_rules:
                 for rot in packing_rotations:
@@ -166,70 +178,76 @@ class CellPackDataset(Dataset):
                         + f"_{rot}"
                         + ".json"
                     )
-                    with open(structure_path + this_path, "r") as f:
-                        tmp = json.load(f)
-                        points = pd.DataFrame()
-                        points["x"] = [i[0] for i in tmp["0"]["nucleus_interior_pcna"]]
-                        points["y"] = [i[1] for i in tmp["0"]["nucleus_interior_pcna"]]
-                        points["z"] = [i[2] for i in tmp["0"]["nucleus_interior_pcna"]]
+                    if os.path.isfile(structure_path + this_path):
 
-                        nuc_path = ref_path + f"{this_id}_{rot}.obj"
-                        my_point_cloud = PyntCloud.from_file(nuc_path)
-                        points_dna = my_point_cloud.points
+                        with open(structure_path + this_path, "r") as f:
+                            tmp = json.load(f)
+                            points = pd.DataFrame()
+                            points["x"] = [i[0] for i in tmp["0"]["nucleus_interior_pcna"]]
+                            points["y"] = [i[1] for i in tmp["0"]["nucleus_interior_pcna"]]
+                            points["z"] = [i[2] for i in tmp["0"]["nucleus_interior_pcna"]]
 
-                        if points_dna.shape[0] > num_points_ref:
-                            points_dna = self._subsample(points_dna, num_points_ref)
+                            nuc_path = ref_path + f"{this_id}_{rot}.obj"
+                            my_point_cloud = PyntCloud.from_file(nuc_path)
+                            points_dna = my_point_cloud.points
 
-                        if points.shape[0] > num_points:
-                            points = self._subsample(points, num_points)
+                            # points_dna_she = self.ref_csv.loc[self.ref_csv == '']
 
-                        self.data.append(points.values)
-                        self.ref.append(points_dna.values)
-                        self.id_list.append(self._all_ids.index(this_id))
-                        self.rule.append(self.packing_rules.index(rule))
-                        self.pack_rot.append(self.packing_rotations.index(rot))
-                        self.rot.append(np.array(0))
-                        self.jitter.append(np.array(0))
+                            if points_dna.shape[0] > num_points_ref:
+                                points_dna = self._subsample(points_dna, num_points_ref)
 
-                        if self.rotation_augmentations:
-                            for i in range(self.rotation_augmentations):
-                                (
-                                    points_dna_rot,
-                                    rotation_matrix,
-                                    theta,
-                                ) = rotate_pointcloud(
-                                    points_dna.values, return_rot=True
-                                )
-                                points_rot = rotate_pointcloud(
-                                    points.values, rotation_matrix, return_rot=False
-                                )
+                            if points.shape[0] > num_points:
+                                points = self._subsample(points, num_points)
 
-                                if self.jitter_augmentations:
-                                    for j in range(self.jitter_augmentations):
-                                        self.data.append(jitter_pointcloud(points_rot))
-                                        self.ref.append(
-                                            jitter_pointcloud(points_dna_rot)
-                                        )
-                                        self.id_list.append(
-                                            self._all_ids.index(this_id)
-                                        )
+                            self.data.append(points.values)
+                            self.ref.append(points_dna.values)
+                            self.id_list.append(self._all_ids.index(this_id))
+                            self.rule.append(self.packing_rules.index(rule))
+                            self.pack_rot.append(self.packing_rotations.index(rot))
+                            self.rot.append(np.array(0))
+                            self.jitter.append(np.array(0))
+
+                            if self.rotation_augmentations:
+                                for i in range(self.rotation_augmentations):
+                                    (
+                                        points_dna_rot,
+                                        rotation_matrix,
+                                        theta,
+                                    ) = rotate_pointcloud(
+                                        points_dna.values, return_rot=True
+                                    )
+                                    points_rot = rotate_pointcloud(
+                                        points.values, rotation_matrix, return_rot=False
+                                    )
+
+                                    if self.jitter_augmentations:
+                                        for j in range(self.jitter_augmentations):
+                                            self.data.append(jitter_pointcloud(points_rot))
+                                            self.ref.append(
+                                                jitter_pointcloud(points_dna_rot)
+                                            )
+                                            self.id_list.append(
+                                                self._all_ids.index(this_id)
+                                            )
+                                            self.rule.append(self.packing_rules.index(rule))
+                                            self.pack_rot.append(
+                                                self.packing_rotations.index(rot)
+                                            )
+                                            self.rot.append(np.array(theta))
+                                            self.jitter.append(np.array(j))
+
+                                    else:
+                                        self.data.append(points_rot)
+
+                                        self.id_list.append(self._all_ids.index(this_id))
                                         self.rule.append(self.packing_rules.index(rule))
                                         self.pack_rot.append(
                                             self.packing_rotations.index(rot)
                                         )
-                                        self.rot.append(np.array(i))
-                                        self.jitter.append(np.array(j))
-
-                                else:
-                                    self.data.append(points_rot)
-
-                                    self.id_list.append(self._all_ids.index(this_id))
-                                    self.rule.append(self.packing_rules.index(rule))
-                                    self.pack_rot.append(
-                                        self.packing_rotations.index(rot)
-                                    )
-                                    self.rot.append(np.array(i))
-                                    self.jitter.append(np.array(0))
+                                        self.rot.append(np.array(theta))
+                                        self.jitter.append(np.array(0))
+                    else:
+                        print("Missing", structure_path + this_path)
 
         self.len = len(self.data)
         self.label = []

@@ -7,6 +7,8 @@ from .gaussian_nll_loss import GaussianNLLLoss
 from .weibull import WeibullLogLoss
 from .weighted_mse_loss import WeightedMSELoss
 from .l1_loss import L1Loss
+from .geomloss import GeomLoss
+from .chamfer_augmented import ChamferAugmented
 
 try:
     from .spharm_loss import SpharmLoss

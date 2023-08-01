@@ -18,6 +18,8 @@ class ReadPointCloud(MapTransform):
         sample: Optional[int] = None,
         scale: int = 1,
         num_cols: int = 3,
+        norm: bool = True,
+        flip_dims: bool = False,
     ):
         """
         Parameters
@@ -32,8 +34,18 @@ class ReadPointCloud(MapTransform):
         self.keys = [keys] if isinstance(keys, str) else keys
         self.remote = remote
         self.sample = sample
+        self.norm = norm
         self.scale = scale
         self.num_cols = num_cols
+        self.flip_dims = flip_dims
+
+    def pc_norm(self, pc):
+        """pc: NxC, return NxC"""
+        centroid = np.mean(pc, axis=0)
+        pc = pc - centroid
+        m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
+        pc = pc / m
+        return pc
 
     def __call__(self, row):
         res = dict(**row)
@@ -53,15 +65,23 @@ class ReadPointCloud(MapTransform):
                 else:
                     path = str(row[key])
                 points = PyntCloud.from_file(path).points.values[:, : self.num_cols]
-                points = points[:, -1::-1].copy()
-                res[key] = (
-                    torch.tensor(
-                        points,
-                        dtype=torch.get_default_dtype(),
-                    )
-                    * self.scale
-                )
 
+                if self.flip_dims:
+                    if self.num_cols == 3:
+                        points = points[:, -1::-1].copy()
+                    else:
+                        points = np.concatenate(
+                            [points[:, -2::-1], points[:, -1:]], axis=1
+                        )
+
+                if self.scale:
+                    points = points * self.scale
+                if self.norm:
+                    points[:, :3] = self.pc_norm(points[:, :3])
+                res[key] = torch.tensor(
+                    points,
+                    dtype=torch.get_default_dtype(),
+                )
                 if self.num_cols > 3:
                     res[key][:, self.num_cols - 1 :] = (
                         res[key][:, self.num_cols - 1 :] * 0.1
