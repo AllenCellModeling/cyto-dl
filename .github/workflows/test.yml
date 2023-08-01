@@ -42,7 +42,6 @@ jobs:
                   ;;
           esac
 
-          #sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
           conda activate test
           conda install -c conda-forge -n test pip fftw gfortran blas-devel
 
@@ -78,15 +77,15 @@ jobs:
       - name: Install dependencies
         shell: bash -el {0}
         run: |
-          sudo apt update
-          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
-          conda install -n test pip fftw
-          pip install wheel
+          conda activate test
+          conda install -c conda-forge -n test pip fftw gfortran blas-devel
+
           # need numpy for some builds. make sure to install a compatible version
-          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
-          # from https://stackoverflow.com/a/14369968
-          SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
+          grep -E '^numpy==' requirements/linux/test-requirements.txt | xargs -n 1 pip install
+          pip install -r requirements/linux/test-requirements.txt
           pip install .
+
+
 
       - name: Run tests and collect coverage
         shell: bash -el {0}
