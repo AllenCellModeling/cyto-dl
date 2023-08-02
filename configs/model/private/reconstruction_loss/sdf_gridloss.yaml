@@ -1,4 +1,4 @@
-_target_: cyto_dl.nn.losses.ChamferAugmented
+_target_: cyto_dl.nn.losses.SDFGridLoss
 n_samples: 50
 max_x: 25
 max_y: 25

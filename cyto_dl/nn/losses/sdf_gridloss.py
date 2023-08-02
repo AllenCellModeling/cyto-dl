@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-class ChamferAugmented(nn.Module):
+class SDFGridLoss(nn.Module):
     def __init__(
         self,
         n_samples=10,
@@ -46,14 +46,6 @@ class ChamferAugmented(nn.Module):
         P = torch.cdist(x, y, p=2)
         return P
 
-    def compute_chamfer_loss(self, gts, preds):
-        P = self.batch_pairwise_dist(gts, preds)
-        mins, _ = torch.min(P, 1)
-        loss_1 = torch.sum(mins, axis=1)
-        mins, _ = torch.min(P, 2)
-        loss_2 = torch.sum(mins, axis=1)
-        return loss_1 + loss_2
-
     def forward(self, gts, preds):
         bs, _, _ = gts.size()
 
@@ -82,8 +74,21 @@ class ChamferAugmented(nn.Module):
         )
         grid_points = grid_points.type_as(preds)
 
-        loss1 = self.compute_chamfer_loss(grid_points, preds)
-        loss2 = self.compute_chamfer_loss(grid_points, gts)
-        loss3 = self.compute_chamfer_loss(gts, preds)
+        P = self.batch_pairwise_dist(grid_points, preds)
+        mins, _ = torch.min(P, 2)
 
-        return loss1 + loss2 + loss3
+        P = self.batch_pairwise_dist(grid_points, gts)
+        mins2, _ = torch.min(P, 2)
+
+        if self.p_norm == 1:
+            diff = torch.abs(mins - mins2)
+
+        if self.p_norm == 2:
+            diff = torch.abs(mins - mins2) ** 2
+
+        if self.mean:
+            diff = torch.mean(diff, dim=1)
+        else:
+            diff = torch.sum(diff, dim=1)
+
+        return diff
