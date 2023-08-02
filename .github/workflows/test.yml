@@ -43,7 +43,7 @@ jobs:
           esac
 
           conda activate test
-          #conda install -c conda-forge -n test pip fftw gfortran blas-devel
+          conda install -c conda-forge -n test gfortran blas-devel
 
           # need numpy for some builds. make sure to install a compatible version
           grep -E '^numpy==' requirements/$PLATFORM/test-requirements.txt | xargs -n 1 pip install
