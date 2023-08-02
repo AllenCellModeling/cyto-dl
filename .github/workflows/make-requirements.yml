@@ -63,6 +63,7 @@ jobs:
           path: requirements/${{ steps.platform.outputs.platform }}
 
   open-PR:
+    needs: [make-requirements]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
