@@ -76,7 +76,6 @@ test = [
     "cyto-dl[all]",
     "pyrootutils~=1.0",
     "pytest~=7.2",
-    "sh~=1.14",
     "pytest-cov[toml]~=4.0",
 ]
 docs = [
