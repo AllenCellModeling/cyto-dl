@@ -8,4 +8,4 @@ p_norm: 1
 replace: False
 mean: true
 fix_grid: True
-convex_hull: False
+convex_hull: True

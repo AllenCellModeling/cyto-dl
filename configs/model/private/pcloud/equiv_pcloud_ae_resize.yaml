@@ -2,7 +2,7 @@ defaults:
   - private/pcloud_encoders@encoder.pcloud: equiv.yaml
   - private/pcloud_decoders@decoder.pcloud: foldingnet.yaml
   - private/priors@prior.pcloud: identity.yaml
-  - private/reconstruction_loss@reconstruction_loss.pcloud: chamfer_augmented_resize.yaml
+  - private/reconstruction_loss@reconstruction_loss.pcloud: sdf_gridloss_resize.yaml
 
 _target_: cyto_dl.models.vae.PointCloudVAE
 
