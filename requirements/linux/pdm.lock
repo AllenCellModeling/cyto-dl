@@ -111,6 +111,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "aniso8601"
+version = "9.0.1"
+summary = "A library for parsing ISO 8601 strings."
+
+[[package]]
 name = "anndata"
 version = "0.9.2"
 requires_python = ">=3.8"
@@ -129,6 +134,12 @@ name = "annotated-types"
 version = "0.5.0"
 requires_python = ">=3.7"
 summary = "Reusable constraint types to use with typing.Annotated"
+
+[[package]]
+name = "ansi2html"
+version = "1.8.0"
+requires_python = ">=3.6"
+summary = ""
 
 [[package]]
 name = "antlr4-python3-runtime"
@@ -625,6 +636,17 @@ dependencies = [
     "blinker>=1.6.2",
     "click>=8.1.3",
     "itsdangerous>=2.1.2",
+]
+
+[[package]]
+name = "flask-restful"
+version = "0.3.10"
+summary = "Simple framework for creating REST APIs"
+dependencies = [
+    "Flask>=0.8",
+    "aniso8601>=0.82",
+    "pytz",
+    "six>=1.3.0",
 ]
 
 [[package]]
@@ -1175,6 +1197,24 @@ requires_python = ">=3.8"
 summary = "Fundamental package for array computing in Python"
 
 [[package]]
+name = "nvgpu"
+version = "0.10.0"
+summary = "NVIDIA GPU tools"
+dependencies = [
+    "ansi2html",
+    "arrow",
+    "flask",
+    "flask-restful",
+    "pandas",
+    "psutil",
+    "pynvml; python_version >= \"3.6\"",
+    "requests",
+    "six",
+    "tabulate",
+    "termcolor",
+]
+
+[[package]]
 name = "nvidia-cublas-cu11"
 version = "11.10.3.66"
 requires_python = ">=3"
@@ -1557,6 +1597,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "pynvml"
+version = "11.5.0"
+requires_python = ">=3.6"
+summary = "Python Bindings for the NVIDIA Management Library"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 requires_python = ">=3.6.8"
@@ -1809,11 +1855,6 @@ name = "setuptools"
 version = "68.0.0"
 requires_python = ">=3.7"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
-
-[[package]]
-name = "sh"
-version = "1.14.3"
-summary = "Python subprocess replacement"
 
 [[package]]
 name = "six"
@@ -2281,7 +2322,7 @@ summary = "Backport of pathlib-compatible object wrapper for zip files"
 lock_version = "4.2"
 cross_platform = false
 groups = ["default", "all", "docs", "equiv", "omnipose", "s3", "spharm", "test", "torchserve"]
-content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba1ec5c40"
+content_hash = "sha256:73bda6b01b9767b0beaa827626fe387878a031e1032ef1d1bad621f87dcdd6b8"
 
 [metadata.files]
 "aicscytoparam 0.1.9" = [
@@ -2320,6 +2361,10 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
     {url = "https://files.pythonhosted.org/packages/11/00/46a4f66ad54c661350a1cd5daae4b4ab2232486c55635ee12ff12958b03f/alembic-1.11.1-py3-none-any.whl", hash = "sha256:dc871798a601fab38332e38d6ddb38d5e734f60034baeb8e2db5b642fccd8ab8"},
     {url = "https://files.pythonhosted.org/packages/c6/e3/3d9b95470606b93bd6e6d5c899ed9d0049dfa10246ecca25b18c2c708cdf/alembic-1.11.1.tar.gz", hash = "sha256:6a810a6b012c88b33458fceb869aef09ac75d6ace5291915ba7fae44de372c01"},
 ]
+"aniso8601 9.0.1" = [
+    {url = "https://files.pythonhosted.org/packages/cb/72/be3db445b03944bfbb2b02b82d00cb2a2bcf96275c4543f14bf60fa79e12/aniso8601-9.0.1.tar.gz", hash = "sha256:72e3117667eedf66951bb2d93f4296a56b94b078a8a95905a052611fb3f1b973"},
+    {url = "https://files.pythonhosted.org/packages/e3/04/e97c12dc034791d7b504860acfcdd2963fa21ae61eaca1c9d31245f812c3/aniso8601-9.0.1-py2.py3-none-any.whl", hash = "sha256:1d2b7ef82963909e93c4f24ce48d4de9e66009a21bf1c1e1c85bdd0812fe412f"},
+]
 "anndata 0.9.2" = [
     {url = "https://files.pythonhosted.org/packages/a7/ee/767a05c299d95b438ef9c8ab6dbc15896cfb9121cf4327fe1da160a45343/anndata-0.9.2-py3-none-any.whl", hash = "sha256:badab44bf0b4d598ae49403ee634a6ffc8896d9aa21db52f0f6af98d6fe1fceb"},
     {url = "https://files.pythonhosted.org/packages/c0/e2/537dfed354d98cd1cd907bd97c05f052589abba000de7bdebc44ae4a527f/anndata-0.9.2.tar.gz", hash = "sha256:e5b8383d09723af674cae7ad0c2ef53eb1f8c73949b7f4c182a6e30f42196327"},
@@ -2327,6 +2372,10 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
 "annotated-types 0.5.0" = [
     {url = "https://files.pythonhosted.org/packages/42/97/41ccb6acac36fdd13592a686a21b311418f786f519e5794b957afbcea938/annotated_types-0.5.0.tar.gz", hash = "sha256:47cdc3490d9ac1506ce92c7aaa76c579dc3509ff11e098fc867e5130ab7be802"},
     {url = "https://files.pythonhosted.org/packages/d8/f0/a2ee543a96cc624c35a9086f39b1ed2aa403c6d355dfe47a11ee5c64a164/annotated_types-0.5.0-py3-none-any.whl", hash = "sha256:58da39888f92c276ad970249761ebea80ba544b77acddaa1a4d6cf78287d45fd"},
+]
+"ansi2html 1.8.0" = [
+    {url = "https://files.pythonhosted.org/packages/62/88/491c699c135c63e4420f69e348c9f14559b82c2b81f5b4c698ae5c374a88/ansi2html-1.8.0.tar.gz", hash = "sha256:38b82a298482a1fa2613f0f9c9beb3db72a8f832eeac58eb2e47bf32cd37f6d5"},
+    {url = "https://files.pythonhosted.org/packages/e6/7f/ff656e2c8e83873122cc22d345fb68f82a005f19848b04e53e49361ac547/ansi2html-1.8.0-py3-none-any.whl", hash = "sha256:ef9cc9682539dbe524fbf8edad9c9462a308e04bce1170c32daa8fdfd0001785"},
 ]
 "antlr4-python3-runtime 4.9.3" = [
     {url = "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b"},
@@ -2529,6 +2578,10 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
 "flask 2.3.2" = [
     {url = "https://files.pythonhosted.org/packages/4d/00/ef81c18da32fdfcde6381c315f4b11597fb6691180a330418848efee0ae7/Flask-2.3.2.tar.gz", hash = "sha256:8c2f9abd47a9e8df7f0c3f091ce9497d011dc3b31effcf4c85a6e2b50f4114ef"},
     {url = "https://files.pythonhosted.org/packages/fa/1a/f191d32818e5cd985bdd3f47a6e4f525e2db1ce5e8150045ca0c31813686/Flask-2.3.2-py3-none-any.whl", hash = "sha256:77fd4e1249d8c9923de34907236b747ced06e5467ecac1a7bb7115ae0e9670b0"},
+]
+"flask-restful 0.3.10" = [
+    {url = "https://files.pythonhosted.org/packages/c0/ce/a0a133db616ea47f78a41e15c4c68b9f08cab3df31eb960f61899200a119/Flask-RESTful-0.3.10.tar.gz", hash = "sha256:fe4af2ef0027df8f9b4f797aba20c5566801b6ade995ac63b588abf1a59cec37"},
+    {url = "https://files.pythonhosted.org/packages/d7/7b/f0b45f0df7d2978e5ae51804bb5939b7897b2ace24306009da0cc34d8d1f/Flask_RESTful-0.3.10-py2.py3-none-any.whl", hash = "sha256:1cf93c535172f112e080b0d4503a8d15f93a48c88bdd36dd87269bdaf405051b"},
 ]
 "fonttools 4.42.0" = [
     {url = "https://files.pythonhosted.org/packages/87/61/f50ab3237b0cbf2b0be12274227f912d30f94e2b93fb8bae92c91107eee8/fonttools-4.42.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:58c1165f9b2662645de9b19a8c8bdd636b36294ccc07e1b0163856b74f10bafc"},
@@ -2761,6 +2814,9 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
     {url = "https://files.pythonhosted.org/packages/10/be/ae5bf4737cb79ba437879915791f6f26d92583c738d7d960ad94e5c36adf/numpy-1.24.4-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7ffe43c74893dbf38c2b0a1f5428760a1a9c98285553c89e12d70a96a7f3a4d6"},
     {url = "https://files.pythonhosted.org/packages/a4/9b/027bec52c633f6556dba6b722d9a0befb40498b9ceddd29cbe67a45a127c/numpy-1.24.4.tar.gz", hash = "sha256:80f5e3a4e498641401868df4208b74581206afbee7cf7b8329daae82676d9463"},
 ]
+"nvgpu 0.10.0" = [
+    {url = "https://files.pythonhosted.org/packages/1a/95/5b99a5798b366ab242fe0b2190f3814b9321eb98c6e1e9c6b599b2b4ce84/nvgpu-0.10.0.tar.gz", hash = "sha256:c415f757e0c375357f8904a6ea0cee084ab0ce97ed11e4840f2c8839196b3918"},
+]
 "nvidia-cublas-cu11 11.10.3.66" = [
     {url = "https://files.pythonhosted.org/packages/ce/41/fdeb62b5437996e841d83d7d2714ca75b886547ee8017ee2fe6ea409d983/nvidia_cublas_cu11-11.10.3.66-py3-none-manylinux1_x86_64.whl", hash = "sha256:d32e4d75f94ddfb93ea0a5dda08389bcc65d8916a25cb9f37ac89edaeed3bded"},
 ]
@@ -2917,6 +2973,10 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
     {url = "https://files.pythonhosted.org/packages/15/74/89a48e10db90a76ebe532479dc775c21b18829c5fae9adc8ad9d5e46f9db/pymanopt-2.1.1.tar.gz", hash = "sha256:07f6996b944eb43a15ce762841e01f7f7aa2d29005253eb7087db3926fdd8aa6"},
     {url = "https://files.pythonhosted.org/packages/b3/05/1bc00d7487ecd2c2c058a08785dd7e3d8426e083e255f9d3386a42de82fe/pymanopt-2.1.1-py3-none-any.whl", hash = "sha256:4822b00b5f73330d5f5b060ef4e04abb3d1f6d1dbc28e0eea12d956566e2e2e7"},
 ]
+"pynvml 11.5.0" = [
+    {url = "https://files.pythonhosted.org/packages/5b/9c/adb8070059caaa15d5a572b66bccd95900d8c1b9fa54d6ecea6ae97448d1/pynvml-11.5.0-py3-none-any.whl", hash = "sha256:5cce014ac01b098d08f06178f86c37be409b80b2e903a5a03ce15eed60f55e25"},
+    {url = "https://files.pythonhosted.org/packages/77/1b/dbc48e97c0c005a5ac4574dbea98465211e918dd79e6bdbde21ee77cccb9/pynvml-11.5.0.tar.gz", hash = "sha256:d027b21b95b1088b9fc278117f9f61b7c67f8e33a787e9f83f735f0f71ac32d0"},
+]
 "pyparsing 3.0.9" = [
     {url = "https://files.pythonhosted.org/packages/6c/10/a7d0fa5baea8fe7b50f448ab742f26f52b80bfca85ac2be9d35cdd9a3246/pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {url = "https://files.pythonhosted.org/packages/71/22/207523d16464c40a0310d2d4d8926daffa00ac1f5b1576170a32db749636/pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
@@ -3019,9 +3079,6 @@ content_hash = "sha256:eb2d90af63453316088964ce064be1d6cc45f49a8c230bba8423ed1ba
 "setuptools 68.0.0" = [
     {url = "https://files.pythonhosted.org/packages/c7/42/be1c7bbdd83e1bfb160c94b9cafd8e25efc7400346cf7ccdbdb452c467fa/setuptools-68.0.0-py3-none-any.whl", hash = "sha256:11e52c67415a381d10d6b462ced9cfb97066179f0e871399e006c4ab101fc85f"},
     {url = "https://files.pythonhosted.org/packages/dc/98/5f896af066c128669229ff1aa81553ac14cfb3e5e74b6b44594132b8540e/setuptools-68.0.0.tar.gz", hash = "sha256:baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"},
-]
-"sh 1.14.3" = [
-    {url = "https://files.pythonhosted.org/packages/b7/09/89c28aaf2a49f226fef8587c90c6386bd2cc03a0295bc4ff7fc6ee43c01d/sh-1.14.3.tar.gz", hash = "sha256:e4045b6c732d9ce75d571c79f5ac2234edd9ae4f5fa9d59b09705082bdca18c7"},
 ]
 "six 1.16.0" = [
     {url = "https://files.pythonhosted.org/packages/71/39/171f1c67cd00715f190ba0b100d606d440a28c93c7714febeca8b79af85e/six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
