@@ -187,6 +187,10 @@ class GAN(BaseModel):
             self.manual_backward(loss_D["loss"])
             d_opt.step()
 
+            if batch_idx == 0:
+                for sch in self.lr_schedulers():
+                    sch.step()
+
         loss_dict = {}
         for key, loss in loss_D.items():
             loss_dict[f"discriminator_{key}"] = loss
