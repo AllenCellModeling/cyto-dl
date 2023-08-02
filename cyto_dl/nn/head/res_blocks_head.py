@@ -102,6 +102,7 @@ class ResBlocksHead(BaseHead):
         if dense:
             # dense convolutions
             modules = [modules[0]] + [DenseBlock(modules[1:])]
+            conv_input_channels *= n_convs + 1
         modules.extend(
             (
                 UnetOutBlock(
