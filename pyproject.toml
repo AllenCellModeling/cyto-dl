@@ -48,6 +48,7 @@ requires-python = ">=3.8,<3.11"
 
 [project.optional-dependencies]
 equiv = [
+    "lie_learn @ git+https://github.com/colobas/lie_learn.git@d5be2ab",
     "escnn~=1.0.7",
     "e3nn~=0.5.1"
 ]
