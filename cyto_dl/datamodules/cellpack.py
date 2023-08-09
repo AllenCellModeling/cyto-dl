@@ -8,6 +8,8 @@ from pyntcloud import PyntCloud
 import point_cloud_utils as pcu
 import pandas as pd
 from typing import Optional
+from tqdm import tqdm
+from multiprocessing import Pool
 
 
 class CellPackDataModule(LightningDataModule):
@@ -64,7 +66,7 @@ class CellPackDataModule(LightningDataModule):
             self.ref_label,
             self.rotation_augmentations,
             self.jitter_augmentations,
-            self.max_ids
+            self.max_ids,
         )
 
     def train_dataloader(self):
@@ -134,7 +136,7 @@ class CellPackDataset(Dataset):
         self.num_points_ref = num_points_ref
         self.max_ids = max_ids
 
-        self.ref_csv = pd.read_csv(ref_path + 'manifest.csv')
+        self.ref_csv = pd.read_csv(ref_path + "manifest.csv")
 
         self.return_id = return_id
         self.split = split
@@ -145,7 +147,7 @@ class CellPackDataset(Dataset):
             set([i.split(".")[0].split("_")[-2].split("deg")[-1] for i in items])
         )
         if self.max_ids:
-            self._all_ids = self._all_ids[:self.max_ids]
+            self._all_ids = self._all_ids[: self.max_ids]
 
         _splits = {
             "train": self._all_ids[: int(0.7 * len(self._all_ids))],
@@ -157,18 +159,18 @@ class CellPackDataset(Dataset):
 
         self.ids = _splits[split]
 
-        self.data = []
-        self.ref = []
-        self.id_list = []
-        self.rule = []
-        self.pack_rot = []
-        self.rot = []
-        self.jitter = []
+        self.ids = self.ids[:4]
 
-        # import ipdb
-        # ipdb.set_trace()
+        # self.data = []
+        # self.ref = []
+        # self.id_list = []
+        # self.rule = []
+        # self.pack_rot = []
+        # self.rot = []
+        # self.jitter = []
 
-        for this_id in self.ids:
+        tup = []
+        for this_id in tqdm(self.ids, total=len(self.ids)):
             for rule in packing_rules:
                 for rot in packing_rotations:
                     this_path = (
@@ -179,94 +181,62 @@ class CellPackDataset(Dataset):
                         + ".json"
                     )
                     if os.path.isfile(structure_path + this_path):
+                        nuc_path = ref_path + f"{this_id}_{rot}.obj"
+                        tup.append(
+                            [
+                                structure_path + this_path,
+                                False,
+                                False,
+                                self._all_ids.index(this_id),
+                                rule,
+                                self.packing_rotations.index(rot),
+                                nuc_path,
+                                num_points_ref,
+                                num_points,
+                                self.packing_rules.index(rule),
+                            ]
+                        )
+                        if self.rotation_augmentations:
+                            for i in range(self.rotation_augmentations):
+                                tup.append(
+                                    [
+                                        structure_path + this_path,
+                                        True,
+                                        False,
+                                        self._all_ids.index(this_id),
+                                        rule,
+                                        self.packing_rotations.index(rot),
+                                        nuc_path,
+                                        num_points_ref,
+                                        num_points,
+                                        self.packing_rules.index(rule),
+                                    ]
+                                )
 
-                        with open(structure_path + this_path, "r") as f:
-                            tmp = json.load(f)
-                            points = pd.DataFrame()
-                            points["x"] = [i[0] for i in tmp["0"]["nucleus_interior_pcna"]]
-                            points["y"] = [i[1] for i in tmp["0"]["nucleus_interior_pcna"]]
-                            points["z"] = [i[2] for i in tmp["0"]["nucleus_interior_pcna"]]
-
-                            nuc_path = ref_path + f"{this_id}_{rot}.obj"
-                            my_point_cloud = PyntCloud.from_file(nuc_path)
-                            points_dna = my_point_cloud.points
-
-                            # points_dna_she = self.ref_csv.loc[self.ref_csv == '']
-
-                            if points_dna.shape[0] > num_points_ref:
-                                points_dna = self._subsample(points_dna, num_points_ref)
-
-                            if points.shape[0] > num_points:
-                                points = self._subsample(points, num_points)
-
-                            self.data.append(points.values)
-                            self.ref.append(points_dna.values)
-                            self.id_list.append(self._all_ids.index(this_id))
-                            self.rule.append(self.packing_rules.index(rule))
-                            self.pack_rot.append(self.packing_rotations.index(rot))
-                            self.rot.append(np.array(0))
-                            self.jitter.append(np.array(0))
-
-                            if self.rotation_augmentations:
-                                for i in range(self.rotation_augmentations):
-                                    (
-                                        points_dna_rot,
-                                        rotation_matrix,
-                                        theta,
-                                    ) = rotate_pointcloud(
-                                        points_dna.values, return_rot=True
-                                    )
-                                    points_rot = rotate_pointcloud(
-                                        points.values, rotation_matrix, return_rot=False
-                                    )
-
-                                    if self.jitter_augmentations:
-                                        for j in range(self.jitter_augmentations):
-                                            self.data.append(jitter_pointcloud(points_rot))
-                                            self.ref.append(
-                                                jitter_pointcloud(points_dna_rot)
-                                            )
-                                            self.id_list.append(
-                                                self._all_ids.index(this_id)
-                                            )
-                                            self.rule.append(self.packing_rules.index(rule))
-                                            self.pack_rot.append(
-                                                self.packing_rotations.index(rot)
-                                            )
-                                            self.rot.append(np.array(theta))
-                                            self.jitter.append(np.array(j))
-
-                                    else:
-                                        self.data.append(points_rot)
-
-                                        self.id_list.append(self._all_ids.index(this_id))
-                                        self.rule.append(self.packing_rules.index(rule))
-                                        self.pack_rot.append(
-                                            self.packing_rotations.index(rot)
-                                        )
-                                        self.rot.append(np.array(theta))
-                                        self.jitter.append(np.array(0))
-                    else:
-                        print("Missing", structure_path + this_path)
+        with Pool(10) as p:
+            all_packings = tuple(
+                tqdm(
+                    p.imap_unordered(
+                        get_packing,
+                        tup,
+                    ),
+                    total=len(tup),
+                    desc="get_packings",
+                )
+            )
+        self.data = [i[0] for i in all_packings]
+        self.ref = [i[1] for i in all_packings]
+        self.id_list = [i[2] for i in all_packings]
+        self.rule = [i[3] for i in all_packings]
+        self.pack_rot = [i[4] for i in all_packings]
+        self.rot = [i[5] for i in all_packings]
+        self.jitter = [i[6] for i in all_packings]
 
         self.len = len(self.data)
         self.label = []
 
     def __len__(self):
         return self.len
-
-    def _subsample(self, points_dna, num_points_ref):
-        v = points_dna.values
-        idx = pcu.downsample_point_cloud_poisson_disk(
-            v, num_samples=num_points_ref + 50
-        )
-        v_sampled = v[idx]
-        points_dna = pd.DataFrame()
-        points_dna["x"] = v_sampled[:, 0]
-        points_dna["y"] = v_sampled[:, 1]
-        points_dna["z"] = v_sampled[:, 2]
-        points_dna = points_dna.sample(n=num_points_ref)
-        return points_dna
 
     def pc_norm(self, pc):
         """pc: NxC, return NxC"""
@@ -283,16 +253,15 @@ class CellPackDataset(Dataset):
         ref = self.ref[item]
         # ref = self.pc_norm(ref)
         ref = torch.from_numpy(ref).float()
-
         if self.return_id:
             return {
                 self.x_label: x,
                 self.ref_label: ref,
-                "CellId": torch.tensor(self.id_list[item]),
-                "rule": torch.tensor(self.rule[item]),
-                "packing_rotation": torch.tensor(self.pack_rot[item]),
+                "CellId": torch.tensor(self.id_list[item]).unsqueeze(dim=0),
+                "rule": torch.tensor(self.rule[item]).unsqueeze(dim=0),
+                "packing_rotation": torch.tensor(self.pack_rot[item]).unsqueeze(dim=0),
                 "rotation_aug": torch.tensor(self.rot[item]),
-                "jitter_aug": torch.tensor(self.jitter[item]),
+                "jitter_aug": torch.tensor(self.jitter[item][0]).unsqueeze(dim=0),
             }
         else:
             return {self.x_label: x, self.ref_label: ref}
@@ -318,3 +287,74 @@ def rotate_pointcloud(pointcloud, rotation_matrix=None, return_rot=False):
         return pointcloud_rotated, rotation_matrix, theta
 
     return pointcloud_rotated
+
+
+def _subsample(points_dna, num_points_ref):
+    v = points_dna.values
+    idx = pcu.downsample_point_cloud_poisson_disk(v, num_samples=num_points_ref + 50)
+    v_sampled = v[idx]
+    points_dna = pd.DataFrame()
+    points_dna["x"] = v_sampled[:, 0]
+    points_dna["y"] = v_sampled[:, 1]
+    points_dna["z"] = v_sampled[:, 2]
+    points_dna = points_dna.sample(n=num_points_ref)
+    return points_dna
+
+
+def get_packing(tup):
+    this_path = tup[0]
+    rotate = tup[1]  # bool
+    jitter = tup[2]  # bool
+    this_index = tup[3]
+    this_rule = tup[4]
+    this_pack_rot = tup[5]
+    nuc_path = tup[6]
+    num_points_ref = tup[7]
+    num_points = tup[8]
+    rule_ind = tup[9]
+
+    with open(this_path, "r") as f:
+        tmp = json.load(f)
+        points = pd.DataFrame()
+        points["x"] = [i[0] for i in tmp["0"]["nucleus_interior_pcna"]]
+        points["y"] = [i[1] for i in tmp["0"]["nucleus_interior_pcna"]]
+        points["z"] = [i[2] for i in tmp["0"]["nucleus_interior_pcna"]]
+
+        my_point_cloud = PyntCloud.from_file(nuc_path)
+        points_dna = my_point_cloud.points
+
+        if points_dna.shape[0] > num_points_ref:
+            points_dna = _subsample(points_dna, num_points_ref)
+
+        if points.shape[0] > num_points:
+            points = _subsample(points, num_points)
+
+        if rotate:
+            (
+                points_dna,
+                rotation_matrix,
+                theta,
+            ) = rotate_pointcloud(points_dna.values, return_rot=True)
+            points = rotate_pointcloud(points.values, rotation_matrix, return_rot=False)
+            theta = np.array([theta])
+        else:
+            theta = np.array([0])
+            points = points.values
+            points_dna = points_dna.values
+
+        if jitter:
+            points = jitter_pointcloud(points)
+            points_dna = jitter_pointcloud(points_dna)
+            jitter_ret = np.array([1])
+        else:
+            jitter_ret = np.array([0])
+
+        return (
+            points,
+            points_dna,
+            this_index,
+            rule_ind,
+            this_pack_rot,
+            theta,
+            jitter_ret,
+        )
