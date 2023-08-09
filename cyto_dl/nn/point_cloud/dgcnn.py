@@ -18,6 +18,7 @@ from cyto_dl.datamodules.shapenet_dataset.utils import (
     normalize_coordinate,
     coordinate2index,
 )
+import ipdb
 from torch_scatter import scatter_mean, scatter_max
 
 log = utils.get_pylogger(__name__)
@@ -89,7 +90,7 @@ class DGCNN(nn.Module):
         hidden_conv1d_channels=[
             512,
             512,
-        ],  # [512, 1024, 512, num_features] for dgcnn cls (where 1024 is latent dim) and [512, 512] for normal dgcnn, [64, num_feats] for vector
+        ],  # [512, 1024, 512, numf_features] for dgcnn cls (where 1024 is latent dim) and [512, 512] for normal dgcnn, [64, num_feats] for vector
         scalar_inds=None,
         include_cross=True,
         include_coords=True,
@@ -100,7 +101,7 @@ class DGCNN(nn.Module):
         plane_type=["xz", "xy", "yz"],
         generate_grid_feats=False,
         scatter_type="max",
-        x_label="pcloud",
+        x_label="inputs",
     ):
         super().__init__()
         self.k = k
@@ -246,6 +247,8 @@ class DGCNN(nn.Module):
         return torch.cat((x, _axis), dim=1)
 
     def _generate_plane_features(self, points, cond, plane="xz"):
+        import ipdb
+        ipdb.set_trace()
         view_dims1 = (points.size(0), self.num_features, self.reso_plane**2)
         view_dims2 = (
             points.size(0),
@@ -263,7 +266,7 @@ class DGCNN(nn.Module):
 
         # scatter plane features from points
         fea_plane = cond.new_zeros(*view_dims1)
-        cond = cond.permute(*permute_dims1)  # B x 512 x T
+        cond = cond.permute(*permute_dims1)  # B x 512 x Tfea_plane.shape
         fea_plane = scatter_mean(cond, index, out=fea_plane)  # B x 512 x reso^2
         fea_plane = fea_plane.reshape(
             *view_dims2
@@ -361,7 +364,9 @@ class DGCNN(nn.Module):
                 x = self.pool(x, dim=-1)
 
         rot = torch.zeros(1).type_as(x)
+        ipdb.set_trace()
         if self.generate_grid_feats:
+            # ipdb.set_trace() 
             if len(x.shape) == 4:
                 _, rot = self.rotation(pre_repeat.squeeze(dim=-1))
                 rot = rot.mT
@@ -377,7 +382,8 @@ class DGCNN(nn.Module):
                 fea["xy"] = self._generate_plane_features(input_pc, x, plane="xy")
             if "yz" in self.plane_type:
                 fea["yz"] = self._generate_plane_features(input_pc, x, plane="yz")
-            return pre_repeat, rot, fea
+            return {self.x_label: pre_repeat, "rotation":rot, "grid_feats":fea}
+            # return pre_repeat, rot, fea
 
         if self.mode == "vector":
             x, rot = self.rotation(x)

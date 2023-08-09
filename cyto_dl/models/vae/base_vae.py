@@ -8,6 +8,7 @@ from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 import inspect
+import ipdb
 
 from .priors import IdentityPrior, IsotropicGaussianPrior, Prior
 
@@ -209,6 +210,8 @@ class BaseVAE(BaseModel):
     def encode(self, batch, **kwargs):
         ret_dict = {}
         for part, encoder in self.encoder.items():
+            # ipdb.set_trace()
+            # print(part)
             this_ret = encoder(
                 batch[part],
                 **{k: v for k, v in kwargs.items() if k in self.encoder_args[part]},

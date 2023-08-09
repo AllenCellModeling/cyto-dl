@@ -119,7 +119,7 @@ class PointCloudVAE(BaseVAE):
 
         if prior is None:
             prior = {
-                "embedding": (
+                "embedding": ( #pcloud
                     IsotropicGaussianPrior(dimensionality=latent_dim)
                     if embedding_prior == "gaussian"
                     else IdentityPrior(dimensionality=latent_dim)

@@ -1,6 +1,7 @@
 from .base_vae import BaseVAE
 from .image_vae import ImageVAE
 from .latent_loss_vae import LatentLossVAE
+from .point_cloud_vae import PointCloudVAE
 
 # from .so2_image_vae import SO2ImageVAE
 from .tabular_vae import TabularVAE
