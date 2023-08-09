@@ -1,0 +1,16 @@
+_target_: cyto_dl.nn.point_cloud.DGCNN
+num_features: 20
+hidden_dim: 64
+hidden_conv2d_channels: [64, 64, 64, 64]
+hidden_conv1d_channels: [512, 20, 512, 20]
+k: 20
+mode: vector
+scalar_inds:
+include_cross: True
+include_coords: True
+symmetry_breaking_axis:
+generate_grid_feats: True
+padding: 0.1
+reso_plane: 64
+plane_type: ['xz', 'xy', 'yz']
+scatter_type: 'max'

@@ -1,5 +1,5 @@
 defaults:
-  - private/pcloud_encoders@encoder.inputs: implicit_equiv.yaml
+  - private/pcloud_encoders@encoder.inputs: implicit_classical.yaml
   - private/priors@prior.inputs: identity.yaml
   - private/pcloud_decoders@decoder.inputs: localdecoder.yaml
   - private/reconstruction_loss@reconstruction_loss.inputs: l1.yaml
