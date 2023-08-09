@@ -1,0 +1,36 @@
+defaults:
+  - private/pcloud_encoders@encoder.inputs: implicit_classical.yaml
+  - private/priors@prior.inputs: identity.yaml
+  - private/pcloud_decoders@decoder.inputs: localdecoder.yaml
+  - private/reconstruction_loss@reconstruction_loss.inputs: l1.yaml
+
+_target_: cyto_dl.models.vae.PointCloudVAE
+
+x_label: inputs
+point_label: points
+
+latent_dim: 128
+
+scale: 1
+
+encoder:
+  inputs:
+    num_features: ${eval:${model.latent_dim}*${model.scale}}
+    x_label: ${model.x_label}
+
+decoder:
+  inputs:
+    num_features: ${eval:${model.latent_dim}*${model.scale}}
+
+prior:
+  inputs:
+    dimensionality: ${model.latent_dim}
+
+get_rotation: false
+
+beta: 1.0
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002

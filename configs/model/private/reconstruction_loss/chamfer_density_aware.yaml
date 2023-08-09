@@ -1,0 +1,3 @@
+_target_: cyto_dl.nn.losses.DensityAwareChamferLoss
+alpha: 0.1
+n_lambda: 0.5

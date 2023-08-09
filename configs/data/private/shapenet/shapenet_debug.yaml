@@ -18,7 +18,7 @@ return_idx: True
 train_rotate: True
 train_translate: False
 train_single_trans: False
-batch_size: 32
-num_workers: 20
+batch_size: 1
+num_workers: 0
 multi_files: 
 categories: 

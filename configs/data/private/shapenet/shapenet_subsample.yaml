@@ -5,11 +5,11 @@ dataset_type: "partial_pointcloud"
 train_split: "train"
 val_split: "val"
 test_split: "test"
-points_subsample: 2048
+points_subsample: 256
 input_type: "pointcloud"
 points_file: "points.npz"
 points_iou_file: "points.npz"
-pointcloud_n: 2048
+pointcloud_n: 256
 pointcloud_noise: 0.005
 pointcloud_file: "pointcloud.npz"
 part_ratio: 0.5
@@ -18,7 +18,7 @@ return_idx: True
 train_rotate: True
 train_translate: False
 train_single_trans: False
-batch_size: 32
+batch_size: 64
 num_workers: 20
 multi_files: 
 categories: 

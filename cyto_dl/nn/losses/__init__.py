@@ -10,6 +10,7 @@ from .l1_loss import L1Loss
 from .geomloss import GeomLoss
 from .chamfer_augmented import ChamferAugmented
 from .sdf_gridloss import SDFGridLoss
+from .density_aware_chamfer_loss import DensityAwareChamferLoss
 try:
     from .spharm_loss import SpharmLoss
 except (ModuleNotFoundError, ImportError):

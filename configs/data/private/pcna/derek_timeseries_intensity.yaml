@@ -21,6 +21,6 @@ transforms:
     keys: pcloud
     remote: false
     scale: 0.1
-    num_cols: 3
+    num_cols: 4
     norm: false
     flip_dims: true

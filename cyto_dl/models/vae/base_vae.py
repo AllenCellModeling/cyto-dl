@@ -172,7 +172,6 @@ class BaseVAE(BaseModel):
 
     def calculate_elbo(self, x, xhat, z):
         rcl_reduced = self.calculate_rcl_dict(x, xhat)
-
         kld_per_part = {
             part: prior(z[part], mode="kl", reduction="none")
             for part, prior in self.prior.items()

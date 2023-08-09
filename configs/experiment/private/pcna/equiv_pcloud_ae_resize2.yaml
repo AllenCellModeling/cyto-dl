@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/pcna_resize.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
+  - override /data: private/pcna/pcna_resize2.yaml
+  - override /model: private/pcloud/equiv_pcloud_ae_resize_shapenet.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -15,11 +15,9 @@ defaults:
 
 experiment_name: pcloud
 tags: ["equivariance", "pcna-dataset", "point-cloud"]
+ckpt_path: "/allen/aics/modeling/ritvik/projects/checkpoints/shapenet_subsample/best.ckpt"
 
 seed: 42
-
-model:
-  x_label: pcloud
 
 data:
   batch_size: 32
@@ -29,7 +27,7 @@ trainer:
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [0]
+  devices: [1]
 
 callbacks:
   early_stopping:

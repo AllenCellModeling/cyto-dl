@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/pcna_resize.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
+  - override /data: private/pcna/derek_timeseries.yaml
+  - override /model: private/pcloud/equiv_pcloud_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -29,7 +29,7 @@ trainer:
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [0]
+  devices: [1]
 
 callbacks:
   early_stopping:

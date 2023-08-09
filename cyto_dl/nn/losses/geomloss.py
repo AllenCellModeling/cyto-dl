@@ -9,12 +9,14 @@ from geomloss import SamplesLoss
 
 
 class GeomLoss(nn.Module):
-    def __init__(self, name: str = 'sinkhorn', p: int = 1, blur: float = 0.01, **kwargs):
+    def __init__(
+        self, name: str = "sinkhorn", p: int = 1, blur: float = 0.01, **kwargs
+    ):
         super().__init__()
         self.name = name
         self.p = p
         self.blur = blur
-        self.loss = SamplesLoss(loss="sinkhorn", p=2, blur=.05, **kwargs)
+        self.loss = SamplesLoss(loss=self.name, p=self.p, blur=self.blur, **kwargs)
 
     def forward(self, gts, preds):
         return self.loss(preds, gts)

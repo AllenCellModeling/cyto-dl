@@ -1,0 +1,54 @@
+_target_: cyto_dl.models.vae.PointCloudVAE
+
+x_label: pcloud
+occupancy_label: 
+
+latent_dim: 128
+scale: 1
+num_output_points: 256
+hidden_conv1_dim: 512
+
+encoder:
+  pcloud:
+    _target_: cyto_dl.nn.point_cloud.equiv_transformer.EquivTransformer
+    encoder:
+        _target_: VN_transformer.VNTransformer
+        dim: 64
+        depth: 2
+        dim_head: 64
+        heads: 8
+        dim_feat: 0 
+    x_label: 'pcloud'
+    concat_feats: False
+    num_points: 256
+    num_features: 128
+
+decoder:
+  pcloud:
+    _target_: cyto_dl.nn.point_cloud.FoldingNet
+    input_dim: 128
+    num_output_points: 256
+    hidden_dim: 512
+    std: 0.3
+    shape: 'plane'
+    sphere_path: "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/sphere.npy"
+    gaussian_path: "/allen/aics/modeling/ritvik/projects/cellshape/cellshape-cloud/cellshape_cloud/vendor/gaussian.npy"
+    num_coords: 3
+
+prior:
+  pcloud:
+    _target_: cyto_dl.models.vae.priors.IdentityPrior
+    dimensionality: 128
+
+reconstruction_loss:
+  pcloud:
+    _target_: cyto_dl.nn.losses.ChamferLoss
+
+beta: 1.0
+
+get_rotation: true
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002

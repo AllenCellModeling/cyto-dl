@@ -1,0 +1,3 @@
+_target_: cyto_dl.nn.point_cloud.LocalDecoder
+num_features: 20
+hidden_size: 512

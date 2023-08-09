@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/pcna_resize.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
+  - override /data: private/shapenet/shapenet_subsample.yaml
+  - override /model: private/pcloud/equiv_pcloud_ae_resize_shapenet.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -14,22 +14,16 @@ defaults:
 # this allows you to overwrite only specified parameters
 
 experiment_name: pcloud
-tags: ["equivariance", "pcna-dataset", "point-cloud"]
+tags: ["equivariance", "point-cloud"]
 
 seed: 42
-
-model:
-  x_label: pcloud
-
-data:
-  batch_size: 32
 
 trainer:
   check_val_every_n_epoch: 1
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [0]
+  devices: [3]
 
 callbacks:
   early_stopping:

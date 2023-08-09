@@ -377,7 +377,7 @@ class DGCNN(nn.Module):
                 fea["xy"] = self._generate_plane_features(input_pc, x, plane="xy")
             if "yz" in self.plane_type:
                 fea["yz"] = self._generate_plane_features(input_pc, x, plane="yz")
-            return pre_repeat, rot, fea
+            return {self.x_label: pre_repeat, "rotation":rot, "grid_feats":fea}
 
         if self.mode == "vector":
             x, rot = self.rotation(x)
