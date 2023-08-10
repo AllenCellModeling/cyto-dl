@@ -11,13 +11,14 @@ train_dataloaders:
     download: true
     train: true
     transform:
+      - _target_: monai.transforms.Resized
+        mode: bilinear
+        keys: [image]
+        spatial_size: [29, 29]
       - _target_: monai.transforms.RandRotated
         keys: image
         range_x: 3.14159
         prob: 1.0
-      - _target_: monai.transforms.SpatialPadd
-        keys: [image]
-        spatial_size: [32, 32]
       - _target_: monai.transforms.ToTensord
         keys: image
         track_meta: false
@@ -32,13 +33,14 @@ val_dataloaders:
     download: true
     train: false
     transform:
-      #      - _target_: monai.transforms.RandRotated
-      #        keys: image
-      #        range_x: 3.14159
-      #        prob: 1.0
-      - _target_: monai.transforms.SpatialPadd
+      - _target_: monai.transforms.Resized
+        mode: bilinear
         keys: [image]
-        spatial_size: [32, 32]
+        spatial_size: [29, 29]
+      #- _target_: monai.transforms.RandRotated
+      #  keys: image
+      #  range_x: 3.14159
+      #  prob: 1.0
       - _target_: monai.transforms.ToTensord
         keys: image
         track_meta: false

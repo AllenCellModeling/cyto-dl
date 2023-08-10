@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: vae/variance_3d.yaml
+  - override /data: vae/rotated_mnist.yaml
   - override /model: vae/so2_equiv_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
@@ -13,40 +13,64 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-experiment_name: variance_so2_3d_vae
+experiment_name: rotated_mnist_so2
 
-tags: ["so2-equiv", "variance-dataset", "3d"]
+tags: ["mnist", "so2", "vae"]
 
 seed: 42
 
 data:
-  subsample: { "train": 10000, "valid": 2000, "test": 2000 }
+  _aux:
+    batch_size: 128
 
 model:
-  spatial_dims: 3
-  in_shape: [1, 32, 96, 96]
-  mask_input: true
+  group: so2
+  spatial_dims: 2
+  in_shape: [1, 29, 29]
+
+  background_value: 0
+
+  mask_input: false
   mask_output: true
-  pad: null
 
-  latent_dim: 32
+  latent_dim: 64
 
-  channels: [8, 8, 8, 16, 32, 64, 128]
-  strides: [1, 1, 2, 2, 2, 2, 2]
+  kernel_sizes: [7, 5, 5, 5, 3, 3]
+  channels: [8, 16, 32, 32, 64, 64]
+  strides: [1, 1, 2, 2, 1]
 
-  use_sigmoid: false
-  decoder_pixelshuffle: false
+  decoder_channels: [16, 8, 4, 2]
+  decoder_strides: [2, 2, 1, 1]
+
+  last_act: sigmoid
+  #last_scale: null
+
+  reconstruction_loss:
+    _target_: torch.nn.MSELoss
+    reduction: none
+
+  prior: gaussian
+  beta: 0.1
+
+  x_label: image
+
+  act: swish
+  norm: null
+  dropout: null
+  bias: true
 
 trainer:
   check_val_every_n_epoch: 1
-  min_epochs: 10
-  max_epochs: 100
+  min_epochs: 500
+  max_epochs: 1000
   accelerator: gpu
-  devices: [2]
+  devices: [0]
 
 callbacks:
   early_stopping:
     monitor: val/loss
+    patience: 10
+    min_delta: 0.
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
@@ -56,12 +80,8 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: debug_so2_3d_vae
-    run_name: debug
-
-zarr_level: 2
-padded_size: [32, 96, 96]
-channels: [dna_segmentation]
+    experiment_name: ${experiment_name}
+    run_name:
 
 extras:
   precision:
