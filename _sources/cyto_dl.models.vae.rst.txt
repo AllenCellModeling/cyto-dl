@@ -14,7 +14,6 @@ Subpackages
 
    cyto_dl.models.vae.o2_spharm_vae
    cyto_dl.models.vae.priors
-   cyto_dl.models.vae.so2_image_vae
 
 Submodules
 ----------
@@ -23,6 +22,8 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.models.vae.base_vae
+   cyto_dl.models.vae.image_canon_vae
+   cyto_dl.models.vae.image_encoder
    cyto_dl.models.vae.image_vae
    cyto_dl.models.vae.latent_loss_vae
    cyto_dl.models.vae.tabular_vae

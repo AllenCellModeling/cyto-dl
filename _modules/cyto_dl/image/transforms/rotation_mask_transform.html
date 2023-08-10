@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.image.transforms.o2_mask_transform - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.image.transforms.rotation_mask_transform - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -202,9 +202,9 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.o2_mask_transform.html">cyto_dl.image.transforms.o2_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.resize.html">cyto_dl.image.transforms.resize module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.so2_random_rotation.html">cyto_dl.image.transforms.so2_random_rotation module</a></li>
 </ul>
@@ -256,13 +256,9 @@
 <li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.vae.priors.joint_prior.html">cyto_dl.models.vae.priors.joint_prior module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../cyto_dl.models.vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.vae.so2_image_vae.so2_encoder.html">cyto_dl.models.vae.so2_image_vae.so2_encoder module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.vae.so2_image_vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae.so2_image_vae module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.vae.so2_image_vae.utils.html">cyto_dl.models.vae.so2_image_vae.utils module</a></li>
-</ul>
-</li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.base_vae.html">cyto_dl.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.image_canon_vae.html">cyto_dl.models.vae.image_canon_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.latent_loss_vae.html">cyto_dl.models.vae.latent_loss_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.tabular_vae.html">cyto_dl.models.vae.tabular_vae module</a></li>
@@ -271,13 +267,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.discriminators.multi_scale_discriminator.html">cyto_dl.nn.discriminators.multi_scale_discriminator module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.discriminators.n_layer_discriminator.html">cyto_dl.nn.discriminators.n_layer_discriminator module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
@@ -285,7 +281,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.adversarial_loss.html">cyto_dl.nn.losses.adversarial_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.continuous_bernoulli.html">cyto_dl.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.cosine_loss.html">cyto_dl.nn.losses.cosine_loss module</a></li>
@@ -293,17 +289,19 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.gaussian_nll_loss.html">cyto_dl.nn.losses.gaussian_nll_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.loss_wrapper.html">cyto_dl.nn.losses.loss_wrapper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.spharm_loss.html">cyto_dl.nn.losses.spharm_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.threshold_loss.html">cyto_dl.nn.losses.threshold_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.weibull.html">cyto_dl.nn.losses.weibull module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -312,6 +310,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.utils.rich_utils.html">cyto_dl.utils.rich_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
 </ul>
 </li>
@@ -355,7 +354,7 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.image.transforms.o2_mask_transform</h1><div class="highlight"><pre>
+          <h1>Source code for cyto_dl.image.transforms.rotation_mask_transform</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -364,14 +363,15 @@
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
 
 
-<div class="viewcode-block" id="O2Mask"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.o2_mask_transform.html#cyto_dl.image.transforms.o2_mask_transform.O2Mask">[docs]</a><span class="k">class</span> <span class="nc">O2Mask</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<div class="viewcode-block" id="RotationMask"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.rotation_mask_transform.html#cyto_dl.image.transforms.rotation_mask_transform.RotationMask">[docs]</a><span class="k">class</span> <span class="nc">RotationMask</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">mask_side</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">mask_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">background</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cylinder_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">cylinder_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># CZYX</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Similar functionality as https://quva-</span>
 <span class="sd">        lab.github.io/escnn/api/escnn.nn.html#escnn.nn.MaskModule.</span>
@@ -381,6 +381,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        group: str</span>
+<span class="sd">            Rotation group (either so2 or so3)</span>
 <span class="sd">        spatial_dims: int</span>
 <span class="sd">            Whether 2d or 3d</span>
 <span class="sd">        mask_side: int</span>
@@ -389,7 +391,7 @@
 <span class="sd">        mask_margin: float = 0.0</span>
 <span class="sd">            Margin to smooth the mask edges. See the escnn docs linked above</span>
 <span class="sd">            for details. Note: ignored if background is not `None`</span>
-<span class="sd">        background: Optional[int] = None</span>
+<span class="sd">        background: Optional[float] = None</span>
 <span class="sd">            Value for masked out pixels/voxels. If `None` (default) background</span>
 <span class="sd">            value will be 0. If not `None`, `mask_margin` is ignored and the</span>
 <span class="sd">            mask is not smooth.</span>
@@ -399,35 +401,57 @@
 <span class="sd">            Defaults to 2, (i.e. assumes ZYX or ZXY ordering of spatial dimensions)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;o2&quot;</span><span class="p">,</span> <span class="s2">&quot;o3&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span>
         <span class="n">margin</span> <span class="o">=</span> <span class="n">mask_margin</span> <span class="k">if</span> <span class="n">background</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">build_mask</span><span class="p">(</span><span class="n">mask_side</span><span class="p">,</span> <span class="n">margin</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">cylinder_axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;o2&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">build_mask</span><span class="p">(</span><span class="n">mask_side</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">cylinder_axis</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">build_mask</span><span class="p">(</span><span class="n">mask_side</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">margin</span><span class="o">=</span><span class="n">margin</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># BCZYX</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># BCYX</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">img</span> <span class="o">*</span> <span class="n">mask</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mask</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">img</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">img</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">out</span></div>
 
 
-<div class="viewcode-block" id="O2Maskd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.o2_mask_transform.html#cyto_dl.image.transforms.o2_mask_transform.O2Maskd">[docs]</a><span class="k">class</span> <span class="nc">O2Maskd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<div class="viewcode-block" id="RotationMaskd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.rotation_mask_transform.html#cyto_dl.image.transforms.rotation_mask_transform.RotationMaskd">[docs]</a><span class="k">class</span> <span class="nc">RotationMaskd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keys</span><span class="p">,</span>
+        <span class="n">group</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">mask_side</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">mask_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">background</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">cylinder_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cylinder_axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># CZYX</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Dictionary-transform version of O2Mask.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">O2Mask</span><span class="p">(</span><span class="n">spatial_dims</span><span class="p">,</span> <span class="n">mask_side</span><span class="p">,</span> <span class="n">mask_margin</span><span class="p">,</span> <span class="n">background</span><span class="p">,</span> <span class="n">cylinder_axis</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">RotationMask</span><span class="p">(</span>
+            <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+            <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
+            <span class="n">mask_side</span><span class="o">=</span><span class="n">mask_side</span><span class="p">,</span>
+            <span class="n">mask_margin</span><span class="o">=</span><span class="n">mask_margin</span><span class="p">,</span>
+            <span class="n">background</span><span class="o">=</span><span class="n">background</span><span class="p">,</span>
+            <span class="n">cylinder_axis</span><span class="o">=</span><span class="n">cylinder_axis</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>

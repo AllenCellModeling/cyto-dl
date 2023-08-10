@@ -24,4 +24,5 @@ Submodules
    cyto_dl.utils.dummy_dataset
    cyto_dl.utils.pylogger
    cyto_dl.utils.rich_utils
+   cyto_dl.utils.rotation
    cyto_dl.utils.template_utils

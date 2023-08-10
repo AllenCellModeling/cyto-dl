@@ -1,0 +1,7 @@
+cyto\_dl.image.transforms.rotation\_mask\_transform module
+==========================================================
+
+.. automodule:: cyto_dl.image.transforms.rotation_mask_transform
+   :members:
+   :undoc-members:
+   :show-inheritance:

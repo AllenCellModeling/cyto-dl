@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.image.transforms.project module" href="cyto_dl.image.transforms.project.html" /><link rel="prev" title="cyto_dl.image.transforms.multiscale_cropper module" href="cyto_dl.image.transforms.multiscale_cropper.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.spatial_transformer module" href="cyto_dl.nn.spatial_transformer.html" /><link rel="prev" title="cyto_dl.nn.mlp module" href="cyto_dl.nn.mlp.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.image.transforms.o2_mask_transform module - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.nn.res_unit module - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -192,7 +192,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.io.html">cyto_dl.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.aicsimage_loader.html">cyto_dl.image.io.aicsimage_loader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
@@ -200,12 +200,12 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.ome_zarr_reader.html">cyto_dl.image.io.ome_zarr_reader module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.image.transforms.o2_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.resize.html">cyto_dl.image.transforms.resize module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.so2_random_rotation.html">cyto_dl.image.transforms.so2_random_rotation module</a></li>
 </ul>
@@ -257,13 +257,9 @@
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.priors.joint_prior.html">cyto_dl.models.vae.priors.joint_prior module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.so2_encoder.html">cyto_dl.models.vae.so2_image_vae.so2_encoder module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae.so2_image_vae module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.utils.html">cyto_dl.models.vae.so2_image_vae.utils module</a></li>
-</ul>
-</li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.base_vae.html">cyto_dl.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_canon_vae.html">cyto_dl.models.vae.image_canon_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.latent_loss_vae.html">cyto_dl.models.vae.latent_loss_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.tabular_vae.html">cyto_dl.models.vae.tabular_vae module</a></li>
@@ -272,13 +268,13 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.discriminators.multi_scale_discriminator.html">cyto_dl.nn.discriminators.multi_scale_discriminator module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.discriminators.n_layer_discriminator.html">cyto_dl.nn.discriminators.n_layer_discriminator module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
@@ -286,7 +282,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.adversarial_loss.html">cyto_dl.nn.losses.adversarial_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.continuous_bernoulli.html">cyto_dl.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.cosine_loss.html">cyto_dl.nn.losses.cosine_loss module</a></li>
@@ -294,17 +290,19 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.gaussian_nll_loss.html">cyto_dl.nn.losses.gaussian_nll_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.loss_wrapper.html">cyto_dl.nn.losses.loss_wrapper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.spharm_loss.html">cyto_dl.nn.losses.spharm_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.threshold_loss.html">cyto_dl.nn.losses.threshold_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.weibull.html">cyto_dl.nn.losses.weibull module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.res_unit module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -313,6 +311,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rich_utils.html">cyto_dl.utils.rich_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
 </ul>
 </li>
@@ -351,48 +350,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.image.transforms.o2_mask_transform">
-<span id="cyto-dl-image-transforms-o2-mask-transform-module"></span><h1>cyto_dl.image.transforms.o2_mask_transform module<a class="headerlink" href="#module-cyto_dl.image.transforms.o2_mask_transform" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.image.transforms.o2_mask_transform.O2Mask">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.o2_mask_transform.</span></span><span class="sig-name descname"><span class="pre">O2Mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cylinder_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/o2_mask_transform.html#O2Mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.o2_mask_transform.O2Mask" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
-<p>Similar functionality as <a class="reference external" href="https://quva">https://quva</a>-
-lab.github.io/escnn/api/escnn.nn.html#escnn.nn.MaskModule.</p>
-<p>In the 3d case, the mask is a cylinder - we only consider rotations of
-the XY plane.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>spatial_dims</strong> (<em>int</em>) – Whether 2d or 3d</p></li>
-<li><p><strong>mask_side</strong> (<em>int</em>) – Side of the square in which to inscribe the mask.
-(Should be the max between the X and Y dimensions)</p></li>
-<li><p><strong>mask_margin</strong> (<em>float = 0.0</em>) – Margin to smooth the mask edges. See the escnn docs linked above
-for details. Note: ignored if background is not <cite>None</cite></p></li>
-<li><p><strong>background</strong> (<em>Optional[int] = None</em>) – Value for masked out pixels/voxels. If <cite>None</cite> (default) background
-value will be 0. If not <cite>None</cite>, <cite>mask_margin</cite> is ignored and the
-mask is not smooth.</p></li>
-<li><p><strong>cylinder_axis</strong> (<em>int</em>) – Axis along which to form the cylinder, in the 3d case.
-For rotations of the XY plane, this would be the Z axis.
-Defaults to 2, (i.e. assumes ZYX or ZXY ordering of spatial dimensions)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.image.transforms.o2_mask_transform.O2Maskd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.o2_mask_transform.</span></span><span class="sig-name descname"><span class="pre">O2Maskd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cylinder_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/o2_mask_transform.html#O2Maskd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.o2_mask_transform.O2Maskd" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
-<p>Dictionary-transform version of O2Mask.</p>
-</dd></dl>
-
+          <section id="cyto-dl-nn-res-unit-module">
+<h1>cyto_dl.nn.res_unit module<a class="headerlink" href="#cyto-dl-nn-res-unit-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -400,23 +365,23 @@ Defaults to 2, (i.e. assumes ZYX or ZXY ordering of spatial dimensions)</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.image.transforms.project.html">
+          <a class="next-page" href="cyto_dl.nn.spatial_transformer.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.image.transforms.project module</div>
+                <div class="title">cyto_dl.nn.spatial_transformer module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.image.transforms.multiscale_cropper.html">
+          <a class="prev-page" href="cyto_dl.nn.mlp.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.image.transforms.multiscale_cropper module</div>
+                <div class="title">cyto_dl.nn.mlp module</div>
                 
               </div>
             </a>
@@ -438,28 +403,8 @@ Defaults to 2, (i.e. assumes ZYX or ZXY ordering of spatial dimensions)</p></li>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.image.transforms.o2_mask_transform module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.image.transforms.o2_mask_transform.O2Mask"><code class="docutils literal notranslate"><span class="pre">O2Mask</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.image.transforms.o2_mask_transform.O2Maskd"><code class="docutils literal notranslate"><span class="pre">O2Maskd</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

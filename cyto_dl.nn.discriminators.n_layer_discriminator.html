@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -203,9 +203,9 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.o2_mask_transform.html">cyto_dl.image.transforms.o2_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.resize.html">cyto_dl.image.transforms.resize module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.so2_random_rotation.html">cyto_dl.image.transforms.so2_random_rotation module</a></li>
 </ul>
@@ -257,13 +257,9 @@
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.priors.joint_prior.html">cyto_dl.models.vae.priors.joint_prior module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.so2_encoder.html">cyto_dl.models.vae.so2_image_vae.so2_encoder module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.so2_image_vae.html">cyto_dl.models.vae.so2_image_vae.so2_image_vae module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.so2_image_vae.utils.html">cyto_dl.models.vae.so2_image_vae.utils module</a></li>
-</ul>
-</li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.base_vae.html">cyto_dl.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_canon_vae.html">cyto_dl.models.vae.image_canon_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.latent_loss_vae.html">cyto_dl.models.vae.latent_loss_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.tabular_vae.html">cyto_dl.models.vae.tabular_vae module</a></li>
@@ -272,13 +268,13 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.discriminators.multi_scale_discriminator.html">cyto_dl.nn.discriminators.multi_scale_discriminator module</a></li>
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.discriminators.n_layer_discriminator module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
@@ -286,7 +282,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.adversarial_loss.html">cyto_dl.nn.losses.adversarial_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.continuous_bernoulli.html">cyto_dl.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.cosine_loss.html">cyto_dl.nn.losses.cosine_loss module</a></li>
@@ -294,17 +290,19 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.gaussian_nll_loss.html">cyto_dl.nn.losses.gaussian_nll_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.loss_wrapper.html">cyto_dl.nn.losses.loss_wrapper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.spharm_loss.html">cyto_dl.nn.losses.spharm_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.threshold_loss.html">cyto_dl.nn.losses.threshold_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.weibull.html">cyto_dl.nn.losses.weibull module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -313,6 +311,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rich_utils.html">cyto_dl.utils.rich_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
 </ul>
 </li>
@@ -351,43 +350,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.discriminators.n_layer_discriminator">
-<span id="cyto-dl-nn-discriminators-n-layer-discriminator-module"></span><h1>cyto_dl.nn.discriminators.n_layer_discriminator module<a class="headerlink" href="#module-cyto_dl.nn.discriminators.n_layer_discriminator" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.discriminators.n_layer_discriminator.</span></span><span class="sig-name descname"><span class="pre">NLayerDiscriminator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_nc:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndf:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layers:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm_layer=&lt;class</span> <span class="pre">'torch.nn.modules.instancenorm.InstanceNorm3d'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise_annealer=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/discriminators/n_layer_discriminator.html#NLayerDiscriminator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Defines a PatchGAN discriminator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input_nc</strong> (<em>int=2</em>) – Number of channels of input images. Generally, <cite>n_channels(input_im)+n_channels(model_output)</cite></p></li>
-<li><p><strong>ndf</strong> (<em>int=64</em>) – Number of filters in the first conv layer. Later layers are multiples of <cite>ndf</cite>.</p></li>
-<li><p><strong>n_layers</strong> (<em>int=3</em>) – Number of conv layers in the discriminator</p></li>
-<li><p><strong>norm_layer=nn.InstanceNorm3d</strong> – normalization layer</p></li>
-<li><p><strong>noise_annealer=None</strong> – Noise annealer object</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/discriminators/n_layer_discriminator.html#NLayerDiscriminator.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.forward" title="Permalink to this definition">#</a></dt>
-<dd><p>Standard forward.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-discriminators-n-layer-discriminator-module">
+<h1>cyto_dl.nn.discriminators.n_layer_discriminator module<a class="headerlink" href="#cyto-dl-nn-discriminators-n-layer-discriminator-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -433,31 +403,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.discriminators.n_layer_discriminator module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.forward"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.training"><code class="docutils literal notranslate"><span class="pre">NLayerDiscriminator.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
