@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel
           pip install numpy
-          pip install -r requirements/docs-requirements.txt
+          pip install -r requirements/linux/docs-requirements.txt
           pip install .
       - name: Generate Docs
         run: |
