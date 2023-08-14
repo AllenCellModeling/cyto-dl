@@ -1,8 +1,8 @@
-from typing import Callable,  Sequence, Union, List, Optional
+from typing import Callable, List, Optional, Sequence, Union
 
 from monai.data import DataLoader, Dataset, PersistentDataset
 from monai.transforms import Compose
-from omegaconf import ListConfig, DictConfig, OmegaConf
+from omegaconf import DictConfig, ListConfig, OmegaConf
 from upath import UPath as Path
 
 
@@ -12,14 +12,14 @@ def make_data_dict_dataloader(
     cache_dir: Optional[Union[Path, str]] = None,
     **dataloader_kwargs
 ):
-    """Create a dataloader based on a dictionary of paths to images. 
+    """Create a dataloader based on a dictionary of paths to images.
 
     Parameters
     ----------
     data: Sequence[Union[DictConfig, dict]]
-        A sequence of dictionaries, each containing a key expected by transforms 
-        (usually an image path) 
-        
+        A sequence of dictionaries, each containing a key expected by transforms
+        (usually an image path)
+
     transforms: Union[Sequence[Callable], Callable],
         Transforms to apply to each sample
 
@@ -39,7 +39,9 @@ def make_data_dict_dataloader(
     if isinstance(transforms, (list, tuple, ListConfig)):
         transforms = Compose(transforms)
 
-    data = {k: OmegaConf.to_container(v) if isinstance(v, DictConfig) else v for k, v in data.items()}
+    data = {
+        k: OmegaConf.to_container(v) if isinstance(v, DictConfig) else v for k, v in data.items()
+    }
 
     if cache_dir is not None:
         dataset = PersistentDataset(data, transform=transforms, cache_dir=cache_dir)
