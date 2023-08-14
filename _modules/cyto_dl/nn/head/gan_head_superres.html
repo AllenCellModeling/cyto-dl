@@ -452,7 +452,6 @@
         <span class="k">if</span> <span class="n">dense</span><span class="p">:</span>
             <span class="c1"># dense convolutions</span>
             <span class="n">modules</span> <span class="o">=</span> <span class="p">[</span><span class="n">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">DenseBlock</span><span class="p">(</span><span class="n">modules</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
-            <span class="n">conv_input_channels</span> <span class="o">*=</span> <span class="n">n_convs</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">modules</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">UnetOutBlock</span><span class="p">(</span>
