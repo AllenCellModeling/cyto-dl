@@ -69,7 +69,9 @@ class MultiTaskIm2Im(BaseModel):
 
         if not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
-            self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
+            self.task_heads = torch.nn.ModuleDict(
+                {k: torch.compile(v) for k, v in task_heads.items()}
+            )
         else:
             self.backbone = backbone
             self.task_heads = torch.nn.ModuleDict({k: v for k, v in task_heads.items()})
