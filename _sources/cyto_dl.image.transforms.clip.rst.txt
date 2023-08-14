@@ -1,0 +1,7 @@
+cyto\_dl.image.transforms.clip module
+=====================================
+
+.. automodule:: cyto_dl.image.transforms.clip
+   :members:
+   :undoc-members:
+   :show-inheritance:

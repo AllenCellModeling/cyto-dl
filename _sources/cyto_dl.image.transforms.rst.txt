@@ -13,6 +13,7 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.image.transforms.bright_sampler
+   cyto_dl.image.transforms.clip
    cyto_dl.image.transforms.multiscale_cropper
    cyto_dl.image.transforms.project
    cyto_dl.image.transforms.resize

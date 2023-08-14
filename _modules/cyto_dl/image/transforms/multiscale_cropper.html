@@ -201,6 +201,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.clip.html">cyto_dl.image.transforms.clip module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.resize.html">cyto_dl.image.transforms.resize module</a></li>
@@ -371,7 +372,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">x_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">patch_shape</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">scales_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
         <span class="n">patch_per_image</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -416,6 +416,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">scale_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">scales_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                <span class="k">continue</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">)):</span>
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span>
                     <span class="mi">1</span><span class="p">,</span>
@@ -426,10 +428,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span><span class="p">)</span> <span class="o">*</span> <span class="n">v</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scale_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">x_key</span> <span class="o">=</span> <span class="n">x_key</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale_dict</span><span class="p">[</span><span class="n">x_key</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input key must be sampled at 1x rescale factor&quot;</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_apply_slice</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">slicee</span><span class="p">):</span>
@@ -514,7 +512,7 @@
                 <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
 
             <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">patches</span></div>
+        <span class="k">return</span> <span class="n">patches</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">patches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 </pre></div>
         </article>
       </div>
