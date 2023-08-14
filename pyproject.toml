@@ -68,7 +68,6 @@ s3 = [
 ]
 torchserve = [
     "torchserve>=0.8.0",
-    "nvgpu>=0.10.0",
     "gorilla>=0.4.0",
 ]
 all = [

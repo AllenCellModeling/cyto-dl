@@ -9,7 +9,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
 # uncomment the step below in a new branch to ssh into the runner and debug
 #      - name: Setup tmate session
 #        uses: mxschmitt/action-tmate@v3
