@@ -1,3 +1,6 @@
+# taken from https://github.com/facebookresearch/Mask2Former/blob/9b0651c6c1d5b3af2e6da0589b719c514ec0d69a/mask2former/modeling/matcher.py#L15
+
+
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Modified by Bowen Cheng from https://github.com/facebookresearch/detr/blob/master/models/matcher.py
 """Modules to compute the matching cost and solve the corresponding LSAP."""
@@ -7,7 +10,7 @@ from scipy.optimize import linear_sum_assignment
 from torch import nn
 from torch.cuda.amp import autocast
 
-from .common import point_sample
+from aics_im2im.nn.bfm.common import point_sample
 
 
 def batch_dice_loss(inputs: torch.Tensor, targets: torch.Tensor):
@@ -78,46 +81,43 @@ class HungarianMatcher(nn.Module):
 
         self.num_points = num_points
 
+
+
     @torch.no_grad()
     def memory_efficient_forward(self, out_mask, tgt_mask):
         """More memory-friendly matching."""
-        num_queries = tgt_mask.shape[0]
-        indices = []
-
-        out_mask = out_mask[:, None]
-        tgt_mask = tgt_mask[:, None]
+        num_queries = out_mask.shape[1]
 
         # all masks share the same set of points for efficient matching!
-        point_coords = torch.rand(1, self.num_points, 2, device=out_mask.device)
+        point_coords = torch.rand(1, self.num_points, 3, device=out_mask.device)
         # get gt labels
         tgt_mask = point_sample(
             tgt_mask,
             point_coords.repeat(tgt_mask.shape[0], 1, 1),
             align_corners=False,
-        ).squeeze(1)
+        ).squeeze(0)
 
         out_mask = point_sample(
-            out_mask,
+            out_mask.float(), # half doesn't work for grid sample
             point_coords.repeat(out_mask.shape[0], 1, 1),
             align_corners=False,
-        ).squeeze(1)
+        ).squeeze(0)
 
         with autocast(enabled=False):
             out_mask = out_mask.float()
             tgt_mask = tgt_mask.float()
-
             # Compute the focal loss between masks
             cost_mask = batch_sigmoid_ce_loss_jit(out_mask, tgt_mask)
 
             # Compute the dice loss between masks
-            cost_dice = batch_dice_loss_jit(out_mask, tgt_mask)
-
+            cost_dice = batch_dice_loss_jit(out_mask, tgt_mask) 
         # Final cost matrix
-        C = self.cost_mask * cost_mask + self.cost_dice * cost_dice
-        C = C.reshape(num_queries, -1).cpu()
-
-        i, j = linear_sum_assignment(C)
-
+        try:
+            C = self.cost_mask * cost_mask + self.cost_dice * cost_dice
+            C = C.reshape(num_queries, -1).cpu()
+            i, j = linear_sum_assignment(C)
+        except:
+            breakpoint()
         return (torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64))
 
     @torch.no_grad()
@@ -148,3 +148,6 @@ class HungarianMatcher(nn.Module):
         ]
         lines = [head] + [" " * _repr_indent + line for line in body]
         return "\n".join(lines)
+
+
+

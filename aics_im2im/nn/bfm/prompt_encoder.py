@@ -17,7 +17,6 @@ class PromptEncoder(nn.Module):
         embed_dim: int,
         image_embedding_size: Tuple[int, int, int],
         mask_in_chans: int,
-        num_masks: int,
         activation: Type[nn.Module] = nn.GELU,
     ) -> None:
         """Encodes prompts for input to SAM's mask decoder.
@@ -41,11 +40,6 @@ class PromptEncoder(nn.Module):
         self.point_embeddings = nn.ModuleList(point_embeddings)
         self.not_a_point_embed = nn.Embedding(1, embed_dim)
 
-        self.mask_input_size = (
-            4 * image_embedding_size[0],
-            4 * image_embedding_size[1],
-            4 * image_embedding_size[2],
-        )
         self.mask_downscaling = nn.Sequential(
             # the input of the dense prompt encoder is a 0.25x downscaled
             # version of a per-voxel one-hot encoding of a previous model output
@@ -57,6 +51,7 @@ class PromptEncoder(nn.Module):
             activation(),
             nn.Conv3d(mask_in_chans, embed_dim, kernel_size=1),
         )
+
         self.no_mask_embed = nn.Embedding(1, embed_dim)
 
     def get_dense_pe(self) -> torch.Tensor:
@@ -76,7 +71,9 @@ class PromptEncoder(nn.Module):
         pad: bool,
         input_image_size: Tuple[int, int, int],
     ) -> torch.Tensor:
-        """Embeds point prompts."""
+        """Embeds point prompts.
+            points: B N 3
+            labels: B N """
         points = points + 0.5  # Shift to center of pixel
         if pad:
             padding_point = torch.zeros((points.shape[0], 1, 2), device=points.device)
@@ -152,17 +149,16 @@ class PromptEncoder(nn.Module):
         if points is not None:
             coords, labels = points
             point_embeddings = self._embed_points(
-                coords, labels, pad=(boxes is None), input_image_size=input_image_size
+                coords, labels, pad=False, input_image_size=input_image_size #(boxes is None)
             )
             sparse_embeddings = torch.cat([sparse_embeddings, point_embeddings], dim=1)
         if boxes is not None:
             box_embeddings = self._embed_boxes(boxes, input_image_size=input_image_size)
             sparse_embeddings = torch.cat([sparse_embeddings, box_embeddings], dim=1)
-
         if masks is not None:
-            dense_embeddings = self._embed_masks(masks)
+            dense_embeddings = self._embed_masks(masks.unsqueeze(0).unsqueeze(0))
         else:
-            dense_embeddings = self.no_mask_embed.weight.reshape(1, -1, 1, 1).expand(
+            dense_embeddings = self.no_mask_embed.weight.reshape(1, -1, 1, 1, 1).expand(
                 bs,
                 -1,
                 self.image_embedding_size[0],
@@ -212,7 +208,8 @@ class PositionEmbeddingRandom(nn.Module):
     def forward_with_coords(
         self, coords_input: torch.Tensor, image_size: Tuple[int, int, int]
     ) -> torch.Tensor:
-        """Positionally encode points that are not normalized to [0,1]."""
+        """Positionally encode points that are not normalized to [0,1].
+        coords have shape B N 3"""
         coords = coords_input.clone()
         coords[:, :, 0] = coords[:, :, 0] / image_size[2]
         coords[:, :, 1] = coords[:, :, 1] / image_size[1]

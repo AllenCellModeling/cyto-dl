@@ -44,14 +44,14 @@ class MaskDecoder(nn.Module):
         self.transformer_dim = transformer_dim
         self.transformer = transformer
 
-        self.qc_token = nn.Embedding(1, transformer_dim)
 
         self.num_mask_tokens = num_multimask_outputs
 
         self.mask_tokens = nn.Embedding(n_tasks * self.num_mask_tokens, transformer_dim)
+        self.qc_token = nn.Embedding(n_tasks * self.num_mask_tokens, transformer_dim)
 
         self.output_upscaling = nn.Sequential(
-            nn.ConvTranspose2d(transformer_dim, transformer_dim // 4, kernel_size=2, stride=2),
+            nn.ConvTranspose3d(transformer_dim, transformer_dim // 4, kernel_size=2, stride=2),
             LayerNorm3d(transformer_dim // 4),
             activation(),
             nn.ConvTranspose3d(
@@ -67,7 +67,7 @@ class MaskDecoder(nn.Module):
         )
 
         self.qc_prediction_head = MLP(
-            transformer_dim, qc_head_hidden_dim, 2 * self.num_mask_tokens, qc_head_depth
+            transformer_dim, qc_head_hidden_dim, 1, qc_head_depth
         )
 
     def forward(
@@ -84,12 +84,14 @@ class MaskDecoder(nn.Module):
         See 'forward' for more details.
         """
         # Concatenate output tokens
-
         mask_tokens = self.mask_tokens.weight[
             task_index * self.num_mask_tokens : (task_index + 1) * self.num_mask_tokens
         ]
-
-        output_tokens = torch.cat([self.qc_token.weight, mask_tokens], dim=0)
+        
+        qc_tokens = self.qc_token.weight[
+            task_index * self.num_mask_tokens : (task_index + 1) * self.num_mask_tokens
+        ]
+        output_tokens = torch.cat([qc_tokens, mask_tokens], dim=0)
 
         # repeat output tokens across the batch. B x (N_masks + 1) x transformer_dim
         output_tokens = output_tokens.unsqueeze(0).expand(sparse_prompt_embeddings.size(0), -1, -1)
@@ -105,8 +107,10 @@ class MaskDecoder(nn.Module):
 
         # Run the transformer
         hs, src = self.transformer(src, pos_src, tokens)
-        qc_token_out = hs[:, 0]
-        mask_tokens_out = hs[:, 1 : (1 + self.num_mask_tokens)]
+        # qc_token_out = hs[:, 0]
+        # mask_tokens_out = hs[:, 1 : (1 + self.num_mask_tokens)]
+        qc_token_out = hs[:, :self.num_mask_tokens]
+        mask_tokens_out = hs[:, self.num_mask_tokens :]
 
         # Upscale mask embeddings and predict masks using the mask tokens
         src = src.transpose(1, 2).view(b, c, d, h, w)
@@ -119,8 +123,8 @@ class MaskDecoder(nn.Module):
         masks = (hyper_in @ upscaled_embedding.view(b, c, d * h * w)).view(b, -1, d, h, w)
 
         # Generate mask quality predictions
-        qc_pred = self.qc_prediction_head(qc_token_out)
-        masks = F.interpolate(masks, image_shape, mode="bilinear", align_corners=False)
+        qc_pred = self.qc_prediction_head(qc_token_out).squeeze(-1)
+        masks = F.interpolate(masks, image_shape, mode="trilinear", align_corners=False)
 
         return masks, qc_pred
 

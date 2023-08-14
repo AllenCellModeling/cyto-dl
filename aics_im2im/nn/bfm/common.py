@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-
+from typing import Type
 
 class LayerNorm3d(nn.Module):
     def __init__(self, num_channels: int, eps: float = 1e-6) -> None:
@@ -26,20 +26,33 @@ def point_sample(input, point_coords, **kwargs):
     [0, 1] x [0, 1] square.
 
     Args:
-        input (Tensor): A tensor of shape (N, C, H, W) that contains features map on a H x W grid.
-        point_coords (Tensor): A tensor of shape (N, P, 2) or (N, Hgrid, Wgrid, 2) that contains
-        [0, 1] x [0, 1] normalized point coordinates.
+        input (Tensor): A tensor of shape (N, C, D, H, W) that contains features map on a D x H x W grid.
+        point_coords (Tensor): A tensor of shape (N, P, 3) that contains [0, 1] x [0, 1] normalized point coordinates.
 
     Returns:
-        output (Tensor): A tensor of shape (N, C, P) or (N, C, Hgrid, Wgrid) that contains
+        output (Tensor): A tensor of shape (N, C, P) that contains
             features for points in `point_coords`. The features are obtained via bilinear
             interplation from `input` the same way as :function:`torch.nn.functional.grid_sample`.
     """
-    add_dim = False
-    if point_coords.dim() == 3:
-        add_dim = True
-        point_coords = point_coords.unsqueeze(2)
+    # turn into 5d tensor
+    point_coords = point_coords.unsqueeze(-2).unsqueeze(-2)
     output = F.grid_sample(input, 2.0 * point_coords - 1.0, **kwargs)
-    if add_dim:
-        output = output.squeeze(3)
+    #back to NCP
+    output = output.squeeze(-1).squeeze(-1)
+
     return output
+
+class MLPBlock(nn.Module):
+    def __init__(
+        self,
+        embedding_dim: int,
+        mlp_dim: int,
+        act: Type[nn.Module] = nn.GELU,
+    ) -> None:
+        super().__init__()
+        self.lin1 = nn.Linear(embedding_dim, mlp_dim)
+        self.lin2 = nn.Linear(mlp_dim, embedding_dim)
+        self.act = act()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.lin2(self.act(self.lin1(x)))
