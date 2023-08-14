@@ -72,8 +72,10 @@ class PromptEncoder(nn.Module):
         input_image_size: Tuple[int, int, int],
     ) -> torch.Tensor:
         """Embeds point prompts.
-            points: B N 3
-            labels: B N """
+
+        points: B N 3
+        labels: B N
+        """
         points = points + 0.5  # Shift to center of pixel
         if pad:
             padding_point = torch.zeros((points.shape[0], 1, 2), device=points.device)
@@ -149,7 +151,7 @@ class PromptEncoder(nn.Module):
         if points is not None:
             coords, labels = points
             point_embeddings = self._embed_points(
-                coords, labels, pad=False, input_image_size=input_image_size #(boxes is None)
+                coords, labels, pad=False, input_image_size=input_image_size  # (boxes is None)
             )
             sparse_embeddings = torch.cat([sparse_embeddings, point_embeddings], dim=1)
         if boxes is not None:
@@ -209,7 +211,9 @@ class PositionEmbeddingRandom(nn.Module):
         self, coords_input: torch.Tensor, image_size: Tuple[int, int, int]
     ) -> torch.Tensor:
         """Positionally encode points that are not normalized to [0,1].
-        coords have shape B N 3"""
+
+        coords have shape B N 3
+        """
         coords = coords_input.clone()
         coords[:, :, 0] = coords[:, :, 0] / image_size[2]
         coords[:, :, 1] = coords[:, :, 1] / image_size[1]

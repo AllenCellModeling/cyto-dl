@@ -44,7 +44,6 @@ class MaskDecoder(nn.Module):
         self.transformer_dim = transformer_dim
         self.transformer = transformer
 
-
         self.num_mask_tokens = num_multimask_outputs
 
         self.mask_tokens = nn.Embedding(n_tasks * self.num_mask_tokens, transformer_dim)
@@ -66,9 +65,7 @@ class MaskDecoder(nn.Module):
             ]
         )
 
-        self.qc_prediction_head = MLP(
-            transformer_dim, qc_head_hidden_dim, 1, qc_head_depth
-        )
+        self.qc_prediction_head = MLP(transformer_dim, qc_head_hidden_dim, 1, qc_head_depth)
 
     def forward(
         self,
@@ -87,7 +84,7 @@ class MaskDecoder(nn.Module):
         mask_tokens = self.mask_tokens.weight[
             task_index * self.num_mask_tokens : (task_index + 1) * self.num_mask_tokens
         ]
-        
+
         qc_tokens = self.qc_token.weight[
             task_index * self.num_mask_tokens : (task_index + 1) * self.num_mask_tokens
         ]
@@ -109,7 +106,7 @@ class MaskDecoder(nn.Module):
         hs, src = self.transformer(src, pos_src, tokens)
         # qc_token_out = hs[:, 0]
         # mask_tokens_out = hs[:, 1 : (1 + self.num_mask_tokens)]
-        qc_token_out = hs[:, :self.num_mask_tokens]
+        qc_token_out = hs[:, : self.num_mask_tokens]
         mask_tokens_out = hs[:, self.num_mask_tokens :]
 
         # Upscale mask embeddings and predict masks using the mask tokens

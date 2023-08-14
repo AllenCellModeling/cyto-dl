@@ -81,8 +81,6 @@ class HungarianMatcher(nn.Module):
 
         self.num_points = num_points
 
-
-
     @torch.no_grad()
     def memory_efficient_forward(self, out_mask, tgt_mask):
         """More memory-friendly matching."""
@@ -98,7 +96,7 @@ class HungarianMatcher(nn.Module):
         ).squeeze(0)
 
         out_mask = point_sample(
-            out_mask.float(), # half doesn't work for grid sample
+            out_mask.float(),  # half doesn't work for grid sample
             point_coords.repeat(out_mask.shape[0], 1, 1),
             align_corners=False,
         ).squeeze(0)
@@ -110,14 +108,11 @@ class HungarianMatcher(nn.Module):
             cost_mask = batch_sigmoid_ce_loss_jit(out_mask, tgt_mask)
 
             # Compute the dice loss between masks
-            cost_dice = batch_dice_loss_jit(out_mask, tgt_mask) 
+            cost_dice = batch_dice_loss_jit(out_mask, tgt_mask)
         # Final cost matrix
-        try:
-            C = self.cost_mask * cost_mask + self.cost_dice * cost_dice
-            C = C.reshape(num_queries, -1).cpu()
-            i, j = linear_sum_assignment(C)
-        except:
-            breakpoint()
+        C = self.cost_mask * cost_mask + self.cost_dice * cost_dice
+        C = C.reshape(num_queries, -1).cpu()
+        i, j = linear_sum_assignment(C)
         return (torch.as_tensor(i, dtype=torch.int64), torch.as_tensor(j, dtype=torch.int64))
 
     @torch.no_grad()
@@ -148,6 +143,3 @@ class HungarianMatcher(nn.Module):
         ]
         lines = [head] + [" " * _repr_indent + line for line in body]
         return "\n".join(lines)
-
-
-

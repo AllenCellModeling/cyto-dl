@@ -1,7 +1,9 @@
+from typing import Type
+
 import torch
 from torch import nn
 from torch.nn import functional as F
-from typing import Type
+
 
 class LayerNorm3d(nn.Module):
     def __init__(self, num_channels: int, eps: float = 1e-6) -> None:
@@ -37,10 +39,11 @@ def point_sample(input, point_coords, **kwargs):
     # turn into 5d tensor
     point_coords = point_coords.unsqueeze(-2).unsqueeze(-2)
     output = F.grid_sample(input, 2.0 * point_coords - 1.0, **kwargs)
-    #back to NCP
+    # back to NCP
     output = output.squeeze(-1).squeeze(-1)
 
     return output
+
 
 class MLPBlock(nn.Module):
     def __init__(
