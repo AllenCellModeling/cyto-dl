@@ -1,5 +1,6 @@
 from .bright_sampler import BrightSampler
 from .multiscale_cropper import RandomMultiScaleCropd
+from .physical_cropper import RandomPhysicalDimsCropper
 from .project import MaxProjectd
 from .resize import Resized
 from .save import Save, Saved
