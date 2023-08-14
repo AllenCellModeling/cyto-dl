@@ -1,0 +1,69 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_3d.yaml
+  - override /model: vae/so2_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: variance_so2_3d_vae
+
+tags: ["so2-equiv", "variance-dataset", "3d"]
+
+seed: 42
+
+data:
+  subsample: { "train": 10000, "valid": 2000, "test": 2000 }
+
+model:
+  spatial_dims: 3
+  in_shape: [1, 32, 96, 96]
+  mask_input: true
+  mask_output: true
+  pad: null
+
+  latent_dim: 32
+
+  channels: [8, 8, 8, 16, 32, 64, 128]
+  strides: [1, 1, 2, 2, 2, 2, 2]
+
+  use_sigmoid: false
+  decoder_pixelshuffle: false
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu
+  devices: [2]
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: debug_so2_3d_vae
+    run_name: debug
+
+zarr_level: 2
+padded_size: [32, 96, 96]
+channels: [dna_segmentation]
+
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

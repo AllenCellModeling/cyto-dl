@@ -1,0 +1,61 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+path: s3://allencell-cytodata-variance-data/processed/manifest_split.parquet
+split_column: split
+
+batch_size: 64
+num_workers:
+multiprocessing_context: spawn
+persistent_workers: true
+
+# Registered images in this dataset have the following channels
+# ['bf', 'dna', 'membrane', 'structure', 'dna_segmentation', 'membrane_segmentation', 'struct_segmentation_roof']
+#
+# And the dimensions of each level are (ZYX)
+# 0: [129, 238, 374]
+# 1: [ 64, 119, 187]
+# 2: [ 32,  60,  94]
+
+transforms:
+  train:
+    - _target_: cyto_dl.dataframe.transforms.GroupCols
+      groups:
+        image: registered_path
+        cell_id: CellId
+    - _target_: monai.transforms.LoadImaged
+      keys: [image]
+      reader:
+        _target_: cyto_dl.image.io.OmeZarrReader
+        level: ${zarr_level}
+        channels: ["membrane_segmentation"]
+      expanduser: false
+    - _target_: monai.transforms.SpatialPadd
+      keys: [image]
+      spatial_size: ${padded_size} # set to [-1, -1, -1] to bypass
+    - _target_: cyto_dl.utils.SO2RandomRotated
+      keys: [image]
+      spatial_dims: 3
+    - _target_: monai.transforms.ToTensord
+      keys: [image]
+      track_meta: false
+  val:
+    - _target_: cyto_dl.dataframe.transforms.GroupCols
+      groups:
+        image: registered_path
+        cell_id: CellId
+    - _target_: monai.transforms.LoadImaged
+      keys: [image]
+      reader:
+        _target_: cyto_dl.image.io.OmeZarrReader
+        level: ${zarr_level}
+        channels: ["membrane_segmentation"]
+      expanduser: false
+    - _target_: monai.transforms.SpatialPadd
+      keys: [image]
+      spatial_size: ${padded_size} # set to [-1, -1, -1] to bypass
+    - _target_: monai.transforms.ToTensord
+      keys: [image]
+      track_meta: false
+
+  test: val

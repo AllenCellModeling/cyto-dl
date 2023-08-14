@@ -1,0 +1,46 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_centerslice_resize.yaml
+  - override /model: vae/classical_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: variance_classical_2d_vae
+
+tags: ["classical", "variance-dataset", "2d"]
+
+seed: 42
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu
+  devices:
+
+model:
+  in_shape: [1, 28, 28]
+  spatial_dims: 2
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: variance_2d_vae
+    run_name:

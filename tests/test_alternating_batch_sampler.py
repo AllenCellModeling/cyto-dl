@@ -6,12 +6,12 @@ import pyrootutils
 import pytest
 from torch.utils.data import SubsetRandomSampler
 
-from aics_im2im.datamodules.dataframe.utils import (
+from cyto_dl.datamodules.dataframe.utils import (
     AlternatingBatchSampler,
     RemoveNaNKeysd,
     make_multiple_dataframe_splits,
 )
-from aics_im2im.image.io import MonaiBioReader
+from cyto_dl.image.io import MonaiBioReader
 
 overrides = ["logger=[]", "++source_col=raw", "++target_col=seg"]
 

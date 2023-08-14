@@ -1,0 +1,29 @@
+_target_: cyto_dl.models.vae.ImageVAE
+
+latent_dim:
+spatial_dims:
+in_shape:
+channels:
+strides:
+last_act:
+
+x_label:
+id_label:
+
+reconstruction_loss:
+prior:
+
+group: so3
+
+beta: 1.0
+act: relu
+norm: batch
+dropout: null
+bias: false
+mask_input: false
+mask_output: false
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.Adam
+  lr: 0.001

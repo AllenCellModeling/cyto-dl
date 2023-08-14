@@ -1,0 +1,46 @@
+_aux:
+  batch_size: 32
+
+train_dataloaders:
+  _target_: monai.data.dataloader.DataLoader
+  batch_size: ${data._aux.batch_size}
+  num_workers: 20
+  dataset:
+    _target_: cyto_dl.datamodules.torchvision.MNIST
+    root: /tmp/mnist
+    download: true
+    train: true
+    transform:
+      - _target_: monai.transforms.Resized
+        mode: bilinear
+        keys: [image]
+        spatial_size: [29, 29]
+      - _target_: monai.transforms.RandRotated
+        keys: image
+        range_x: 3.14159
+        prob: 1.0
+      - _target_: monai.transforms.ToTensord
+        keys: image
+        track_meta: false
+
+val_dataloaders:
+  _target_: monai.data.dataloader.DataLoader
+  batch_size: ${data._aux.batch_size}
+  num_workers: 10
+  dataset:
+    _target_: cyto_dl.datamodules.torchvision.MNIST
+    root: /tmp/mnist
+    download: true
+    train: false
+    transform:
+      - _target_: monai.transforms.Resized
+        mode: bilinear
+        keys: [image]
+        spatial_size: [29, 29]
+      #- _target_: monai.transforms.RandRotated
+      #  keys: image
+      #  range_x: 3.14159
+      #  prob: 1.0
+      - _target_: monai.transforms.ToTensord
+        keys: image
+        track_meta: false

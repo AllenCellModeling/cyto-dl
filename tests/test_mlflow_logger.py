@@ -8,8 +8,8 @@ from lightning import Trainer
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.demos.boring_classes import BoringModel
 
-from aics_im2im.loggers import MLFlowLogger
-from aics_im2im.models.utils.mlflow import get_config
+from cyto_dl.loggers import MLFlowLogger
+from cyto_dl.models.utils.mlflow import get_config
 
 
 @mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)

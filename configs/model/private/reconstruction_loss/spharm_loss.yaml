@@ -1,0 +1,4 @@
+shcoeff:
+  _target_: cyto_dl.nn.losses.SpharmLoss
+  max_band: 16
+  columns:

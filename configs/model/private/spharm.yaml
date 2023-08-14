@@ -1,0 +1,33 @@
+defaults:
+  - reconstruction_loss: spharm_gaussian
+
+_target_: cyto_dl.models.vae.BaseVase
+x_dim: 289
+beta: 1.0
+x_label: shcoeff
+latent_dim: 16
+
+encoder:
+  shcoeff:
+    _target_: cyto_dl.nn.MLP
+    _args_:
+      - 289
+      - 32
+    hidden_layers: [64]
+
+decoder:
+  shcoeff:
+    _target_: cyto_dl.nn.MLP
+    _args_:
+      - 16
+      - 289
+    hidden_layers: [64]
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.Adam
+  lr: 1e-3
+
+prior:
+  shcoeff:
+    _target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior

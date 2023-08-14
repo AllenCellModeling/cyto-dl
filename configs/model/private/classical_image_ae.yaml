@@ -1,0 +1,32 @@
+_target_: cyto_dl.models.vae.ImageVAE
+
+latent_dim: 256
+spatial_dims: 2
+in_shape: [1, 28, 28]
+channels: [2, 2, 2, 2]
+strides: [1, 1, 1, 1]
+
+x_label: image
+id_label: null
+
+kernel_size: 3
+act: relu
+norm: batch
+dropout: null
+bias: false
+beta: 1.0
+
+reconstruction_loss:
+  _target_: torch.nn.modules.loss.MSELoss
+  reduction: sum
+
+prior:
+  _target_: cyto_dl.models.vae.priors.IdentityPrior
+  dimensionality: 256
+
+last_act:
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.001

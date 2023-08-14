@@ -1,0 +1,4 @@
+shcoeff:
+  _target_: cyto_dl.nn.losses.GaussianNLLLoss
+  var: [0.1]
+  reduction: none

@@ -4,7 +4,7 @@ import pytest
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import open_dict
 
-from aics_im2im.train import train
+from cyto_dl.train import train
 from tests.helpers.run_if import RunIf
 
 from .utils import resolve_readonly
