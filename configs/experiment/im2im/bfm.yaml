@@ -1,0 +1,44 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: im2im/bfm.yaml
+  - override /model: im2im/bfm.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: bfm
+run_name: test
+source_col: raw
+target_col: caaxseg
+persist_cache: true
+source_ch: 0
+
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+  devices: [0]
+
+# ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/aics-im2im/logs/train/runs/bfm/test/2023-07-31_16-02-32/checkpoints/last.ckpt"
+data:
+  path: ${paths.data_dir}finetune_prompt/
+  cache_dir: ${paths.data_dir}finetune_prompt/cache
+  batch_size: 2 #8
+  subsample:
+    train: 100
+    # valid: 100
+  # columns: ['raw', 'nucseg']
+
+callbacks:
+  model_checkpoint:
+    monitor: val/loss/seg_loss
+  early_stopping: null

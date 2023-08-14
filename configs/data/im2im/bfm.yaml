@@ -1,0 +1,163 @@
+_target_: aics_im2im.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 8
+batch_size: 1
+pin_memory: True
+persistent_workers: False
+split_column:
+columns:
+  - ${source_col}
+  - ${target_col}
+  - physical_pixel_dims
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${source_col}
+
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: aics_im2im.image.transforms.RandomPhysicalDimsCropper
+        keys:
+          - ${source_col}
+          - ${target_col}
+        pixel_key: physical_pixel_dims
+        physical_crop_size: [10, 55.296, 55.296]
+        patch_per_image: 1
+
+      - _target_: aics_im2im.image.transforms.token_crop.TokenCropd
+        keys:
+          - ${source_col}
+          - ${target_col}
+        spatial_dims: 3
+        n_patches: [2, 32, 32]
+      - _target_: aics_im2im.image.transforms.relabel.Relabeld
+        keys: ${target_col}
+      - _target_: monai.transforms.SelectItemsd
+        keys:
+          - ${source_col}
+          - ${target_col}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - ${target_col}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 5
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${data.columns}
+      - _target_: aics_im2im.image.transforms.Resized
+        keys:
+          - ${source_col}
+          - ${target_col}
+        scale_factor: 0.25
+      - _target_: monai.transforms.ToTensord
+        keys: ${data.columns}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: ${target_col}
+        threshold: 0.1
+        above: False
+        cval: 1
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 5
+      - _target_: monai.transforms.AddChanneld
+        keys: ${source_col}
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "CZYX"
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: aics_im2im.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+            C: 0
+      - _target_: monai.transforms.AddChanneld
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: aics_im2im.image.transforms.RandomPhysicalDimsCropper
+        keys:
+          - ${source_col}
+          - ${target_col}
+        pixel_key: physical_pixel_dims
+        physical_crop_size: [10, 55.296, 55.296]
+        patch_per_image: 1
+      - _target_: aics_im2im.image.transforms.token_crop.TokenCropd
+        keys:
+          - ${source_col}
+          - ${target_col}
+        spatial_dims: 3
+        n_patches: [2, 32, 32]
+      - _target_: aics_im2im.image.transforms.relabel.Relabeld
+        keys: ${target_col}
+      - _target_: monai.transforms.SelectItemsd
+        keys:
+          - ${source_col}
+          - ${target_col}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - ${target_col}
+
+_aux:
+  _scales_dict:
+    - - ${target_col}
+      - [1]
+    - - ${source_col}
+      - [1]

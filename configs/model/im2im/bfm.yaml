@@ -1,0 +1,28 @@
+_target_: aics_im2im.models.im2im.bfm.BFM
+
+x_key: ${source_col}
+y_key: ${target_col}
+
+image_embedding_size: [2, 32, 32]
+save_dir: ${paths.output_dir}
+
+encoder:
+  _target_: aics_im2im.models.utils.loading.load_model_from_checkpoint
+  ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/aics-im2im/logs/train/runs/flexi_mae/czi_test/2023-07-14_16-51-29/checkpoints/last.ckpt"
+  key: model.encoder
+  model_class: aics_im2im.models.im2im.mae.MaskedAutoEncoder
+
+transformer_dim: 256
+
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 0.001
+  weight_decay: 0.0001
+  _partial_: true
+
+lr_scheduler:
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  _partial_: true
+  max_lr: 0.001
+  total_steps: 50000
+  pct_start: 0.1
