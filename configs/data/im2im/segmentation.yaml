@@ -53,7 +53,6 @@ transforms:
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-        x_key: ${source_col}
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
         keys: ${source_col}
@@ -164,7 +163,6 @@ transforms:
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-        x_key: ${source_col}
 
 _aux:
   _scales_dict:

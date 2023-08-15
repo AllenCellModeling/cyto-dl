@@ -61,7 +61,6 @@ transforms:
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-        x_key: ${source_col}
 
   test:
     _target_: monai.transforms.Compose
@@ -182,7 +181,6 @@ transforms:
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-        x_key: ${source_col}
 
 _aux:
   patch_shape: [32, 512, 512]
