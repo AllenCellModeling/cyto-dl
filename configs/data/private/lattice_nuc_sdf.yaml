@@ -1,0 +1,19 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+path: /allen/aics/assay-dev/users/Alex/pod/lattice123_manifest.csv
+split_column: split
+
+batch_size: 64
+num_workers: 10
+multiprocessing_context: spawn
+persistent_workers: true
+
+transforms:
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
+    groups:
+      image: sdf_path_unalign
+      cell_id: CellId
+  - _target_: cyto_dl.image.io.ReadNumpyFile
+    keys: image
+    remote: false

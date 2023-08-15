@@ -1,11 +1,10 @@
 _target_: cyto_dl.models.vae.ImageVAE
 
-latent_dim: 32
-spatial_dims:
-in_shape:
-out_channels: 1
-channels: [16, 16]
-strides: [2, 1]
+latent_dim: 256
+spatial_dims: 2
+in_shape: [1, 28, 28]
+channels: [2, 2, 2, 2]
+strides: [1, 1, 1, 1]
 
 x_label: image
 id_label: null
@@ -21,14 +20,13 @@ beta: 1.0
 
 reconstruction_loss:
   _target_: torch.nn.modules.loss.MSELoss
-  reduction: none
+  reduction: sum
 
-encoder_out_size: 64
 prior:
   _target_: cyto_dl.models.vae.priors.IsotropicGaussianPrior
   dimensionality: 32
 
-use_sigmoid: true
+last_act:
 
 optimizer:
   _partial_: true

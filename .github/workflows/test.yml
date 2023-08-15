@@ -12,10 +12,11 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         python-version: [3.8, 3.9, "3.10"]
     steps:
       - uses: actions/checkout@v3
@@ -24,20 +25,31 @@ jobs:
           auto-update-conda: true
           miniconda-version: latest
           python-version: ${{ matrix.python-version }}
+          use-mamba: true
 
       - name: Install dependencies
         shell: bash -el {0}
         run: |
-          sudo apt update
-          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
-          conda install -n test pip fftw
-          pip install wheel
+          case "${{ matrix.os }}" in
+              "ubuntu-latest")
+                  export PLATFORM="linux"
+                  ;;
+              "macOS-latest")
+                  export PLATFORM="macos"
+                  ;;
+              "windows-latest")
+                  export PLATFORM="windows"
+                  ;;
+          esac
+
+          conda activate test
+          conda install -c conda-forge -n test fortran-compiler blas-devel
+
+          pip install greenlet
           # need numpy for some builds. make sure to install a compatible version
-          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
-          # from https://stackoverflow.com/a/14369968
-          SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
+          grep -E '^numpy==' requirements/$PLATFORM/test-requirements.txt | xargs -n 1 pip install
+          pip install -r requirements/$PLATFORM/test-requirements.txt
           pip install .
-          pip install sh
 
       - name: List dependencies
         shell: bash -el {0}
@@ -66,14 +78,12 @@ jobs:
       - name: Install dependencies
         shell: bash -el {0}
         run: |
-          sudo apt update
-          sudo apt install -y g++ gfortran libfftw3-dev libblas-dev liblapack-dev
-          conda install -n test pip fftw
-          pip install wheel
+          conda activate test
+          conda install -c conda-forge -n test pip fftw gfortran blas-devel
+
           # need numpy for some builds. make sure to install a compatible version
-          pip install $(grep -E '^numpy==' requirements/test-requirements.txt)
-          # from https://stackoverflow.com/a/14369968
-          SETUPTOOLS_USE_DISTUTILS=stdlib pip install -r requirements/test-requirements.txt
+          grep -E '^numpy==' requirements/linux/test-requirements.txt | xargs -n 1 pip install
+          pip install -r requirements/linux/test-requirements.txt
           pip install .
 
       - name: Run tests and collect coverage

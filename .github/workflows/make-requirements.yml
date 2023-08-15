@@ -38,6 +38,7 @@ jobs:
                   ;;
           esac
 
+          rm -r requirements/*
           make sync-reqs-files
 
       - name: Get platform variable

@@ -137,15 +137,11 @@ class BaseVAE(BaseModel):
                         "latent parts it uses."
                     )
 
-    def calculate_rcl(self, x, xhat, key):
-        rcl_per_input_dimension = self.reconstruction_loss[key](x[key], xhat[key])
-        return rcl_per_input_dimension
-
     def calculate_elbo(self, x, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key)
+            rcl_per_input_dimension[key] = self.reconstruction_loss[key](xhat[key], x[key])
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -160,13 +156,13 @@ class BaseVAE(BaseModel):
                 rcl_reduced[key] = rcl_per_input_dimension[key]
 
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
+            part: prior(z[part], mode="kl", reduction="none").sum(dim=-1).mean()
+            for part, prior in self.prior.items()
         }
 
-        kld_per_part_summed = {part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()}
-
-        total_kld = sum(kld_per_part_summed.values())
+        total_kld = sum(kld_per_part.values())
         total_recon = sum(rcl_reduced.values())
+
         return (
             total_recon + self.beta * total_kld,
             total_recon,

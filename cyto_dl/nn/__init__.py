@@ -9,3 +9,4 @@ from .losses import (
 )
 from .mlp import MLP
 from .spatial_transformer import STN
+from .res_unit import ResidualUnit
