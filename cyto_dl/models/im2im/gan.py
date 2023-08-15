@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Dict
 
@@ -66,7 +67,7 @@ class GAN(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile:
+        if compile and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.discriminator = torch.compile(discriminator)
             self.task_heads = torch.nn.ModuleDict(

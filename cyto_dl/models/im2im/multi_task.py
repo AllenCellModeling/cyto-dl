@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -66,7 +67,7 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        if compile:
+        if compile and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.task_heads = torch.nn.ModuleDict(
                 {k: torch.compile(v) for k, v in task_heads.items()}
