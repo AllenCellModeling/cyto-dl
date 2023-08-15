@@ -421,7 +421,7 @@ class SkootsCluster:
         if len(np.unique(skel)) == 2:
             return self._get_largest_cc(semantic)
 
-        out = np.zeros_like(semantic, dtype=np.uint8)
+        out = np.zeros_like(semantic, dtype=np.uint16)
         semantic_points = semantic.nonzero().T
 
         # find pixel coordinates pointed to by each z, y, x point within semantic segmentation
