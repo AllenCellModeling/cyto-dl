@@ -21,6 +21,7 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.datamodules.czi
+   cyto_dl.datamodules.data_dict
    cyto_dl.datamodules.folder
    cyto_dl.datamodules.smartcache
    cyto_dl.datamodules.torchvision

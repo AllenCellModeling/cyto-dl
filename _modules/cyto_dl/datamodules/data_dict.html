@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.datamodules.czi - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.datamodules.data_dict - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -356,208 +356,55 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.datamodules.czi</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+          <h1>Source code for cyto_dl.datamodules.data_dict</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">aicsimageio.aics_image</span> <span class="kn">import</span> <span class="n">AICSImage</span>
-<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">apply_transform</span>
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span>
+<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PersistentDataset</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
+<span class="kn">from</span> <span class="nn">upath</span> <span class="kn">import</span> <span class="n">UPath</span> <span class="k">as</span> <span class="n">Path</span>
 
 
-<div class="viewcode-block" id="CZIDataset"><a class="viewcode-back" href="../../../cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset">[docs]</a><span class="k">class</span> <span class="nc">CZIDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataset converting a `.csv` file listing CZI files and some metadata into batches of single-</span>
-<span class="sd">    scene, single-timepoint, single-channel images.&quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">csv_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">img_path_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">channel_column</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">out_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="n">scene_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;scene&quot;</span><span class="p">,</span>
-        <span class="n">time_start_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span><span class="p">,</span>
-        <span class="n">time_stop_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span>
-        <span class="n">time_step_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;step&quot;</span><span class="p">,</span>
-        <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        csv_path: Union[Path, str]</span>
-<span class="sd">            path to csv</span>
-<span class="sd">        img_path_column: str</span>
-<span class="sd">            column in `csv_path` that contains path to CZI file</span>
-<span class="sd">        channel_column:str</span>
-<span class="sd">            Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.</span>
-<span class="sd">        out_key:str</span>
-<span class="sd">            Key where single-scene/timepoint/channel is saved in output dictionary</span>
-<span class="sd">        spatial_dims:int=3</span>
-<span class="sd">            Spatial dimension of output image. Must be 2 for YX or 3 for ZYX</span>
-<span class="sd">        scene_column:str=&quot;scene&quot;,</span>
-<span class="sd">            Column in `csv_path` that contains scenes to extract from CZI file. If not specified, all scenes will</span>
-<span class="sd">            be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. `scene1,scene2`)</span>
-<span class="sd">        time_start_column:str=&quot;start&quot;</span>
-<span class="sd">            Column in `csv_path` specifying which timepoint in timelapse CZI to start extracting. If any of `start_column`, `stop_column`, or `step_column`</span>
-<span class="sd">            are not specified, all timepoints are extracted.</span>
-<span class="sd">        time_stop_column:str=&quot;stop&quot;</span>
-<span class="sd">            Column in `csv_path` specifying which timepoint in timelapse CZI to stop extracting. If any of `start_column`, `stop_column`, or `step_column`</span>
-<span class="sd">            are not specified, all timepoints are extracted.</span>
-<span class="sd">        time_step_column:str=&quot;step&quot;</span>
-<span class="sd">            Column in `csv_path` specifying step between timepoints. For example, values in this column should be `2` if every other timepoint should be run.</span>
-<span class="sd">            If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.</span>
-<span class="sd">        transform: Optional[Callable] = None</span>
-<span class="sd">            Callable to that accepts numpy array. For example, image normalization functions could be passed here.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span> <span class="o">=</span> <span class="n">img_path_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel_column</span> <span class="o">=</span> <span class="n">channel_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scene_column</span> <span class="o">=</span> <span class="n">scene_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_start_column</span> <span class="o">=</span> <span class="n">time_start_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_stop_column</span> <span class="o">=</span> <span class="n">time_stop_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_step_column</span> <span class="o">=</span> <span class="n">time_step_column</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">out_key</span> <span class="o">=</span> <span class="n">out_key</span>
-        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`spatial_dims` must be 2 or 3, got </span><span class="si">{</span><span class="n">spatial_dims</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_get_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
-        <span class="n">scenes</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">scenes</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">scenes</span> <span class="o">=</span> <span class="n">scenes</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">scenes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">scene</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">img</span><span class="o">.</span><span class="n">scenes</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;For image </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">]</span><span class="si">}</span><span class="s2"> unable to find scene `</span><span class="si">{</span><span class="n">scene</span><span class="si">}</span><span class="s2">`, available scenes are </span><span class="si">{</span><span class="n">img</span><span class="o">.</span><span class="n">scenes</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">scenes</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">scenes</span>
-        <span class="k">return</span> <span class="n">scenes</span>
-
-    <span class="k">def</span> <span class="nf">_get_timepoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_start_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">stop</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_stop_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">step</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step_column</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dims</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">timepoints</span>
-
-<div class="viewcode-block" id="CZIDataset.get_per_file_args"><a class="viewcode-back" href="../../../cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_per_file_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
-        <span class="n">n_files</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">img_data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
-            <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>
-            <span class="n">img</span> <span class="o">=</span> <span class="n">AICSImage</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">])</span>
-            <span class="n">scenes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenes</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
-            <span class="n">timepoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timepoints</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
-            <span class="n">n_files</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scenes</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">timepoints</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">scenes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">timepoint</span> <span class="ow">in</span> <span class="n">timepoints</span><span class="p">:</span>
-                    <span class="n">img_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="p">{</span>
-                            <span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="n">img</span><span class="p">,</span>
-                            <span class="s2">&quot;dimension_order_out&quot;</span><span class="p">:</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:],</span>
-                            <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_column</span><span class="p">],</span>
-                            <span class="s2">&quot;scene&quot;</span><span class="p">:</span> <span class="n">scene</span><span class="p">,</span>
-                            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">timepoint</span><span class="p">,</span>
-                            <span class="s2">&quot;original_path&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">],</span>
-                        <span class="p">}</span>
-                    <span class="p">)</span>
-        <span class="k">return</span> <span class="n">img_data</span><span class="p">,</span> <span class="n">n_files</span></div>
-
-    <span class="k">def</span> <span class="nf">_metadata_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
-
-    <span class="k">def</span> <span class="nf">_ensure_channel_first</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
-        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">img</span>
-
-    <span class="k">def</span> <span class="nf">_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">img_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">)</span>
-        <span class="n">original_path</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;original_path&quot;</span><span class="p">)</span>
-        <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scene&quot;</span><span class="p">))</span>
-        <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
-        <span class="n">data_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_channel_first</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">out_key</span><span class="p">:</span> <span class="n">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">data_i</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">data_i</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">out_key</span><span class="si">}</span><span class="s2">_meta_dict&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;filename_or_obj&quot;</span><span class="p">:</span> <span class="n">original_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_to_str</span><span class="p">(</span><span class="n">img_data</span><span class="p">))</span>
-            <span class="p">},</span>
-        <span class="p">}</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_files</span></div>
-
-
-<div class="viewcode-block" id="make_CZI_dataloader"><a class="viewcode-back" href="../../../cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.make_CZI_dataloader">[docs]</a><span class="k">def</span> <span class="nf">make_CZI_dataloader</span><span class="p">(</span>
-    <span class="n">csv_path</span><span class="p">,</span>
-    <span class="n">img_path_column</span><span class="p">,</span>
-    <span class="n">channel_column</span><span class="p">,</span>
-    <span class="n">out_key</span><span class="p">,</span>
-    <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">scene_column</span><span class="o">=</span><span class="s2">&quot;scene&quot;</span><span class="p">,</span>
-    <span class="n">time_start_column</span><span class="o">=</span><span class="s2">&quot;start&quot;</span><span class="p">,</span>
-    <span class="n">time_stop_column</span><span class="o">=</span><span class="s2">&quot;stop&quot;</span><span class="p">,</span>
-    <span class="n">time_step_column</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
-    <span class="n">transforms</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">dataloader_kwargs</span><span class="p">,</span>
+<div class="viewcode-block" id="make_data_dict_dataloader"><a class="viewcode-back" href="../../../cyto_dl.datamodules.data_dict.html#cyto_dl.datamodules.data_dict.make_data_dict_dataloader">[docs]</a><span class="k">def</span> <span class="nf">make_data_dict_dataloader</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DictConfig</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span>
+    <span class="n">transforms</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Callable</span><span class="p">],</span> <span class="n">Callable</span><span class="p">],</span>
+    <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">dataloader_kwargs</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to create a CZI Dataset. Currently, this dataset is only useful during prediction</span>
-<span class="sd">    and cannot be used for training or testing.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a dataloader based on a dictionary of paths to images.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    csv_path: Union[Path, str]</span>
-<span class="sd">        path to csv</span>
-<span class="sd">    img_path_column: str</span>
-<span class="sd">        column in `csv_path` that contains path to CZI file</span>
-<span class="sd">    channel_column:str</span>
-<span class="sd">        Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.</span>
-<span class="sd">    out_key:str</span>
-<span class="sd">        Key where single-scene/timepoint/channel is saved in output dictionary</span>
-<span class="sd">    spatial_dims:int=3</span>
-<span class="sd">        Spatial dimension of output image. Must be 2 for YX or 3 for ZYX</span>
-<span class="sd">    scene_column:str=&quot;scene&quot;,</span>
-<span class="sd">        Column in `csv_path` that contains scenes to extract from CZI file. If not specified, all scenes will</span>
-<span class="sd">        be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. `scene1,scene2`)</span>
-<span class="sd">    time_start_column:str=&quot;start&quot;</span>
-<span class="sd">        Column in `csv_path` specifying which timepoint in timelapse CZI to start extracting. If any of `start_column`, `stop_column`, or `step_column`</span>
-<span class="sd">        are not specified, all timepoints are extracted.</span>
-<span class="sd">    time_stop_column:str=&quot;stop&quot;</span>
-<span class="sd">        Column in `csv_path` specifying which timepoint in timelapse CZI to stop extracting. If any of `start_column`, `stop_column`, or `step_column`</span>
-<span class="sd">        are not specified, all timepoints are extracted.</span>
-<span class="sd">    time_step_column:str=&quot;step&quot;</span>
-<span class="sd">        Column in `csv_path` specifying step between timepoints. For example, values in this column should be `2` if every other timepoint should be run.</span>
-<span class="sd">        If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.</span>
-<span class="sd">    transform: Optional[Callable] = None</span>
-<span class="sd">        Callable to that accepts numpy array. For example, image normalization functions could be passed here.</span>
+<span class="sd">    data: Sequence[Union[DictConfig, dict]]</span>
+<span class="sd">        A sequence of dictionaries, each containing a key expected by transforms</span>
+<span class="sd">        (usually an image path)</span>
+
+<span class="sd">    transforms: Union[Sequence[Callable], Callable],</span>
+<span class="sd">        Transforms to apply to each sample</span>
+
+<span class="sd">    cache_dir: Optional[Union[Path, str]] = None</span>
+<span class="sd">        Path to a directory in which to store cached transformed inputs, to</span>
+<span class="sd">        accelerate batch loading.</span>
+
+<span class="sd">    dataloader_kwargs:</span>
+<span class="sd">        Additional keyword arguments are passed to the</span>
+<span class="sd">        torch.utils.data.DataLoader class when instantiating it (aside from</span>
+<span class="sd">        `shuffle` which is only used for the train dataloader).</span>
+<span class="sd">        Among these args are `num_workers`, `batch_size`, `shuffle`, etc.</span>
+<span class="sd">        See the PyTorch docs for more info on these args:</span>
+<span class="sd">        https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">)):</span>
         <span class="n">transforms</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
-    <span class="n">dataset</span> <span class="o">=</span> <span class="n">CZIDataset</span><span class="p">(</span>
-        <span class="n">csv_path</span><span class="p">,</span>
-        <span class="n">img_path_column</span><span class="p">,</span>
-        <span class="n">channel_column</span><span class="p">,</span>
-        <span class="n">out_key</span><span class="p">,</span>
-        <span class="n">spatial_dims</span><span class="p">,</span>
-        <span class="n">scene_column</span><span class="o">=</span><span class="n">scene_column</span><span class="p">,</span>
-        <span class="n">time_start_column</span><span class="o">=</span><span class="n">time_start_column</span><span class="p">,</span>
-        <span class="n">time_stop_column</span><span class="o">=</span><span class="n">time_stop_column</span><span class="p">,</span>
-        <span class="n">time_step_column</span><span class="o">=</span><span class="n">time_step_column</span><span class="p">,</span>
-        <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">,</span>
-    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">ListConfig</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">PersistentDataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="o">**</span><span class="n">dataloader_kwargs</span><span class="p">)</span></div>
 </pre></div>
         </article>
