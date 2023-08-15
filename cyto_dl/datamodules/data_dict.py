@@ -39,8 +39,8 @@ def make_data_dict_dataloader(
     if isinstance(transforms, (list, tuple, ListConfig)):
         transforms = Compose(transforms)
 
-    for i in range(len(data)):
-        data[i] = OmegaConf.to_container(data[i]) if isinstance(data[i], DictConfig) else data[i]
+    if isinstance(data, (ListConfig, DictConfig)):
+        data = OmegaConf.to_container(data)
 
     if cache_dir is not None:
         dataset = PersistentDataset(data, transform=transforms, cache_dir=cache_dir)
