@@ -1,0 +1,47 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_3d_npm1.yaml
+  - override /model: vae/classical_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: npm1_3d_sdf
+tags: ["classical", "npm1", "3d"]
+
+seed: 42
+
+model:
+  spatial_dims: 3
+  in_shape: [1, 32, 32, 32]
+  strides: [1, 1, 1, 2, 1]
+  channels: [4, 8, 16, 32, 32]
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 10
+  max_epochs: 100
+  accelerator: gpu
+  devices: 1
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: npm1_3d_sdf
+    run_name:

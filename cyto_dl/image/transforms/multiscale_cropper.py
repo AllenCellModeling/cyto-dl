@@ -14,7 +14,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
     def __init__(
         self,
         keys: Sequence[str],
-        x_key: str,
         patch_shape: Sequence[int],
         scales_dict: Dict,
         patch_per_image: int = 1,
@@ -59,6 +58,8 @@ class RandomMultiScaleCropd(RandomizableTransform):
 
         self.scale_dict = {}
         for k, v in scales_dict.items():
+            if k not in keys:
+                continue
             if isinstance(v, (list, ListConfig)):
                 assert len(v) in (
                     1,
@@ -69,10 +70,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
             else:
                 v = np.ones(self.spatial_dims) * v
             self.scale_dict[k] = np.asarray(v)
-
-        self.x_key = x_key
-        if not np.all(self.scale_dict[x_key] == 1):
-            raise ValueError("Input key must be sampled at 1x rescale factor")
 
     @staticmethod
     def _apply_slice(data, slicee):
@@ -157,4 +154,4 @@ class RandomMultiScaleCropd(RandomizableTransform):
                 attempts = 0
 
             attempts += 1
-        return patches
+        return patches if len(patches) > 1 else patches[0]

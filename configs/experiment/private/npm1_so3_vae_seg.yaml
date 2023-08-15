@@ -1,0 +1,109 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_3d_npm_nuc_v2.yaml
+  - override /model: vae/so3_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: variance_so2_3d_vae
+
+tags: ["so3-equiv", "variance-dataset", "3d", "npm1"]
+
+seed: 42
+
+data:
+  batch_size: 64
+  cache_dir: /storage/cache
+  transforms:
+    - _target_: cyto_dl.dataframe.transforms.GroupCols
+      groups:
+        image: sdf_path
+        cell_id: cell_id
+    - _target_: cyto_dl.image.io.ReadNumpyFile
+      keys: [image]
+      channels: [2] # nuc_seg: 2, npm1_seg: 3
+      remote: false
+    - _target_: cyto_dl.image.transforms.Resized
+      keys: [image]
+      # images become [42, 42, 42]
+      scale_factor: 0.25
+    - _target_: monai.transforms.RandRotated
+      keys: [image]
+      range_x: 3.14159
+      range_y: 3.14159
+      range_z: 3.14159
+      prob: 1.0
+    - _target_: monai.transforms.ToTensord
+      keys: [image]
+      track_meta: false
+
+model:
+  group: so3
+
+  spatial_dims: 3
+  in_shape: [1, 42, 42, 42]
+
+  background_value: 0
+
+  mask_input: true
+  mask_output: true
+
+  latent_dim: 64
+
+  channels: [8, 16, 32, 64]
+  strides: [1, 2, 2, 2]
+
+  last_act: sigmoid
+  #last_scale: null
+
+  reconstruction_loss:
+    _target_: torch.nn.MSELoss
+    reduction: none
+
+  prior:
+
+  x_label: image
+  id_label: cell_id
+
+  kernel_size: 3
+  act: swish
+  norm: batch
+  dropout: null
+  bias: true
+  beta: 1.0
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 1000
+  max_epochs: 2000
+  accelerator: gpu
+  devices: [0]
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 10
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: so3_vae_npm1_sdf
+    run_name: so3_vae_sdf
+
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

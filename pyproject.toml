@@ -48,6 +48,7 @@ requires-python = ">=3.8,<3.11"
 
 [project.optional-dependencies]
 equiv = [
+    "lie_learn @ git+https://github.com/colobas/lie_learn.git@d5be2ab",
     "escnn~=1.0.7",
     "e3nn~=0.5.1"
 ]
@@ -67,7 +68,6 @@ s3 = [
 ]
 torchserve = [
     "torchserve>=0.8.0",
-    "nvgpu>=0.10.0",
     "gorilla>=0.4.0",
 ]
 all = [
@@ -77,7 +77,6 @@ test = [
     "cyto-dl[all]",
     "pyrootutils~=1.0",
     "pytest~=7.2",
-    "sh~=1.14",
     "pytest-cov[toml]~=4.0",
 ]
 docs = [
