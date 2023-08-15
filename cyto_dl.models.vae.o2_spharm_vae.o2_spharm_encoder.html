@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -351,14 +351,35 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-vae-o2-spharm-vae-o2-spharm-encoder-module">
-<h1>cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module<a class="headerlink" href="#cyto-dl-models-vae-o2-spharm-vae-o2-spharm-encoder-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder">
+<span id="cyto-dl-models-vae-o2-spharm-vae-o2-spharm-encoder-module"></span><h1>cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module<a class="headerlink" href="#module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.</span></span><span class="sig-name descname"><span class="pre">O2SpharmEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reflections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[4]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_spharm_band</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_hidden_band</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/o2_spharm_vae/o2_spharm_encoder.html#O2SpharmEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EquivariantModule</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.evaluate_output_shape">
+<span class="sig-name descname"><span class="pre">evaluate_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/o2_spharm_vae/o2_spharm_encoder.html#O2SpharmEncoder.evaluate_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.evaluate_output_shape" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeometricTensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/o2_spharm_vae/o2_spharm_encoder.html#O2SpharmEncoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -404,8 +425,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder"><code class="docutils literal notranslate"><span class="pre">O2SpharmEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.evaluate_output_shape"><code class="docutils literal notranslate"><span class="pre">O2SpharmEncoder.evaluate_output_shape()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.forward"><code class="docutils literal notranslate"><span class="pre">O2SpharmEncoder.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.training"><code class="docutils literal notranslate"><span class="pre">O2SpharmEncoder.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -416,10 +416,16 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo">calculate_elbo() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.calculate_elbo">(cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Caltech101">Caltech101 (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Caltech256">Caltech256 (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.canonicalize">canonicalize() (cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.continuous_bernoulli.html#cyto_dl.nn.losses.continuous_bernoulli.CBLogLoss">CBLogLoss (class in cyto_dl.nn.losses.continuous_bernoulli)</a>
 </li>
@@ -432,6 +438,10 @@
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Cityscapes">Cityscapes (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CLEVRClassification">CLEVRClassification (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.clip.html#cyto_dl.image.transforms.clip.Clip">Clip (class in cyto_dl.image.transforms.clip)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.clip.html#cyto_dl.image.transforms.clip.Clipd">Clipd (class in cyto_dl.image.transforms.clip)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.close_loggers">close_loggers() (in module cyto_dl.utils.template_utils)</a>
 </li>
@@ -454,7 +464,11 @@
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.configure_optimizers">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE.configure_optimizers">(cyto_dl.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
         </ul></li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.Convolution">Convolution (class in cyto_dl.models.vae.image_encoder)</a>
+</li>
         <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU">ConvPoolReLU (class in cyto_dl.nn.spatial_transformer)</a>
 </li>
         <li><a href="cyto_dl.nn.head.conv_proj_layer.html#cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer">ConvProjectionLayer (class in cyto_dl.nn.head.conv_proj_layer)</a>
@@ -590,6 +604,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.image
+
+        <ul>
+          <li><a href="cyto_dl.image.html#module-cyto_dl.image">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.image.io
 
         <ul>
@@ -625,10 +646,24 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.image.transforms
+
+        <ul>
+          <li><a href="cyto_dl.image.transforms.html#module-cyto_dl.image.transforms">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.image.transforms.bright_sampler
 
         <ul>
           <li><a href="cyto_dl.image.transforms.bright_sampler.html#module-cyto_dl.image.transforms.bright_sampler">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.image.transforms.clip
+
+        <ul>
+          <li><a href="cyto_dl.image.transforms.clip.html#module-cyto_dl.image.transforms.clip">module</a>
 </li>
         </ul></li>
         <li>
@@ -729,8 +764,6 @@
           <li><a href="cyto_dl.models.im2im.html#module-cyto_dl.models.im2im">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.im2im.gan
 
@@ -759,6 +792,8 @@
           <li><a href="cyto_dl.models.im2im.utils.noise_annealer.html#module-cyto_dl.models.im2im.utils.noise_annealer">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.im2im.utils.omnipose
 
@@ -816,10 +851,66 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.models.vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.html#module-cyto_dl.models.vae">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.models.vae.base_vae
 
         <ul>
           <li><a href="cyto_dl.models.vae.base_vae.html#module-cyto_dl.models.vae.base_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.image_canon_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_canon_vae.html#module-cyto_dl.models.vae.image_canon_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.image_encoder
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#module-cyto_dl.models.vae.image_encoder">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.image_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_vae.html#module-cyto_dl.models.vae.image_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.latent_loss_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#module-cyto_dl.models.vae.latent_loss_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.o2_spharm_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.html#module-cyto_dl.models.vae.o2_spharm_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html#module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae">module</a>
 </li>
         </ul></li>
         <li>
@@ -855,6 +946,41 @@
 
         <ul>
           <li><a href="cyto_dl.models.vae.priors.joint_prior.html#module-cyto_dl.models.vae.priors.joint_prior">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.vae.tabular_vae
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.tabular_vae.html#module-cyto_dl.models.vae.tabular_vae">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn
+
+        <ul>
+          <li><a href="cyto_dl.nn.html#module-cyto_dl.nn">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn.discriminators
+
+        <ul>
+          <li><a href="cyto_dl.nn.discriminators.html#module-cyto_dl.nn.discriminators">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn.discriminators.multi_scale_discriminator
+
+        <ul>
+          <li><a href="cyto_dl.nn.discriminators.multi_scale_discriminator.html#module-cyto_dl.nn.discriminators.multi_scale_discriminator">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn.discriminators.n_layer_discriminator
+
+        <ul>
+          <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#module-cyto_dl.nn.discriminators.n_layer_discriminator">module</a>
 </li>
         </ul></li>
         <li>
@@ -991,6 +1117,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.nn.res_unit
+
+        <ul>
+          <li><a href="cyto_dl.nn.res_unit.html#module-cyto_dl.nn.res_unit">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.nn.spatial_transformer
 
         <ul>
@@ -1089,13 +1222,21 @@
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.DatasetFolder">DatasetFolder (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.decode">decode() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.decode">(cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE method)</a>
 </li>
+          <li><a href="cyto_dl.models.vae.image_vae.html#cyto_dl.models.vae.image_vae.ImageVAE.decode">(cyto_dl.models.vae.image_vae.ImageVAE method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE.decode">(cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.detach">detach() (in module cyto_dl.models.im2im.utils.postprocessing.dict_to_im)</a>
 </li>
         <li><a href="cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior">DiagonalGaussianPrior (class in cyto_dl.models.vae.priors.gaussian)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.DictToIm">DictToIm (class in cyto_dl.models.im2im.utils.postprocessing.dict_to_im)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeClustering.do_naive_labeling">do_naive_labeling() (cyto_dl.models.im2im.utils.omnipose.OmniposeClustering method)</a>
@@ -1119,13 +1260,31 @@
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EMNIST">EMNIST (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.encode">encode() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.encode">(cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE method)</a>
 </li>
+          <li><a href="cyto_dl.models.vae.image_vae.html#cyto_dl.models.vae.image_vae.ImageVAE.encode">(cyto_dl.models.vae.image_vae.ImageVAE method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE.encode">(cyto_dl.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE.encode">(cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE method)</a>
+</li>
+        </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.enforce_tags">enforce_tags() (in module cyto_dl.utils.rich_utils)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EuroSAT">EuroSAT (class in cyto_dl.datamodules.torchvision)</a>
 </li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.Convolution.evaluate_output_shape">evaluate_output_shape() (cyto_dl.models.vae.image_encoder.Convolution method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ResBlock.evaluate_output_shape">(cyto_dl.models.vae.image_encoder.ResBlock method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.evaluate_output_shape">(cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder method)</a>
+</li>
+        </ul></li>
         <li><a href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.expand_rot_matrices">expand_rot_matrices() (in module cyto_dl.utils.spharm.rotation)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.extras">extras() (in module cyto_dl.utils.template_utils)</a>
@@ -1175,6 +1334,14 @@
 </li>
           <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.forward">(cyto_dl.models.vae.base_vae.BaseVAE method)</a>
 </li>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.Convolution.forward">(cyto_dl.models.vae.image_encoder.Convolution method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ImageEncoder.forward">(cyto_dl.models.vae.image_encoder.ImageEncoder method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ResBlock.forward">(cyto_dl.models.vae.image_encoder.ResBlock method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.forward">(cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder method)</a>
+</li>
           <li><a href="cyto_dl.models.vae.priors.abstract_prior.html#cyto_dl.models.vae.priors.abstract_prior.Prior.forward">(cyto_dl.models.vae.priors.abstract_prior.Prior method)</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.forward">(cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior method)</a>
@@ -1184,6 +1351,10 @@
           <li><a href="cyto_dl.models.vae.priors.identity_prior.html#cyto_dl.models.vae.priors.identity_prior.IdentityPrior.forward">(cyto_dl.models.vae.priors.identity_prior.IdentityPrior method)</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.joint_prior.html#cyto_dl.models.vae.priors.joint_prior.JointPrior.forward">(cyto_dl.models.vae.priors.joint_prior.JointPrior method)</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.multi_scale_discriminator.html#cyto_dl.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator.forward">(cyto_dl.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator method)</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.forward">(cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator method)</a>
 </li>
           <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.forward">(cyto_dl.nn.head.base_head.BaseHead method)</a>
 </li>
@@ -1208,6 +1379,8 @@
           <li><a href="cyto_dl.nn.losses.weighted_mse_loss.html#cyto_dl.nn.losses.weighted_mse_loss.WeightedMSELoss.forward">(cyto_dl.nn.losses.weighted_mse_loss.WeightedMSELoss method)</a>
 </li>
           <li><a href="cyto_dl.nn.mlp.html#cyto_dl.nn.mlp.MLP.forward">(cyto_dl.nn.mlp.MLP method)</a>
+</li>
+          <li><a href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit.forward">(cyto_dl.nn.res_unit.ResidualUnit method)</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU.forward">(cyto_dl.nn.spatial_transformer.ConvPoolReLU method)</a>
 </li>
@@ -1237,6 +1410,8 @@
         <li><a href="cyto_dl.image.transforms.multiscale_cropper.html#cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd.generate_slices">generate_slices() (cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd method)</a>
 </li>
         <li><a href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.get_band_indices">get_band_indices() (in module cyto_dl.utils.spharm.rotation)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.get_batch_norm">get_batch_norm() (in module cyto_dl.models.vae.image_encoder)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_canonical_split_name">get_canonical_split_name() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
@@ -1275,6 +1450,8 @@
         <li><a href="cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_mesh_from_series">get_mesh_from_series() (in module cyto_dl.utils.spharm.reconstruction)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.get_metric_value">get_metric_value() (in module cyto_dl.utils.template_utils)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.get_non_linearity">get_non_linearity() (in module cyto_dl.models.vae.image_encoder)</a>
 </li>
         <li><a href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args">get_per_file_args() (cyto_dl.datamodules.czi.CZIDataset method)</a>
 
@@ -1326,16 +1503,22 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.vae.priors.identity_prior.html#cyto_dl.models.vae.priors.identity_prior.IdentityPrior">IdentityPrior (class in cyto_dl.models.vae.priors.identity_prior)</a>
 </li>
+        <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE">ImageCanonicalVAE (class in cyto_dl.models.vae.image_canon_vae)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ImageEncoder">ImageEncoder (class in cyto_dl.models.vae.image_encoder)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageFolder">ImageFolder (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.handlers.image_handler.html#cyto_dl.models.handlers.image_handler.ImageHandler">ImageHandler (class in cyto_dl.models.handlers.image_handler)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageNet">ImageNet (class in cyto_dl.datamodules.torchvision)</a>
 </li>
-        <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.INaturalist">INaturalist (class in cyto_dl.datamodules.torchvision)</a>
+        <li><a href="cyto_dl.models.vae.image_vae.html#cyto_dl.models.vae.image_vae.ImageVAE">ImageVAE (class in cyto_dl.models.vae.image_vae)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.INaturalist">INaturalist (class in cyto_dl.datamodules.torchvision)</a>
+</li>
         <li><a href="cyto_dl.models.handlers.base_handler.html#cyto_dl.models.handlers.base_handler.BaseHandler.inference">inference() (cyto_dl.models.handlers.base_handler.BaseHandler method)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_callbacks">instantiate_callbacks() (in module cyto_dl.utils.template_utils)</a>
@@ -1398,16 +1581,20 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.skoots.html#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.label_2d">label_2d() (cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd method)</a>
 </li>
+        <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE.latent_compose_function">latent_compose_function() (cyto_dl.models.vae.latent_loss_vae.LatentLossVAE method)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE">LatentLossVAE (class in cyto_dl.models.vae.latent_loss_vae)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LFWPairs">LFWPairs (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LFWPeople">LFWPeople (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.handlers.load_image_patch.html#cyto_dl.models.handlers.load_image_patch.load_image__call__patch">load_image__call__patch() (in module cyto_dl.models.handlers.load_image_patch)</a>
 </li>
-        <li><a href="cyto_dl.models.utils.mlflow.html#cyto_dl.models.utils.mlflow.load_model_from_checkpoint">load_model_from_checkpoint() (in module cyto_dl.models.utils.mlflow)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.utils.mlflow.html#cyto_dl.models.utils.mlflow.load_model_from_checkpoint">load_model_from_checkpoint() (in module cyto_dl.models.utils.mlflow)</a>
+</li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.log_hyperparameters">log_hyperparameters() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger.log_hyperparams">log_hyperparams() (cyto_dl.loggers.mlflow.MLFlowLogger method)</a>
@@ -1434,6 +1621,10 @@
           <li><a href="cyto_dl.train.html#cyto_dl.train.main">(in module cyto_dl.train)</a>
 </li>
         </ul></li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ImageEncoder.make_block">make_block() (cyto_dl.models.vae.image_encoder.ImageEncoder method)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.image_canon_vae.html#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.make_canon_net">make_canon_net() (cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE method)</a>
+</li>
         <li><a href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.make_CZI_dataloader">make_CZI_dataloader() (in module cyto_dl.datamodules.czi)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.make_dataloader">make_dataloader() (cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
@@ -1468,6 +1659,8 @@
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
           <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.model_step">(cyto_dl.models.vae.base_vae.BaseVAE method)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE.model_step">(cyto_dl.models.vae.latent_loss_vae.LatentLossVAE method)</a>
 </li>
         </ul></li>
         <li>
@@ -1510,6 +1703,8 @@
 </li>
           <li><a href="cyto_dl.eval.html#module-cyto_dl.eval">cyto_dl.eval</a>
 </li>
+          <li><a href="cyto_dl.image.html#module-cyto_dl.image">cyto_dl.image</a>
+</li>
           <li><a href="cyto_dl.image.io.html#module-cyto_dl.image.io">cyto_dl.image.io</a>
 </li>
           <li><a href="cyto_dl.image.io.aicsimage_loader.html#module-cyto_dl.image.io.aicsimage_loader">cyto_dl.image.io.aicsimage_loader</a>
@@ -1520,7 +1715,11 @@
 </li>
           <li><a href="cyto_dl.image.io.ome_zarr_reader.html#module-cyto_dl.image.io.ome_zarr_reader">cyto_dl.image.io.ome_zarr_reader</a>
 </li>
+          <li><a href="cyto_dl.image.transforms.html#module-cyto_dl.image.transforms">cyto_dl.image.transforms</a>
+</li>
           <li><a href="cyto_dl.image.transforms.bright_sampler.html#module-cyto_dl.image.transforms.bright_sampler">cyto_dl.image.transforms.bright_sampler</a>
+</li>
+          <li><a href="cyto_dl.image.transforms.clip.html#module-cyto_dl.image.transforms.clip">cyto_dl.image.transforms.clip</a>
 </li>
           <li><a href="cyto_dl.image.transforms.multiscale_cropper.html#module-cyto_dl.image.transforms.multiscale_cropper">cyto_dl.image.transforms.multiscale_cropper</a>
 </li>
@@ -1574,7 +1773,23 @@
 </li>
           <li><a href="cyto_dl.models.utils.mlflow.html#module-cyto_dl.models.utils.mlflow">cyto_dl.models.utils.mlflow</a>
 </li>
+          <li><a href="cyto_dl.models.vae.html#module-cyto_dl.models.vae">cyto_dl.models.vae</a>
+</li>
           <li><a href="cyto_dl.models.vae.base_vae.html#module-cyto_dl.models.vae.base_vae">cyto_dl.models.vae.base_vae</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_canon_vae.html#module-cyto_dl.models.vae.image_canon_vae">cyto_dl.models.vae.image_canon_vae</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#module-cyto_dl.models.vae.image_encoder">cyto_dl.models.vae.image_encoder</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_vae.html#module-cyto_dl.models.vae.image_vae">cyto_dl.models.vae.image_vae</a>
+</li>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#module-cyto_dl.models.vae.latent_loss_vae">cyto_dl.models.vae.latent_loss_vae</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.html#module-cyto_dl.models.vae.o2_spharm_vae">cyto_dl.models.vae.o2_spharm_vae</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html#module-cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.html#module-cyto_dl.models.vae.priors">cyto_dl.models.vae.priors</a>
 </li>
@@ -1585,6 +1800,16 @@
           <li><a href="cyto_dl.models.vae.priors.identity_prior.html#module-cyto_dl.models.vae.priors.identity_prior">cyto_dl.models.vae.priors.identity_prior</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.joint_prior.html#module-cyto_dl.models.vae.priors.joint_prior">cyto_dl.models.vae.priors.joint_prior</a>
+</li>
+          <li><a href="cyto_dl.models.vae.tabular_vae.html#module-cyto_dl.models.vae.tabular_vae">cyto_dl.models.vae.tabular_vae</a>
+</li>
+          <li><a href="cyto_dl.nn.html#module-cyto_dl.nn">cyto_dl.nn</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.html#module-cyto_dl.nn.discriminators">cyto_dl.nn.discriminators</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.multi_scale_discriminator.html#module-cyto_dl.nn.discriminators.multi_scale_discriminator">cyto_dl.nn.discriminators.multi_scale_discriminator</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#module-cyto_dl.nn.discriminators.n_layer_discriminator">cyto_dl.nn.discriminators.n_layer_discriminator</a>
 </li>
           <li><a href="cyto_dl.nn.head.html#module-cyto_dl.nn.head">cyto_dl.nn.head</a>
 </li>
@@ -1624,6 +1849,8 @@
 </li>
           <li><a href="cyto_dl.nn.mlp.html#module-cyto_dl.nn.mlp">cyto_dl.nn.mlp</a>
 </li>
+          <li><a href="cyto_dl.nn.res_unit.html#module-cyto_dl.nn.res_unit">cyto_dl.nn.res_unit</a>
+</li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#module-cyto_dl.nn.spatial_transformer">cyto_dl.nn.spatial_transformer</a>
 </li>
           <li><a href="cyto_dl.train.html#module-cyto_dl.train">cyto_dl.train</a>
@@ -1655,6 +1882,8 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.MovingMNIST">MovingMNIST (class in cyto_dl.datamodules.torchvision)</a>
 </li>
+        <li><a href="cyto_dl.nn.discriminators.multi_scale_discriminator.html#cyto_dl.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator">MultiScaleDiscriminator (class in cyto_dl.nn.discriminators.multi_scale_discriminator)</a>
+</li>
         <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im">MultiTaskIm2Im (class in cyto_dl.models.im2im.multi_task)</a>
 </li>
     </ul></td>
@@ -1664,6 +1893,10 @@
 <section id="N" class="genindex-section">
   <h2>N</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator">NLayerDiscriminator (class in cyto_dl.nn.discriminators.n_layer_discriminator)</a>
+</li>
+    </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.noise_annealer.html#cyto_dl.models.im2im.utils.noise_annealer.NoiseAnnealer">NoiseAnnealer (class in cyto_dl.models.im2im.utils.noise_annealer)</a>
 </li>
@@ -1675,16 +1908,20 @@
   <h2>O</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder">O2SpharmEncoder (class in cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder)</a>
+</li>
+        <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.O2SpharmVAE">O2SpharmVAE (class in cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae)</a>
+</li>
         <li><a href="cyto_dl.image.io.ome_zarr_reader.html#cyto_dl.image.io.ome_zarr_reader.OmeZarrReader">OmeZarrReader (class in cyto_dl.image.io.ome_zarr_reader)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Omniglot">Omniglot (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeClustering">OmniposeClustering (class in cyto_dl.models.im2im.utils.omnipose)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeLoss">OmniposeLoss (class in cyto_dl.models.im2im.utils.omnipose)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeLoss">OmniposeLoss (class in cyto_dl.models.im2im.utils.omnipose)</a>
+</li>
         <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposePreprocessd">OmniposePreprocessd (class in cyto_dl.models.im2im.utils.omnipose)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeRandFlipd">OmniposeRandFlipd (class in cyto_dl.models.im2im.utils.omnipose)</a>
@@ -1716,17 +1953,21 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.parse_batch">parse_batch() (cyto_dl.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.vae.latent_loss_vae.html#cyto_dl.models.vae.latent_loss_vae.LatentLossVAE.parse_batch">(cyto_dl.models.vae.latent_loss_vae.LatentLossVAE method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.parse_transforms">parse_transforms() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PCAM">PCAM (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PhotoTour">PhotoTour (class in cyto_dl.datamodules.torchvision)</a>
 </li>
-        <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in cyto_dl.nn.losses.gan_loss)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in cyto_dl.nn.losses.gan_loss)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Places365">Places365 (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.handlers.base_handler.html#cyto_dl.models.handlers.base_handler.BaseHandler.postprocess">postprocess() (cyto_dl.models.handlers.base_handler.BaseHandler method)</a>
@@ -1813,9 +2054,13 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.RenderedSST2">RenderedSST2 (class in cyto_dl.datamodules.torchvision)</a>
 </li>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ResBlock">ResBlock (class in cyto_dl.models.vae.image_encoder)</a>
+</li>
         <li><a href="cyto_dl.nn.head.res_blocks_head.html#cyto_dl.nn.head.res_blocks_head.ResBlocksHead">ResBlocksHead (class in cyto_dl.nn.head.res_blocks_head)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.omnipose.html#cyto_dl.models.im2im.utils.omnipose.OmniposeClustering.rescale_instance">rescale_instance() (cyto_dl.models.im2im.utils.omnipose.OmniposeClustering method)</a>
+</li>
+        <li><a href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit">ResidualUnit (class in cyto_dl.nn.res_unit)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.resize.html#cyto_dl.image.transforms.resize.Resized">Resized (class in cyto_dl.image.transforms.resize)</a>
 </li>
@@ -1921,6 +2166,8 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.vae.tabular_vae.html#cyto_dl.models.vae.tabular_vae.TabularVAE">TabularVAE (class in cyto_dl.models.vae.tabular_vae)</a>
+</li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.task_wrapper">task_wrapper() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.test_dataloader">test_dataloader() (cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
@@ -1947,9 +2194,17 @@
           <li><a href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.train_dataloader">(cyto_dl.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.models.vae.priors.abstract_prior.html#cyto_dl.models.vae.priors.abstract_prior.Prior.training">training (cyto_dl.models.vae.priors.abstract_prior.Prior attribute)</a>
+        <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.Convolution.training">training (cyto_dl.models.vae.image_encoder.Convolution attribute)</a>
 
         <ul>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ImageEncoder.training">(cyto_dl.models.vae.image_encoder.ImageEncoder attribute)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.ResBlock.training">(cyto_dl.models.vae.image_encoder.ResBlock attribute)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html#cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder.training">(cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.O2SpharmEncoder attribute)</a>
+</li>
+          <li><a href="cyto_dl.models.vae.priors.abstract_prior.html#cyto_dl.models.vae.priors.abstract_prior.Prior.training">(cyto_dl.models.vae.priors.abstract_prior.Prior attribute)</a>
+</li>
           <li><a href="cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.training">(cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior attribute)</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.training">(cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior attribute)</a>
@@ -1957,6 +2212,10 @@
           <li><a href="cyto_dl.models.vae.priors.identity_prior.html#cyto_dl.models.vae.priors.identity_prior.IdentityPrior.training">(cyto_dl.models.vae.priors.identity_prior.IdentityPrior attribute)</a>
 </li>
           <li><a href="cyto_dl.models.vae.priors.joint_prior.html#cyto_dl.models.vae.priors.joint_prior.JointPrior.training">(cyto_dl.models.vae.priors.joint_prior.JointPrior attribute)</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.multi_scale_discriminator.html#cyto_dl.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator.training">(cyto_dl.nn.discriminators.multi_scale_discriminator.MultiScaleDiscriminator attribute)</a>
+</li>
+          <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.training">(cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.training">(cyto_dl.nn.head.base_head.BaseHead attribute)</a>
 </li>
@@ -1981,6 +2240,8 @@
           <li><a href="cyto_dl.nn.losses.threshold_loss.html#cyto_dl.nn.losses.threshold_loss.ThresholdLoss.training">(cyto_dl.nn.losses.threshold_loss.ThresholdLoss attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.mlp.html#cyto_dl.nn.mlp.MLP.training">(cyto_dl.nn.mlp.MLP attribute)</a>
+</li>
+          <li><a href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit.training">(cyto_dl.nn.res_unit.ResidualUnit attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU.training">(cyto_dl.nn.spatial_transformer.ConvPoolReLU attribute)</a>
 </li>

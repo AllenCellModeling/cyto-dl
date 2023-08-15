@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -351,14 +351,45 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-vae-image-canon-vae-module">
-<h1>cyto_dl.models.vae.image_canon_vae module<a class="headerlink" href="#cyto-dl-models-vae-image-canon-vae-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.vae.image_canon_vae">
+<span id="cyto-dl-models-vae-image-canon-vae-module"></span><h1>cyto_dl.models.vae.image_canon_vae module<a class="headerlink" href="#module-cyto_dl.models.vae.image_canon_vae" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_canon_vae.</span></span><span class="sig-name descname"><span class="pre">ImageCanonicalVAE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE" title="cyto_dl.models.vae.base_vae.BaseVAE"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseVAE</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.calculate_elbo">
+<span class="sig-name descname"><span class="pre">calculate_elbo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xhat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE.calculate_elbo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.calculate_elbo" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.canonicalize">
+<span class="sig-name descname"><span class="pre">canonicalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE.canonicalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.canonicalize" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_corrected</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.decode" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.encode" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.make_canon_net">
+<span class="sig-name descname"><span class="pre">make_canon_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximum_frequency</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_canon_vae.html#ImageCanonicalVAE.make_canon_net"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.make_canon_net" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -404,8 +435,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.vae.image_canon_vae module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.calculate_elbo"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE.calculate_elbo()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.canonicalize"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE.canonicalize()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.decode"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE.decode()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.encode"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE.encode()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_canon_vae.ImageCanonicalVAE.make_canon_net"><code class="docutils literal notranslate"><span class="pre">ImageCanonicalVAE.make_canon_net()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

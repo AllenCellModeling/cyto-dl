@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -351,14 +351,87 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-vae-image-encoder-module">
-<h1>cyto_dl.models.vae.image_encoder module<a class="headerlink" href="#cyto-dl-models-vae-image-encoder-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.vae.image_encoder">
+<span id="cyto-dl-models-vae-image-encoder-module"></span><h1>cyto_dl.models.vae.image_encoder module<a class="headerlink" href="#module-cyto_dl.models.vae.image_encoder" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.Convolution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_encoder.</span></span><span class="sig-name descname"><span class="pre">Convolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_vector_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#Convolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.Convolution" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EquivariantModule</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.Convolution.evaluate_output_shape">
+<span class="sig-name descname"><span class="pre">evaluate_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#Convolution.evaluate_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.Convolution.evaluate_output_shape" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.Convolution.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#Convolution.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.Convolution.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.Convolution.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.Convolution.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ImageEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_encoder.</span></span><span class="sig-name descname"><span class="pre">ImageEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_sizes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'so2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_conv_padding_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'replicate'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_res_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ImageEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ImageEncoder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ImageEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ImageEncoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ImageEncoder.make_block">
+<span class="sig-name descname"><span class="pre">make_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_conv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_vector_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ImageEncoder.make_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.make_block" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ImageEncoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ResBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_encoder.</span></span><span class="sig-name descname"><span class="pre">ResBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zeros'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subunits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ResBlock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ResBlock" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EquivariantModule</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ResBlock.evaluate_output_shape">
+<span class="sig-name descname"><span class="pre">evaluate_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ResBlock.evaluate_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ResBlock.evaluate_output_shape" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ResBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#ResBlock.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ResBlock.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.ResBlock.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.ResBlock.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.get_batch_norm">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_encoder.</span></span><span class="sig-name descname"><span class="pre">get_batch_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_norm_cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#get_batch_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.get_batch_norm" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.image_encoder.get_non_linearity">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.image_encoder.</span></span><span class="sig-name descname"><span class="pre">get_non_linearity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scalar_fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vector_fields</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/image_encoder.html#get_non_linearity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.image_encoder.get_non_linearity" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 
         </article>
@@ -404,8 +477,46 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.vae.image_encoder module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.Convolution"><code class="docutils literal notranslate"><span class="pre">Convolution</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.Convolution.evaluate_output_shape"><code class="docutils literal notranslate"><span class="pre">Convolution.evaluate_output_shape()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.Convolution.forward"><code class="docutils literal notranslate"><span class="pre">Convolution.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.Convolution.training"><code class="docutils literal notranslate"><span class="pre">Convolution.training</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ImageEncoder"><code class="docutils literal notranslate"><span class="pre">ImageEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.forward"><code class="docutils literal notranslate"><span class="pre">ImageEncoder.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.make_block"><code class="docutils literal notranslate"><span class="pre">ImageEncoder.make_block()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ImageEncoder.training"><code class="docutils literal notranslate"><span class="pre">ImageEncoder.training</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ResBlock"><code class="docutils literal notranslate"><span class="pre">ResBlock</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ResBlock.evaluate_output_shape"><code class="docutils literal notranslate"><span class="pre">ResBlock.evaluate_output_shape()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ResBlock.forward"><code class="docutils literal notranslate"><span class="pre">ResBlock.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.ResBlock.training"><code class="docutils literal notranslate"><span class="pre">ResBlock.training</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.get_batch_norm"><code class="docutils literal notranslate"><span class="pre">get_batch_norm()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.image_encoder.get_non_linearity"><code class="docutils literal notranslate"><span class="pre">get_non_linearity()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
