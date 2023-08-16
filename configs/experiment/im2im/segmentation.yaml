@@ -22,7 +22,7 @@ spatial_dims: 3
 raw_im_channels: 1
 
 trainer:
-  max_epochs: 5
+  max_epochs: 2
 
 data:
   path: ${paths.data_dir}/example_experiment_data/segmentation
