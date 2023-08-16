@@ -6,7 +6,6 @@ import torch
 import torch.nn as nn
 from escnn import gspaces
 from escnn import nn as enn
-
 from monai.networks.blocks import UpSample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
@@ -14,8 +13,8 @@ from monai.networks.layers.simplelayers import Flatten, Reshape
 
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
-from cyto_dl.utils.rotation import RotationModule
 from cyto_dl.nn import ResidualUnit
+from cyto_dl.utils.rotation import RotationModule
 
 from .image_encoder import Convolution as EqConvolution
 
@@ -63,7 +62,7 @@ class ImageCanonicalVAE(BaseVAE):
         up_kernel_size: int = 3,
         encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
-        **base_kwargs
+        **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
 
@@ -134,7 +133,9 @@ class ImageCanonicalVAE(BaseVAE):
             encoder_out_size = prior.param_size
 
         encoder = nn.Sequential(
-            *encode_blocks, Flatten(), nn.Linear(np.prod(final_size) * channels[-1], encoder_out_size)
+            *encode_blocks,
+            Flatten(),
+            nn.Linear(np.prod(final_size) * channels[-1], encoder_out_size),
         )
 
         if decoder_channels is None:
@@ -193,7 +194,7 @@ class ImageCanonicalVAE(BaseVAE):
             Reshape(_channels[0], *init_shape),
             *decode_blocks,
             last_act if last_act is not None else nn.Identity(),
-            _Scale(last_scale)
+            _Scale(last_scale),
         )
 
         if group is not None:
@@ -238,9 +239,9 @@ class ImageCanonicalVAE(BaseVAE):
         conv_class = enn.R3Conv if spatial_dims == 3 else enn.R2Conv
         conv2 = conv_class(
             conv1.out_type,
-            enn.FieldType(gspace, n_out_vectors*[gspace.irrep(1)]),
+            enn.FieldType(gspace, n_out_vectors * [gspace.irrep(1)]),
             kernel_size=7,
-            stride=1
+            stride=1,
         )
         self.canonicalization = enn.SequentialModule(conv1, conv2)
 
@@ -306,8 +307,10 @@ class ImageCanonicalVAE(BaseVAE):
 
     def calculate_elbo(self, x, xhat, z):
         with torch.no_grad():
-            base_x = {self.hparams.x_label:
-                      self.rotation_module(x[self.hparams.x_label],
-                                           None, R=z["pose"].transpose(1, 2))}
+            base_x = {
+                self.hparams.x_label: self.rotation_module(
+                    x[self.hparams.x_label], None, R=z["pose"].transpose(1, 2)
+                )
+            }
 
         return super().calculate_elbo(base_x, xhat, z)
