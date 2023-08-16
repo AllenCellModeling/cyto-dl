@@ -4,7 +4,6 @@ from typing import Optional, Union
 import dask
 import numpy as np
 import pandas as pd
-import tqdm
 from aicsimageio import AICSImage
 from dask.diagnostics import ProgressBar
 from lightning import LightningDataModule
