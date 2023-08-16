@@ -10,21 +10,18 @@
 # limitations under the License.
 # ADAPTED FROM: https://github.com/Project-MONAI/MONAI/blob/dev/monai/networks/blocks/convolutions.py
 
-from collections.abc import Sequence
+from typing import Sequence, Union
 
 import numpy as np
 import torch
 import torch.nn as nn
-
-from monai.networks.layers.factories import Conv
-from monai.networks.blocks import ADN
+from monai.networks.blocks import ADN, Convolution
 from monai.networks.layers.convutils import same_padding, stride_minus_kernel_padding
-from monai.networks.blocks import Convolution
+from monai.networks.layers.factories import Conv
 
 
 class ResidualUnit(nn.Module):
-    """
-    Residual module with multiple convolutions and a residual connection.
+    """Residual module with multiple convolutions and a residual connection.
 
     For example:
 
@@ -93,7 +90,6 @@ class ResidualUnit(nn.Module):
     See also:
 
         :py:class:`monai.networks.blocks.Convolution`
-
     """
 
     def __init__(
@@ -101,18 +97,18 @@ class ResidualUnit(nn.Module):
         spatial_dims: int,
         in_channels: int,
         out_channels: int,
-        strides: Sequence[int] | int = 1,
-        kernel_size: Sequence[int] | int = 3,
+        strides: Union[Sequence[int], int] = 1,
+        kernel_size: Union[Sequence[int], int] = 3,
         subunits: int = 2,
         adn_ordering: str = "NDA",
-        act: tuple | str | None = "PRELU",
-        norm: tuple | str | None = "INSTANCE",
-        dropout: tuple | str | float | None = None,
-        dropout_dim: int | None = 1,
-        dilation: Sequence[int] | int = 1,
+        act: Union[tuple, str, None] = "PRELU",
+        norm: Union[tuple, str, None] = "INSTANCE",
+        dropout: Union[tuple, str, float, None] = None,
+        dropout_dim: Union[int, None] = 1,
+        dilation: Union[Sequence[int], int] = 1,
         bias: bool = True,
         last_conv_only: bool = False,
-        padding: Sequence[int] | int | None = None,
+        padding: Union[Sequence[int], int, None] = None,
     ) -> None:
         super().__init__()
         self.spatial_dims = spatial_dims
@@ -156,17 +152,24 @@ class ResidualUnit(nn.Module):
             sstrides = 1
             spadding = _same_padding
         # apply convolution to input to change number of output channels and size to match that coming from self.conv
-        if np.prod(strides) != 1 or in_channels != out_channels or (
-                np.prod(strides) == 1 and padding != _same_padding):
+        if (
+            np.prod(strides) != 1
+            or in_channels != out_channels
+            or (np.prod(strides) == 1 and padding != _same_padding)
+        ):
             rkernel_size = kernel_size
             rpadding = padding
 
-            if np.prod(strides) == 1 and padding == _same_padding:  # if only adapting number of channels a 1x1 kernel is used with no padding
+            if (
+                np.prod(strides) == 1 and padding == _same_padding
+            ):  # if only adapting number of channels a 1x1 kernel is used with no padding
                 rkernel_size = 1
                 rpadding = 0
 
             conv_type = Conv[Conv.CONV, self.spatial_dims]
-            self.residual = conv_type(in_channels, out_channels, rkernel_size, strides, rpadding, bias=bias)
+            self.residual = conv_type(
+                in_channels, out_channels, rkernel_size, strides, rpadding, bias=bias
+            )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         res: torch.Tensor = self.residual(x)  # create the additive residual from x

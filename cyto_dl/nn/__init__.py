@@ -8,5 +8,5 @@ from .losses import (
     WeibullLogLoss,
 )
 from .mlp import MLP
-from .spatial_transformer import STN
 from .res_unit import ResidualUnit
+from .spatial_transformer import STN
