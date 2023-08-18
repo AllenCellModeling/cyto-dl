@@ -10,6 +10,7 @@ persistent_workers: true
 shuffle: false
 # we're not using fsspec for now so this isn't necessary
 # multiprocessing_context: spawn
+multiprocessing_context: fork # use for joblib
 
 transforms:
   - _target_: cyto_dl.dataframe.transforms.GroupCols
@@ -28,3 +29,4 @@ transforms:
     num_cols: 3
     norm: false
     flip_dims: true
+    rotate: false

@@ -4,6 +4,7 @@ from .latent_loss_vae import LatentLossVAE
 
 # from .so2_image_vae import SO2ImageVAE
 from .tabular_vae import TabularVAE
+from .model_vae import ModelVAE
 
 # compartmentalize imports so that only the relevant packages
 # need to be installed

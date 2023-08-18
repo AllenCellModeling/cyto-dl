@@ -8,7 +8,7 @@ import torch.nn as nn
 
 
 class ChamferLoss(nn.Module):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
 
     def batch_pairwise_dist(self, x, y):

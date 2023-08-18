@@ -1,4 +1,6 @@
+_aux: quadratic_sinkhorn
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'sinkhorn'
 p: 2
 blur: 0.01
+reach: 0.3

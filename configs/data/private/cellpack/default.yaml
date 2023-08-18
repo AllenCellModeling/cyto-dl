@@ -3,13 +3,15 @@ batch_size: 10
 num_workers: 0
 num_points: 256
 num_points_ref: 256
-packing_rotations: [0,1,2]
+# packing_rotations: [0,1,2]
+packing_rotations: [0]
 packing_rules: ['planar_gradient_0deg_', 'planar_gradient_45deg_', 'planar_gradient_90deg_', 'surface_gradient_', 'random_', 'radial_gradient_']
 #packing_rules: ['planar_gradient_0deg_', 'surface_gradient_', '']
 structure_path: /allen/aics/animated-cell/Saurabh/cellpack/out/pcna/spheresSST/
 ref_path: "/allen/aics/modeling/ritvik/forSaurabh/"
 return_id: True
-x_label: 'pcna'
-ref_label: 'dna'
+x_label: 'pcloud'
+ref_label: 'shcoeff'
 rotation_augmentations:
 jitter_augmentations:
+scale: 0.1

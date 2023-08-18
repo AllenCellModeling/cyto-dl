@@ -1,0 +1,6 @@
+defaults:
+  - override launcher: joblib
+
+launcher:
+  # override the number of jobs for joblib
+  n_jobs: 10

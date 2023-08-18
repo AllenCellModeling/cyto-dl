@@ -17,6 +17,7 @@ class SDFGridLoss(nn.Module):
         mean=True,
         fix_grid=False,
         convex_hull=True,
+        **kwargs,
     ):
         super().__init__()
         self.max_x = max_x

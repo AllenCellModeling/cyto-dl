@@ -2,7 +2,10 @@ import torch
 
 
 class L1Loss(torch.nn.Module):
-    def __init__(self):
+    def __init__(
+        self,
+        **kwargs,
+    ):
         super().__init__()
         self.loss = torch.nn.L1Loss(reduction="none")
 

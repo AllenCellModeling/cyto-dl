@@ -1,0 +1,26 @@
+_target_: cyto_dl.models.basic_model.BasicModel
+
+x_label: pcloud
+
+network:
+  _target_: cyto_dl.nn.point_cloud.Point_MAE
+  mask_ratio: 0.1
+  trans_dim: 384
+  depth: 12
+  drop_path_rate: 0.1
+  num_heads: 6
+  encoder_dims: 384
+  mask_type: 'rand'
+  group_size: 32
+  num_group: 64
+  decoder_depth: 4
+  decoder_num_heads: 6
+
+loss:
+  _target_: cyto_dl.nn.losses.ChamferLoss
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002
+

@@ -1,0 +1,47 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: private/shapenet/shapenet.yaml
+  - override /model: private/pcloud/mae/point_m2ae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: pcloud
+tags: ["equivariance", "point-cloud"]
+
+seed: 42
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 400
+  max_epochs: 2000
+  accelerator: gpu
+  devices: [0]
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: pointcloud_shapenet
+    run_name:
+
+##### ONLY USE WITH A100s
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

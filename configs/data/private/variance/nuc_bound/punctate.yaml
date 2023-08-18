@@ -29,3 +29,4 @@ transforms:
     num_cols: 3
     norm: false
     flip_dims: true
+    rotate: False

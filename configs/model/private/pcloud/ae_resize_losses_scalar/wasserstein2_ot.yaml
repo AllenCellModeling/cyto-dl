@@ -1,0 +1,39 @@
+defaults:
+  - private/pcloud_encoders@encoder.pcloud: equiv_scalar.yaml
+  - private/pcloud_decoders@decoder.pcloud: foldingnet_scalar.yaml
+  - private/priors@prior.pcloud: identity.yaml
+  - private/reconstruction_loss@reconstruction_loss.pcloud: wasserstein2_optimaltransport.yaml
+
+_target_: cyto_dl.models.vae.PointCloudVAE
+
+x_label: pcloud
+occupancy_label: 
+
+latent_dim: 128
+scale: 1
+num_output_points: 256
+hidden_conv1_dim: 512
+
+encoder:
+  pcloud:
+    num_features: ${eval:${model.latent_dim}*${model.scale}}
+    hidden_conv1d_channels: [512, 128]
+
+decoder:
+  pcloud:
+    input_dim: ${model.latent_dim}
+    num_output_points: ${model.num_output_points}
+
+prior:
+  pcloud:
+    dimensionality: ${model.latent_dim}
+
+beta: 1.0
+
+get_rotation: true
+
+optimizer:
+  _partial_: true
+  _target_: torch.optim.adam.Adam
+  lr: 0.0002
+

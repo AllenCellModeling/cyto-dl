@@ -1,0 +1,5 @@
+_aux: smallblur_largescale
+_target_: cyto_dl.nn.losses.GeomLoss
+name: 'sinkhorn'
+blur: 0.001
+scaling: 0.99

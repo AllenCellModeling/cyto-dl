@@ -1,3 +1,4 @@
+_aux: energy
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'energy'
 p: 2

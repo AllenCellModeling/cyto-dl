@@ -1,3 +1,4 @@
+_aux: sinkhorn
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'sinkhorn'
 p: 1

@@ -141,15 +141,15 @@ class Shapes3dDataset(data.Dataset):
 
     def transforms(self, data, transform_type=None):
         if "rotate" in transform_type:
-            data["inputs"], data["points"], data["points_iou"] = rotate_pointcloud(
-                pointcloud=data["inputs"],
+            data["pcloud"], data["points"], data["points_iou"] = rotate_pointcloud(
+                pointcloud=data["pcloud"],
                 points=data["points"],
                 points_iou=data.get("points_iou"),
             )
 
         if "translate" in transform_type:
-            data["inputs"], data["points"], data["points_iou"] = translate_pointcloud(
-                pointcloud=data["inputs"],
+            data["pcloud"], data["points"], data["points_iou"] = translate_pointcloud(
+                pointcloud=data["pcloud"],
                 points=data["points"],
                 points_iou=data.get("points_iou"),
             )
@@ -164,13 +164,13 @@ class Shapes3dDataset(data.Dataset):
 
             if data.get("points_iou") is not None:
                 (
-                    data["inputs"],
-                    data["points"],
+                    data["pcloud"],
+                    data["pcloud"],
                     data["points_iou"],
                     points_df,
                     points_iou_df,
                 ) = single_translate_pointcloud(
-                    pointcloud=data["inputs"],
+                    pointcloud=data["pcloud"],
                     points=data["points"],
                     points_iou=data["points_iou"],
                     points_df=points_df,
@@ -181,8 +181,8 @@ class Shapes3dDataset(data.Dataset):
                 if points_iou_df is not None:
                     data["points_iou.df"] = points_iou_df
             else:
-                data["inputs"], data["points"], points_df = single_translate_pointcloud(
-                    pointcloud=data["inputs"],
+                data["pcloud"], data["points"], points_df = single_translate_pointcloud(
+                    pointcloud=data["pcloud"],
                     points=data["points"],
                     points_df=points_df,
                 )

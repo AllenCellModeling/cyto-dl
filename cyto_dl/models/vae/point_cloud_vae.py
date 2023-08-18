@@ -145,10 +145,15 @@ class PointCloudVAE(BaseVAE):
         self.condition_decoder = nn.ModuleDict(condition_decoder)
 
     def decode(self, z_parts, return_canonical=False, batch=None):
-        if self.encoder[self.hparams.x_label].generate_grid_feats:
-            base_xhat = self.decoder[self.hparams.x_label](
-                batch[self.point_label], z_parts["grid_feats"]
-            )
+        if hasattr(self.encoder[self.hparams.x_label], 'generate_grid_feats'):
+            if self.encoder[self.hparams.x_label].generate_grid_feats:
+                base_xhat = self.decoder[self.hparams.x_label](
+                    batch[self.point_label], z_parts["grid_feats"]
+                )
+            else:
+                base_xhat = self.decoder[self.hparams.x_label](
+                    z_parts[self.hparams.x_label]
+                )
         else:
             base_xhat = self.decoder[self.hparams.x_label](
                 z_parts[self.hparams.x_label]
@@ -230,9 +235,11 @@ class PointCloudVAE(BaseVAE):
         if not decode:
             return z
 
-        if self.encoder[self.hparams.x_label].generate_grid_feats:
-
-            xhat = self.decode(z, batch=batch)
+        if hasattr(self.encoder[self.hparams.x_label], 'generate_grid_feats'):
+            if self.encoder[self.hparams.x_label].generate_grid_feats:
+                xhat = self.decode(z, batch=batch)
+            else:
+                xhat = self.decode(z)
         else:
             xhat = self.decode(z)
 

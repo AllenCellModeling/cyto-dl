@@ -30,3 +30,4 @@ transforms:
     norm: false
     flip_dims: true
     sample: 256
+    rotate: False

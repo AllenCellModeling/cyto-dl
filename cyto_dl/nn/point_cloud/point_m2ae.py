@@ -3,12 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from timm.models.layers import trunc_normal_
-from .build import MODELS
 import random
-from extensions.chamfer_dist import ChamferDistanceL2
-
-from utils.logger import *
 from .modules import *
+from cyto_dl.nn.losses.metrics import cd, emd
 
 
 # Hierarchical Encoder
@@ -24,7 +21,6 @@ class H_Encoder(nn.Module):
         **kwargs,
     ):
         super().__init__()
-        self.config = config
 
         self.mask_ratio = mask_ratio
         self.encoder_depths = encoder_depths
@@ -210,7 +206,6 @@ class H_Encoder(nn.Module):
         return x_vis_list, mask_vis_list, bool_masked_pos
 
 
-@MODELS.register_module()
 class Point_M2AE(nn.Module):
     def __init__(
         self,
@@ -225,8 +220,6 @@ class Point_M2AE(nn.Module):
         encoder_depths,
         encoder_dims,
         local_radius,
-        drop_path_rate,
-        num_heads,
     ):
         super().__init__()
 
@@ -303,8 +296,7 @@ class Point_M2AE(nn.Module):
 
         # prediction head
         self.rec_head = nn.Conv1d(self.decoder_dims[-1], 3 * self.group_sizes[0], 1)
-        # loss
-        self.rec_loss = ChamferDistanceL2().cuda()
+        self.loss = cd()
 
     def forward(self, pts, eval=False, **kwargs):
         # multi-scale representations of point clouds
@@ -379,7 +371,6 @@ class Point_M2AE(nn.Module):
                 pos_full = self.decoder_pos_embeds[i](center)
 
             x_full = self.h_decoder[i](x_full, pos_full)
-
         # reconstruction
         x_full = self.decoder_norm(x_full)
         B, N, C = x_full.shape
@@ -389,6 +380,4 @@ class Point_M2AE(nn.Module):
         rec_points = self.rec_head(x_rec.unsqueeze(-1)).reshape(L, -1, 3)
         gt_points = neighborhoods[-2][masks[-2]].reshape(L, -1, 3)
 
-        # CD loss
-        loss = self.rec_loss(rec_points, gt_points)
-        return loss
+        return rec_points, gt_points

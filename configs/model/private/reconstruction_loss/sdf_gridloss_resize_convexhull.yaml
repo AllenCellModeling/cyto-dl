@@ -1,3 +1,4 @@
+_aux: griddloss
 _target_: cyto_dl.nn.losses.SDFGridLoss
 n_samples: 2500
 max_x: 1.9 # calculated based on max size of pcna resize pooint cloud

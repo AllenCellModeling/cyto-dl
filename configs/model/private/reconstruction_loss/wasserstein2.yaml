@@ -1,4 +1,5 @@
+_aux: wasserstein2
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'sinkhorn'
-p: 1
-blur: 0.1
+p: 2
+blur: 1

@@ -1,7 +1,8 @@
 _target_: cyto_dl.datamodules.DataframeDatamodule
 _convert_: all
 
-path: /allen/aics/modeling/ritvik/derek_pcna/singlecellmanifest.csv
+#path: /allen/aics/modeling/ritvik/derek_pcna/singlecellmanifest.csv
+path: /allen/aics/modeling/ritvik/derek_pcna/singlecellmanifest_clean.csv
 split_column: split
 
 batch_size: 32

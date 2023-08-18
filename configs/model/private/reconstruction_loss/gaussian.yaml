@@ -1,3 +1,4 @@
+_aux: gaussian
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'gaussian'
 p: 2

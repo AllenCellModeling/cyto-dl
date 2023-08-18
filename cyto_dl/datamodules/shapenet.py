@@ -91,7 +91,7 @@ class ShapenetDataModule(LightningDataModule):
         )
 
         if inputs_field is not None:
-            fields["inputs"] = inputs_field
+            fields["pcloud"] = inputs_field
 
         if self.return_idx:
             fields["idx"] = IndexField()
@@ -122,6 +122,7 @@ class ShapenetDataModule(LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             shuffle=False,
+            multiprocessing_context="fork",
         )
         return dataloader
 
@@ -134,6 +135,7 @@ class ShapenetDataModule(LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             shuffle=False,
+            multiprocessing_context="fork",
         )
         return dataloader
 
@@ -146,5 +148,6 @@ class ShapenetDataModule(LightningDataModule):
             num_workers=self.num_workers,
             pin_memory=True,
             shuffle=False,
+            multiprocessing_context="fork",
         )
         return dataloader

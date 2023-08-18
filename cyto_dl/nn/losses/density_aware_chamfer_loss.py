@@ -12,7 +12,12 @@ from cyto_dl.nn.losses.metrics import cd, emd
 
 
 class DensityAwareChamferLoss(nn.Module):
-    def __init__(self, alpha, n_lambda):
+    def __init__(
+        self,
+        alpha,
+        n_lambda,
+        **kwargs,
+    ):
         super().__init__()
         self.alpha = alpha
         self.n_lambda = n_lambda

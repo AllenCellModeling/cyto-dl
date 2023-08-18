@@ -5,10 +5,11 @@
 
 defaults:
   - override /data: private/pcna/nuc_bound/pcna_subsample.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize.yaml
+  - override /model: private/pcloud/ae_resize_losses/sinkhorn.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
+  - override /hydra: private/joblib
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -29,7 +30,7 @@ trainer:
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [1]
+  devices: [0]
 
 callbacks:
   early_stopping:
@@ -43,11 +44,13 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: pcna_classical_pcloud
-    run_name:
+    experiment_name: pointcloud_shapenet
+    # run_name: ${model.reconstruction_loss.pcloud._target_}
+    run_name: ${data.transforms[1].sample}/${data.transforms[1].num_cols}/${data.transforms[1].rotate}/${model.reconstruction_loss.pcloud._aux}/${model.encoder.pcloud.mode}
 
 ##### ONLY USE WITH A100s
 extras:
   precision:
     _target_: torch.set_float32_matmul_precision
     precision: medium
+

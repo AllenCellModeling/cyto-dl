@@ -10,6 +10,8 @@ import pandas as pd
 from typing import Optional
 from tqdm import tqdm
 from multiprocessing import Pool
+import pyshtools
+from scipy import interpolate as spinterp
 
 
 class CellPackDataModule(LightningDataModule):
@@ -30,6 +32,7 @@ class CellPackDataModule(LightningDataModule):
         return_id=False,
         x_label=None,
         ref_label=None,
+        scale: Optional[float] = 1,
         rotation_augmentations: Optional[int] = None,
         jitter_augmentations: Optional[int] = None,
         max_ids: Optional[int] = None,
@@ -41,6 +44,7 @@ class CellPackDataModule(LightningDataModule):
         self.loader_fnc = DataLoader
         self.num_points = num_points
         self.return_id = return_id
+        self.scale = scale
         self.rotation_augmentations = rotation_augmentations
         self.jitter_augmentations = jitter_augmentations
         self.num_points_ref = num_points_ref
@@ -64,6 +68,7 @@ class CellPackDataModule(LightningDataModule):
             split,
             self.x_label,
             self.ref_label,
+            self.scale,
             self.rotation_augmentations,
             self.jitter_augmentations,
             self.max_ids,
@@ -120,11 +125,13 @@ class CellPackDataset(Dataset):
         split="train",
         x_label: str = "pcloud",
         ref_label: str = "nuc",
+        scale: Optional[float] = 1,
         rotation_augmentations: Optional[int] = None,
         jitter_augmentations: Optional[int] = None,
         max_ids: Optional[int] = None,
     ):
         self.x_label = x_label
+        self.scale = scale
         self.ref_label = ref_label
         self.num_points = num_points
         self.packing_rotations = packing_rotations
@@ -158,8 +165,6 @@ class CellPackDataset(Dataset):
         }
 
         self.ids = _splits[split]
-
-        self.ids = self.ids[:4]
 
         # self.data = []
         # self.ref = []
@@ -213,6 +218,7 @@ class CellPackDataset(Dataset):
                                     ]
                                 )
 
+        # get_packing(tup[0])
         with Pool(10) as p:
             all_packings = tuple(
                 tqdm(
@@ -249,8 +255,8 @@ class CellPackDataset(Dataset):
     def __getitem__(self, item):
         x = self.data[item]
         # x = self.pc_norm(x)
-        x = torch.from_numpy(x).float()
-        ref = self.ref[item]
+        x = torch.from_numpy(x).float() * self.scale
+        ref = self.ref[item] * self.scale
         # ref = self.pc_norm(ref)
         ref = torch.from_numpy(ref).float()
         if self.return_id:
@@ -323,8 +329,10 @@ def get_packing(tup):
         my_point_cloud = PyntCloud.from_file(nuc_path)
         points_dna = my_point_cloud.points
 
-        if points_dna.shape[0] > num_points_ref:
-            points_dna = _subsample(points_dna, num_points_ref)
+        nuc_she = get_shcoeffs(points_dna.values).values.astype(np.float32).flatten()
+
+        # if points_dna.shape[0] > num_points_ref:
+        #     points_dna = _subsample(points_dna, num_points_ref)
 
         if points.shape[0] > num_points:
             points = _subsample(points, num_points)
@@ -351,10 +359,55 @@ def get_packing(tup):
 
         return (
             points,
-            points_dna,
+            nuc_she,
             this_index,
             rule_ind,
             this_pack_rot,
             theta,
             jitter_ret,
         )
+
+
+def get_shcoeffs(points, lmax=16):
+    # import ipdb
+
+    # ipdb.set_trace()
+    x = points[:, 2]
+    y = points[:, 1]
+    z = points[:, 0]
+    rad = np.sqrt(x**2 + y**2 + z**2)
+    lat = np.arccos(np.divide(z, rad, out=np.zeros_like(rad), where=(rad != 0)))
+    lon = np.pi + np.arctan2(y, x)
+
+    # Creating a meshgrid data from (lon,lat,r)
+    points = np.concatenate(
+        [np.array(lon).reshape(-1, 1), np.array(lat).reshape(-1, 1)], axis=1
+    )
+
+    grid_lon, grid_lat = np.meshgrid(
+        np.linspace(start=0, stop=2 * np.pi, num=256, endpoint=True),
+        np.linspace(start=0, stop=1 * np.pi, num=128, endpoint=True),
+    )
+
+    # Interpolate the (lon,lat,r) data into a grid
+    grid = spinterp.griddata(points, rad, (grid_lon, grid_lat), method="nearest")
+
+    # Fit grid data with SH. Look at pyshtools for detail.
+    coeffs = pyshtools.expand.SHExpandDH(grid, sampling=2, lmax_calc=lmax)
+
+    # # Reconstruct grid. Look at pyshtools for detail.
+    # grid_rec = pyshtools.expand.MakeGridDH(coeffs, sampling=2)
+
+    # Create (l,m) keys for the coefficient dictionary
+    lvalues = np.repeat(np.arange(lmax + 1).reshape(-1, 1), lmax + 1, axis=1)
+    keys = []
+    for suffix in ["C", "S"]:
+        for L, m in zip(lvalues.flatten(), lvalues.T.flatten()):
+            keys.append(f"shcoeffs_L{L}M{m}{suffix}")
+
+    coeffs_dict = dict(zip(keys, coeffs.flatten()))
+    coeffs_dict = dict((f"{k}_lcc", v) for k, v in coeffs_dict.items())
+
+    coeffs_dict = pd.DataFrame(coeffs_dict, index=[0])
+    coeffs_dict = coeffs_dict.loc[:, (coeffs_dict != 0).any(axis=0)]
+    return coeffs_dict

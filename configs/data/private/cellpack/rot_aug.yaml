@@ -9,7 +9,8 @@ packing_rules: ['planar_gradient_0deg_', 'planar_gradient_45deg_', 'planar_gradi
 structure_path: /allen/aics/animated-cell/Saurabh/cellpack/out/pcna/spheresSST/
 ref_path: "/allen/aics/modeling/ritvik/forSaurabh/"
 return_id: True
-x_label: 'pcna'
-ref_label: 'dna'
-rotation_augmentations: 10
+x_label: 'pcloud'
+ref_label: 'shcoeff'
+rotation_augmentations: 2
 jitter_augmentations:
+scale: 0.1

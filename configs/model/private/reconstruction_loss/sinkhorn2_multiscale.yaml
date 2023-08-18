@@ -1,5 +1,7 @@
+_aux: sinkhorn2_mutliscale
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'sinkhorn'
 p: 2
-blur: 1
+blur: 0.05
+scaling: 0.8
 backend: 'multiscale'

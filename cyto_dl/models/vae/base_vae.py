@@ -141,7 +141,8 @@ class BaseVAE(BaseModel):
                     )
         self.encoder_args = {}
         for part, enc in self.encoder.items():
-            self.encoder_args[part] = inspect.getfullargspec(enc.forward).args
+            if enc is not None:
+                self.encoder_args[part] = inspect.getfullargspec(enc.forward).args
 
     def calculate_rcl(self, x, xhat, input_key, target_key=None):
         if not target_key:

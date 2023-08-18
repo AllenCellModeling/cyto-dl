@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/shapenet/shapenet_debug.yaml
+  - override /data: private/shapenet/shapenet.yaml
   - override /model: private/pcloud/classical_pcloud_iae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml

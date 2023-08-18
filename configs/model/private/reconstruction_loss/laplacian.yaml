@@ -1,3 +1,4 @@
+_aux: laplacian
 _target_: cyto_dl.nn.losses.GeomLoss
 name: 'laplacian'
 p: 2

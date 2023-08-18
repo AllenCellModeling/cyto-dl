@@ -14,6 +14,7 @@ class ChamferAugmented(nn.Module):
         replace=False,
         mean=True,
         fix_grid=False,
+        **kwargs,
     ):
         super().__init__()
         self.max_x = max_x
