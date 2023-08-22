@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Dict
 
@@ -36,6 +37,7 @@ class GAN(BaseModel):
         save_images_every_n_epochs=1,
         automatic_optimization: bool = False,
         inference_args: Dict = {},
+        compile: True,
         **base_kwargs,
     ):
         """
@@ -64,9 +66,18 @@ class GAN(BaseModel):
         self.automatic_optimization = False
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.backbone = backbone
-        self.discriminator = discriminator
-        self.task_heads = torch.nn.ModuleDict(task_heads)
+
+        if compile and not sys.platform.startswith("win"):
+            self.backbone = torch.compile(backbone)
+            self.discriminator = torch.compile(discriminator)
+            self.task_heads = torch.nn.ModuleDict(
+                {k: torch.compile(v) for k, v in task_heads.items()}
+            )
+        else:
+            self.backbone = backbone
+            self.discriminator = discriminator
+            self.task_heads = torch.nn.ModuleDict(task_heads)
+
         assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
@@ -170,8 +181,6 @@ class GAN(BaseModel):
 
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        if stage == "predict":
-            return (None, None, None)
 
         loss_D = self._extract_loss(outs, "loss_D")
         loss_G = self._extract_loss(outs, "loss_G")
@@ -199,3 +208,13 @@ class GAN(BaseModel):
         loss_dict["loss"] = total_loss
 
         return loss_dict, None, None
+
+    def predict_step(self, batch, batch_idx):
+        # convert monai metatensors to tensors
+        for k, v in batch.items():
+            if isinstance(v, MetaTensor):
+                batch[k] = v.as_tensor()
+        stage = "predict"
+        run_heads = self._get_run_heads(batch, stage)
+        self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        return (None, None, None)
