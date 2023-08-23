@@ -1,0 +1,51 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+#path: /allen/aics/modeling/ritvik/pcna_center_dna2/register/manifest.csv
+path: /allen/aics/modeling/ritvik/pcna/manifest.parquet
+split_column: split
+
+batch_size: 32
+num_workers: 10
+
+persistent_workers: true
+multiprocessing_context: spawn
+
+transforms:
+  - _target_: cyto_dl.dataframe.transforms.GroupCols
+    groups:
+      image: cropped_path_nucmask
+      cell_id: CellId
+  - _target_: monai.transforms.LoadImaged
+    keys: image
+    reader:
+      - _target_: cyto_dl.image.io.SkimageReader
+        channels: [2]
+  - _target_: cyto_dl.image.transforms.ContrastAdjustd
+    keys: [image]
+    low: 0
+    high: 6000
+    background: 0
+  - _target_: monai.transforms.SpatialPadd
+    keys: [image]
+    spatial_size: [256, 256, 256]
+    value: 0
+  - _target_: torchio.transforms.Resize
+    keys:
+      - image
+    target_shape: 33
+  - _target_: monai.transforms.RandRotated
+    keys: [image]
+    range_x: 3.14159
+    range_y: 3.14159
+    range_z: 3.14159
+    prob: 1.0
+  - _target_: cyto_dl.image.transforms.RotationMaskd
+    keys: [image]
+    group: so3
+    spatial_dims: 3
+    mask_side: 33
+    background: 0
+  - _target_: monai.transforms.ToTensord
+    keys: [image]
+    track_meta: false
