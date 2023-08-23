@@ -14,7 +14,7 @@ class Resized(Transform):
         keys: Sequence[str],
         scale_factor: Union[float, Sequence[float]],
         spatial_dims: int = 3,
-        mode: str = "nearest",
+        mode: str = "nearest-exact",
         align_corners: Union[bool, None] = None,
         recompute_scale_factor: bool = False,
         antialias: bool = False,

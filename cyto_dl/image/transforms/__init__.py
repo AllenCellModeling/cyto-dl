@@ -5,10 +5,10 @@ from .resize import Resized
 from .save import Save, Saved
 
 try:
-    from .o2_mask_transform import O2Mask, O2Maskd
+    from .rotation_mask_transform import RotationMask, RotationMaskd
 except (ModuleNotFoundError, ImportError):
-    O2Mask = None
-    O2Maskd = None
+    RotationMask = None
+    RotationMaskd = None
 
 try:
     from .so2_random_rotation import SO2RandomRotate, SO2RandomRotated

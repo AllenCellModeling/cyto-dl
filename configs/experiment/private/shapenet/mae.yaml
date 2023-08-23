@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: private/shapenet/shapenet.yaml
-  - override /model: private/pcloud/mae/point_m2ae.yaml
+  - override /model: private/pcloud/mae/point_mae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -15,6 +15,8 @@ defaults:
 
 experiment_name: pcloud
 tags: ["equivariance", "point-cloud"]
+
+ckpt_path: /allen/aics/modeling/ritvik/projects/checkpoints/mae.ckpt
 
 seed: 42
 
@@ -38,10 +40,12 @@ callbacks:
 logger:
   mlflow:
     experiment_name: pointcloud_shapenet
-    run_name:
+    run_name: mae
 
 ##### ONLY USE WITH A100s
 extras:
   precision:
     _target_: torch.set_float32_matmul_precision
     precision: medium
+
+

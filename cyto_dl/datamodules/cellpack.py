@@ -173,6 +173,8 @@ class CellPackDataset(Dataset):
         # self.pack_rot = []
         # self.rot = []
         # self.jitter = []
+        df_orig = pd.read_csv('/allen/aics/assay-dev/computational/data/4DN_handoff_Apr2022_testing/PCNA_manifest_for_suraj_with_brightfield.csv')
+
 
         tup = []
         for this_id in tqdm(self.ids, total=len(self.ids)):
@@ -187,6 +189,7 @@ class CellPackDataset(Dataset):
                     )
                     if os.path.isfile(structure_path + this_path):
                         nuc_path = ref_path + f"{this_id}_{rot}.obj"
+                        nuc_vol = df_orig.loc[df_orig['CellId'] == this_id]['volume_of_nucleus_um3'].item()
                         tup.append(
                             [
                                 structure_path + this_path,
@@ -199,6 +202,7 @@ class CellPackDataset(Dataset):
                                 num_points_ref,
                                 num_points,
                                 self.packing_rules.index(rule),
+                                nuc_vol
                             ]
                         )
                         if self.rotation_augmentations:
@@ -215,11 +219,12 @@ class CellPackDataset(Dataset):
                                         num_points_ref,
                                         num_points,
                                         self.packing_rules.index(rule),
+                                        nuc_vol
                                     ]
                                 )
 
         # get_packing(tup[0])
-        with Pool(10) as p:
+        with Pool(3) as p:
             all_packings = tuple(
                 tqdm(
                     p.imap_unordered(
@@ -237,6 +242,7 @@ class CellPackDataset(Dataset):
         self.pack_rot = [i[4] for i in all_packings]
         self.rot = [i[5] for i in all_packings]
         self.jitter = [i[6] for i in all_packings]
+        self.nuc_vol = [i[7] for i in all_packings]
 
         self.len = len(self.data)
         self.label = []
@@ -268,6 +274,7 @@ class CellPackDataset(Dataset):
                 "packing_rotation": torch.tensor(self.pack_rot[item]).unsqueeze(dim=0),
                 "rotation_aug": torch.tensor(self.rot[item]),
                 "jitter_aug": torch.tensor(self.jitter[item][0]).unsqueeze(dim=0),
+                "nuc_vol": torch.tensor(self.nuc_vol[item]).unsqueeze(dim=0),
             }
         else:
             return {self.x_label: x, self.ref_label: ref}
@@ -318,6 +325,7 @@ def get_packing(tup):
     num_points_ref = tup[7]
     num_points = tup[8]
     rule_ind = tup[9]
+    nuc_vol = tup[10]
 
     with open(this_path, "r") as f:
         tmp = json.load(f)
@@ -365,6 +373,7 @@ def get_packing(tup):
             this_pack_rot,
             theta,
             jitter_ret,
+            nuc_vol
         )
 
 

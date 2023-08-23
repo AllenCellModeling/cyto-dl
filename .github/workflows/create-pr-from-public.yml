@@ -28,7 +28,7 @@ jobs:
               "https://api.github.com/repos/$OWNER/$REPO/pulls/$PR_NUMBER"
 
       - name: Run a multi-line script
-        run: git apply --3way --ignore-space-change ../public-pr.patch
+        run: git apply --reject --ignore-space-change ../public-pr.patch
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

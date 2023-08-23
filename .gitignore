@@ -160,3 +160,4 @@ logs/
 # PDM
 
 .pdm-python
+requirements/local

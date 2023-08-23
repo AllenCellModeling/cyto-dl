@@ -12,6 +12,7 @@ occupancy_label:
 latent_dim: 128
 scale: 1
 num_output_points: 256
+condition_keys: 
 
 encoder:
   pcloud:

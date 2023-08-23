@@ -44,7 +44,7 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: pointcloud_shapenet
+    experiment_name: pointcloud_nucbound
     # run_name: ${model.reconstruction_loss.pcloud._target_}
     run_name: ${data.transforms[1].sample}/${data.transforms[1].num_cols}/${data.transforms[1].rotate}/${model.reconstruction_loss.pcloud._aux}/${model.encoder.pcloud.mode}
 

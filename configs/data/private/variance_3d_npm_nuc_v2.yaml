@@ -1,0 +1,29 @@
+_target_: cyto_dl.datamodules.DataframeDatamodule
+_convert_: all
+
+#path: /storage/nuc_npm1_sdf/manifest.csv
+path: /allen/aics/modeling/gui.pires/data/nuc_npm1_sdf/manifest.csv
+#path: /allen/aics/modeling/gui.pires/data/nuc_npm1_sdf/manifest_mini.csv
+split_column: split
+
+batch_size: 32
+num_workers: 30
+multiprocessing_context: fork
+persistent_workers: false
+
+transforms:
+#  - _target_: cyto_dl.dataframe.transforms.GroupCols
+#    groups:
+#      image: sdf_path
+#      cell_id: cell_id
+#  - _target_: cyto_dl.image.io.ReadNumpyFile
+#    keys: [image]
+#    channels: [0] # nuc: 0, npm1: 1
+#    remote: false
+#    clip_min: -10
+#    clip_max: 10
+#
+#  - _target_: cyto_dl.image.transforms.Resized
+#    keys: [image]
+#    # images become [42, 42, 42]
+#    scale_factor: 0.25

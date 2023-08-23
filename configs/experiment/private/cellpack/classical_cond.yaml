@@ -9,6 +9,7 @@ defaults:
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
+  # - override /hydra: private/joblib
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -27,9 +28,9 @@ data:
 trainer:
   check_val_every_n_epoch: 1
   min_epochs: 400
-  max_epochs: 2000
+  max_epochs: 800
   accelerator: gpu
-  devices: [1]
+  devices: [0]
 
 callbacks:
   early_stopping:
@@ -43,8 +44,9 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: pcna_classical_pcloud
-    run_name:
+    experiment_name: pointcloud_cellpack
+    run_name: classical_cond_rotate
+    # run_name: ${model.encoder.pcloud.mode}/${model.condition_keys}
 
 ##### ONLY USE WITH A100s
 extras:

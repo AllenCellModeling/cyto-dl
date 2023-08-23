@@ -1,0 +1,121 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: vae/variance_3d_npm_nuc_v2.yaml
+  - override /model: vae/so2_equiv_image_vae.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: default.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+experiment_name: npm1_so2_sdf
+
+tags: ["so2-equiv", "variance-dataset", "3d", "npm1", "sdf"]
+
+seed: 42
+
+data:
+  _aux:
+    background: 15
+
+  batch_size: 32
+  cache_dir: /storage/cache
+  transforms:
+    - _target_: cyto_dl.dataframe.transforms.GroupCols
+      groups:
+        image: sdf_path
+        cell_id: cell_id
+    - _target_: cyto_dl.image.io.ReadNumpyFile
+      keys: [image]
+      # nuc_sdf: 0, npm1_sdf: 1, nuc_seg: 2, npm1_seg: 3
+      channels: [1]
+      remote: false
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: image
+      threshold: ${data._aux.background}
+      above: false
+      cval: ${data._aux.background}
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: image
+      threshold: -10.
+      above: true
+      cval: -10.
+    - _target_: monai.transforms.Resized
+      keys: [image]
+      spatial_size: [81, 81, 81] # one voxel smaller than 0.5x
+    - _target_: monai.transforms.RandRotated
+      keys: [image]
+      range_x: 3.14159
+      range_y: 3.14159
+      range_z: 3.14159
+      prob: 1.0
+    - _target_: monai.transforms.ToTensord
+      keys: [image]
+      track_meta: false
+
+model:
+  group: so2
+  spatial_dims: 3
+  in_shape: [1, 81, 81, 81]
+
+  background_value: ${data._aux.background}
+
+  mask_input: true
+  mask_output: true
+
+  latent_dim: 64
+
+  kernel_sizes: [7, 5, 5, 5, 3, 3]
+  channels: [8, 16, 32, 32, 64, 64]
+  strides: [1, 1, 2, 2, 2, 1]
+
+  #last_act: sigmoid
+  #last_scale: null
+
+  reconstruction_loss:
+    _target_: torch.nn.MSELoss
+    reduction: none
+
+  prior:
+
+  x_label: image
+
+  act: swish
+  norm: null
+  dropout: null
+  bias: true
+  beta: 1.0
+
+trainer:
+  check_val_every_n_epoch: 1
+  min_epochs: 500
+  max_epochs: 1000
+  accelerator: gpu
+  devices: [1]
+
+callbacks:
+  early_stopping:
+    monitor: val/loss
+    patience: 10
+    min_delta: 0.
+
+  model_checkpoint:
+    dirpath: ${paths.output_dir}/ckpts
+    monitor: val/loss
+    save_top_k: 2
+    every_n_epochs: 1
+
+logger:
+  mlflow:
+    experiment_name: ${experiment_name}
+    run_name:
+
+extras:
+  precision:
+    _target_: torch.set_float32_matmul_precision
+    precision: medium

@@ -80,35 +80,17 @@ class BasicModel(BaseModel):
         if save_predictions is not None:
             self.save_predictions = save_predictions
         self.fields_to_log = fields_to_log
+        self.x_label = x_label
 
     def forward(self, x, **kwargs):
         return self.network(x, **kwargs)
 
-    def _step(self, stage, batch, batch_idx, logger):
+    def model_step(self, stage, batch, batch_idx):
         rec, gt = self.forward(batch[self.x_label])
-        loss = self.loss(rec, gt)
-
-        if stage != "predict":
-            self.log(
-                f"{stage}_loss",
-                loss.detach(),
-                logger=logger,
-                on_step=True,
-                on_epoch=True,
-            )
+        loss = self.loss(rec, gt).mean()
 
         output = {
             "loss": loss,
         }
 
-        if isinstance(self.fields_to_log, (list, ListConfig)):
-            if stage in ("predict", "test"):
-                for field in self.fields_to_log:
-                    output[field] = batch[field]
-
-        elif isinstance(self.fields_to_log, (dict, DictConfig)):
-            if stage in self.fields_to_log:
-                for field in self.fields_to_log[stage]:
-                    output[field] = batch[field]
-
-        return output
+        return output, None, None

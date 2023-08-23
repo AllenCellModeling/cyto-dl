@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: private/shapenet/shapenet_subsample.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae_resize_vntransformer_shapenet.yaml
+  - override /model: private/pcloud/equiv_pcloud_ae_resize_vntransformer.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
@@ -16,6 +16,8 @@ defaults:
 experiment_name: pcloud
 tags: ["equivariance", "point-cloud"]
 
+ckpt_path: /allen/aics/modeling/ritvik/projects/checkpoints/vntransformer.ckpt
+
 seed: 42
 
 trainer:
@@ -23,7 +25,7 @@ trainer:
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [3]
+  devices: [0]
 
 callbacks:
   early_stopping:
@@ -37,8 +39,8 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: pcna_classical_pcloud
-    run_name:
+    experiment_name: pointcloud_shapenet
+    run_name: vn_transformer
 
 ##### ONLY USE WITH A100s
 extras:

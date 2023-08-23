@@ -33,11 +33,11 @@ trainer:
 
 callbacks:
   early_stopping:
-    monitor: val loss
+    monitor: val/loss
 
   model_checkpoint:
     dirpath: ${paths.output_dir}/ckpts
-    monitor: val loss
+    monitor: val/loss
     save_top_k: 2
     every_n_epochs: 1
 

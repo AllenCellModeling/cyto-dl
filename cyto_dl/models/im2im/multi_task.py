@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -21,6 +22,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
         inference_heads: Union[List, None] = None,
+        compile=True,
         **base_kwargs,
     ):
         """
@@ -65,8 +67,16 @@ class MultiTaskIm2Im(BaseModel):
         self.automatic_optimization = True
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-        self.backbone = torch.compile(backbone)
-        self.task_heads = torch.nn.ModuleDict({k: torch.compile(v) for k, v in task_heads.items()})
+
+        if compile and not sys.platform.startswith("win"):
+            self.backbone = torch.compile(backbone)
+            self.task_heads = torch.nn.ModuleDict(
+                {k: torch.compile(v) for k, v in task_heads.items()}
+            )
+        else:
+            self.backbone = backbone
+            self.task_heads = torch.nn.ModuleDict(task_heads)
+
         self.inference_heads = inference_heads or self.task_heads.keys()
 
         for k, head in self.task_heads.items():
@@ -169,4 +179,15 @@ class MultiTaskIm2Im(BaseModel):
 
         preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
 
+        return None, preds, None
+
+    def predict_step(self, batch, batch_idx):
+        stage = "predict"
+        # convert monai metatensors to tensors
+        for k, v in batch.items():
+            if isinstance(v, MetaTensor):
+                batch[k] = v.as_tensor()
+        run_heads = self._get_run_heads(batch, stage)
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
         return None, preds, None

@@ -1,5 +1,6 @@
 .PHONY: clean build docs help clean-logs gen-docs format test test-full sync-reqs-files
 .DEFAULT_GOAL := help
+PLATFORM ?= local
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
@@ -64,22 +65,26 @@ test: ## Run not slow tests
 test-full: ## Run all tests
 	pytest
 
-pdm.lock: pyproject.toml
-	pdm lock -G :all
+# to handle different platforms, specially for pytorch we can use these
+# in Github Actions
+requirements/$(PLATFORM)/pdm.lock: pyproject.toml
+	mkdir -p requirements/$(PLATFORM)
+	pdm lock -G :all --no-cross-platform -L requirements/$(PLATFORM)/pdm.lock
 
-requirements/%-requirements.txt: pdm.lock
-	pdm export -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
+requirements/$(PLATFORM)/%-requirements.txt: requirements/$(PLATFORM)/pdm.lock
+	pdm export -L requirements/$(PLATFORM)/pdm.lock -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
 
-requirements/requirements.txt:
-	pdm lock -L simple.lock
-	pdm export -L simple.lock -f requirements --without-hashes -o requirements/requirements.txt
+requirements/$(PLATFORM)/requirements.txt:
+	mkdir -p requirements/$(PLATFORM)
+	pdm lock --no-cross-platform -L simple.lock
+	pdm export -L simple.lock -f requirements --without-hashes -o requirements/$(PLATFORM)/requirements.txt
 	rm simple.lock
 
-sync-reqs-files: requirements/requirements.txt \
-                 requirements/torchserve-requirements.txt \
-                 requirements/equiv-requirements.txt \
-                 requirements/spharm-requirements.txt \
-                 requirements/omnipose-requirements.txt \
-                 requirements/all-requirements.txt \
-                 requirements/test-requirements.txt \
-                 requirements/docs-requirements.txt
+sync-reqs-files: requirements/$(PLATFORM)/requirements.txt \
+                 requirements/$(PLATFORM)/torchserve-requirements.txt \
+                 requirements/$(PLATFORM)/equiv-requirements.txt \
+                 requirements/$(PLATFORM)/spharm-requirements.txt \
+                 requirements/$(PLATFORM)/omnipose-requirements.txt \
+                 requirements/$(PLATFORM)/all-requirements.txt \
+                 requirements/$(PLATFORM)/test-requirements.txt \
+                 requirements/$(PLATFORM)/docs-requirements.txt
