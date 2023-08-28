@@ -1,3 +1,4 @@
+import os
 from collections.abc import MutableMapping
 from contextlib import suppress
 from typing import List, Tuple
@@ -90,7 +91,11 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="eval.yaml")
+@hydra.main(
+    version_base="1.3",
+    config_path=os.environ.get("CYTODL_CONFIG_PATH", "../configs"),
+    config_name="eval.yaml",
+)
 def main(cfg: DictConfig) -> None:
     evaluate(cfg)
 
