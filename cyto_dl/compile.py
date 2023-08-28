@@ -100,7 +100,11 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
         package_model(args, manifest=manifest)
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="compile.yaml")
+@hydra.main(
+    version_base="1.3",
+    config_path=os.environ.get("CYTODL_CONFIG_PATH", "../configs"),
+    config_name="compile.yaml",
+)
 def main(cfg: DictConfig) -> None:
     compile(cfg)
 
