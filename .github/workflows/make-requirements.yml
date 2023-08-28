@@ -2,9 +2,9 @@ name: Make requirements files
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    types: [closed]
+  push:
+    branches:
+      - main
     paths:
       - "pyproject.toml"
 
@@ -21,7 +21,7 @@ jobs:
         uses: pdm-project/setup-pdm@v3
         with:
           python-version: "3.10"
-          version: 2.7.4
+          version: 2.8.2
 
       - name:
         shell: bash
