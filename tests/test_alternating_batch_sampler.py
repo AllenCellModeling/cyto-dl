@@ -58,7 +58,7 @@ def test_alternating_batch_sampler(shuffle, sampler):
     prev_type = None
 
     for batch in batch_sampler:
-        na_cols = ~subset.dataset.data.df.iloc[batch][target_columns].isna().any()
+        na_cols = ~subset.dataset.data.dataframe.take(batch).to_pandas()[target_columns].isna().any()
         seg_type = na_cols.index[na_cols].tolist()
 
         assert len(seg_type) == 1
