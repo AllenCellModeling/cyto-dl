@@ -79,7 +79,8 @@ class AlternatingBatchSampler(BatchSampler):
         # of the subsetted dataframe
 
         # order is subset.monai_dataset.dataframewrapper.dataframe
-        subset_df = subset.dataset.data.dataframe.take(subset.indices).to_pandas().reset_index()
+        idx_to_take = list(subset.indices)
+        subset_df = subset.dataset.data.dataframe.take(idx_to_take).to_pandas().reset_index()
         samplers = []
         if target_columns is not None:
             for name in target_columns:
