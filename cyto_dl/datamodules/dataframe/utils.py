@@ -2,8 +2,8 @@ import re
 from itertools import chain, repeat
 from typing import Iterator, List
 
-import numpy as np
 import pyarrow as pa
+import numpy as np
 
 try:
     import modin.pandas as pd
@@ -148,7 +148,7 @@ def get_canonical_split_name(split):
 
 
 def get_dataset(dataframe, transform, split, cache_dir=None):
-    data = pa.Table.from_pandas(dataframe)
+    data = _DataframeWrapper(dataframe)
     if cache_dir is not None and split in ("train", "val"):
         return PersistentDataset(data, transform=transform, cache_dir=cache_dir)
     return Dataset(data, transform=transform)
@@ -260,3 +260,30 @@ def parse_transforms(transforms):
         transforms["predict"] = transforms["test"]
 
     return transforms
+
+
+class _DataframeWrapper:
+    """Class to wrap a pandas DataFrame in a pytorch Dataset. In practice, at
+    AICS we use this to wrap manifest dataframes that point to the image files
+    that correspond to a cell. The `loaders` dict contains a loading function
+    for each key, normally consisting of a function to load the contents of a
+    file from a path.
+
+    Parameters
+    ----------
+    dataframe: pd.DataFrame
+        The file which points to or contains the data to be loaded
+
+    """
+
+    def __init__(self, dataframe):
+        self.dataframe = pa.Table.from_pandas(dataframe)
+
+    def __len__(self):
+        return len(self.dataframe)
+
+    def __getitem__(self, idx):
+        return {
+            k: v.pop() for k, v in
+            self.dataframe.take([idx]).to_pydict().items()
+        }
