@@ -2,8 +2,8 @@ import re
 from itertools import chain, repeat
 from typing import Iterator, List
 
-import pyarrow as pa
 import numpy as np
+import pyarrow as pa
 
 try:
     import modin.pandas as pd
@@ -91,7 +91,9 @@ class AlternatingBatchSampler(BatchSampler):
                     )
                 samplers.append(sampler(head_indices))
         else:
-            grouping_options = set(subset.dataset.data.dataframe[grouping_column].unique().to_pylist())
+            grouping_options = set(
+                subset.dataset.data.dataframe[grouping_column].unique().to_pylist()
+            )
 
             seen_keys = set()
             for group_key, group in subset_df.groupby(grouping_column):
@@ -99,7 +101,7 @@ class AlternatingBatchSampler(BatchSampler):
                 seen_keys.add(group_key)
 
             unseen_keys = grouping_options - seen_keys
-            if len(unseen_keys) > 0:
+            if unseen_keys:
                 raise ValueError(
                     f"Dataset must contain examples of groups {unseen_keys}."
                     "Please increase the value of subsample."
@@ -268,17 +270,15 @@ def parse_transforms(transforms):
 
 
 class _DataframeWrapper:
-    """Class to wrap a pandas DataFrame in a pytorch Dataset. In practice, at
-    AICS we use this to wrap manifest dataframes that point to the image files
-    that correspond to a cell. The `loaders` dict contains a loading function
-    for each key, normally consisting of a function to load the contents of a
-    file from a path.
+    """Class to wrap a pandas DataFrame in a pytorch Dataset. In practice, at AICS we use this to
+    wrap manifest dataframes that point to the image files that correspond to a cell. The `loaders`
+    dict contains a loading function for each key, normally consisting of a function to load the
+    contents of a file from a path.
 
     Parameters
     ----------
     dataframe: pd.DataFrame
         The file which points to or contains the data to be loaded
-
     """
 
     def __init__(self, dataframe):
@@ -288,7 +288,4 @@ class _DataframeWrapper:
         return len(self.dataframe)
 
     def __getitem__(self, idx):
-        return {
-            k: v.pop() for k, v in
-            self.dataframe.take([idx]).to_pydict().items()
-        }
+        return {k: v.pop() for k, v in self.dataframe.take([idx]).to_pydict().items()}
