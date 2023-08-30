@@ -3,6 +3,7 @@ from itertools import chain, repeat
 from typing import Iterator, List
 
 import numpy as np
+import pyarrow as pa
 
 try:
     import modin.pandas as pd
@@ -147,7 +148,7 @@ def get_canonical_split_name(split):
 
 
 def get_dataset(dataframe, transform, split, cache_dir=None):
-    data = _DataframeWrapper(dataframe)
+    data = pa.Table.from_pandas(dataframe)
     if cache_dir is not None and split in ("train", "val"):
         return PersistentDataset(data, transform=transform, cache_dir=cache_dir)
     return Dataset(data, transform=transform)
@@ -259,14 +260,3 @@ def parse_transforms(transforms):
         transforms["predict"] = transforms["test"]
 
     return transforms
-
-
-class _DataframeWrapper:
-    def __init__(self, df):
-        self.df = df
-
-    def __len__(self):
-        return len(self.df)
-
-    def __getitem__(self, ix):
-        return self.df.iloc[ix].to_dict()
