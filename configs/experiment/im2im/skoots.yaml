@@ -33,4 +33,4 @@ data:
   batch_size: 1
 
   _aux:
-    patch_shape: [16, 128, 128]
+    patch_shape: [16, 32, 32]
