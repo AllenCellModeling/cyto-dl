@@ -3,10 +3,9 @@ _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 path:
 cache_dir:
 
-num_workers: 8
+num_workers: 0
 batch_size: 1
 pin_memory: True
-persistent_workers: False
 split_column:
 columns:
   - ${source_col}
