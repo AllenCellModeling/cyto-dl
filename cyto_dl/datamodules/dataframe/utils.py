@@ -3,6 +3,7 @@ from itertools import chain, repeat
 from typing import Iterator, List
 
 import numpy as np
+import pyarrow as pa
 
 try:
     import modin.pandas as pd
@@ -78,26 +79,34 @@ class AlternatingBatchSampler(BatchSampler):
         # of the subsetted dataframe
 
         # order is subset.monai_dataset.dataframewrapper.dataframe
-        subset_df = subset.dataset.data.df.iloc[subset.indices].reset_index()
+        idx_to_take = list(subset.indices)
+        subset_df = subset.dataset.data.dataframe.take(idx_to_take).to_pandas().reset_index()
         samplers = []
         if target_columns is not None:
             for name in target_columns:
                 # returns an index into dataset.indices where head column is not empty
-                head_indices = subset_df.index[~subset_df[name].isna()].to_list()
+                head_indices = subset_df.index[~subset_df[name].isna()].values
                 if len(head_indices) == 0:
                     raise ValueError(
                         f"Dataset must contain examples of head {name}. Please increase the value of subsample."
                     )
                 samplers.append(sampler(head_indices))
         else:
-            grouping_options = subset.dataset.data.df[grouping_column].unique()
-            for i, opt in enumerate(grouping_options):
-                group_indices = subset_df.index[subset_df[grouping_column] == opt].to_list()
-                if len(group_indices) == 0:
-                    raise ValueError(
-                        f"Dataset must contain examples of group {opt}. Please increase the value of subsample."
-                    )
-                samplers.append(sampler(group_indices))
+            grouping_options = set(
+                subset.dataset.data.dataframe[grouping_column].unique().to_pylist()
+            )
+
+            seen_keys = set()
+            for group_key, group in subset_df.groupby(grouping_column):
+                samplers.append(sampler(group.index.values))
+                seen_keys.add(group_key)
+
+            unseen_keys = grouping_options - seen_keys
+            if unseen_keys:
+                raise ValueError(
+                    f"Dataset must contain examples of groups {unseen_keys}."
+                    "Please increase the value of subsample."
+                )
 
         self.samplers = samplers
         self.shuffle = shuffle
@@ -262,11 +271,22 @@ def parse_transforms(transforms):
 
 
 class _DataframeWrapper:
-    def __init__(self, df):
-        self.df = df
+    """Class to wrap a pandas DataFrame in a pytorch Dataset. In practice, at AICS we use this to
+    wrap manifest dataframes that point to the image files that correspond to a cell. The `loaders`
+    dict contains a loading function for each key, normally consisting of a function to load the
+    contents of a file from a path.
+
+    Parameters
+    ----------
+    dataframe: pd.DataFrame
+        The file which points to or contains the data to be loaded
+    """
+
+    def __init__(self, dataframe):
+        self.dataframe = pa.Table.from_pandas(dataframe)
 
     def __len__(self):
-        return len(self.df)
+        return len(self.dataframe)
 
-    def __getitem__(self, ix):
-        return self.df.iloc[ix].to_dict()
+    def __getitem__(self, idx):
+        return {k: v.pop() for k, v in self.dataframe.take([idx]).to_pydict().items()}
