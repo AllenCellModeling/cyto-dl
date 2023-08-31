@@ -53,7 +53,7 @@ class BaseHead(ABC, torch.nn.Module):
     def _save(self, fn, img, stage):
         OmeTiffWriter().save(
             uri=Path(self.save_dir) / f"{stage}_images" / fn,
-            data=img.squeeze().astype(float),
+            data=img.squeeze(),
             dims_order="STCZYX"[-len(img.shape)],
         )
 
