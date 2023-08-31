@@ -412,7 +412,7 @@
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
         <span class="n">OmeTiffWriter</span><span class="p">()</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
             <span class="n">uri</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_images&quot;</span> <span class="o">/</span> <span class="n">fn</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span>
             <span class="n">dims_order</span><span class="o">=</span><span class="s2">&quot;STCZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)],</span>
         <span class="p">)</span>
 
