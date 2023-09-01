@@ -35,16 +35,16 @@ cd cyto-dl
 conda create -n myenv python=3.9
 conda activate myenv
 
-pip install -r requirements/requirements.txt
+pip install -r requirements/linux/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
-pip install -r requirements/equiv-requirements.txt
+pip install -r requirements/linux/equiv-requirements.txt
 
 pip install -e .
 
 
 #[OPTIONAL] if you want to use default experiments on example data
-python scripts download_test_data.py
+python scripts/download_test_data.py
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
