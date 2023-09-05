@@ -42,3 +42,10 @@ _aux:
           _target_: cyto_dl.models.im2im.utils.SkootsLoss
           dim: ${spatial_dims}
         save_raw: True
+        postprocess:
+          input:
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+            dtype: numpy.float32
+          prediction:
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+            dtype: numpy.float32

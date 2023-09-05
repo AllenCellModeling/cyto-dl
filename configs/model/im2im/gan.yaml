@@ -64,3 +64,10 @@ _aux:
         reconstruction_loss:
           _target_: torch.nn.MSELoss
         save_raw: True
+        postprocess:
+          input:
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+            rescale_dtype: numpy.uint8
+          prediction:
+            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+            rescale_dtype: numpy.uint8
