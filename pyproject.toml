@@ -57,6 +57,24 @@ spharm = [
     "aicscytoparam~=0.1",
     "pyshtools~=4.9",
 ]
+pcloud = [
+    "pyntcloud",
+    "aicsshparam",
+    "torchvision",
+    "torch-geometric",
+    "torch-scatter",
+    "point-cloud-utils",
+    "pyshtools",
+    "escnn==1.0.11",
+    "geomloss",
+    "Ninja",
+    "vtk==9.2.2",
+    "aicscytoparam",
+    "timm",
+    "numpy==1.23.5",
+    "torchio",
+]
+
 omnipose = [
     "edt>=0.56.4",
     "torchvf~=0.1.2",
