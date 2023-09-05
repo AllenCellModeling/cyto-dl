@@ -49,7 +49,7 @@ requires-python = ">=3.8,<3.11"
 [project.optional-dependencies]
 equiv = [
     "lie_learn @ git+https://github.com/colobas/lie_learn.git@d5be2ab",
-    "escnn~=1.0.7",
+    "escnn~=1.0.11",
     "e3nn~=0.5.1"
 ]
 spharm = [
@@ -57,24 +57,6 @@ spharm = [
     "aicscytoparam~=0.1",
     "pyshtools~=4.9",
 ]
-pcloud = [
-    "pyntcloud",
-    "aicsshparam",
-    "torchvision",
-    "torch-geometric",
-    "torch-scatter",
-    "point-cloud-utils",
-    "pyshtools",
-    "escnn==1.0.11",
-    "geomloss",
-    "Ninja",
-    "vtk==9.2.2",
-    "aicscytoparam",
-    "timm",
-    "numpy==1.23.5",
-    "torchio",
-]
-
 omnipose = [
     "edt>=0.56.4",
     "torchvf~=0.1.2",
@@ -88,8 +70,21 @@ torchserve = [
     "torchserve>=0.8.0",
     "gorilla>=0.4.0",
 ]
+pcloud = [
+    "pyntcloud",
+    "aicsshparam",
+    "torchvision",
+    "torch-scatter",
+    "torch-geometric",
+    "point-cloud-utils",
+    "pyshtools",
+    "geomloss",
+    "Ninja",
+    "timm",
+    "torchio",
+]
 all = [
-    "cyto-dl[equiv,spharm,omnipose,s3,torchserve]",
+    "cyto-dl[equiv,spharm,omnipose,s3,torchserve,pcloud]",
 ]
 test = [
     "cyto-dl[all]",
