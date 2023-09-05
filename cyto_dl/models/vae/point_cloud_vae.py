@@ -145,19 +145,15 @@ class PointCloudVAE(BaseVAE):
         self.condition_decoder = nn.ModuleDict(condition_decoder)
 
     def decode(self, z_parts, return_canonical=False, batch=None):
-        if hasattr(self.encoder[self.hparams.x_label], 'generate_grid_feats'):
+        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
                 base_xhat = self.decoder[self.hparams.x_label](
                     batch[self.point_label], z_parts["grid_feats"]
                 )
             else:
-                base_xhat = self.decoder[self.hparams.x_label](
-                    z_parts[self.hparams.x_label]
-                )
+                base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
         else:
-            base_xhat = self.decoder[self.hparams.x_label](
-                z_parts[self.hparams.x_label]
-            )
+            base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -182,9 +178,9 @@ class PointCloudVAE(BaseVAE):
                     cond_feats = this_z_parts
                 else:
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
-            z_parts[self.hparams.x_label] = self.condition_encoder[
-                self.hparams.x_label
-            ](cond_feats)
+            z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
+                cond_feats
+            )
         return z_parts
 
     def decoder_compose_function(self, z_parts, batch):
@@ -194,21 +190,17 @@ class PointCloudVAE(BaseVAE):
                     cond_inputs = batch[key]
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-                cond_feats = torch.cat(
-                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-                )
-            z_parts[self.hparams.x_label] = self.condition_decoder[
-                self.hparams.x_label
-            ](cond_feats)
+                cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
+            z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
+                cond_feats
+            )
         return z_parts
 
     def calculate_rcl_dict(self, x, xhat):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(
-                x, xhat, key, self.occupancy_label
-            )
+            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, self.occupancy_label)
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -235,7 +227,7 @@ class PointCloudVAE(BaseVAE):
         if not decode:
             return z
 
-        if hasattr(self.encoder[self.hparams.x_label], 'generate_grid_feats'):
+        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
                 xhat = self.decode(z, batch=batch)
             else:
