@@ -30,12 +30,12 @@ class ReadPointCloud(MapTransform):
             to point cloud files which should be loaded
         remote: bool = False
             Whether files can be in a fsspec-interpretable remote location
-        sample: Optional[int] 
+        sample: Optional[int]
             How many points to sample from the point cloud
         scale: float
             scale factor for X,Y,Z coordinates - e.g. X' = scale * X
         num_cols: int
-            Number of colums to sample from the saved point cloud 
+            Number of colums to sample from the saved point cloud
             This is relevant for ply files saved with additional scalar features
             here we assume first 3 columns are X, Y, Z coordinates
         norm: bool
