@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/dna.yaml
+  - override /data: private/pcna/nuc_bound/pcna_dna_intensity.yaml
   - override /model: private/pcloud/classical_pcloud_ae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
@@ -29,7 +29,7 @@ trainer:
   min_epochs: 400
   max_epochs: 2000
   accelerator: gpu
-  devices: [2]
+  devices: [0]
 
 callbacks:
   early_stopping:
@@ -43,8 +43,8 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: pcna_classical_pcloud
-    run_name:
+    experiment_name: dna_pointcloud_intensity
+    run_name: classical
 
 ##### ONLY USE WITH A100s
 extras:

@@ -4,17 +4,20 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/nuc_bound/pcna_dna_intensity.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae.yaml
+  - override /data: private/pcna/nuc_bound/pcna_subsample.yaml
+  - override /model: private/pcloud/ae_resize_losses/sinkhorn.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
+  - override /hydra: private/joblib
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
 experiment_name: pcloud
 tags: ["equivariance", "pcna-dataset", "point-cloud"]
+
+ckpt_path: /allen/aics/modeling/ritvik/projects/checkpoints/shapenet_cdvector.ckpt
 
 seed: 42
 
@@ -43,11 +46,13 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: dna_pointcloud_intensity
-    run_name: equiv
+    experiment_name: pointcloud_nucbound
+    # run_name: ${model.reconstruction_loss.pcloud._target_}
+    run_name: pretrain_shapenet_${data.transforms[1].sample}/${data.transforms[1].num_cols}/${data.transforms[1].rotate}/${model.reconstruction_loss.pcloud._aux}/${model.encoder.pcloud.mode}
 
 ##### ONLY USE WITH A100s
 extras:
   precision:
     _target_: torch.set_float32_matmul_precision
     precision: medium
+

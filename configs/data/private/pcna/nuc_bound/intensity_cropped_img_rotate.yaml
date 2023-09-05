@@ -14,7 +14,7 @@ multiprocessing_context: spawn
 transforms:
   - _target_: cyto_dl.dataframe.transforms.GroupCols
     groups:
-      image: cropped_path_nucmask
+      image: cropped_registered_path_nucmask
       cell_id: CellId
   - _target_: monai.transforms.LoadImaged
     keys: image
@@ -26,10 +26,9 @@ transforms:
     low: 0
     high: 6000
     background: 0
-  - _target_: monai.transforms.SpatialPadd
+  - _target_: monai.transforms.NormalizeIntensityd
     keys: [image]
-    spatial_size: [256, 256, 256]
-    value: 0
+    channel_wise: True
   - _target_: torchio.transforms.Resize
     keys:
       - image

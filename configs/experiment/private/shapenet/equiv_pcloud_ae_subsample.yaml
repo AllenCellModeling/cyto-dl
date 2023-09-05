@@ -5,7 +5,7 @@
 
 defaults:
   - override /data: private/shapenet/shapenet_subsample.yaml
-  - override /model: private/pcloud/ae_resize_losses/sinkhorn.yaml
+  - override /model: private/pcloud/ae_resize_losses/cd.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml

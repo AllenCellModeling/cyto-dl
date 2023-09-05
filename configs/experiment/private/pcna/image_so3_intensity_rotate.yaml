@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/nuc_bound/intensity_cropped_img_resize.yaml
+  - override /data: private/pcna/nuc_bound/intensity_cropped_img_rotate.yaml
   - override /model: private/so3_equiv_image_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
@@ -96,7 +96,7 @@ callbacks:
 logger:
   mlflow:
     experiment_name: pcna_image
-    run_name: so3_intensity
+    run_name: so3_intensity_rotate
 
 extras:
   precision:

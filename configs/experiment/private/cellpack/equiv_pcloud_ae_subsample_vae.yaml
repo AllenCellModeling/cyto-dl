@@ -4,11 +4,12 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: private/pcna/nuc_bound/pcna_dna_intensity.yaml
-  - override /model: private/pcloud/equiv_pcloud_ae.yaml
+  - override /data: private/cellpack/default.yaml
+  - override /model: private/pcloud/ae_resize_losses/cd_vae.yaml
   - override /callbacks: default.yaml
   - override /trainer: default.yaml
   - override /logger: mlflow.yaml
+  # - override /hydra: private/joblib
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
@@ -27,7 +28,7 @@ data:
 trainer:
   check_val_every_n_epoch: 1
   min_epochs: 400
-  max_epochs: 2000
+  max_epochs: 800
   accelerator: gpu
   devices: [0]
 
@@ -43,8 +44,8 @@ callbacks:
 
 logger:
   mlflow:
-    experiment_name: dna_pointcloud_intensity
-    run_name: equiv
+    experiment_name: pointcloud_cellpack
+    run_name: equiv_vae
 
 ##### ONLY USE WITH A100s
 extras:

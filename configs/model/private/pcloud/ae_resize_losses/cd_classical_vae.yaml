@@ -1,7 +1,7 @@
 defaults:
   - private/pcloud_encoders@encoder.pcloud: classical.yaml
   - private/pcloud_decoders@decoder.pcloud: foldingnet.yaml
-  - private/priors@prior.pcloud: identity.yaml
+  - private/priors@prior.pcloud: gaussian.yaml
   - private/reconstruction_loss@reconstruction_loss.pcloud: chamfer.yaml
 
 _target_: cyto_dl.models.vae.PointCloudVAE
@@ -9,9 +9,10 @@ _target_: cyto_dl.models.vae.PointCloudVAE
 x_label: pcloud
 occupancy_label: 
 
-latent_dim: 256
-scale: 1
-num_output_points: 2048
+latent_dim: 128
+scale: 2
+num_output_points: 256
+condition_keys: 
 
 encoder:
   pcloud:
