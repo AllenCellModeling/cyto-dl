@@ -16,9 +16,9 @@ class ReadPointCloud(MapTransform):
         keys: Union[str, Sequence[str]],
         remote: bool = False,
         sample: Optional[int] = None,
-        scale: int = 1,
+        scale: float = 1.0,
         num_cols: int = 3,
-        norm: bool = True,
+        norm: bool = False,
         flip_dims: bool = False,
         rotate: bool = False,
     ):
@@ -30,6 +30,21 @@ class ReadPointCloud(MapTransform):
             to point cloud files which should be loaded
         remote: bool = False
             Whether files can be in a fsspec-interpretable remote location
+        sample: Optional[int] 
+            How many points to sample from the point cloud
+        scale: float
+            scale factor for X,Y,Z coordinates - e.g. X' = scale * X
+        num_cols: int
+            Number of colums to sample from the saved point cloud 
+            This is relevant for ply files saved with additional scalar features
+            here we assume first 3 columns are X, Y, Z coordinates
+        norm: bool
+            Whether to normalize point cloud coordinates.
+        flip_dims: bool
+            Whether to flip dims from XYZ to ZYX
+        rotate: bool
+            Whether to add random rotation to the point cloud in the XY plane
+            assuming ordering is XYZ
         """
         super().__init__(keys)
         self.keys = [keys] if isinstance(keys, str) else keys
@@ -68,13 +83,14 @@ class ReadPointCloud(MapTransform):
                     path = str(row[key])
                 points = PyntCloud.from_file(path).points.values[:, : self.num_cols]
 
+                if self.rotate:
+                    points = rotate_pointcloud(points)
+
                 if self.flip_dims:
                     if self.num_cols == 3:
                         points = points[:, -1::-1].copy()
                     else:
                         points = np.concatenate([points[:, -2::-1], points[:, -1:]], axis=1)
-                if self.rotate:
-                    points = rotate_pointcloud(points)
 
                 if self.scale:
                     points = points * self.scale
@@ -103,7 +119,7 @@ def rotate_pointcloud(pointcloud, rotation_matrix=None, return_rot=False):
         )
     pointcloud_rotated[:, [0, 1]] = pointcloud_rotated[:, [0, 1]].dot(
         rotation_matrix
-    )  # random rotation (x,z)
+    )  # random rotation (x,y)
     if return_rot:
         return pointcloud_rotated, rotation_matrix, theta
 
