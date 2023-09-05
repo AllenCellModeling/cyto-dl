@@ -22,12 +22,13 @@ class ContrastAdjust(Transform):
         self.high = high
         self.background = 0
 
-
     def __call__(self, img):
         low = self.low
         high = self.high
         img = torch.where(img < high, img, self.background)
         img = torch.where(img > low, img, self.background)
+        if len(img.shape) < 4:
+            img = img.unsqueeze(dim=0)
 
         return img
 

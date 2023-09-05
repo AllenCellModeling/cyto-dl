@@ -20,8 +20,8 @@ class SkimageReader(ImageReader):
         filenames: Sequence[PathLike] = ensure_tuple(data)
         img_ = []
         for name in filenames:
-            # print(imread(f"{name}").shape, name)
-            img_.append(imread(f"{name}")[self.channels])
+            this_im = imread(f"{name}")[self.channels]
+            img_.append(this_im)
 
         return img_ if len(filenames) > 1 else img_[0]
 

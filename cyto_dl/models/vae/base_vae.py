@@ -174,11 +174,14 @@ class BaseVAE(BaseModel):
     def calculate_elbo(self, x, xhat, z):
         rcl_reduced = self.calculate_rcl_dict(x, xhat)
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none").sum(dim=-1).mean()
+            part: prior(z[part], mode="kl", reduction="none")
             for part, prior in self.prior.items()
         }
+        kld_per_part_summed = {
+            part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()
+        }
 
-        total_kld = sum(kld_per_part.values())
+        total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
 
         return (
