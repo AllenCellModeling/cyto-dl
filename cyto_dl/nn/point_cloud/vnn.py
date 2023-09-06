@@ -17,40 +17,8 @@ class VNLinear(nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
         self.linear = nn.Linear(in_channels, out_channels, bias=False)
-        # self.weight = nn.Parameter(linear.weight.data)
         self.in_channels = in_channels
         self.out_channels = out_channels
-
-    # def forward(self, x):
-    #     """
-    #     x: point features of shape [B, N_feat, 3, N_samples, ...]
-    #     """
-    #     import ipdb
-    #     ipdb.set_trace()
-    #     self.weight = self.weight.type_as(x)
-    #     n_squeeze = 0
-    #     if len(x.shape) == 3:
-    #         x = x.unsqueeze(-1).unsqueeze(-1)
-    #         n_squeeze = 2
-    #     elif len(x.shape) == 4:
-    #         x = x.unsqueeze(-1)
-    #         n_squeeze = 1
-
-    #     orig_shape = x.shape
-    #     stacked = x.view(x.shape[0], x.shape[1] * 3, x.shape[-2], x.shape[-1])
-
-    #     out = F.conv2d(
-    #         stacked,
-    #         torch.kron(self.weight, torch.eye(3).type_as(x)).unsqueeze(-1).unsqueeze(-1),
-    #         bias=None,
-    #     )
-
-    #     out = out.view(orig_shape[0], self.out_channels, 3, orig_shape[-2], orig_shape[-1])
-
-    #     for _ in range(n_squeeze):
-    #         out = out.squeeze(-1)
-
-    #     return out
 
     def forward(self, x):
         """
