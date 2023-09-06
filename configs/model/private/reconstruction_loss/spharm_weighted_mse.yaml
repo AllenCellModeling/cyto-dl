@@ -1,3 +1,0 @@
-shcoeff:
-  _target_: cyto_dl.nn.losses.WeightedMSE
-  weights: ${model._aux_.mem_mse_weights}
