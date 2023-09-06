@@ -22,9 +22,6 @@ class FoldingNet(nn.Module):
     ):
         super().__init__()
 
-        # if np.sqrt(num_output_points) ** 2 != num_output_points:
-        #     raise ValueError("The number of output points must have an integer square root.")
-
         self.input_dim = input_dim
         self.num_output_points = num_output_points
         self.shape = shape
@@ -38,9 +35,7 @@ class FoldingNet(nn.Module):
             grid_side = np.sqrt(num_output_points).astype(int)
             range_x = torch.linspace(-std, std, grid_side)
             range_y = torch.linspace(-std, std, grid_side)
-            # xy = torch.meshgrid(range_x, range_y, indexing="ij")
-            # xy = torch.cat(xy, axis=0)
-            # self.grid = nn.Parameter(xy.float().reshape(-1, 2), requires_grad=False)
+
             x_coor, y_coor = torch.meshgrid(range_x, range_y, indexing="ij")
             self.grid = torch.stack([x_coor, y_coor], axis=-1).float().reshape(-1, 2)
         elif self.shape == "sphere":
