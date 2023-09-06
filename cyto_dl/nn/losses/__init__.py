@@ -1,4 +1,5 @@
 from .adversarial_loss import AdversarialLoss
+from .chamfer_loss import ChamferLoss
 from .continuous_bernoulli import CBLogLoss
 from .cosine_loss import CosineLoss
 from .gan_loss import GANLoss, Pix2PixHD

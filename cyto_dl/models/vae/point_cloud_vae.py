@@ -9,7 +9,7 @@ from torch import nn
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
-from cyto_dl.nn.point_cloud import DGCNN, FoldingNet, LocalDecoder
+from cyto_dl.nn.point_cloud import DGCNN, FoldingNet
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -107,8 +107,8 @@ class PointCloudVAE(BaseVAE):
                     gaussian_path,
                     num_coords,
                 )
-            elif decoder_type == "localdecoder":
-                decoder = LocalDecoder(latent_dim, hidden_decoder_dim)
+            else:
+                raise ValueError(f"Key`{decoder_type}` is not implemented")
             decoder = {x_label: decoder}
 
         if reconstruction_loss is None:
