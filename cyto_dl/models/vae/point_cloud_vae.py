@@ -8,7 +8,7 @@ from torch import nn
 
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
-from cyto_dl.nn.losses import ChamferLoss, L1Loss
+from cyto_dl.nn.losses import ChamferLoss
 from cyto_dl.nn.point_cloud import DGCNN, FoldingNet, LocalDecoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
@@ -115,7 +115,7 @@ class PointCloudVAE(BaseVAE):
             if loss_type == "chamfer":
                 reconstruction_loss = {x_label: ChamferLoss()}
             elif loss_type == "L1":
-                reconstruction_loss = {x_label: L1Loss()}
+                reconstruction_loss = {x_label: torch.nn.L1Loss(reduction="mean")}
 
         if prior is None:
             prior = {
