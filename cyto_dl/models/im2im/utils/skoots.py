@@ -384,7 +384,8 @@ class SkootsCluster:
             closest_skel_point_to_embedding[1],
             closest_skel_point_to_embedding[2],
         ]
-        embedding_labels[dist_to_closest_skel > self.distance_threshold] = -1
+        # remove points too far from any skeleton
+        embedding_labels[dist_to_closest_skel > self.distance_threshold] = 0
         return embedding_labels
 
     def _get_largest_cc(self, im):
@@ -439,7 +440,4 @@ class SkootsCluster:
         labeled_embed = self.kd_clustering(embed_z, embed_y, embed_x, skel)
         # propagate embedding label to semantic segmentation
         out[semantic_points[0], semantic_points[1], semantic_points[2]] = labeled_embed
-        # remove points too far from any skeleton
-        out[out < 0] = 0
-
         return out
