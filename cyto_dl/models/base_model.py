@@ -49,7 +49,8 @@ class BaseModelMeta(type):
 
         init_args = inspect.signature(cls.__init__).parameters.copy()
         init_args.pop("self")
-        init_args.pop("base_kwargs")
+        if "base_kwargs" in init_args.keys():
+            init_args.pop("base_kwargs")
         keys = tuple(init_args.keys())
 
         user_init_args = {keys[ix]: arg for ix, arg in enumerate(args)}

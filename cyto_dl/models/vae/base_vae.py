@@ -1,3 +1,4 @@
+import inspect
 from typing import Dict, Optional, Sequence
 
 import torch
@@ -136,8 +137,20 @@ class BaseVAE(BaseModel):
                         f"`decoder_latent_parts`, so we don't know which "
                         "latent parts it uses."
                     )
+        self.encoder_args = {}
+        for part, enc in self.encoder.items():
+            if enc is not None:
+                self.encoder_args[part] = inspect.getfullargspec(enc.forward).args
 
-    def calculate_elbo(self, x, xhat, z):
+    def calculate_rcl(self, x, xhat, input_key, target_key=None):
+        if not target_key:
+            target_key = input_key
+        rcl_per_input_dimension = self.reconstruction_loss[input_key](
+            x[target_key], xhat[input_key]
+        )
+        return rcl_per_input_dimension
+
+    def calculate_rcl_dict(self, x, xhat):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
@@ -154,13 +167,16 @@ class BaseVAE(BaseModel):
                 rcl_reduced[key] = rcl.mean()
             else:
                 rcl_reduced[key] = rcl_per_input_dimension[key]
+        return rcl_reduced
 
+    def calculate_elbo(self, x, xhat, z):
+        rcl_reduced = self.calculate_rcl_dict(x, xhat)
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none").sum(dim=-1).mean()
-            for part, prior in self.prior.items()
+            part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
         }
+        kld_per_part_summed = {part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()}
 
-        total_kld = sum(kld_per_part.values())
+        total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
 
         return (
@@ -183,8 +199,19 @@ class BaseVAE(BaseModel):
 
         return z
 
-    def encode(self, batch):
-        return {part: encoder(batch[part]) for part, encoder in self.encoder.items()}
+    def encode(self, batch, **kwargs):
+        ret_dict = {}
+        for part, encoder in self.encoder.items():
+            this_ret = encoder(
+                batch[part],
+                **{k: v for k, v in kwargs.items() if k in self.encoder_args[part]},
+            )
+            if isinstance(this_ret, dict):  # deal with multiple outputs for an encoder
+                for key in this_ret.keys():
+                    ret_dict[key] = this_ret[key]
+            else:
+                ret_dict[part] = this_ret
+        return ret_dict
 
     def decode(self, z):
         # for each decoder key, get the latent parts it uses from `self.decoder_latent_keys`
@@ -194,17 +221,16 @@ class BaseVAE(BaseModel):
             for part, decoder in self.decoder.items()
         }
 
-    def forward(self, batch, decode=False, inference=True, return_params=False):
+    def forward(self, batch, decode=False, inference=True, return_params=False, **kwargs):
         is_inference = inference or not self.training
 
-        z_params = self.encode(batch)
+        z_params = self.encode(batch, **kwargs)
         z = self.sample_z(z_params, inference=inference)
 
         if not decode:
             return z
 
         xhat = self.decode(z)
-
         if return_params:
             return xhat, z, z_params
 
@@ -235,9 +261,11 @@ class BaseVAE(BaseModel):
             loss[f"reconstruction_{part}"] = recon_part.detach()
 
         preds = {}
+
         for part, z_part in z.items():
-            preds[f"z/{part}"] = z_part.detach()
-            preds[f"z_params/{part}"] = z_params[part].detach()
+            if not isinstance(z_part, dict):
+                preds[f"z/{part}"] = z_part.detach()
+                preds[f"z_params/{part}"] = z_params[part].detach()
 
         for part in self.prior:
             loss[f"kld_{part}"] = kld_per_part[part].detach()
