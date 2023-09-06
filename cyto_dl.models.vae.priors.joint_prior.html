@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,45 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.models.vae.priors.joint_prior">
-<span id="cyto-dl-models-vae-priors-joint-prior-module"></span><h1>cyto_dl.models.vae.priors.joint_prior module<a class="headerlink" href="#module-cyto_dl.models.vae.priors.joint_prior" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.priors.joint_prior.</span></span><span class="sig-name descname"><span class="pre">JointPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">priors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/joint_prior.html#JointPrior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cyto_dl.models.vae.priors.abstract_prior.html#cyto_dl.models.vae.priors.abstract_prior.Prior" title="cyto_dl.models.vae.priors.abstract_prior.Prior"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/joint_prior.html#JointPrior.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior.kl_divergence">
-<span class="sig-name descname"><span class="pre">kl_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/joint_prior.html#JointPrior.kl_divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.kl_divergence" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior.param_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">param_size</span></span><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.param_size" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/joint_prior.html#JointPrior.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.sample" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.joint_prior.JointPrior.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-models-vae-priors-joint-prior-module">
+<h1>cyto_dl.models.vae.priors.joint_prior module<a class="headerlink" href="#cyto-dl-models-vae-priors-joint-prior-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -454,34 +423,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.models.vae.priors.joint_prior module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior"><code class="docutils literal notranslate"><span class="pre">JointPrior</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.forward"><code class="docutils literal notranslate"><span class="pre">JointPrior.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.kl_divergence"><code class="docutils literal notranslate"><span class="pre">JointPrior.kl_divergence()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.param_size"><code class="docutils literal notranslate"><span class="pre">JointPrior.param_size</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.sample"><code class="docutils literal notranslate"><span class="pre">JointPrior.sample()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.priors.joint_prior.JointPrior.training"><code class="docutils literal notranslate"><span class="pre">JointPrior.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

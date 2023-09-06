@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,34 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.models.im2im.utils.postprocessing.act_thresh_label">
-<span id="cyto-dl-models-im2im-utils-postprocessing-act-thresh-label-module"></span><h1>cyto_dl.models.im2im.utils.postprocessing.act_thresh_label module<a class="headerlink" href="#module-cyto_dl.models.im2im.utils.postprocessing.act_thresh_label" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.ActThreshLabel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.</span></span><span class="sig-name descname"><span class="pre">ActThreshLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">activation:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">Identity()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">~numpy.dtype[~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">~typing.Type[~typing.Any]</span> <span class="pre">|</span> <span class="pre">~numpy._typing._dtype_like._SupportsDType[~numpy.dtype[~typing.Any]]</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int]</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.SupportsIndex</span> <span class="pre">|</span> <span class="pre">~typing.Sequence[~typing.SupportsIndex]]</span> <span class="pre">|</span> <span class="pre">~typing.List[~typing.Any]</span> <span class="pre">|</span> <span class="pre">~numpy._typing._dtype_like._DTypeDict</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.uint8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ch:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale_dtype:</span> <span class="pre">~numpy.dtype[~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">~typing.Type[~typing.Any]</span> <span class="pre">|</span> <span class="pre">~numpy._typing._dtype_like._SupportsDType[~numpy.dtype[~typing.Any]]</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int]</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.SupportsIndex</span> <span class="pre">|</span> <span class="pre">~typing.Sequence[~typing.SupportsIndex]]</span> <span class="pre">|</span> <span class="pre">~typing.List[~typing.Any]</span> <span class="pre">|</span> <span class="pre">~numpy._typing._dtype_like._DTypeDict</span> <span class="pre">|</span> <span class="pre">~typing.Tuple[~typing.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/postprocessing/act_thresh_label.html#ActThreshLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.ActThreshLabel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>General-purpose postprocessing transform for applying any of an activation, threshold,
-labeling, and rescaling.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>activation</strong> (<em>Callable=torch.nn.Identity()</em>) – activation to apply to image</p></li>
-<li><p><strong>threshold</strong> (<em>float =None</em>) – Threshold value, defaults to None, where no threshold is applied</p></li>
-<li><p><strong>label</strong> (<em>bool=False</em>) – whether to label image after thresholding</p></li>
-<li><p><strong>dtype</strong> (<em>DTypeLike=np.uint8</em>) – data type of output image, defaults to np.uint8</p></li>
-<li><p><strong>ch</strong> (<em>int=0</em>) – channel of image to apply postprocessing to, default 0</p></li>
-<li><p><strong>rescale_dtype=None</strong> – dtype to rescale intensity range to, defaults to no rescaling.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+          <section id="cyto-dl-models-im2im-utils-postprocessing-act-thresh-label-module">
+<h1>cyto_dl.models.im2im.utils.postprocessing.act_thresh_label module<a class="headerlink" href="#cyto-dl-models-im2im-utils-postprocessing-act-thresh-label-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -443,27 +423,8 @@ labeling, and rescaling.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.models.im2im.utils.postprocessing.act_thresh_label module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.ActThreshLabel"><code class="docutils literal notranslate"><span class="pre">ActThreshLabel</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

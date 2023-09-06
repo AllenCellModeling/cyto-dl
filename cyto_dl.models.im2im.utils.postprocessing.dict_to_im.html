@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,35 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.models.im2im.utils.postprocessing.dict_to_im">
-<span id="cyto-dl-models-im2im-utils-postprocessing-dict-to-im-module"></span><h1>cyto_dl.models.im2im.utils.postprocessing.dict_to_im module<a class="headerlink" href="#module-cyto_dl.models.im2im.utils.postprocessing.dict_to_im" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.DictToIm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.postprocessing.dict_to_im.</span></span><span class="sig-name descname"><span class="pre">DictToIm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/postprocessing/dict_to_im.html#DictToIm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.DictToIm" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Convert dictionary with image values to multichannel image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>Union[str, List[str]]</em>) – keys from dictionary to concatenate into multichannel image</p></li>
-<li><p><strong>allow_missing_keys</strong> (<em>bool = False</em>) – whether to raise error if specified key is missing</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.detach">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.postprocessing.dict_to_im.</span></span><span class="sig-name descname"><span class="pre">detach</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/postprocessing/dict_to_im.html#detach"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.detach" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert CUDA tensor to numpy array on cpu.</p>
-</dd></dl>
-
+          <section id="cyto-dl-models-im2im-utils-postprocessing-dict-to-im-module">
+<h1>cyto_dl.models.im2im.utils.postprocessing.dict_to_im module<a class="headerlink" href="#cyto-dl-models-im2im-utils-postprocessing-dict-to-im-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -444,28 +423,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.DictToIm"><code class="docutils literal notranslate"><span class="pre">DictToIm</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.detach"><code class="docutils literal notranslate"><span class="pre">detach()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

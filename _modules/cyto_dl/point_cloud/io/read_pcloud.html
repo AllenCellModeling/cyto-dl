@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.losses.threshold_loss - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.point_cloud.io.read_pcloud - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -374,37 +374,133 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.losses.threshold_loss</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+          <h1>Source code for cyto_dl.point_cloud.io.read_pcloud</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">tempfile</span> <span class="kn">import</span> <span class="n">TemporaryDirectory</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">MapTransform</span>
+<span class="kn">from</span> <span class="nn">pyntcloud</span> <span class="kn">import</span> <span class="n">PyntCloud</span>
+<span class="kn">from</span> <span class="nn">upath</span> <span class="kn">import</span> <span class="n">UPath</span> <span class="k">as</span> <span class="n">Path</span>
 
 
-<div class="viewcode-block" id="ThresholdLoss"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.threshold_loss.html#cyto_dl.nn.losses.threshold_loss.ThresholdLoss">[docs]</a><span class="k">class</span> <span class="nc">ThresholdLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">above</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper Loss that thresholds the target before computing the loss given by loss_fn.</span>
-
+<div class="viewcode-block" id="ReadPointCloud"><a class="viewcode-back" href="../../../../cyto_dl.point_cloud.io.read_pcloud.html#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud">[docs]</a><span class="k">class</span> <span class="nc">ReadPointCloud</span><span class="p">(</span><span class="n">MapTransform</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">remote</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">sample</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">num_cols</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">flip_dims</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">rotate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">            loss_fn</span>
-<span class="sd">                Loss function</span>
-<span class="sd">            threshold: float = 0.0</span>
-<span class="sd">                Threshold value</span>
-<span class="sd">            above: bool = True</span>
-<span class="sd">                Whether to threshold above or below</span>
+<span class="sd">        keys: Union[str, Sequence[str]]</span>
+<span class="sd">            Key (or list thereof) of the input dictionary to interpret as paths</span>
+<span class="sd">            to point cloud files which should be loaded</span>
+<span class="sd">        remote: bool = False</span>
+<span class="sd">            Whether files can be in a fsspec-interpretable remote location</span>
+<span class="sd">        sample: Optional[int]</span>
+<span class="sd">            How many points to sample from the point cloud</span>
+<span class="sd">        scale: float</span>
+<span class="sd">            scale factor for X,Y,Z coordinates - e.g. X&#39; = scale * X</span>
+<span class="sd">        num_cols: int</span>
+<span class="sd">            Number of columns to sample from the saved point cloud</span>
+<span class="sd">            This is relevant for ply files saved with additional scalar features</span>
+<span class="sd">            here we assume first 3 columns are X, Y, Z coordinates</span>
+<span class="sd">        norm: bool</span>
+<span class="sd">            Whether to normalize point cloud coordinates.</span>
+<span class="sd">        flip_dims: bool</span>
+<span class="sd">            Whether to flip dims from XYZ to ZYX</span>
+<span class="sd">        rotate: bool</span>
+<span class="sd">            Whether to add random rotation to the point cloud in the XY plane</span>
+<span class="sd">            assuming ordering is XYZ</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">above</span> <span class="o">=</span> <span class="n">above</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remote</span> <span class="o">=</span> <span class="n">remote</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span> <span class="o">=</span> <span class="n">num_cols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flip_dims</span> <span class="o">=</span> <span class="n">flip_dims</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span> <span class="o">=</span> <span class="n">rotate</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">above</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+<div class="viewcode-block" id="ReadPointCloud.pc_norm"><a class="viewcode-back" href="../../../../cyto_dl.point_cloud.io.read_pcloud.html#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud.pc_norm">[docs]</a>    <span class="k">def</span> <span class="nf">pc_norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;pc: NxC, return NxC&quot;&quot;&quot;</span>
+        <span class="n">centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">pc</span> <span class="o">-</span> <span class="n">centroid</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pc</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">pc</span> <span class="o">/</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="n">pc</span></div>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="o">**</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                    <span class="n">ext</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span>
+
+                    <span class="n">fifo_path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">mkfifo</span><span class="p">(</span><span class="n">fifo_path</span><span class="p">)</span>
+
+                    <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_input</span><span class="p">:</span>
+                        <span class="n">Path</span><span class="p">(</span><span class="n">fifo_path</span><span class="p">)</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="n">f_input</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">fifo_path</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="n">points</span> <span class="o">=</span> <span class="n">PyntCloud</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">:</span>
+                    <span class="n">points</span> <span class="o">=</span> <span class="n">rotate_pointcloud</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flip_dims</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">points</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">2</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">:]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">:</span>
+                    <span class="n">points</span> <span class="o">=</span> <span class="n">points</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">:</span>
+                    <span class="n">points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc_norm</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+                    <span class="n">points</span><span class="p">,</span>
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">get_default_dtype</span><span class="p">(),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_cols</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">*</span> <span class="mf">0.1</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sample</span><span class="p">)</span>
+                    <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_idx</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="rotate_pointcloud"><a class="viewcode-back" href="../../../../cyto_dl.point_cloud.io.read_pcloud.html#cyto_dl.point_cloud.io.read_pcloud.rotate_pointcloud">[docs]</a><span class="k">def</span> <span class="nf">rotate_pointcloud</span><span class="p">(</span><span class="n">pointcloud</span><span class="p">,</span> <span class="n">rotation_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_rot</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">pointcloud_rotated</span> <span class="o">=</span> <span class="n">pointcloud</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">rotation_matrix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span> <span class="o">/</span> <span class="mi">24</span>
+        <span class="n">rotation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)],</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]]</span>
+        <span class="p">)</span>
+    <span class="n">pointcloud_rotated</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pointcloud_rotated</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
+        <span class="n">rotation_matrix</span>
+    <span class="p">)</span>  <span class="c1"># random rotation (x,y)</span>
+    <span class="k">if</span> <span class="n">return_rot</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pointcloud_rotated</span><span class="p">,</span> <span class="n">rotation_matrix</span><span class="p">,</span> <span class="n">theta</span>
+
+    <span class="k">return</span> <span class="n">pointcloud_rotated</span></div>
 </pre></div>
         </article>
       </div>

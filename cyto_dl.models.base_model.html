@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,113 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.models.base_model">
-<span id="cyto-dl-models-base-model-module"></span><h1>cyto_dl.models.base_model module<a class="headerlink" href="#module-cyto_dl.models.base_model" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.base_model.</span></span><span class="sig-name descname"><span class="pre">BaseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LightningModule</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.compute_metrics">
-<span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.compute_metrics" title="Permalink to this definition">#</a></dt>
-<dd><p>Method to handle logging metrics. Assumptions made:</p>
-<ul>
-<li><p>the <cite>_step</cite> method of each model returns a tuple (loss, preds, targets),
-whose elements may be dictionaries</p></li>
-<li><p>the keys of <cite>self.metrics</cite> have a specific structure:
-‘split/type(/part)’ , where:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><cite>split</cite> is one of (train, val, test, predict)</p></li>
-<li><p><cite>type</cite> is either “loss”, or an arbitrary string denoting a metric</p></li>
-<li><p><cite>part</cite> is optional, used when (loss, preds, targets) are dictionaries,
-in which case it must match a dictionary key</p></li>
-</ul>
-</div></blockquote>
-</li>
-</ul>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.configure_optimizers">
-<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.configure_optimizers" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.model_step">
-<span class="sig-name descname"><span class="pre">model_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.model_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.model_step" title="Permalink to this definition">#</a></dt>
-<dd><p>Here you should implement the logic for a step in the training/validation/test process.
-The stage (training/validation/test) is given by the variable <cite>stage</cite>.</p>
-<p>Example:</p>
-<p>x = self.parse_batch(batch)</p>
-<dl>
-<dt>if self.hparams.id_label is not None:</dt><dd><dl>
-<dt>if self.hparams.id_label in batch:</dt><dd><p>ids = batch[self.hparams.id_label].detach().cpu()
-results.update({</p>
-<blockquote>
-<div><p>self.hparams.id_label: ids,
-“id”: ids</p>
-</div></blockquote>
-<p>})</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>return results</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.on_train_start">
-<span class="sig-name descname"><span class="pre">on_train_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.on_train_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.on_train_start" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.parse_batch">
-<span class="sig-name descname"><span class="pre">parse_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.parse_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.parse_batch" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.predict_step">
-<span class="sig-name descname"><span class="pre">predict_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.predict_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.predict_step" title="Permalink to this definition">#</a></dt>
-<dd><p>Here you should implement the logic for an inference step.</p>
-<p>In most cases this would simply consist of calling the forward pass of your model, but you
-might wish to add additional post-processing.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.test_step">
-<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.test_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.test_step" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.training_step">
-<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.training_step" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModel.validation_step">
-<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModel.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModel.validation_step" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.base_model.BaseModelMeta">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.base_model.</span></span><span class="sig-name descname"><span class="pre">BaseModelMeta</span></span><a class="reference internal" href="_modules/cyto_dl/models/base_model.html#BaseModelMeta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.base_model.BaseModelMeta" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
-</dd></dl>
-
+          <section id="cyto-dl-models-base-model-module">
+<h1>cyto_dl.models.base_model module<a class="headerlink" href="#cyto-dl-models-base-model-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -522,40 +423,8 @@ might wish to add additional post-processing.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.models.base_model module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.compute_metrics"><code class="docutils literal notranslate"><span class="pre">BaseModel.compute_metrics()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">BaseModel.configure_optimizers()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.forward"><code class="docutils literal notranslate"><span class="pre">BaseModel.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.model_step"><code class="docutils literal notranslate"><span class="pre">BaseModel.model_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.on_train_start"><code class="docutils literal notranslate"><span class="pre">BaseModel.on_train_start()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.parse_batch"><code class="docutils literal notranslate"><span class="pre">BaseModel.parse_batch()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.predict_step"><code class="docutils literal notranslate"><span class="pre">BaseModel.predict_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.test_step"><code class="docutils literal notranslate"><span class="pre">BaseModel.test_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.training_step"><code class="docutils literal notranslate"><span class="pre">BaseModel.training_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModel.validation_step"><code class="docutils literal notranslate"><span class="pre">BaseModel.validation_step()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.models.base_model.BaseModelMeta"><code class="docutils literal notranslate"><span class="pre">BaseModelMeta</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

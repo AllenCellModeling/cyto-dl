@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,79 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.losses.gan_loss">
-<span id="cyto-dl-nn-losses-gan-loss-module"></span><h1>cyto_dl.nn.losses.gan_loss module<a class="headerlink" href="#module-cyto_dl.nn.losses.gan_loss" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.GANLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.losses.gan_loss.</span></span><span class="sig-name descname"><span class="pre">GANLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gan_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'vanilla'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_real_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fake_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/gan_loss.html#GANLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.GANLoss" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Define different GAN objectives.</p>
-<p>The GANLoss class abstracts away the need to create the target label tensor that has the same
-size as the input.</p>
-<p>Initialize the GANLoss class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gan_mode</strong> (<em>str=’vanilla’</em>) – Type of GAN objective <cite>vanilla</cite>, <cite>lsgan</cite>, and <cite>wgangp</cite> are supported.</p></li>
-<li><p><strong>target_real_label</strong> (<em>float=1.0</em>) – label for a real image</p></li>
-<li><p><strong>target_fake_label</strong> (<em>float=0.0</em>) – label of a fake image</p></li>
-</ul>
-</dd>
-</dl>
-<p>Note: Do not use sigmoid as the last layer of Discriminator.
-LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.GANLoss.get_target_tensor">
-<span class="sig-name descname"><span class="pre">get_target_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_is_real</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/gan_loss.html#GANLoss.get_target_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.GANLoss.get_target_tensor" title="Permalink to this definition">#</a></dt>
-<dd><p>Create label tensors with the same size as the input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prediction</strong> (<em>torch.Tensor</em>) – Prediction output from a discriminator</p></li>
-<li><p><strong>target_is_real</strong> (<em>bool</em>) – if the ground truth label is for real images or fake images</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>A label tensor filled with ground truth label, and with the size of input</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.GANLoss.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.GANLoss.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.Pix2PixHD">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.losses.gan_loss.</span></span><span class="sig-name descname"><span class="pre">Pix2PixHD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scales</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'FM':</span> <span class="pre">10,</span> <span class="pre">'GAN':</span> <span class="pre">1}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/gan_loss.html#Pix2PixHD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss">
-<span class="sig-name descname"><span class="pre">get_feature_matching_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/gan_loss.html#Pix2PixHD.get_feature_matching_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss">
-<span class="sig-name descname"><span class="pre">get_gan_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/gan_loss.html#Pix2PixHD.get_gan_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.gan_loss.Pix2PixHD.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-losses-gan-loss-module">
+<h1>cyto_dl.nn.losses.gan_loss module<a class="headerlink" href="#cyto-dl-nn-losses-gan-loss-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -488,37 +423,8 @@ LSGAN needs no sigmoid. vanilla GANs will handle it with BCEWithLogitsLoss.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.losses.gan_loss module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.GANLoss"><code class="docutils literal notranslate"><span class="pre">GANLoss</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.GANLoss.get_target_tensor"><code class="docutils literal notranslate"><span class="pre">GANLoss.get_target_tensor()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.GANLoss.training"><code class="docutils literal notranslate"><span class="pre">GANLoss.training</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD"><code class="docutils literal notranslate"><span class="pre">Pix2PixHD</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss"><code class="docutils literal notranslate"><span class="pre">Pix2PixHD.get_feature_matching_loss()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss"><code class="docutils literal notranslate"><span class="pre">Pix2PixHD.get_gan_loss()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.gan_loss.Pix2PixHD.training"><code class="docutils literal notranslate"><span class="pre">Pix2PixHD.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

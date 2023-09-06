@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,52 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.head.res_blocks_head">
-<span id="cyto-dl-nn-head-res-blocks-head-module"></span><h1>cyto_dl.nn.head.res_blocks_head module<a class="headerlink" href="#module-cyto_dl.nn.head.res_blocks_head" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.res_blocks_head.ResBlocksHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.res_blocks_head.</span></span><span class="sig-name descname"><span class="pre">ResBlocksHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_act:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">Identity()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution='lr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_convs=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_method='pixelshuffle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_ratio=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_layer=Identity()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/res_blocks_head.html#ResBlocksHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead" title="cyto_dl.nn.head.base_head.BaseHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseHead</span></code></a></p>
-<p>Task head for doing task-specific convolution and optional upsampling.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>in_channels</strong> (<em>int</em>) – Number of input channels (same as number of output channels from backbone)</p></li>
-<li><p><strong>out_channels</strong> (<em>int</em>) – Number of output channels</p></li>
-<li><p><strong>final_act</strong> (<em>Callable=torch.nn.Identity()</em>) – Final activation applied to logits</p></li>
-<li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing functions for ground truth and model predictions</p></li>
-<li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric. Currently not implemented</p></li>
-<li><p><strong>save_raw=False</strong> – Whether to save raw image examples during training</p></li>
-<li><p><strong>resolution=”lr”</strong> – Resolution of output image. If <cite>lr</cite>, no upsampling is done. If <cite>hr</cite>, <cite>upsample_method</cite> and <cite>upsample_ratio</cite> are used
-to determine how to perform upsampling.</p></li>
-<li><p><strong>spatial_dims=3</strong> – Spatial dimension of data after <cite>first_layer</cite></p></li>
-<li><p><strong>n_convs=1</strong> – Number of convolutional layers</p></li>
-<li><p><strong>dropout=0.0</strong> – Dropout ratio</p></li>
-<li><p><strong>upsample_method=”pixelshuffle”</strong> – Method of upsampling. See the [monai upsampling docs](<a class="reference external" href="https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample">https://docs.monai.io/en/stable/networks.html#monai.networks.blocks.Upsample</a>) for options</p></li>
-<li><p><strong>upsample_ratio=None</strong> – Amount to upsample. If not None, should be array of length <cite>spatial_dims</cite></p></li>
-<li><p><strong>first_layer=torch.nn.Identity()</strong> – Initial layer to apply to backbone outputs. For example, <cite>ConvProjectionLayer</cite> for transforming 3D-&gt;2D output.</p></li>
-<li><p><strong>dense=False</strong> – Whether to use dense connections between convolutional layers</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.res_blocks_head.ResBlocksHead.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/res_blocks_head.html#ResBlocksHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.res_blocks_head.ResBlocksHead.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-head-res-blocks-head-module">
+<h1>cyto_dl.nn.head.res_blocks_head module<a class="headerlink" href="#cyto-dl-nn-head-res-blocks-head-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -461,31 +423,8 @@ to determine how to perform upsampling.</p></li>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.head.res_blocks_head module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.forward"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.training"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

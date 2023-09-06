@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,106 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.res_unit">
-<span id="cyto-dl-nn-res-unit-module"></span><h1>cyto_dl.nn.res_unit module<a class="headerlink" href="#module-cyto_dl.nn.res_unit" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.res_unit.ResidualUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.res_unit.</span></span><span class="sig-name descname"><span class="pre">ResidualUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subunits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adn_ordering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'NDA'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">act</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'PRELU'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'INSTANCE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_conv_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/res_unit.html#ResidualUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.res_unit.ResidualUnit" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Residual module with multiple convolutions and a residual connection.</p>
-<p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">monai.networks.blocks</span> <span class="kn">import</span> <span class="n">ResidualUnit</span>
-
-<span class="n">convs</span> <span class="o">=</span> <span class="n">ResidualUnit</span><span class="p">(</span>
-    <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">out_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">adn_ordering</span><span class="o">=</span><span class="s2">&quot;AN&quot;</span><span class="p">,</span>
-    <span class="n">act</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;prelu&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;init&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">}),</span>
-    <span class="n">norm</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;layer&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;normalized_shape&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)}),</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">convs</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ResidualUnit</span><span class="p">(</span>
-  <span class="p">(</span><span class="n">conv</span><span class="p">):</span> <span class="n">Sequential</span><span class="p">(</span>
-    <span class="p">(</span><span class="n">unit0</span><span class="p">):</span> <span class="n">Convolution</span><span class="p">(</span>
-      <span class="p">(</span><span class="n">conv</span><span class="p">):</span> <span class="n">Conv3d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-      <span class="p">(</span><span class="n">adn</span><span class="p">):</span> <span class="n">ADN</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">A</span><span class="p">):</span> <span class="n">PReLU</span><span class="p">(</span><span class="n">num_parameters</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">(</span><span class="n">N</span><span class="p">):</span> <span class="n">LayerNorm</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">elementwise_affine</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-      <span class="p">)</span>
-    <span class="p">)</span>
-    <span class="p">(</span><span class="n">unit1</span><span class="p">):</span> <span class="n">Convolution</span><span class="p">(</span>
-      <span class="p">(</span><span class="n">conv</span><span class="p">):</span> <span class="n">Conv3d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-      <span class="p">(</span><span class="n">adn</span><span class="p">):</span> <span class="n">ADN</span><span class="p">(</span>
-        <span class="p">(</span><span class="n">A</span><span class="p">):</span> <span class="n">PReLU</span><span class="p">(</span><span class="n">num_parameters</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">(</span><span class="n">N</span><span class="p">):</span> <span class="n">LayerNorm</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">elementwise_affine</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-      <span class="p">)</span>
-    <span class="p">)</span>
-  <span class="p">)</span>
-  <span class="p">(</span><span class="n">residual</span><span class="p">):</span> <span class="n">Identity</span><span class="p">()</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<dl>
-<dt>Args:</dt><dd><p>spatial_dims: number of spatial dimensions.
-in_channels: number of input channels.
-out_channels: number of output channels.
-strides: convolution stride. Defaults to 1.
-kernel_size: convolution kernel size. Defaults to 3.
-subunits: number of convolutions. Defaults to 2.
-adn_ordering: a string representing the ordering of activation, normalization, and dropout.</p>
-<blockquote>
-<div><p>Defaults to “NDA”.</p>
-</div></blockquote>
-<p>act: activation type and arguments. Defaults to PReLU.
-norm: feature normalization type and arguments. Defaults to instance norm.
-dropout: dropout ratio. Defaults to no dropout.
-dropout_dim: determine the dimensions of dropout. Defaults to 1.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>When dropout_dim = 1, randomly zeroes some of the elements for each channel.</p></li>
-<li><p>When dropout_dim = 2, Randomly zero out entire channels (a channel is a 2D feature map).</p></li>
-<li><p>When dropout_dim = 3, Randomly zero out entire channels (a channel is a 3D feature map).</p></li>
-</ul>
-<p>The value of dropout_dim should be no larger than the value of <cite>dimensions</cite>.</p>
-</div></blockquote>
-<p>dilation: dilation rate. Defaults to 1.
-bias: whether to have a bias term. Defaults to True.
-last_conv_only: for the last subunit, whether to use the convolutional layer only.</p>
-<blockquote>
-<div><p>Defaults to False.</p>
-</div></blockquote>
-<dl class="simple">
-<dt>padding: controls the amount of implicit zero-paddings on both sides for padding number of points</dt><dd><p>for each dimension. Defaults to None.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>See also:</p>
-<blockquote>
-<div><p><code class="xref py py-class docutils literal notranslate"><span class="pre">monai.networks.blocks.Convolution</span></code></p>
-</div></blockquote>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.res_unit.ResidualUnit.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="_modules/cyto_dl/nn/res_unit.html#ResidualUnit.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.res_unit.ResidualUnit.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.res_unit.ResidualUnit.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.res_unit.ResidualUnit.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-res-unit-module">
+<h1>cyto_dl.nn.res_unit module<a class="headerlink" href="#cyto-dl-nn-res-unit-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -515,31 +423,8 @@ last_conv_only: for the last subunit, whether to use the convolutional layer onl
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.res_unit module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.res_unit.ResidualUnit"><code class="docutils literal notranslate"><span class="pre">ResidualUnit</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.res_unit.ResidualUnit.forward"><code class="docutils literal notranslate"><span class="pre">ResidualUnit.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.res_unit.ResidualUnit.training"><code class="docutils literal notranslate"><span class="pre">ResidualUnit.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

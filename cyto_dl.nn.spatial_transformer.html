@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,51 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.spatial_transformer">
-<span id="cyto-dl-nn-spatial-transformer-module"></span><h1>cyto_dl.nn.spatial_transformer module<a class="headerlink" href="#module-cyto_dl.nn.spatial_transformer" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.ConvPoolReLU">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.spatial_transformer.</span></span><span class="sig-name descname"><span class="pre">ConvPoolReLU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_filters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/spatial_transformer.html#ConvPoolReLU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.ConvPoolReLU.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/spatial_transformer.html#ConvPoolReLU.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.ConvPoolReLU.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.STN">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.spatial_transformer.</span></span><span class="sig-name descname"><span class="pre">STN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_input_ch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(64,</span> <span class="pre">256,</span> <span class="pre">512)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_conv_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/spatial_transformer.html#STN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.STN" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.STN.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/spatial_transformer.html#STN.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.STN.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.STN.toggle">
-<span class="sig-name descname"><span class="pre">toggle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/spatial_transformer.html#STN.toggle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.STN.toggle" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.spatial_transformer.STN.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.spatial_transformer.STN.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-spatial-transformer-module">
+<h1>cyto_dl.nn.spatial_transformer module<a class="headerlink" href="#cyto-dl-nn-spatial-transformer-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -460,37 +423,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.spatial_transformer module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU"><code class="docutils literal notranslate"><span class="pre">ConvPoolReLU</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU.forward"><code class="docutils literal notranslate"><span class="pre">ConvPoolReLU.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.ConvPoolReLU.training"><code class="docutils literal notranslate"><span class="pre">ConvPoolReLU.training</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.STN"><code class="docutils literal notranslate"><span class="pre">STN</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.STN.forward"><code class="docutils literal notranslate"><span class="pre">STN.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.STN.toggle"><code class="docutils literal notranslate"><span class="pre">STN.toggle()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.spatial_transformer.STN.training"><code class="docutils literal notranslate"><span class="pre">STN.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

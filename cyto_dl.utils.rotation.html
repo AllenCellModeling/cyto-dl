@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,61 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.utils.rotation">
-<span id="cyto-dl-utils-rotation-module"></span><h1>cyto_dl.utils.rotation module<a class="headerlink" href="#module-cyto_dl.utils.rotation" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.utils.rotation.RotationModule">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.rotation.</span></span><span class="sig-name descname"><span class="pre">RotationModule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/rotation.html#RotationModule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.rotation.RotationModule" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.utils.rotation.RotationModule.compute_rotation_matrix">
-<span class="sig-name descname"><span class="pre">compute_rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pose</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/rotation.html#RotationModule.compute_rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.rotation.RotationModule.compute_rotation_matrix" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.rotation.get_rotation_matrix_so2">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.rotation.</span></span><span class="sig-name descname"><span class="pre">get_rotation_matrix_so2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/rotation.html#get_rotation_matrix_so2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.rotation.get_rotation_matrix_so2" title="Permalink to this definition">#</a></dt>
-<dd><p>Computes a (batch of) rotation matrix of the SO(2) group, in either 2d or 3d. In 3d,
-rotation is assumed to be about the Z axis (first axis).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pose</strong> (<em>torch.Tensor</em>) – A (batch of) equivariant 2d vector(s), of the form (cos(theta), sin(theta))</p></li>
-<li><p><strong>spatial_dims</strong> (<em>int</em>) – Indicates whether it’s 2d or 3d</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>The (batch of) rotation matrix</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.rotation.get_rotation_matrix_so3">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.rotation.</span></span><span class="sig-name descname"><span class="pre">get_rotation_matrix_so3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/rotation.html#get_rotation_matrix_so3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.rotation.get_rotation_matrix_so3" title="Permalink to this definition">#</a></dt>
-<dd><p>Computes a (batch of) rotation matrix of the SO(3) group.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z</strong> (<em>torch.Tensor</em>) – A batch of pairs of equivariant vectors, from which a rotation matrix
-is inferred</p></li>
-<li><p><strong>eps</strong> (<em>float</em>) – Precision</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>The (batch of) rotation matrix</p>
-</dd>
-</dl>
-</dd></dl>
-
+          <section id="cyto-dl-utils-rotation-module">
+<h1>cyto_dl.utils.rotation module<a class="headerlink" href="#cyto-dl-utils-rotation-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -470,32 +423,8 @@ is inferred</p></li>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.utils.rotation module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.utils.rotation.RotationModule"><code class="docutils literal notranslate"><span class="pre">RotationModule</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.utils.rotation.RotationModule.compute_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">RotationModule.compute_rotation_matrix()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.utils.rotation.get_rotation_matrix_so2"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so2()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.rotation.get_rotation_matrix_so3"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so3()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

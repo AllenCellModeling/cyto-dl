@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,75 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.utils.template_utils">
-<span id="cyto-dl-utils-template-utils-module"></span><h1>cyto_dl.utils.template_utils module<a class="headerlink" href="#module-cyto_dl.utils.template_utils" title="Permalink to this heading">#</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.close_loggers">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">close_loggers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#close_loggers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.close_loggers" title="Permalink to this definition">#</a></dt>
-<dd><p>Makes sure all loggers closed properly (prevents logging failure during multirun).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.extras">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">extras</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DictConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#extras"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.extras" title="Permalink to this definition">#</a></dt>
-<dd><p>Applies optional utilities before the task is started.</p>
-<p>Utilities:
-- Ignoring python warnings
-- Setting tags from command line
-- Rich config printing</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.get_metric_value">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">get_metric_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#get_metric_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.get_metric_value" title="Permalink to this definition">#</a></dt>
-<dd><p>Safely retrieves value of the metric logged in LightningModule.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.instantiate_callbacks">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">instantiate_callbacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callbacks_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DictConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callback</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#instantiate_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.instantiate_callbacks" title="Permalink to this definition">#</a></dt>
-<dd><p>Instantiates callbacks from config.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.instantiate_loggers">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">instantiate_loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger_cfg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DictConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Logger</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#instantiate_loggers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.instantiate_loggers" title="Permalink to this definition">#</a></dt>
-<dd><p>Instantiates loggers from config.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.log_hyperparameters">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">log_hyperparameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#log_hyperparameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.log_hyperparameters" title="Permalink to this definition">#</a></dt>
-<dd><p>Controls which config parts are saved by lightning loggers.</p>
-<p>Additionally saves:
-- Number of model parameters</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.save_file">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">save_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#save_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.save_file" title="Permalink to this definition">#</a></dt>
-<dd><p>Save file in rank zero mode (only on one process in multi-GPU setup).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.utils.template_utils.task_wrapper">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.template_utils.</span></span><span class="sig-name descname"><span class="pre">task_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/template_utils.html#task_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.template_utils.task_wrapper" title="Permalink to this definition">#</a></dt>
-<dd><p>Optional decorator that wraps the task function in extra utilities.</p>
-<p>Makes multirun more resistant to failure.</p>
-<p>Utilities:
-- Calling the <cite>utils.extras()</cite> before the task is started
-- Calling the <cite>utils.close_loggers()</cite> after the task is finished
-- Logging the exception if occurs
-- Logging the task total execution time
-- Logging the output dir</p>
-</dd></dl>
-
+          <section id="cyto-dl-utils-template-utils-module">
+<h1>cyto_dl.utils.template_utils module<a class="headerlink" href="#cyto-dl-utils-template-utils-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -484,34 +423,8 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.utils.template_utils module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.close_loggers"><code class="docutils literal notranslate"><span class="pre">close_loggers()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.extras"><code class="docutils literal notranslate"><span class="pre">extras()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.get_metric_value"><code class="docutils literal notranslate"><span class="pre">get_metric_value()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.instantiate_callbacks"><code class="docutils literal notranslate"><span class="pre">instantiate_callbacks()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.instantiate_loggers"><code class="docutils literal notranslate"><span class="pre">instantiate_loggers()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.log_hyperparameters"><code class="docutils literal notranslate"><span class="pre">log_hyperparameters()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.save_file"><code class="docutils literal notranslate"><span class="pre">save_file()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.utils.template_utils.task_wrapper"><code class="docutils literal notranslate"><span class="pre">task_wrapper()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

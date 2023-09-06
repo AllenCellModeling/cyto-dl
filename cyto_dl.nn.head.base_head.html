@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,58 +370,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.head.base_head">
-<span id="cyto-dl-nn-head-base-head-module"></span><h1>cyto_dl.nn.head.base_head module<a class="headerlink" href="#module-cyto_dl.nn.head.base_head" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.base_head.</span></span><span class="sig-name descname"><span class="pre">BaseHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Base class for task heads.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>loss</strong> – Loss function for task</p></li>
-<li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing for <cite>input</cite> and <cite>predictions</cite> of head</p></li>
-<li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric during training. Not used by GAN head.</p></li>
-<li><p><strong>save_raw=False</strong> – Whether to save out example input images during training</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.run_head">
-<span class="sig-name descname"><span class="pre">run_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">backbone_features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_forward</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.run_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.run_head" title="Permalink to this definition">#</a></dt>
-<dd><p>Run head on backbone features, calculate loss, postprocess and save image, and calculate
-metrics.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.save_image">
-<span class="sig-name descname"><span class="pre">save_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_hat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.save_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.save_image" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.update_params">
-<span class="sig-name descname"><span class="pre">update_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.update_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.update_params" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-head-base-head-module">
+<h1>cyto_dl.nn.head.base_head module<a class="headerlink" href="#cyto-dl-nn-head-base-head-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -467,34 +423,8 @@ metrics.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.head.base_head module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead"><code class="docutils literal notranslate"><span class="pre">BaseHead</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseHead.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseHead.run_head()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseHead.save_image()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.training"><code class="docutils literal notranslate"><span class="pre">BaseHead.training</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.update_params"><code class="docutils literal notranslate"><span class="pre">BaseHead.update_params()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
