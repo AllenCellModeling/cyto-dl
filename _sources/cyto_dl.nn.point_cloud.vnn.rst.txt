@@ -1,0 +1,7 @@
+cyto\_dl.nn.point\_cloud.vnn module
+===================================
+
+.. automodule:: cyto_dl.nn.point_cloud.vnn
+   :members:
+   :undoc-members:
+   :show-inheritance:

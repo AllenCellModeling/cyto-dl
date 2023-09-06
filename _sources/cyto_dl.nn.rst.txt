@@ -15,6 +15,7 @@ Subpackages
    cyto_dl.nn.discriminators
    cyto_dl.nn.head
    cyto_dl.nn.losses
+   cyto_dl.nn.point_cloud
 
 Submodules
 ----------

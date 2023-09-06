@@ -1,0 +1,7 @@
+cyto\_dl.models.vae.point\_cloud\_vae module
+============================================
+
+.. automodule:: cyto_dl.models.vae.point_cloud_vae
+   :members:
+   :undoc-members:
+   :show-inheritance:

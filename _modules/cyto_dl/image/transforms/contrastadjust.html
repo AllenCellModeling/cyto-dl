@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.models.vae.tabular_vae - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.image.transforms.contrastadjust - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -198,11 +198,13 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.io.numpy_reader.html">cyto_dl.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.io.ome_zarr_reader.html">cyto_dl.image.io.ome_zarr_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.io.skimage_reader.html">cyto_dl.image.io.skimage_reader module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.clip.html">cyto_dl.image.transforms.clip module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.resize.html">cyto_dl.image.transforms.resize module</a></li>
@@ -263,10 +265,12 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.latent_loss_vae.html">cyto_dl.models.vae.latent_loss_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.point_cloud_vae.html">cyto_dl.models.vae.point_cloud_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.vae.tabular_vae.html">cyto_dl.models.vae.tabular_vae module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -296,14 +300,28 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.point_cloud.html">cyto_dl.nn.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.point_cloud.dgcnn.html">cyto_dl.nn.point_cloud.dgcnn module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.point_cloud.folding_net.html">cyto_dl.nn.point_cloud.folding_net module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.point_cloud.graph_functions.html">cyto_dl.nn.point_cloud.graph_functions module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.point_cloud.vnn.html">cyto_dl.nn.point_cloud.vnn module</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.point_cloud.io.read_pcloud.html">cyto_dl.point_cloud.io.read_pcloud module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -356,58 +374,83 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.models.vae.tabular_vae</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+          <h1>Source code for cyto_dl.image.transforms.contrastadjust</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">torch.nn.modules.loss</span> <span class="kn">import</span> <span class="n">_Loss</span> <span class="k">as</span> <span class="n">Loss</span>
-
-<span class="kn">from</span> <span class="nn">cyto_dl.nn</span> <span class="kn">import</span> <span class="n">MLP</span>
-
-<span class="kn">from</span> <span class="nn">.base_vae</span> <span class="kn">import</span> <span class="n">BaseVAE</span>
-<span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">Prior</span>
-
-<span class="n">Array</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span>
 
 
-<div class="viewcode-block" id="TabularVAE"><a class="viewcode-back" href="../../../../cyto_dl.models.vae.tabular_vae.html#cyto_dl.models.vae.tabular_vae.TabularVAE">[docs]</a><span class="k">class</span> <span class="nc">TabularVAE</span><span class="p">(</span><span class="n">BaseVAE</span><span class="p">):</span>
+<div class="viewcode-block" id="ContrastAdjust"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.contrastadjust.html#cyto_dl.image.transforms.contrastadjust.ContrastAdjust">[docs]</a><span class="k">class</span> <span class="nc">ContrastAdjust</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform for contrast adjusting intensity values to be within a range and everything</span>
+<span class="sd">    outside the range be set to a background value.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">high</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        low: int</span>
+<span class="sd">            lower bound for clipping</span>
+<span class="sd">        high: int</span>
+<span class="sd">            upper bound for clipping</span>
+<span class="sd">        background: int</span>
+<span class="sd">            intensity value for everywhere outside the specified range</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">background</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="n">low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">low</span>
+        <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">high</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span> <span class="o">&lt;</span> <span class="n">high</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">img</span> <span class="o">&gt;</span> <span class="n">low</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">img</span></div>
+
+
+<div class="viewcode-block" id="ContrastAdjustd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.contrastadjust.html#cyto_dl.image.transforms.contrastadjust.ContrastAdjustd">[docs]</a><span class="k">class</span> <span class="nc">ContrastAdjustd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dictionary Transform for clipping image intensities based on absolute or percentile</span>
+<span class="sd">    values.&quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">x_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">latent_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">hidden_layers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-        <span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">id_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">priors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Prior</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">reconstruction_loss</span><span class="p">:</span> <span class="n">Loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">),</span>
-        <span class="n">reconstruction_reduce</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">base_kwargs</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">low</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">high</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">background</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">allow_missing_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="n">encoder</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
-            <span class="n">x_dim</span><span class="p">,</span>
-            <span class="mi">2</span> <span class="o">*</span> <span class="n">latent_dim</span><span class="p">,</span>
-            <span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        keys: str</span>
+<span class="sd">            name of images to resize</span>
 
-        <span class="n">decoder</span> <span class="o">=</span> <span class="n">MLP</span><span class="p">(</span>
-            <span class="n">latent_dim</span><span class="p">,</span>
-            <span class="n">x_dim</span><span class="p">,</span>
-            <span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span>
-        <span class="p">)</span>
+<span class="sd">        low: float</span>
+<span class="sd">            lower bound for clipping</span>
+<span class="sd">        high: float</span>
+<span class="sd">            upper bound for clipping</span>
+<span class="sd">        percentile: bool</span>
+<span class="sd">            whether to use percentile or absolute values  for clipping</span>
+<span class="sd">        allow_missing_keys: bool</span>
+<span class="sd">            whether to fail if provided keys are missing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_missing_keys</span> <span class="o">=</span> <span class="n">allow_missing_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clipper</span> <span class="o">=</span> <span class="n">ContrastAdjust</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">encoder</span><span class="o">=</span><span class="n">encoder</span><span class="p">,</span>
-            <span class="n">decoder</span><span class="o">=</span><span class="n">decoder</span><span class="p">,</span>
-            <span class="n">latent_dim</span><span class="o">=</span><span class="n">latent_dim</span><span class="p">,</span>
-            <span class="n">x_label</span><span class="o">=</span><span class="n">x_label</span><span class="p">,</span>
-            <span class="n">id_label</span><span class="o">=</span><span class="n">id_label</span><span class="p">,</span>
-            <span class="n">priors</span><span class="o">=</span><span class="n">priors</span><span class="p">,</span>
-            <span class="n">reconstruction_loss</span><span class="o">=</span><span class="n">reconstruction_loss</span><span class="p">,</span>
-            <span class="n">reconstruction_reduce</span><span class="o">=</span><span class="n">reconstruction_reduce</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">base_kwargs</span>
-        <span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">img_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_missing_keys</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not in img_dict&quot;</span><span class="p">)</span>
+            <span class="n">img_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clipper</span><span class="p">(</span><span class="n">img_dict</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">img_dict</span></div>
 </pre></div>
         </article>
       </div>

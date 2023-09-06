@@ -1,0 +1,7 @@
+cyto\_dl.nn.point\_cloud.folding\_net module
+============================================
+
+.. automodule:: cyto_dl.nn.point_cloud.folding_net
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,18 @@
+cyto\_dl.nn.point\_cloud package
+================================
+
+.. automodule:: cyto_dl.nn.point_cloud
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.point_cloud.dgcnn
+   cyto_dl.nn.point_cloud.folding_net
+   cyto_dl.nn.point_cloud.graph_functions
+   cyto_dl.nn.point_cloud.vnn

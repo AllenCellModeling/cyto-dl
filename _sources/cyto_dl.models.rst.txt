@@ -24,3 +24,4 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.models.base_model
+   cyto_dl.models.basic_model

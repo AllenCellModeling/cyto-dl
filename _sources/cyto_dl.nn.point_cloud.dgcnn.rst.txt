@@ -1,0 +1,7 @@
+cyto\_dl.nn.point\_cloud.dgcnn module
+=====================================
+
+.. automodule:: cyto_dl.nn.point_cloud.dgcnn
+   :members:
+   :undoc-members:
+   :show-inheritance:

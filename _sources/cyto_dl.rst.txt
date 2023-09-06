@@ -19,6 +19,7 @@ Subpackages
    cyto_dl.loggers
    cyto_dl.models
    cyto_dl.nn
+   cyto_dl.point_cloud
    cyto_dl.utils
 
 Submodules
