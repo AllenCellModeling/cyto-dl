@@ -152,7 +152,6 @@ class PointCloudVAE(BaseVAE):
         self.embedding_head = nn.ModuleDict(embedding_head)
         self.embedding_head_loss = nn.ModuleDict(embedding_head_loss)
 
-
     def decode(self, z_parts, return_canonical=False, batch=None):
         if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
@@ -229,7 +228,9 @@ class PointCloudVAE(BaseVAE):
 
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
-                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](z[key], x[key])
+                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](
+                    z[key], x[key]
+                )
         return rcl_reduced
 
     def forward(self, batch, decode=False, inference=True, return_params=False):

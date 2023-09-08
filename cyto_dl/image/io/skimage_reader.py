@@ -1,6 +1,6 @@
 """ADAPTED FROM https://github.com/MMV-Lab/mmv_im2im/"""
 
-from typing import Dict, List, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from monai.config import PathLike
@@ -8,14 +8,15 @@ from monai.data import ImageReader
 from monai.data.image_reader import _stack_images
 from monai.utils import ensure_tuple, require_pkg
 from skimage.io import imread
-from typing import Optional
 
 
 @require_pkg(pkg_name="skimage")
 class SkimageReader(ImageReader):
-    def __init__(self, 
-            channels: Optional[list] = None,
-            transforms: Optional[list] = None,):
+    def __init__(
+        self,
+        channels: Optional[list] = None,
+        transforms: Optional[list] = None,
+    ):
         super().__init__()
         self.channels = channels
         self.transforms = transforms
