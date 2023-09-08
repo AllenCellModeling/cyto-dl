@@ -54,6 +54,9 @@ class PointCloudVAE(BaseVAE):
         occupancy_label: Optional[str] = "points.df",
         encoder: Optional[dict] = None,
         decoder: Optional[dict] = None,
+        embedding_head: Optional[dict] = None,
+        embedding_head_loss: Optional[dict] = None,
+        embedding_head_weight: Optional[dict] = None,
         condition_encoder: Optional[dict] = None,
         condition_decoder: Optional[dict] = None,
         condition_keys: Optional[list] = None,
@@ -69,6 +72,9 @@ class PointCloudVAE(BaseVAE):
         self.occupancy_label = occupancy_label
         self.point_label = point_label
         self.condition_keys = condition_keys
+        self.embedding_head = embedding_head
+        self.embedding_head_loss = embedding_head_loss
+        self.embedding_head_weight = embedding_head_weight
 
         if embedding_prior == "gaussian":
             self.encoder_out_size = 2 * latent_dim
@@ -143,6 +149,9 @@ class PointCloudVAE(BaseVAE):
 
         self.condition_encoder = nn.ModuleDict(condition_encoder)
         self.condition_decoder = nn.ModuleDict(condition_decoder)
+        self.embedding_head = nn.ModuleDict(embedding_head)
+        self.embedding_head_loss = nn.ModuleDict(embedding_head_loss)
+
 
     def decode(self, z_parts, return_canonical=False, batch=None):
         if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
@@ -181,6 +190,10 @@ class PointCloudVAE(BaseVAE):
             z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
                 cond_feats
             )
+        if self.embedding_head:
+            for key in self.embedding_head.keys():
+                z_parts[key] = self.embedding_head[key](z_parts[self.hparams.x_label])
+
         return z_parts
 
     def decoder_compose_function(self, z_parts, batch):
@@ -196,7 +209,7 @@ class PointCloudVAE(BaseVAE):
             )
         return z_parts
 
-    def calculate_rcl_dict(self, x, xhat):
+    def calculate_rcl_dict(self, x, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
@@ -213,6 +226,10 @@ class PointCloudVAE(BaseVAE):
                 rcl_reduced[key] = rcl.mean()
             else:
                 rcl_reduced[key] = rcl_per_input_dimension[key]
+
+        if self.embedding_head_loss:
+            for key in self.embedding_head_loss.keys():
+                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](z[key], x[key])
         return rcl_reduced
 
     def forward(self, batch, decode=False, inference=True, return_params=False):
