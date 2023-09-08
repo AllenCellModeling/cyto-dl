@@ -71,16 +71,14 @@ torchserve = [
     "gorilla>=0.4.0",
 ]
 pcloud = [
-    "pyntcloud",
-    "aicsshparam",
-    "torchvision",
-    "torch-geometric",
-    "point-cloud-utils",
-    "pyshtools",
-    "geomloss",
-    "Ninja",
-    "timm",
-    "torchio",
+    "pyntcloud>=0.3.1",
+    "aicsshparam>=0.1.7",
+    "torch-geometric>=2.3.1",
+    "point-cloud-utils>=0.29.6",
+    "geomloss>=0.2.6",
+    "Ninja>=1.11.1",
+    "timm>=0.9.7",
+    "torchio>=0.19.1",
 ]
 all = [
     "cyto-dl[equiv,spharm,omnipose,s3,torchserve,pcloud]",
