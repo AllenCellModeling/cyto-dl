@@ -21,6 +21,8 @@ class ReadPointCloud(MapTransform):
         norm: bool = False,
         flip_dims: bool = False,
         rotate: bool = False,
+        scalar_scale: Optional[float] = 0.1,
+        final_columns: Optional[list] = None,
     ):
         """
         Parameters
@@ -45,6 +47,9 @@ class ReadPointCloud(MapTransform):
         rotate: bool
             Whether to add random rotation to the point cloud in the XY plane
             assuming ordering is XYZ
+        scalar_scale: float
+            Scale factor for scalar features
+
         """
         super().__init__(keys)
         self.keys = [keys] if isinstance(keys, str) else keys
@@ -55,6 +60,8 @@ class ReadPointCloud(MapTransform):
         self.num_cols = num_cols
         self.flip_dims = flip_dims
         self.rotate = rotate
+        self.scalar_scale = scalar_scale
+        self.final_columns = final_columns
 
     def pc_norm(self, pc):
         """pc: NxC, return NxC"""
@@ -81,7 +88,13 @@ class ReadPointCloud(MapTransform):
                     path = fifo_path
                 else:
                     path = str(row[key])
-                points = PyntCloud.from_file(path).points.values[:, : self.num_cols]
+                points = PyntCloud.from_file(path).points
+
+                if 's' in points.columns:
+                    points = points[['z', 'y', 'x', 's']]
+                else:
+                    points = points[['z', 'y', 'x']]
+                points = points.values[:, : self.num_cols]
 
                 if self.rotate:
                     points = rotate_pointcloud(points)
@@ -101,11 +114,13 @@ class ReadPointCloud(MapTransform):
                     dtype=torch.get_default_dtype(),
                 )
                 if self.num_cols > 3:
-                    res[key][:, self.num_cols - 1 :] = res[key][:, self.num_cols - 1 :] * 0.1
+                    res[key][:, self.num_cols - 1 :] = res[key][:, self.num_cols - 1 :] * self.scalar_scale
 
                 if self.sample:
                     self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
                     res[key] = res[key][self.sample_idx]
+                if self.final_columns:
+                    res[key] = res[key][:, self.final_columns]
 
         return res
 
