@@ -5,6 +5,8 @@ save_dir: ${paths.output_dir}
 
 x_key: ${source_col}
 
+compile: false
+
 backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: ${spatial_dims}
