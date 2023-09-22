@@ -19,7 +19,7 @@ with suppress(ValueError):
 
 
 @utils.task_wrapper
-def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
+def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
     """Evaluates given checkpoint on a datamodule testset.
 
     This method is wrapped in optional @task_wrapper decorator which applies extra utilities
@@ -84,11 +84,10 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict]:
 
     log.info("Starting testing!")
     method = trainer.test if cfg.get("test", False) else trainer.predict
-    method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
-
+    output = method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
     metric_dict = trainer.callback_metrics
 
-    return metric_dict, object_dict
+    return metric_dict, object_dict, output
 
 
 @hydra.main(
