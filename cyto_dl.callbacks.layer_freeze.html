@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.models.im2im.utils.noise_annealer module" href="cyto_dl.models.im2im.utils.noise_annealer.html" /><link rel="prev" title="cyto_dl.models.im2im.utils.postprocessing.auto_thresh module" href="cyto_dl.models.im2im.utils.postprocessing.auto_thresh.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.callbacks.model_utils module" href="cyto_dl.callbacks.model_utils.html" /><link rel="prev" title="cyto_dl.callbacks.latent_walk module" href="cyto_dl.callbacks.latent_walk.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.models.im2im.utils.postprocessing.dict_to_im module - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.callbacks.layer_freeze module - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -161,10 +161,10 @@
 <li class="toctree-l1"><a class="reference internal" href="using_examples.html">Modifying the Example Configs</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="cyto_dl.html">cyto_dl package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
 </ul>
@@ -221,19 +221,19 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.handlers.html">cyto_dl.models.handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.handlers.base_handler.html">cyto_dl.models.handlers.base_handler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.handlers.image_handler.html">cyto_dl.models.handlers.image_handler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.handlers.load_image_patch.html">cyto_dl.models.handlers.load_image_patch module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.models.im2im.html">cyto_dl.models.im2im package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l5 current has-children"><a class="reference internal" href="cyto_dl.models.im2im.utils.html">cyto_dl.models.im2im.utils package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l6 current has-children"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.html">cyto_dl.models.im2im.utils.postprocessing package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.im2im.html">cyto_dl.models.im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.im2im.utils.html">cyto_dl.models.im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.html">cyto_dl.models.im2im.utils.postprocessing package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l7"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.html">cyto_dl.models.im2im.utils.postprocessing.act_thresh_label module</a></li>
 <li class="toctree-l7"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.auto_thresh.html">cyto_dl.models.im2im.utils.postprocessing.auto_thresh module</a></li>
-<li class="toctree-l7 current current-page"><a class="current reference internal" href="#">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
@@ -377,8 +377,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-im2im-utils-postprocessing-dict-to-im-module">
-<h1>cyto_dl.models.im2im.utils.postprocessing.dict_to_im module<a class="headerlink" href="#cyto-dl-models-im2im-utils-postprocessing-dict-to-im-module" title="Permalink to this heading">#</a></h1>
+          <section id="cyto-dl-callbacks-layer-freeze-module">
+<h1>cyto_dl.callbacks.layer_freeze module<a class="headerlink" href="#cyto-dl-callbacks-layer-freeze-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -386,23 +386,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.models.im2im.utils.noise_annealer.html">
+          <a class="next-page" href="cyto_dl.callbacks.model_utils.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.models.im2im.utils.noise_annealer module</div>
+                <div class="title">cyto_dl.callbacks.model_utils module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.models.im2im.utils.postprocessing.auto_thresh.html">
+          <a class="prev-page" href="cyto_dl.callbacks.latent_walk.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.models.im2im.utils.postprocessing.auto_thresh module</div>
+                <div class="title">cyto_dl.callbacks.latent_walk module</div>
                 
               </div>
             </a>

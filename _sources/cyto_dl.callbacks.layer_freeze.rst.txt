@@ -1,0 +1,7 @@
+cyto\_dl.callbacks.layer\_freeze module
+=======================================
+
+.. automodule:: cyto_dl.callbacks.layer_freeze
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -14,5 +14,6 @@ Submodules
 
    cyto_dl.callbacks.callback_utils
    cyto_dl.callbacks.latent_walk
+   cyto_dl.callbacks.layer_freeze
    cyto_dl.callbacks.model_utils
    cyto_dl.callbacks.outlier_detection
