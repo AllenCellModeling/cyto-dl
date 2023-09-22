@@ -33,12 +33,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
@@ -82,12 +79,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
@@ -118,11 +112,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${source_col}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       # input to synthetic image generation model is a semantic segmentation
@@ -153,12 +145,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
