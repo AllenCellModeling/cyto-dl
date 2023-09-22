@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
@@ -89,7 +89,10 @@ class MultiTaskIm2Im(BaseModel):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        list(self.backbone.parameters()) + list(self.task_heads.parameters())
+                        filter(
+                            lambda p: p.requires_grad,
+                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
+                        )
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
