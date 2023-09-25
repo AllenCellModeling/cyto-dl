@@ -31,12 +31,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -86,12 +83,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -115,6 +109,9 @@ transforms:
             C: 5
       - _target_: monai.transforms.AddChanneld
         keys: ${source_col}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -141,12 +138,9 @@ transforms:
             C: 0
       - _target_: monai.transforms.AddChanneld
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
-        keys:
-          - ${source_col}
-          - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
+      - _target_: monai.transforms.Zoomd
+        keys: ${data.columns}
+        zoom: 0.25
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       - _target_: monai.transforms.NormalizeIntensityd
