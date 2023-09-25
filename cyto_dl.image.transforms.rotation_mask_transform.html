@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -370,14 +370,49 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-image-transforms-rotation-mask-transform-module">
-<h1>cyto_dl.image.transforms.rotation_mask_transform module<a class="headerlink" href="#cyto-dl-image-transforms-rotation-mask-transform-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.image.transforms.rotation_mask_transform">
+<span id="cyto-dl-image-transforms-rotation-mask-transform-module"></span><h1>cyto_dl.image.transforms.rotation_mask_transform module<a class="headerlink" href="#module-cyto_dl.image.transforms.rotation_mask_transform" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.rotation_mask_transform.RotationMask">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.rotation_mask_transform.</span></span><span class="sig-name descname"><span class="pre">RotationMask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cylinder_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/rotation_mask_transform.html#RotationMask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.rotation_mask_transform.RotationMask" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<p>Similar functionality as <a class="reference external" href="https://quva">https://quva</a>-
+lab.github.io/escnn/api/escnn.nn.html#escnn.nn.MaskModule.</p>
+<p>In the 3d case, the mask is a cylinder - we only consider rotations of
+the XY plane.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>group</strong> (<em>str</em>) – Rotation group (either so2 or so3)</p></li>
+<li><p><strong>spatial_dims</strong> (<em>int</em>) – Whether 2d or 3d</p></li>
+<li><p><strong>mask_side</strong> (<em>int</em>) – Side of the square in which to inscribe the mask.
+(Should be the max between the X and Y dimensions)</p></li>
+<li><p><strong>mask_margin</strong> (<em>float = 0.0</em>) – Margin to smooth the mask edges. See the escnn docs linked above
+for details. Note: ignored if background is not <cite>None</cite></p></li>
+<li><p><strong>background</strong> (<em>Optional[float] = None</em>) – Value for masked out pixels/voxels. If <cite>None</cite> (default) background
+value will be 0. If not <cite>None</cite>, <cite>mask_margin</cite> is ignored and the
+mask is not smooth.</p></li>
+<li><p><strong>cylinder_axis</strong> (<em>int</em>) – Axis along which to form the cylinder, in the 3d case.
+For rotations of the XY plane, this would be the Z axis.
+Defaults to 2, (i.e. assumes ZYX or ZXY ordering of spatial dimensions)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.rotation_mask_transform.RotationMaskd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.rotation_mask_transform.</span></span><span class="sig-name descname"><span class="pre">RotationMaskd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_side</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">background</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cylinder_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/rotation_mask_transform.html#RotationMaskd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.rotation_mask_transform.RotationMaskd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<p>Dictionary-transform version of O2Mask.</p>
+</dd></dl>
+
 </section>
 
         </article>
@@ -423,8 +458,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.image.transforms.rotation_mask_transform module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.rotation_mask_transform.RotationMask"><code class="docutils literal notranslate"><span class="pre">RotationMask</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.rotation_mask_transform.RotationMaskd"><code class="docutils literal notranslate"><span class="pre">RotationMaskd</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
