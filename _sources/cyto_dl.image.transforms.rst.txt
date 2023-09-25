@@ -17,7 +17,6 @@ Submodules
    cyto_dl.image.transforms.contrastadjust
    cyto_dl.image.transforms.multiscale_cropper
    cyto_dl.image.transforms.project
-   cyto_dl.image.transforms.resize
    cyto_dl.image.transforms.rotation_mask_transform
    cyto_dl.image.transforms.save
    cyto_dl.image.transforms.so2_random_rotation
