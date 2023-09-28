@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
@@ -77,7 +77,7 @@ class MultiTaskIm2Im(BaseModel):
             self.backbone = backbone
             self.task_heads = torch.nn.ModuleDict(task_heads)
 
-        self.inference_heads = inference_heads or self.task_heads.keys()
+        self.inference_heads = inference_heads or list(self.task_heads.keys())
 
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
@@ -89,7 +89,10 @@ class MultiTaskIm2Im(BaseModel):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        list(self.backbone.parameters()) + list(self.task_heads.parameters())
+                        filter(
+                            lambda p: p.requires_grad,
+                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
+                        )
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
@@ -189,5 +192,4 @@ class MultiTaskIm2Im(BaseModel):
                 batch[k] = v.as_tensor()
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
-        return None, preds, None
+        return outs[run_heads[0]]["save_path"]

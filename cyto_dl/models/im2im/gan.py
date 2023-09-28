@@ -163,7 +163,7 @@ class GAN(BaseModel):
         if stage not in ("test", "predict"):
             run_heads = [key for key in self.task_heads.keys() if key in batch]
         else:
-            run_heads = self.task_heads.keys()
+            run_heads = list(self.task_heads.keys())
         return run_heads
 
     def _extract_loss(self, outs, loss_type):
@@ -216,5 +216,5 @@ class GAN(BaseModel):
                 batch[k] = v.as_tensor()
         stage = "predict"
         run_heads = self._get_run_heads(batch, stage)
-        self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        return (None, None, None)
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        return outs[run_heads[0]]["save_path"]

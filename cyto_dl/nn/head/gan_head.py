@@ -81,9 +81,9 @@ class GANHead(BaseHead):
                 )
             loss_D, loss_G = self._calculate_loss(y_hat, batch, discriminator)
 
-        y_hat_out, y_out = None, None
+        y_hat_out, y_out, out_paths = None, None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
 
         metric = None
         if self.calculate_metric and stage in ("val", "test"):
@@ -95,4 +95,5 @@ class GANHead(BaseHead):
             "metric": metric,
             "y_hat_out": y_hat_out,
             "y_out": y_out,
+            "save_path": out_paths,
         }
