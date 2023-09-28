@@ -13,7 +13,6 @@ class CBLogLoss(Loss):
         self.mode = mode
 
     def forward(self, input, target):
-
         # the trick with the dictionary allows us to use either `probs` or `logits`
         log_probs = ContinuousBernoulli(**{self.mode: input}).log_prob(target)
 
