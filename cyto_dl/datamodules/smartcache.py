@@ -133,7 +133,8 @@ class SmartcacheDatamodule(LightningDataModule):
             self.img_data["train"] = self.get_per_file_args(self.df_train)
             self.img_data["val"] = self.get_per_file_args(self.df_val)
             pd.DataFrame(self.img_data["train"]).to_csv(
-                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv", index=False
+                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv",
+                index=False,
             )
             pd.DataFrame(self.img_data["val"]).to_csv(
                 f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv", index=False

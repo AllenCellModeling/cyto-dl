@@ -32,7 +32,10 @@ class OmniposePreprocessd(Transform):
     smooth distance images from an input instance segmentation."""
 
     def __init__(
-        self, label_keys: Union[Sequence[str], str], dim: int = 3, allow_missing_keys: bool = False
+        self,
+        label_keys: Union[Sequence[str], str],
+        dim: int = 3,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -376,7 +379,9 @@ class OmniposeClustering:
         return {
             "slice": tuple(crop[1:]),
             "mask": remove_small_holes(
-                mask_crop > 0, area_threshold=self.hole_size, connectivity=self.spatial_dim
+                mask_crop > 0,
+                area_threshold=self.hole_size,
+                connectivity=self.spatial_dim,
             ),
         }
 

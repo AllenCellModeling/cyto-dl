@@ -52,9 +52,7 @@ class GetEmbeddings(Callback):
         self.cutoff_kld_per_dim = 0
 
     def on_test_epoch_end(self, trainer: Trainer, pl_module: LightningModule):
-
         with torch.no_grad():
-
             embeddings = get_all_embeddings(
                 trainer.datamodule.train_dataloader(),
                 trainer.datamodule.val_dataloader(),
@@ -79,7 +77,6 @@ def get_all_embeddings(
     x_label: str,
     id_label: None,
 ):
-
     all_embeddings = []
     cell_ids = []
     split = []

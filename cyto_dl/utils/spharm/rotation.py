@@ -58,7 +58,6 @@ def expand_rot_matrices(rot, max_band):
     _rot = torch.eye(2, 2).repeat(rot.shape[0], 1, 1).to(rot.device)
 
     for m in range(1, max_band + 1):
-
         _rot = torch.matmul(_rot, rot)
 
         rot_matrices.append(
