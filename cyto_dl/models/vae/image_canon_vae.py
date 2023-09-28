@@ -203,7 +203,11 @@ class ImageCanonicalVAE(BaseVAE):
             self.rotation_module = None
 
         super().__init__(
-            encoder=encoder, decoder=decoder, latent_dim=latent_dim, prior=prior, **base_kwargs
+            encoder=encoder,
+            decoder=decoder,
+            latent_dim=latent_dim,
+            prior=prior,
+            **base_kwargs,
         )
 
         self.make_canon_net(maximum_frequency)
