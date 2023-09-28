@@ -84,6 +84,7 @@ class BaseModel(LightningModule, metaclass=BaseModelMeta):
         metrics=_DEFAULT_METRICS,
     ):
         super().__init__()
+
         self.metrics = tuple(metrics.keys())
 
         for key, value in metrics.items():
