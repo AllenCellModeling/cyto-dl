@@ -174,7 +174,7 @@ class DiagonalGaussianPrior(IsotropicGaussianPrior):
                 logvar,
                 self.logvar,
                 tc_penalty_weight=self.tc_penalty_weight,
-                **kwargs
+                **kwargs,
             )
 
         if inference:

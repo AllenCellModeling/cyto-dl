@@ -24,7 +24,7 @@ class TabularVAE(BaseVAE):
         priors: Optional[Sequence[Prior]] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         reconstruction_reduce: str = "sum",
-        **base_kwargs
+        **base_kwargs,
     ):
         encoder = MLP(
             x_dim,
@@ -47,5 +47,5 @@ class TabularVAE(BaseVAE):
             priors=priors,
             reconstruction_loss=reconstruction_loss,
             reconstruction_reduce=reconstruction_reduce,
-            **base_kwargs
+            **base_kwargs,
         )
