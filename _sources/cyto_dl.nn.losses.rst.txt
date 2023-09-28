@@ -13,10 +13,12 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.nn.losses.adversarial_loss
+   cyto_dl.nn.losses.chamfer_loss
    cyto_dl.nn.losses.continuous_bernoulli
    cyto_dl.nn.losses.cosine_loss
    cyto_dl.nn.losses.gan_loss
    cyto_dl.nn.losses.gaussian_nll_loss
+   cyto_dl.nn.losses.geomloss
    cyto_dl.nn.losses.loss_wrapper
    cyto_dl.nn.losses.spharm_loss
    cyto_dl.nn.losses.threshold_loss

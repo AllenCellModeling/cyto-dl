@@ -1,0 +1,7 @@
+cyto\_dl.nn.losses.geomloss module
+==================================
+
+.. automodule:: cyto_dl.nn.losses.geomloss
+   :members:
+   :undoc-members:
+   :show-inheritance:

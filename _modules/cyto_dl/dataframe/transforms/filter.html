@@ -289,10 +289,12 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.adversarial_loss.html">cyto_dl.nn.losses.adversarial_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.chamfer_loss.html">cyto_dl.nn.losses.chamfer_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.continuous_bernoulli.html">cyto_dl.nn.losses.continuous_bernoulli module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.cosine_loss.html">cyto_dl.nn.losses.cosine_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.gan_loss.html">cyto_dl.nn.losses.gan_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.gaussian_nll_loss.html">cyto_dl.nn.losses.gaussian_nll_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.geomloss.html">cyto_dl.nn.losses.geomloss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.loss_wrapper.html">cyto_dl.nn.losses.loss_wrapper module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.spharm_loss.html">cyto_dl.nn.losses.spharm_loss module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.losses.threshold_loss.html">cyto_dl.nn.losses.threshold_loss module</a></li>
@@ -494,16 +496,14 @@
 <span class="sd">    regex: Optional[str] = None</span>
 <span class="sd">        A string containing a regular expression to be matched</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
             <span class="n">columns</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
-            <span class="n">columns</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="nb">input</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">columns</span> <span class="o">=</span> <span class="nb">input</span>
-
-        <span class="n">columns</span> <span class="o">=</span> <span class="n">_filter_columns</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">startswith</span><span class="p">,</span> <span class="n">endswith</span><span class="p">,</span> <span class="n">contains</span><span class="p">,</span> <span class="n">excludes</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="n">_filter_columns</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">startswith</span><span class="p">,</span> <span class="n">endswith</span><span class="p">,</span> <span class="n">contains</span><span class="p">,</span> <span class="n">excludes</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>
