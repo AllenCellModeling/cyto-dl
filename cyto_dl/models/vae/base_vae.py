@@ -150,7 +150,7 @@ class BaseVAE(BaseModel):
         )
         return rcl_per_input_dimension
 
-    def calculate_rcl_dict(self, x, xhat):
+    def calculate_rcl_dict(self, x, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
@@ -170,7 +170,7 @@ class BaseVAE(BaseModel):
         return rcl_reduced
 
     def calculate_elbo(self, x, xhat, z):
-        rcl_reduced = self.calculate_rcl_dict(x, xhat)
+        rcl_reduced = self.calculate_rcl_dict(x, xhat, z)
         kld_per_part = {
             part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
         }

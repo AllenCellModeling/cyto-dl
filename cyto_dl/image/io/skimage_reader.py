@@ -1,6 +1,6 @@
 """ADAPTED FROM https://github.com/MMV-Lab/mmv_im2im/"""
 
-from typing import Dict, List, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from monai.config import PathLike
@@ -12,15 +12,26 @@ from skimage.io import imread
 
 @require_pkg(pkg_name="skimage")
 class SkimageReader(ImageReader):
-    def __init__(self, channels: list):
+    def __init__(
+        self,
+        channels: Optional[list] = None,
+        transforms: Optional[list] = None,
+    ):
         super().__init__()
         self.channels = channels
+        self.transforms = transforms
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
         img_ = []
         for name in filenames:
-            this_im = imread(f"{name}")[self.channels]
+            this_im = imread(f"{name}")
+            if self.channels:
+                this_im = this_im[self.channels]
+
+            if self.transforms:
+                for transform in self.transforms:
+                    this_im = transform(this_im)
             img_.append(this_im)
 
         return img_ if len(filenames) > 1 else img_[0]
