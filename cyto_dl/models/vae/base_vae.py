@@ -25,6 +25,8 @@ class BaseVAE(BaseModel):
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         prior: Optional[Sequence[Prior]] = None,
         decoder_latent_parts: Optional[Dict[str, Sequence[str]]] = None,
+        disable_metrics: Optional[bool] = False,
+        metric_keys: Optional[list] = None,
         **base_kwargs,
     ):
         """Instantiate a basic VAE model.
@@ -50,45 +52,55 @@ class BaseVAE(BaseModel):
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
-
-        _DEFAULT_METRICS = {
-            "train/loss": MeanMetric(),
-            "val/loss": MeanMetric(),
-            "test/loss": MeanMetric(),
-            "train/loss/total_reconstruction": MeanMetric(),
-            "val/loss/total_reconstruction": MeanMetric(),
-            "test/loss/total_reconstruction": MeanMetric(),
-            "train/loss/total_kld": MeanMetric(),
-            "val/loss/total_kld": MeanMetric(),
-            "test/loss/total_kld": MeanMetric(),
-        }
-
-        if not isinstance(prior, (dict, DictConfig)):
-            prior = {"embedding": prior}
-
-        for part in prior.keys():
-            _DEFAULT_METRICS.update(
-                {
-                    f"train/loss/kld_{part}": MeanMetric(),
-                    f"val/loss/kld_{part}": MeanMetric(),
-                    f"test/loss/kld_{part}": MeanMetric(),
-                }
-            )
-
         if not isinstance(reconstruction_loss, (dict, DictConfig)):
             assert x_label is not None
             recon_parts = [x_label]
         else:
             recon_parts = reconstruction_loss.keys()
 
-        for part in recon_parts:
-            _DEFAULT_METRICS.update(
-                {
-                    f"train/loss/reconstruction_{part}": MeanMetric(),
-                    f"val/loss/reconstruction_{part}": MeanMetric(),
-                    f"test/loss/reconstruction_{part}": MeanMetric(),
-                }
-            )
+        if not isinstance(prior, (dict, DictConfig)):
+            prior = {"embedding": prior}
+        if disable_metrics:
+            _DEFAULT_METRICS = {
+                "train/loss": MeanMetric(),
+                "val/loss": MeanMetric(),
+                "test/loss": MeanMetric(),
+            }
+        elif metric_keys:
+            _DEFAULT_METRICS = {}
+            for key in metric_keys:
+                _DEFAULT_METRICS.update({key: MeanMetric()})
+
+        else:
+            _DEFAULT_METRICS = {
+                "train/loss": MeanMetric(),
+                "val/loss": MeanMetric(),
+                "test/loss": MeanMetric(),
+                "train/loss/total_reconstruction": MeanMetric(),
+                "val/loss/total_reconstruction": MeanMetric(),
+                "test/loss/total_reconstruction": MeanMetric(),
+                "train/loss/total_kld": MeanMetric(),
+                "val/loss/total_kld": MeanMetric(),
+                "test/loss/total_kld": MeanMetric(),
+            }
+
+            for part in prior.keys():
+                _DEFAULT_METRICS.update(
+                    {
+                        f"train/loss/kld_{part}": MeanMetric(),
+                        f"val/loss/kld_{part}": MeanMetric(),
+                        f"test/loss/kld_{part}": MeanMetric(),
+                    }
+                )
+
+            for part in recon_parts:
+                _DEFAULT_METRICS.update(
+                    {
+                        f"train/loss/reconstruction_{part}": MeanMetric(),
+                        f"val/loss/reconstruction_{part}": MeanMetric(),
+                        f"test/loss/reconstruction_{part}": MeanMetric(),
+                    }
+                )
 
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
 
@@ -100,11 +112,11 @@ class BaseVAE(BaseModel):
                     prior[key] = IsotropicGaussianPrior(dimensionality=latent_dim)
                 else:
                     prior[key] = IdentityPrior(dimensionality=latent_dim)
-            elif not isinstance(prior[key], Prior):
-                raise ValueError(
-                    f"Expected prior to either be one of ('gaussian', 'identity', None)"
-                    f"or an object of type `Prior`. Got: {type(prior)}"
-                )
+            # elif not isinstance(prior[key], Prior):
+            #     raise ValueError(
+            #         f"Expected prior to either be one of ('gaussian', 'identity', None)"
+            #         f"or an object of type `Prior`. Got: {type(prior)}"
+            #     )
         self.prior = nn.ModuleDict(prior)
 
         self.reconstruction_loss = reconstruction_loss
@@ -217,7 +229,7 @@ class BaseVAE(BaseModel):
         # for each decoder key, get the latent parts it uses from `self.decoder_latent_keys`
         # and pass them as *args to that decoder's forward method
         return {
-            part: decoder(*[z[key] for key in self.decoder_latent_keys[part]])
+            part: decoder(*[z[key] for key in self.decoder.keys()])
             for part, decoder in self.decoder.items()
         }
 

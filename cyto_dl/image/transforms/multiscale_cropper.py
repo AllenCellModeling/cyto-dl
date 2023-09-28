@@ -127,7 +127,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
     def __call__(self, image_dict):
-
         available_keys = self.keys
         if self.allow_missing_keys:
             available_keys = [k for k in self.keys if k in image_dict]

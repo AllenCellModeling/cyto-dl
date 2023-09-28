@@ -10,7 +10,7 @@ def make_data_dict_dataloader(
     data: Sequence[Union[DictConfig, dict]],
     transforms: Union[Sequence[Callable], Callable],
     cache_dir: Optional[Union[Path, str]] = None,
-    **dataloader_kwargs
+    **dataloader_kwargs,
 ):
     """Create a dataloader based on a dictionary of paths to images.
 

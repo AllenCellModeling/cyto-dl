@@ -24,7 +24,6 @@ def get_ranked_dims(
     cutoff_kld_per_dim,
     max_num_shapemodes,
 ):
-
     stats = (
         stats.loc[stats["test_kld_per_latent_dim"] > cutoff_kld_per_dim]
         .sort_values(by=["test_kld_per_latent_dim"])
@@ -96,9 +95,7 @@ class LatentWalk(Callback):
             self.plot_limits = [-120, 120, -140, 140]
 
     def on_test_epoch_end(self, trainer: Trainer, pl_module: LightningModule):
-
         with torch.no_grad():
-
             with tempfile.TemporaryDirectory() as tmp_dir:
                 client = mlflow.tracking.MlflowClient(mlflow.get_tracking_uri())
                 stats = pd.read_csv(
@@ -158,7 +155,6 @@ def compute_projections(
     compute_features: bool,
     x_label: str,
 ):
-
     matplotlib.rc("xtick", labelsize=3)
     matplotlib.rc("ytick", labelsize=3)
     matplotlib.rcParams["xtick.major.size"] = 0.1
@@ -319,6 +315,6 @@ def get_surface_area(input_img):
     dy = np.array([0, 0, 1, 0, -1, 0])
     dz = np.array([-1, 0, 0, 0, 0, 1])
     surface_area = 0
-    for (k, j, i) in zip(pxl_z, pxl_y, pxl_x):
+    for k, j, i in zip(pxl_z, pxl_y, pxl_x):
         surface_area += 6 - input_img_surface[k + dz, j + dy, i + dx].sum()
     return int(surface_area)

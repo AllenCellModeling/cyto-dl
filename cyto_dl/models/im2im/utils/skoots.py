@@ -376,9 +376,10 @@ class SkootsCluster:
         skel = find_boundaries(skel, mode="inner") * skel  # propagate labels
         skel_points = np.stack(skel.nonzero()).T
         embed_points = torch.stack((embed_z, embed_y, embed_x)).numpy()
-        dist_to_closest_skel, closest_skel_point_to_embedding = self._get_point_embeddings(
-            embed_points.T, skel_points
-        )
+        (
+            dist_to_closest_skel,
+            closest_skel_point_to_embedding,
+        ) = self._get_point_embeddings(embed_points.T, skel_points)
         embedding_labels = skel[
             closest_skel_point_to_embedding[0],
             closest_skel_point_to_embedding[1],

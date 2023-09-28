@@ -38,7 +38,11 @@ class OutlierDetection(Callback):
         pd.DataFrame(init_activation_csv).to_csv(self.save_dir / "activations.csv", index=False)
 
     def on_save_checkpoint(self, trainer, pl_module, checkpoint):
-        checkpoint["outlier_detection"] = {"md_cov": self.cov, "md_mu": self.mu, "md_n": self.n}
+        checkpoint["outlier_detection"] = {
+            "md_cov": self.cov,
+            "md_mu": self.mu,
+            "md_n": self.n,
+        }
 
     def on_load_checkpoint(self, trainer, pl_module, checkpoint):
         od_params = checkpoint.get("outlier_detection", {})

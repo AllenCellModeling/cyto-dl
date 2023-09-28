@@ -32,7 +32,6 @@ class O2SpharmEncoder(nn.EquivariantModule):
         max_hidden_band=8,
         grid_size=64,
     ):
-
         super().__init__()
         self.out_dim = out_dim
         self.reflections = reflections

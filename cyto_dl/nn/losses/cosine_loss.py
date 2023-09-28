@@ -7,7 +7,6 @@ class CosineLoss(Loss):
         super().__init__(None, None, reduction)
 
     def forward(self, input, target):
-
         # sum per input-element log loss
         loss = 1 - F.cosine_similarity(input, target)
 
