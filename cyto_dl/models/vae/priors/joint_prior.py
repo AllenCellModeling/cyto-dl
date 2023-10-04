@@ -23,7 +23,9 @@ class JointPrior(Prior):
         start_ix = 0
         for prior in self.priors:
             end_ix = (start_ix + prior.dimensionality) - 1
-            kl.append(prior(z_params[:, start_ix:end_ix], mode="kl", reduction=reduction))
+            kl.append(
+                prior(z_params[:, start_ix:end_ix], mode="kl", reduction=reduction)
+            )
             start_ix = end_ix + 1
 
         kl = torch.cat(kl, axis=1)
@@ -33,7 +35,9 @@ class JointPrior(Prior):
         elif reduction == "sum":
             return kl.sum(dim=-1)
         else:
-            raise NotImplementedError(f"Reduction '{reduction}' not implemented for JointPrior")
+            raise NotImplementedError(
+                f"Reduction '{reduction}' not implemented for JointPrior"
+            )
 
     def sample(self, z_params, inference=False):
         samples = []
@@ -41,7 +45,9 @@ class JointPrior(Prior):
         start_ix = 0
         for prior in self.priors:
             end_ix = (start_ix + prior.dimensionality) - 1
-            samples.append(prior(z_params[:, start_ix:end_ix], mode="sample", inference=inference))
+            samples.append(
+                prior(z_params[:, start_ix:end_ix], mode="sample", inference=inference)
+            )
             start_ix = end_ix + 1
 
         return torch.cat(samples, axis=1)

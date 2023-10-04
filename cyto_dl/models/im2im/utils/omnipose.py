@@ -71,7 +71,9 @@ class OmniposePreprocessd(Transform):
             numpy_im = im.numpy().squeeze()
 
             if np.max(numpy_im) <= 0:
-                raise ValueError("Ground truth images for Omnipose must have at least 1 label")
+                raise ValueError(
+                    "Ground truth images for Omnipose must have at least 1 label"
+                )
 
             out_im = np.zeros([4 + self.dim] + list(numpy_im.shape))
 
@@ -81,12 +83,16 @@ class OmniposePreprocessd(Transform):
                 boundaries,
                 smooth_distance,
                 flows,
-            ) = masks_to_flows(numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device)
+            ) = masks_to_flows(
+                numpy_im, omni=True, dim=self.dim, use_gpu=True, device=im.device
+            )
             cutoff = diameters(instance_seg, rough_distance) / 2
             smooth_distance[rough_distance <= 0] = -cutoff
 
             bg_edt = edt.edt(numpy_im < 0.5, black_border=True)
-            boundary_weighted_mask = gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
+            boundary_weighted_mask = (
+                gaussian(1 - np.clip(bg_edt, 0, cutoff) / cutoff, 1) + 0.5
+            )
             out_im[0] = boundaries
             out_im[1] = boundary_weighted_mask
             out_im[2] = instance_seg
@@ -309,7 +315,9 @@ class OmniposeClustering:
         self.spatial_dim = spatial_dim
         self.boundary_seg = boundary_seg
         self.naive_label = naive_label
-        self.clustering_function = self.do_naive_labeling if naive_label else self.get_mask
+        self.clustering_function = (
+            self.do_naive_labeling if naive_label else self.get_mask
+        )
         self.fine_threshold = fine_threshold
         self.convex_ratio_threshold = convex_ratio_threshold
 
@@ -358,7 +366,12 @@ class OmniposeClustering:
         mask_points = np.asarray(list(zip(*np.where(mask_crop))))
 
         # look for <spatial dim dimension data, can't calculate convex hull
-        if np.any([len(np.unique(mask_points[:, i])) == 1 for i in range(mask_points.shape[1])]):
+        if np.any(
+            [
+                len(np.unique(mask_points[:, i])) == 1
+                for i in range(mask_points.shape[1])
+            ]
+        ):
             return False
         c_hull = ConvexHull(mask_points).volume
         mask_crop = binary_dilation(mask_crop)

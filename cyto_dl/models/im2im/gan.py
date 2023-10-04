@@ -78,7 +78,9 @@ class GAN(BaseModel):
             self.discriminator = discriminator
             self.task_heads = torch.nn.ModuleDict(task_heads)
 
-        assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
+        assert (
+            len(self.task_heads.keys()) == 1
+        ), "Only single-head GANs are supported currently."
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -89,7 +91,8 @@ class GAN(BaseModel):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        list(self.backbone.parameters()) + list(self.task_heads.parameters())
+                        list(self.backbone.parameters())
+                        + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
@@ -180,7 +183,9 @@ class GAN(BaseModel):
                 batch[k] = v.as_tensor()
 
         run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(
+            batch, stage, self.should_save_image(batch_idx, stage), run_heads
+        )
 
         loss_D = self._extract_loss(outs, "loss_D")
         loss_G = self._extract_loss(outs, "loss_G")
@@ -216,5 +221,7 @@ class GAN(BaseModel):
                 batch[k] = v.as_tensor()
         stage = "predict"
         run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(
+            batch, stage, self.should_save_image(batch_idx, stage), run_heads
+        )
         return outs[run_heads[0]]["save_path"]

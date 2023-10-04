@@ -93,7 +93,9 @@ class Pix2PixHD(nn.Module):
     def get_feature_matching_loss(self, features):
         loss_fm = 0
         for scale in range(self.scales):
-            for real_feat, pred_feat in zip(features["real"][scale], features["pred"][scale]):
+            for real_feat, pred_feat in zip(
+                features["real"][scale], features["pred"][scale]
+            ):
                 loss_fm += self.feature_matching_loss(real_feat.detach(), pred_feat)
         return loss_fm / self.scales
 
@@ -114,4 +116,7 @@ class Pix2PixHD(nn.Module):
             # tell discriminator these are real features
             loss_G = self.get_gan_loss(features["pred"], "real")
             loss_feature_matching = self.get_feature_matching_loss(features)
-            return loss_G * self.weights["GAN"] + loss_feature_matching * self.weights["FM"]
+            return (
+                loss_G * self.weights["GAN"]
+                + loss_feature_matching * self.weights["FM"]
+            )

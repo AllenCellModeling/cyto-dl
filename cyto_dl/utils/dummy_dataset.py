@@ -56,7 +56,9 @@ class DummyDataset(Dataset):
     def generate_img(self, k):
         if "seg" in k:
             im = torch.zeros(*self.shapes[k])
-            slicee = [slice(s // 2 - s // 4, s // 2 + s // 4, None) for s in self.shapes[k]]
+            slicee = [
+                slice(s // 2 - s // 4, s // 2 + s // 4, None) for s in self.shapes[k]
+            ]
             im[slicee] = 1
             return im
         return torch.randn(*self.shapes[k])

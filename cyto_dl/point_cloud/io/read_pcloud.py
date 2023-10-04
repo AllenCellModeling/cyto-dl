@@ -103,7 +103,9 @@ class ReadPointCloud(MapTransform):
                     if self.num_cols == 3:
                         points = points[:, -1::-1].copy()
                     else:
-                        points = np.concatenate([points[:, -2::-1], points[:, -1:]], axis=1)
+                        points = np.concatenate(
+                            [points[:, -2::-1], points[:, -1:]], axis=1
+                        )
 
                 if self.scale:
                     points = points * self.scale
@@ -119,7 +121,9 @@ class ReadPointCloud(MapTransform):
                     )
 
                 if self.sample:
-                    self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
+                    self.sample_idx = np.random.randint(
+                        res[key].shape[0], size=self.sample
+                    )
                     res[key] = res[key][self.sample_idx]
                 if self.final_columns:
                     res[key] = res[key][:, self.final_columns]

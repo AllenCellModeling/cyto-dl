@@ -91,7 +91,8 @@ class MultiTaskIm2Im(BaseModel):
                     opt = self.optimizer[key](
                         filter(
                             lambda p: p.requires_grad,
-                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
+                            list(self.backbone.parameters())
+                            + list(self.task_heads.parameters()),
                         )
                     )
                 elif key == "discriminator":
@@ -106,7 +107,9 @@ class MultiTaskIm2Im(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(z, batch, stage, save_image, self.global_step)
+            task: self.task_heads[task].run_head(
+                z, batch, stage, save_image, self.global_step
+            )
             for task in run_heads
         }
 
@@ -173,14 +176,22 @@ class MultiTaskIm2Im(BaseModel):
                 batch[k] = v.as_tensor()
 
         run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(
+            batch, stage, self.should_save_image(batch_idx, stage), run_heads
+        )
 
         if stage != "predict":
-            losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+            losses = {
+                head_name: head_result["loss"]
+                for head_name, head_result in outs.items()
+            }
             losses = self._sum_losses(losses)
             return losses, None, None
 
-        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
+        preds = {
+            head_name: head_result["y_hat_out"]
+            for head_name, head_result in outs.items()
+        }
 
         return None, preds, None
 
@@ -191,5 +202,7 @@ class MultiTaskIm2Im(BaseModel):
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
         run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(
+            batch, stage, self.should_save_image(batch_idx, stage), run_heads
+        )
         return outs[run_heads[0]]["save_path"]

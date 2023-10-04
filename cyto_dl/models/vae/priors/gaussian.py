@@ -129,7 +129,9 @@ class DiagonalGaussianPrior(IsotropicGaussianPrior):
         return 2 * self.dimensionality
 
     @classmethod
-    def kl_divergence(cls, mu1, mu2, logvar1, logvar2, tc_penalty_weight=None, reduction="sum"):
+    def kl_divergence(
+        cls, mu1, mu2, logvar1, logvar2, tc_penalty_weight=None, reduction="sum"
+    ):
         """Computes the Kullback-Leibler divergence between two diagonal
         gaussians (not necessarily isotropic). It also works batch-wise.
         Parameters
@@ -146,7 +148,10 @@ class DiagonalGaussianPrior(IsotropicGaussianPrior):
         mu_diff = mu2 - mu1
 
         kl = 0.5 * (
-            (logvar2 - logvar1) + (logvar1 - logvar2).exp() + (mu_diff.pow(2) / logvar2.exp()) + -1
+            (logvar2 - logvar1)
+            + (logvar1 - logvar2).exp()
+            + (mu_diff.pow(2) / logvar2.exp())
+            + -1
         )
 
         if reduction == "none":

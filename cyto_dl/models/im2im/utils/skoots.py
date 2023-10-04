@@ -161,7 +161,9 @@ class SkootsPreprocessd(Transform):
             point_embeddings = self._get_point_embeddings(
                 object_points.mul(self.anisotropy), skel_points.mul(self.anisotropy)
             )
-            embed[:, object_points.T[0], object_points.T[1], object_points.T[2]] = point_embeddings
+            embed[
+                :, object_points.T[0], object_points.T[1], object_points.T[2]
+            ] = point_embeddings
         # smooth sharp transitions from spatial embedding
         embed = self.smooth_embedding(embed)
 
@@ -295,7 +297,9 @@ class SkootsRandFlipd(RandomizableTransform):
         if do_flip:
             for key in self.label_keys + self.image_keys:
                 if key in image_dict:
-                    image_dict[key] = self._flip(image_dict[key], key in self.label_keys)
+                    image_dict[key] = self._flip(
+                        image_dict[key], key in self.label_keys
+                    )
                 elif not self.allow_missing_keys:
                     raise KeyError(
                         f"Key {key} not found in data. Available keys are {image_dict.keys()}"
@@ -427,14 +431,20 @@ class SkootsCluster:
         semantic_points = semantic.nonzero().T
 
         # find pixel coordinates pointed to by each z, y, x point within semantic segmentation
-        embed_z = embedding[0][semantic_points[0], semantic_points[1], semantic_points[2]]
+        embed_z = embedding[0][
+            semantic_points[0], semantic_points[1], semantic_points[2]
+        ]
         embed_z /= self.anisotropy
         embed_z = embed_z.clip(0, semantic.shape[0] - 1).round().int()
 
-        embed_y = embedding[1][semantic_points[0], semantic_points[1], semantic_points[2]]
+        embed_y = embedding[1][
+            semantic_points[0], semantic_points[1], semantic_points[2]
+        ]
         embed_y = embed_y.clip(0, semantic.shape[1] - 1).round().int()
 
-        embed_x = embedding[2][semantic_points[0], semantic_points[1], semantic_points[2]]
+        embed_x = embedding[2][
+            semantic_points[0], semantic_points[1], semantic_points[2]
+        ]
         embed_x = embed_x.clip(0, semantic.shape[2] - 1).round().int()
 
         # assign each embedded point the label of the closest skeleton

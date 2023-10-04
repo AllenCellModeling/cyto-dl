@@ -51,11 +51,15 @@ class RotationMask(Transform):
         margin = mask_margin if background is None else 0
 
         if self.group == "o2":
-            self.mask = build_mask(mask_side, dim=2, margin=margin).squeeze().unsqueeze(0)
+            self.mask = (
+                build_mask(mask_side, dim=2, margin=margin).squeeze().unsqueeze(0)
+            )
             if self.spatial_dims == 3:
                 self.mask = self.mask.unsqueeze(cylinder_axis)
         else:
-            self.mask = build_mask(mask_side, dim=3, margin=margin).squeeze().unsqueeze(0)
+            self.mask = (
+                build_mask(mask_side, dim=3, margin=margin).squeeze().unsqueeze(0)
+            )
 
     def __call__(self, img):
         if self.spatial_dims == 3 and len(img.shape) == 5:  # BCZYX

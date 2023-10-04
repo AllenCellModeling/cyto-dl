@@ -50,7 +50,9 @@ class MLFlowLogger(_MLFlowLogger):
             mlflow.set_tracking_uri(tracking_uri)
 
     @rank_zero_only
-    def log_hyperparams(self, params: Union[Dict[str, Any], Namespace], mode="train") -> None:
+    def log_hyperparams(
+        self, params: Union[Dict[str, Any], Namespace], mode="train"
+    ) -> None:
         requirements = params.pop("requirements", [])
 
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -62,7 +64,9 @@ class MLFlowLogger(_MLFlowLogger):
             reqs_path = Path(tmp_dir) / f"{mode}-requirements.txt"
             reqs_path.write_text("\n".join(requirements))
 
-            self.experiment.log_artifact(self.run_id, local_path=conf_path, artifact_path="config")
+            self.experiment.log_artifact(
+                self.run_id, local_path=conf_path, artifact_path="config"
+            )
             self.experiment.log_artifact(
                 self.run_id, local_path=reqs_path, artifact_path="requirements"
             )
@@ -73,7 +77,9 @@ class MLFlowLogger(_MLFlowLogger):
             super().log_metrics(metrics, step)
         except Exception as e:
             if self.fault_tolerant:
-                log.warn(f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing...")
+                log.warn(
+                    f"`MLFlowLogger.log_metrics` failed with exception {e}\n\nContinuing..."
+                )
             else:
                 raise e
 
@@ -158,7 +164,9 @@ class MLFlowLogger(_MLFlowLogger):
 
 def _delete_local_artifact(repo, artifact_path):
     artifact_path = local_file_uri_to_path(
-        os.path.join(repo._artifact_dir, artifact_path) if artifact_path else repo._artifact_dir
+        os.path.join(repo._artifact_dir, artifact_path)
+        if artifact_path
+        else repo._artifact_dir
     )
 
     if os.path.isfile(artifact_path):

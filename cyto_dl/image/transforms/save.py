@@ -29,7 +29,9 @@ class Save(Transform):
     def __call__(self, img, name="img"):
         OmeTiffWriter.save(
             uri=self.save_path / f"{name}_{self.count}.tif",
-            data=img if not isinstance(img, (torch.Tensor, MetaTensor)) else img.numpy(),
+            data=img
+            if not isinstance(img, (torch.Tensor, MetaTensor))
+            else img.numpy(),
         )
         self.count += 1
         return img
@@ -64,5 +66,7 @@ class Saved(Transform):
             if key in img_dict:
                 self.saver(img_dict[key], key)
             elif not self.allow_missing_keys:
-                raise ValueError(f"key {key} found in data. Available keys are {img_dict.keys()}")
+                raise ValueError(
+                    f"key {key} found in data. Available keys are {img_dict.keys()}"
+                )
         return img_dict

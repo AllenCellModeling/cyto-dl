@@ -16,10 +16,12 @@ class SkimageReader(ImageReader):
         self,
         channels: Optional[list] = None,
         transforms: Optional[list] = None,
+        project: Optional[int] = None,
     ):
         super().__init__()
         self.channels = channels
         self.transforms = transforms
+        self.project = project
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
@@ -28,6 +30,8 @@ class SkimageReader(ImageReader):
             this_im = imread(f"{name}")
             if self.channels:
                 this_im = this_im[self.channels]
+            if isinstance(self.project, int):
+                this_im = np.expand_dims(np.expand_dims(this_im.max(self.project), axis=0), axis=0)
 
             if self.transforms:
                 for transform in self.transforms:

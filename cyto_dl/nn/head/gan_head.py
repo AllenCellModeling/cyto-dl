@@ -50,7 +50,9 @@ class GANHead(BaseHead):
         loss_D = self.gan_loss(features_discriminator, "discriminator")
 
         # passability of generated images
-        features_generator = discriminator(batch[self.x_key], batch[self.head_name], y_hat)
+        features_generator = discriminator(
+            batch[self.x_key], batch[self.head_name], y_hat
+        )
         loss_G = self.gan_loss(features_generator, "generator")
         # image reconstruction quality
         loss_reconstruction = self.reconstruction_loss(batch[self.head_name], y_hat)
@@ -83,7 +85,9 @@ class GANHead(BaseHead):
 
         y_hat_out, y_out, out_paths = None, None, None
         if save_image:
-            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out, out_paths = self.save_image(
+                y_hat, batch, stage, global_step
+            )
 
         metric = None
         if self.calculate_metric and stage in ("val", "test"):

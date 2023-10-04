@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 import torch
 from monai.transforms import Transform
@@ -9,7 +9,8 @@ class ContrastAdjust(Transform):
     """Transform for contrast adjusting intensity values to be within a range and everything
     outside the range be set to a background value."""
 
-    def __init__(self, low: int, high: int, background: int = 0):
+    def __init__(self, low: int, high: int, 
+    background: int = 0, project: Optional[int]= None):
         """
         Parameters
         ----------
@@ -24,14 +25,20 @@ class ContrastAdjust(Transform):
         self.low = low
         self.high = high
         self.background = background
+        self.project = project
 
     def __call__(self, img):
         low = self.low
         high = self.high
         img = torch.where(img < high, img, self.background)
         img = torch.where(img > low, img, self.background)
-        if len(img.shape) < 4:
+
+        if isinstance(self.project, int):
+            img = img.max(self.project)[0]
+
+        if (len(img.shape) < 4):
             img = img.unsqueeze(dim=0)
+        
 
         return img
 
@@ -46,6 +53,7 @@ class ContrastAdjustd(Transform):
         low: int,
         high: int,
         background: int,
+        project: Optional[int] = None,
         allow_missing_keys: bool = False,
     ):
         """
@@ -66,7 +74,8 @@ class ContrastAdjustd(Transform):
         super().__init__()
         self.keys = keys if isinstance(keys, (list, ListConfig)) else [keys]
         self.allow_missing_keys = allow_missing_keys
-        self.clipper = ContrastAdjust(low, high, background)
+
+        self.clipper = ContrastAdjust(low, high, background, project)
 
     def __call__(self, img_dict):
         for key in self.keys:

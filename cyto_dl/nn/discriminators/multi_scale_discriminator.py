@@ -36,9 +36,9 @@ class MultiScaleDiscriminator(nn.Module):
                 source_img = nn.AvgPool3d(
                     kernel_size=3, padding=1, stride=2, count_include_pad=False
                 )(source_img)
-                img = nn.AvgPool3d(kernel_size=3, padding=1, stride=2, count_include_pad=False)(
-                    img
-                )
+                img = nn.AvgPool3d(
+                    kernel_size=3, padding=1, stride=2, count_include_pad=False
+                )(img)
 
             features[key] = result
         return features

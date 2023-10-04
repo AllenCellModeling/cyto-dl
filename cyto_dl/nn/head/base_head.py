@@ -84,12 +84,16 @@ class BaseHead(ABC, torch.nn.Module):
         )
         n_save = len(y_hat_out) if stage in ("test", "predict") else 1
         for i in range(n_save):
-            out_path = self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+            out_path = self._save(
+                save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage
+            )
             filename_map["output"].append(out_path)
             if stage in ("train", "val"):
                 self._save(save_name[i], y_out[i], stage)
                 if self.save_raw:
-                    self._save(save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage)
+                    self._save(
+                        save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage
+                    )
 
         return y_hat_out, y_out, filename_map
 
@@ -120,7 +124,9 @@ class BaseHead(ABC, torch.nn.Module):
 
         y_hat_out, y_out, out_paths = None, None, None
         if save_image:
-            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out, out_paths = self.save_image(
+                y_hat, batch, stage, global_step
+            )
 
         metric = None
         if self.calculate_metric and stage in ("val", "test"):

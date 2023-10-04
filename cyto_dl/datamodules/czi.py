@@ -134,7 +134,9 @@ class CZIDataset(Dataset):
             if self.transform is not None
             else data_i,
             f"{self.out_key}_meta_dict": {
-                "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
+                "filename_or_obj": original_path.replace(
+                    ".", self._metadata_to_str(img_data)
+                )
             },
         }
 

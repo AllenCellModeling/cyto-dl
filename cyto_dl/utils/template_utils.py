@@ -56,8 +56,12 @@ def task_wrapper(task_func: Callable) -> Callable:
             raise ex
         finally:
             path = Path(cfg.paths.output_dir, "exec_time.log")
-            content = f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
-            save_file(path, content)  # save task execution time (even if exception occurs)
+            content = (
+                f"'{cfg.task_name}' execution time: {time.time() - start_time} (s)"
+            )
+            save_file(
+                path, content
+            )  # save task execution time (even if exception occurs)
             close_loggers()  # close loggers (even if exception occurs so multirun won't fail)
 
         log.info(f"Output dir: {cfg.paths.output_dir}")
@@ -184,7 +188,9 @@ def log_hyperparameters(object_dict: dict) -> None:
     hparams["ckpt_path"] = cfg.get("ckpt_path")
     hparams["seed"] = cfg.get("seed")
 
-    reqs = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])  # nosec: B603
+    reqs = subprocess.check_output(
+        [sys.executable, "-m", "pip", "freeze"]
+    )  # nosec: B603
     hparams["requirements"] = str(reqs).split("\\n")
 
     # send hparams to all loggers

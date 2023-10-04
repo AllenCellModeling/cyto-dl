@@ -125,7 +125,9 @@ class ImageVAE(BaseVAE):
         assert len(_strides) + 1 == len(_channels)
 
         decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(zip(_strides, _channels[:-1], _channels[1:])):
+        for i, (s, c_in, c_out) in enumerate(
+            zip(_strides, _channels[:-1], _channels[1:])
+        ):
             last_block = i + 1 == len(_strides)
 
             size = None if not last_block else in_shape
@@ -160,7 +162,9 @@ class ImageVAE(BaseVAE):
 
             decode_blocks.append(nn.Sequential(upsample, res))
 
-        init_shape = self.final_size if decoder_initial_shape is None else decoder_initial_shape
+        init_shape = (
+            self.final_size if decoder_initial_shape is None else decoder_initial_shape
+        )
 
         first_upsample = nn.Sequential(
             nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
@@ -198,7 +202,9 @@ class ImageVAE(BaseVAE):
         )
 
         if group is not None:
-            self.rotation_module = RotationModule(group, spatial_dims, background_value, eps)
+            self.rotation_module = RotationModule(
+                group, spatial_dims, background_value, eps
+            )
         else:
             self.rotation_module = None
 

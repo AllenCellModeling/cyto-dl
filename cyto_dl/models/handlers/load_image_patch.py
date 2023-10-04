@@ -31,7 +31,9 @@ def load_image__call__patch(
     elif isinstance(img_or_path, (np.ndarray, torch.Tensor)):
         out = torch.tensor(img_or_path)
     else:
-        raise TypeError(f"Don't know how to handle `img_or_path` type {type(img_or_path)}")
+        raise TypeError(
+            f"Don't know how to handle `img_or_path` type {type(img_or_path)}"
+        )
 
     if self.image_only:
         return out

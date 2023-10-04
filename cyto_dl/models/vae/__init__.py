@@ -3,5 +3,10 @@ from .image_canon_vae import ImageCanonicalVAE
 from .image_vae import ImageVAE
 from .latent_loss_vae import LatentLossVAE
 from .o2_spharm_vae.o2_spharm_vae import O2SpharmVAE
+from .point_cloud_finvae import PointCloudFinVAE
+from .point_cloud_nfinvae import PointCloudNFinVAE
+from .point_cloud_nfinvae2 import PointCloudNFinVAE2
 from .point_cloud_vae import PointCloudVAE
 from .tabular_vae import TabularVAE
+# from .conditional_canon_vae import ConditonalCanonVAE
+from .ivae import iVAE

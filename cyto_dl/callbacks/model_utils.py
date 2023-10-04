@@ -81,7 +81,9 @@ def get_all_embeddings(
     cell_ids = []
     split = []
 
-    zip_iter = zip(["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader])
+    zip_iter = zip(
+        ["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader]
+    )
 
     with torch.no_grad():
         for split_name, dataloader in zip_iter:
@@ -94,7 +96,11 @@ def get_all_embeddings(
             _split = np.empty(_len, dtype=object)
             _ids = None
 
-            id_label = pl_module.hparams.get("id_label", None) if id_label is None else id_label
+            id_label = (
+                pl_module.hparams.get("id_label", None)
+                if id_label is None
+                else id_label
+            )
 
             for index, batch in enumerate(dataloader):
                 if _ids is None:
@@ -107,7 +113,9 @@ def get_all_embeddings(
                     if not isinstance(batch[key], list):
                         batch[key] = batch[key].to(pl_module.device)
 
-                z_parts_params, z_composed = pl_module(batch, decode=False, compute_loss=False)
+                z_parts_params, z_composed = pl_module(
+                    batch, decode=False, compute_loss=False
+                )
 
                 mu_vars = z_parts_params[x_label]
                 if mu_vars.shape[1] != pl_module.latent_dim:
@@ -139,7 +147,9 @@ def get_all_embeddings(
     cell_ids = np.hstack(cell_ids) if cell_ids[0] is not None else None
     split = np.hstack(split)
 
-    df = pd.DataFrame(all_embeddings, columns=[f"mu_{i}" for i in range(all_embeddings.shape[1])])
+    df = pd.DataFrame(
+        all_embeddings, columns=[f"mu_{i}" for i in range(all_embeddings.shape[1])]
+    )
     df["split"] = split
     if cell_ids is not None:
         df["CellId"] = cell_ids

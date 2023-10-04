@@ -152,7 +152,9 @@ class ImageCanonicalVAE(BaseVAE):
         assert len(_strides) + 1 == len(_channels)
 
         decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(zip(_strides, _channels[:-1], _channels[1:])):
+        for i, (s, c_in, c_out) in enumerate(
+            zip(_strides, _channels[:-1], _channels[1:])
+        ):
             last_block = i + 1 == len(_strides)
 
             size = None if not last_block else in_shape
@@ -187,7 +189,9 @@ class ImageCanonicalVAE(BaseVAE):
 
             decode_blocks.append(nn.Sequential(upsample, res))
 
-        init_shape = final_size if decoder_initial_shape is None else decoder_initial_shape
+        init_shape = (
+            final_size if decoder_initial_shape is None else decoder_initial_shape
+        )
 
         decoder = nn.Sequential(
             nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
@@ -198,7 +202,9 @@ class ImageCanonicalVAE(BaseVAE):
         )
 
         if group is not None:
-            self.rotation_module = RotationModule(group, spatial_dims, background_value, eps)
+            self.rotation_module = RotationModule(
+                group, spatial_dims, background_value, eps
+            )
         else:
             self.rotation_module = None
 
@@ -217,7 +223,9 @@ class ImageCanonicalVAE(BaseVAE):
         spatial_dims = self.spatial_dims
 
         if group not in ("so2", "so3", None):
-            raise ValueError(f"`group` should be one of ('so2', 'so3', None). Got {group!r}")
+            raise ValueError(
+                f"`group` should be one of ('so2', 'so3', None). Got {group!r}"
+            )
 
         if group == "so2":
             self.gspace = (
@@ -230,7 +238,9 @@ class ImageCanonicalVAE(BaseVAE):
                 raise ValueError("The SO3 group only works for spatial_dims=3")
             gspace = gspaces.rot3dOnR3(maximum_frequency=maximum_frequency)
         else:
-            gspace = gspaces.trivialOnR2() if spatial_dims == 2 else gspaces.trivialOnR3()
+            gspace = (
+                gspaces.trivialOnR2() if spatial_dims == 2 else gspaces.trivialOnR3()
+            )
 
         in_type = enn.FieldType(gspace, [gspace.trivial_repr])
 

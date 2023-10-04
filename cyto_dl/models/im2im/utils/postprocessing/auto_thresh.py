@@ -11,7 +11,9 @@ class AutoThreshold:
 
         elif isinstance(method, str):
             try:
-                thresh_func = getattr(importlib.import_module("skimage.filters"), method)
+                thresh_func = getattr(
+                    importlib.import_module("skimage.filters"), method
+                )
             except AttributeError:
                 raise AttributeError(f"method {method} not found in skimage.filters")
         else:

@@ -15,6 +15,8 @@ class ReadNumpyFile(MapTransform):
         keys: Union[str, Sequence[str]],
         channels: Optional[Sequence[int]] = None,
         remote: bool = False,
+        clip_min: Optional[int] = None,
+        clip_max: Optional[int] = None,
     ):
         """
         Parameters
@@ -29,6 +31,8 @@ class ReadNumpyFile(MapTransform):
         self.keys = [keys] if isinstance(keys, str) else keys
         self.channels = channels
         self.remote = remote
+        self.clip_min = clip_min
+        self.clip_max = clip_max
 
     def __call__(self, row):
         res = dict(**row)
@@ -48,8 +52,14 @@ class ReadNumpyFile(MapTransform):
                 else:
                     path = str(row[key])
 
-                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype())
+                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype()).unsqueeze(dim=0)
                 if self.channels is not None:
                     res[key] = res[key][self.channels]
+
+                if isinstance(self.clip_min, int):
+                    res[key] = torch.where(res[key] > self.clip_min, res[key], 0)
+
+                if isinstance(self.clip_max, int):
+                    res[key] = torch.where(res[key] < self.clip_max, res[key], 0)
 
         return res

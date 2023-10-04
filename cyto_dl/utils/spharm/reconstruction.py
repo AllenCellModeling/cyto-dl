@@ -36,7 +36,9 @@ def get_image_from_shcoeffs(x, spharm_cols_filter, spharm_cols):
     img = np.zeros((d, h, w), dtype=np.uint8)
 
     # Voxelize mesh
-    seg = cytoparam.voxelize_mesh(imagedata=imagedata, shape=(d, h, w), mesh=mesh, origin=rmin)
+    seg = cytoparam.voxelize_mesh(
+        imagedata=imagedata, shape=(d, h, w), mesh=mesh, origin=rmin
+    )
     img[seg > 0] = 1
     return img
 

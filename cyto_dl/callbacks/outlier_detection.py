@@ -30,12 +30,16 @@ class OutlierDetection(Callback):
         for ln in layer_names:
             for metric in ("min", "max", "mean", "median", "var"):
                 init_mahalanobis_csv[f"{ln}_mahalanobis_{metric}"] = []
-        pd.DataFrame(init_mahalanobis_csv).to_csv(self.save_dir / "mahalanobis.csv", index=False)
+        pd.DataFrame(init_mahalanobis_csv).to_csv(
+            self.save_dir / "mahalanobis.csv", index=False
+        )
 
         init_activation_csv = {"file": []}
         for ln in layer_names:
             init_activation_csv[f"{ln}_activation"] = []
-        pd.DataFrame(init_activation_csv).to_csv(self.save_dir / "activations.csv", index=False)
+        pd.DataFrame(init_activation_csv).to_csv(
+            self.save_dir / "activations.csv", index=False
+        )
 
     def on_save_checkpoint(self, trainer, pl_module, checkpoint):
         checkpoint["outlier_detection"] = {
@@ -55,7 +59,11 @@ class OutlierDetection(Callback):
         self._run = True
 
     def flatten_activations(self, act):
-        return reduce(act.clone().detach(), "b c z y x ->  b c", reduction="mean").cpu().numpy()
+        return (
+            reduce(act.clone().detach(), "b c z y x ->  b c", reduction="mean")
+            .cpu()
+            .numpy()
+        )
 
     def update_covariance_hook(self, layer_name: str) -> Callable:
         def fn(_, __, output):
@@ -120,9 +128,9 @@ class OutlierDetection(Callback):
         if self._run:
             batch_names = batch["raw_meta_dict"]["filename_or_obj"]
             # activations are saved per-patch
-            distances_per_image = len(self.mahalanobis_distances[self.layer_names[0]]) // len(
-                batch_names
-            )
+            distances_per_image = len(
+                self.mahalanobis_distances[self.layer_names[0]]
+            ) // len(batch_names)
             with open(self.save_dir / "mahalanobis.csv", "a", newline="") as file:
                 writer = csv.writer(file, delimiter=",")
                 rows = []
@@ -147,14 +155,18 @@ class OutlierDetection(Callback):
                 for i, name in enumerate(batch_names):
                     for ln in self.layer_names:
                         # compile stats per-image
-                        summary = [name] + [np.stack(self.activations[ln]).mean(0).tolist()]
+                        summary = [name] + [
+                            np.stack(self.activations[ln]).mean(0).tolist()
+                        ]
                         rows.append(summary)
                 writer.writerows(rows)
 
             self.mahalanobis_distances = {ln: [] for ln in self.layer_names}
             self.activations = {ln: [] for ln in self.layer_names}
 
-    def on_test_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
+    def on_test_batch_end(
+        self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
+    ):
         self._inference_batch_end(batch)
 
     def on_predict_batch_end(

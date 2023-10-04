@@ -53,7 +53,9 @@ names = []
 for name, member in _members:
     if inspect.isclass(member):
         with suppress(TypeError):
-            subclass = TorchvisionDatasetMeta(name, (member,), {"__getitem__": __getitem__})
+            subclass = TorchvisionDatasetMeta(
+                name, (member,), {"__getitem__": __getitem__}
+            )
             globals()[name] = subclass
             names.append(name)
             # the following torchvision datasets aren't compatible with this approach:

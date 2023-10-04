@@ -19,7 +19,9 @@ def kv_to_dict(kv: ListConfig) -> DictConfig:
     if isinstance(kv, ListConfig):
         ret = {}
         for item in kv:
-            assert len(item) == 2, f"Expected ListConfig item to have len 2, got {len(item)}"
+            assert (
+                len(item) == 2
+            ), f"Expected ListConfig item to have len 2, got {len(item)}"
             ret[item[0]] = OmegaConf.to_container(item[1], resolve=True)
     else:
         raise TypeError("Config resolved with kv_to_dict must be ListConfig")
@@ -38,7 +40,9 @@ def remove_aux_key(cfg):
         with open_dict(cfg):
             if isinstance(cfg, DictConfig):
                 for k, v in cfg.items():
-                    with suppress(MissingMandatoryValue, InterpolationToMissingValueError):
+                    with suppress(
+                        MissingMandatoryValue, InterpolationToMissingValueError
+                    ):
                         if isinstance(v, DictConfig):
                             remove_aux_key(v)
                             if k == "_aux":
@@ -49,6 +53,8 @@ def remove_aux_key(cfg):
                                 remove_aux_key(item)
             else:
                 for v in cfg:
-                    with suppress(MissingMandatoryValue, InterpolationToMissingValueError):
+                    with suppress(
+                        MissingMandatoryValue, InterpolationToMissingValueError
+                    ):
                         if isinstance(v, (DictConfig, ListConfig)):
                             remove_aux_key(v)

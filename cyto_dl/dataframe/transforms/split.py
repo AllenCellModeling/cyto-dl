@@ -49,7 +49,9 @@ def split_dataframe(
         # by default use same size for val and test
         val_frac = 0.5
 
-    val_ix, test_ix = train_test_split(val_test_ix, train_size=val_frac, random_state=seed)
+    val_ix, test_ix = train_test_split(
+        val_test_ix, train_size=val_frac, random_state=seed
+    )
 
     if return_splits:
         return dict(
