@@ -1,3 +1,0 @@
-shcoeff:
-  _target_: torch.nn.MSELoss
-  reduction: none
