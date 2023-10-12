@@ -7,6 +7,9 @@ from .point_cloud_finvae import PointCloudFinVAE
 from .point_cloud_nfinvae import PointCloudNFinVAE
 from .point_cloud_nfinvae2 import PointCloudNFinVAE2
 from .point_cloud_vae import PointCloudVAE
+from .point_cloud_vqvae import PointCloudVQVAE
+from .point_cloud_vqvae2 import PointCloudVQVAE2
 from .tabular_vae import TabularVAE
 # from .conditional_canon_vae import ConditonalCanonVAE
 from .ivae import iVAE
+from .image_vqvae import ImageVQVAE

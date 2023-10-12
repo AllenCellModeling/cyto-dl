@@ -52,7 +52,10 @@ class ReadNumpyFile(MapTransform):
                 else:
                     path = str(row[key])
 
-                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype()).unsqueeze(dim=0)
+                res[key] = torch.tensor(np.load(path), dtype=torch.get_default_dtype())
+                if len(res[key].shape) < 3:
+                    res[key] = res[key].unsqueeze(dim=0)
+
                 if self.channels is not None:
                     res[key] = res[key][self.channels]
 

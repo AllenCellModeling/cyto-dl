@@ -34,6 +34,7 @@ class _Scale(nn.Module):
 class ImageVAE(BaseVAE):
     def __init__(
         self,
+        x_label: str,
         latent_dim: int,
         spatial_dims: int,
         in_shape: Sequence[int],
@@ -61,14 +62,15 @@ class ImageVAE(BaseVAE):
         num_res_units: int = 2,
         up_kernel_size: int = 3,
         first_conv_padding_mode: str = "replicate",
-        encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
+        encoder_padding: Optional[Union[int, Sequence[int]]] = None,
+        metric_keys: Optional[list] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
 
         self.out_channels = out_channels if out_channels is not None else in_channels
-
+        self.x_label = x_label
         self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
         self.up_kernel_size = up_kernel_size
@@ -213,6 +215,8 @@ class ImageVAE(BaseVAE):
             decoder=decoder,
             latent_dim=latent_dim,
             prior=prior,
+            x_label=x_label,
+            metric_keys=metric_keys,
             **base_kwargs,
         )
 

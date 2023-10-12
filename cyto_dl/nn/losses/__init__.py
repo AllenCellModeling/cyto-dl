@@ -8,6 +8,7 @@ from .geomloss import GeomLoss
 from .threshold_loss import ThresholdLoss
 from .weibull import WeibullLogLoss
 from .weighted_mse_loss import WeightedMSELoss
+from .topo_loss import TopoLoss
 
 try:
     from .spharm_loss import SpharmLoss

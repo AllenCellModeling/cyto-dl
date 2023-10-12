@@ -62,7 +62,8 @@ class FactorizedPrior(nn.Module):
             return self.prior_mean_spur, self.logl_spur
         elif self.fix_mean_spur_prior:
             if (spur_covar is not None) and (not self.inject_covar_in_latent):
-                logl_spur = self.logl_spur(spur_covar).exp() + 1e-4
+                # self.logl_spur(spur_covar.float())
+                logl_spur = self.logl_spur(spur_covar.float()).exp() + 1e-4
             else:
                 logl_spur = self.logl_spur
 
