@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,49 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-basic-model-module">
-<h1>cyto_dl.models.basic_model module<a class="headerlink" href="#cyto-dl-models-basic-model-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.basic_model">
+<span id="cyto-dl-models-basic-model-module"></span><h1>cyto_dl.models.basic_model module<a class="headerlink" href="#module-cyto_dl.models.basic_model" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.basic_model.BasicModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.basic_model.</span></span><span class="sig-name descname"><span class="pre">BasicModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/basic_model.html#BasicModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.basic_model.BasicModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel" title="cyto_dl.models.base_model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>A minimal Pytorch Lightning wrapper around generic Pytorch models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<em>Optional[nn.Module] = None</em>) – The network to wrap
+Assumes that the network outputs gt and predictions</p></li>
+<li><p><strong>loss</strong> (<em>Optional[Loss] = None</em>) – The loss function to optimize for</p></li>
+<li><p><strong>x_label</strong> (<em>str = “x”</em>) – The key used to retrieve the input from dataloader batches</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer = torch.optim.Adam</em>) – The optimizer class</p></li>
+<li><p><strong>save_predictions</strong> (<em>Optional[Callable] = None</em>) – A function to save the results of <cite>serotiny predict</cite></p></li>
+<li><p><strong>fields_to_log</strong> (<em>Optional[Union[Sequence, Dict]] = None</em>) – List of batch fields to store with the outputs. Use a list to log
+the same fields for every training stage (train, val, test, prediction).
+If a list is used, it is assumed to be for test and prediction only</p></li>
+<li><p><strong>pretrained_weights</strong> (<em>Optional[str] = None</em>) – Path to pretrained weights. If network is not None, this will be
+loaded via <cite>network.load_state_dict</cite>, otherwise it will be
+loaded via <cite>torch.load</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.basic_model.BasicModel.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/basic_model.html#BasicModel.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.basic_model.BasicModel.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.basic_model.BasicModel.model_step">
+<span class="sig-name descname"><span class="pre">model_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/basic_model.html#BasicModel.model_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.basic_model.BasicModel.model_step" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +460,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.basic_model module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.basic_model.BasicModel"><code class="docutils literal notranslate"><span class="pre">BasicModel</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.basic_model.BasicModel.forward"><code class="docutils literal notranslate"><span class="pre">BasicModel.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.basic_model.BasicModel.model_step"><code class="docutils literal notranslate"><span class="pre">BasicModel.model_step()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

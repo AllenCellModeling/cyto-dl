@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,45 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-datamodules-folder-module">
-<h1>cyto_dl.datamodules.folder module<a class="headerlink" href="#cyto-dl-datamodules-folder-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.datamodules.folder">
+<span id="cyto-dl-datamodules-folder-module"></span><h1>cyto_dl.datamodules.folder module<a class="headerlink" href="#module-cyto_dl.datamodules.folder" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.folder.make_folder_dataloader">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.folder.</span></span><span class="sig-name descname"><span class="pre">make_folder_dataloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startswith</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">endswith</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contains</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dataloader_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/folder.html#make_folder_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.folder.make_folder_dataloader" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a dataloader based on a folder of samples. If no transforms are applied, each sample
+is a dictionary with a key “input” containing the corresponding path and a key “orig_fname”
+containing the original filename (with no extension).</p>
+<p>Files can be filtered out of the list with name-based rules, using <cite>regex</cite>,
+<cite>startswith</cite>, <cite>endswith</cite>, <cite>contains</cite>, <cite>excludes</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Union[Path, str],</em>) – Path to folder</p></li>
+<li><p><strong>transforms</strong> (<em>Union[Sequence[Callable], Callable],</em>) – Transforms to apply to each sample</p></li>
+<li><p><strong>cache_dir</strong> (<em>Optional[Union[Path, str]] = None</em>) – Path to a directory in which to store cached transformed inputs, to
+accelerate batch loading.</p></li>
+<li><p><strong>regex</strong> (<em>Optional[str] = None</em>) – A string containing a regular expression to be matched</p></li>
+<li><p><strong>startswith</strong> (<em>Optional[str] = None</em>) – A substring the matching columns must start with</p></li>
+<li><p><strong>endswith</strong> (<em>Optional[str] = None</em>) – A substring the matching columns must end with</p></li>
+<li><p><strong>contains</strong> (<em>Optional[str] = None</em>) – A substring the matching columns must contain</p></li>
+<li><p><strong>excludes</strong> (<em>Optional[str] = None</em>) – A substring the matching columns must not contain</p></li>
+<li><p><strong>dataloader_kwargs</strong> – Additional keyword arguments are passed to the
+torch.utils.data.DataLoader class when instantiating it (aside from
+<cite>shuffle</cite> which is only used for the train dataloader).
+Among these args are <cite>num_workers</cite>, <cite>batch_size</cite>, <cite>shuffle</cite>, etc.
+See the PyTorch docs for more info on these args:
+<a class="reference external" href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader">https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader</a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +456,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.datamodules.folder module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.datamodules.folder.make_folder_dataloader"><code class="docutils literal notranslate"><span class="pre">make_folder_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

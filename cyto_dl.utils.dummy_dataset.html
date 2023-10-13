@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,65 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-utils-dummy-dataset-module">
-<h1>cyto_dl.utils.dummy_dataset module<a class="headerlink" href="#cyto-dl-utils-dummy-dataset-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.utils.dummy_dataset">
+<span id="cyto-dl-utils-dummy-dataset-module"></span><h1>cyto_dl.utils.dummy_dataset module<a class="headerlink" href="#module-cyto_dl.utils.dummy_dataset" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.dummy_dataset.</span></span><span class="sig-name descname"><span class="pre">DummyDatamodule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LightningDataModule</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule.get_dataloader">
+<span class="sig-name descname"><span class="pre">get_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule.get_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.get_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule.predict_dataloader">
+<span class="sig-name descname"><span class="pre">predict_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule.predict_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.predict_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule.test_dataloader">
+<span class="sig-name descname"><span class="pre">test_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule.test_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.test_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule.train_dataloader">
+<span class="sig-name descname"><span class="pre">train_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule.train_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.train_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDatamodule.val_dataloader">
+<span class="sig-name descname"><span class="pre">val_dataloader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDatamodule.val_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.val_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.dummy_dataset.</span></span><span class="sig-name descname"><span class="pre">DummyDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">shapes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<dl>
+<dt>Args:</dt><dd><p>num_samples: how many samples to use in this dataset
+metadata: whether to generate metatensors
+<a href="#id1"><span class="problematic" id="id2">**</span></a>shapes: kwargs, where each key will become a batch key and each</p>
+<blockquote>
+<div><p>value is the shape of the corresponding batch elements</p>
+</div></blockquote>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.utils.dummy_dataset.DummyDataset.generate_img">
+<span class="sig-name descname"><span class="pre">generate_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/dummy_dataset.html#DummyDataset.generate_img"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +476,38 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.utils.dummy_dataset module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.get_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.get_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.predict_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.predict_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.test_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.test_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.train_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.train_dataloader()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDatamodule.val_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.val_dataloader()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDataset"><code class="docutils literal notranslate"><span class="pre">DummyDataset</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img"><code class="docutils literal notranslate"><span class="pre">DummyDataset.generate_img()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

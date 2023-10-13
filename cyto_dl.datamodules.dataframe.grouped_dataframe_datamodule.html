@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,63 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-datamodules-dataframe-grouped-dataframe-datamodule-module">
-<h1>cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule module<a class="headerlink" href="#cyto-dl-datamodules-dataframe-grouped-dataframe-datamodule-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule">
+<span id="cyto-dl-datamodules-dataframe-grouped-dataframe-datamodule-module"></span><h1>cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule module<a class="headerlink" href="#module-cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.</span></span><span class="sig-name descname"><span class="pre">GroupedDataframeDatamodule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">just_inference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_subsample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dataloader_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/grouped_dataframe_datamodule.html#GroupedDataframeDatamodule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule" title="cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeDatamodule</span></code></a></p>
+<p>A DataframeDatamodule modified for cases where batches should be grouped by some criterion
+leveraging an AlternatingBatchSampler.</p>
+<p>The two use cases currently supported are 1. multitask training where ground truths are only
+available for one task at a time and 2. training where batches are grouped by some
+characteristic of the images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Union[Path, str]</em>) – Path to a dataframe file</p></li>
+<li><p><strong>transforms</strong> (<em>Dict</em>) – Transforms specifications for each given split.</p></li>
+<li><p><strong>split_column</strong> (<em>Optional[str] = None</em>) – Name of a column in the dataset which can be used to create train, val, test
+splits.</p></li>
+<li><p><strong>columns</strong> (<em>Optional[Sequence[str]] = None</em>) – List of columns to load from the dataset, in case it’s a parquet file.
+If None, load everything.</p></li>
+<li><p><strong>split_map</strong> (<em>Optional[Dict] = None</em>) – TODO: document this argument</p></li>
+<li><p><strong>just_inference</strong> (<em>bool = False</em>) – Whether this datamodule will be used for just inference
+(testing/prediction).
+If so, the splits are ignored and the whole dataset is used.</p></li>
+<li><p><strong>cache_dir</strong> (<em>Optional[Union[Path, str]] = None</em>) – Path to a directory in which to store cached transformed inputs, to
+accelerate batch loading.</p></li>
+<li><p><strong>subsample</strong> (<em>Optional[Dict] = None</em>) – Dictionary with a key per split (“train”, “val”, “test”), and the
+number of samples of each split to use per epoch. If <cite>None</cite> (default),
+use all the samples in each split per epoch.</p></li>
+<li><p><strong>refresh_subsample</strong> (<em>bool = False</em>) – Whether to refresh subsample each time dataloader is called</p></li>
+<li><p><strong>seed</strong> (<em>int = 42</em>) – random seed</p></li>
+<li><p><strong>target_columns</strong> (<em>str = None</em>) – column names in csv corresponding to ground truth types to alternate between
+during training</p></li>
+<li><p><strong>grouping_column</strong> (<em>str = None</em>) – column names in csv corresponding to a factor that should be homogeneous across
+a batch</p></li>
+<li><p><strong>dataloader_kwargs</strong> – Additional keyword arguments are passed to the
+torch.utils.data.DataLoader class when instantiating it (aside from
+<cite>shuffle</cite> which is only used for the train dataloader).
+Among these args are <cite>num_workers</cite>, <cite>batch_size</cite>, <cite>shuffle</cite>, etc.
+See the PyTorch docs for more info on these args:
+<a class="reference external" href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader">https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader</a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule.make_dataloader">
+<span class="sig-name descname"><span class="pre">make_dataloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/grouped_dataframe_datamodule.html#GroupedDataframeDatamodule.make_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule.make_dataloader" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +474,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule"><code class="docutils literal notranslate"><span class="pre">GroupedDataframeDatamodule</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule.make_dataloader"><code class="docutils literal notranslate"><span class="pre">GroupedDataframeDatamodule.make_dataloader()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

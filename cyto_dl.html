@@ -388,7 +388,10 @@
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html#cyto_dl.callbacks.layer_freeze.LayerFreeze"><code class="docutils literal notranslate"><span class="pre">LayerFreeze</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
 </ul>
@@ -425,11 +428,82 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.datamodules.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.czi.html">cyto_dl.datamodules.czi module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.czi.html">cyto_dl.datamodules.czi module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset"><code class="docutils literal notranslate"><span class="pre">CZIDataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.make_CZI_dataloader"><code class="docutils literal notranslate"><span class="pre">make_CZI_dataloader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.data_dict.html#cyto_dl.datamodules.data_dict.make_data_dict_dataloader"><code class="docutils literal notranslate"><span class="pre">make_data_dict_dataloader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.folder.html#cyto_dl.datamodules.folder.make_folder_dataloader"><code class="docutils literal notranslate"><span class="pre">make_folder_dataloader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule"><code class="docutils literal notranslate"><span class="pre">SmartcacheDatamodule</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CIFAR10"><code class="docutils literal notranslate"><span class="pre">CIFAR10</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CIFAR100"><code class="docutils literal notranslate"><span class="pre">CIFAR100</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CLEVRClassification"><code class="docutils literal notranslate"><span class="pre">CLEVRClassification</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Caltech101"><code class="docutils literal notranslate"><span class="pre">Caltech101</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Caltech256"><code class="docutils literal notranslate"><span class="pre">Caltech256</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CelebA"><code class="docutils literal notranslate"><span class="pre">CelebA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Cityscapes"><code class="docutils literal notranslate"><span class="pre">Cityscapes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CocoCaptions"><code class="docutils literal notranslate"><span class="pre">CocoCaptions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CocoDetection"><code class="docutils literal notranslate"><span class="pre">CocoDetection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Country211"><code class="docutils literal notranslate"><span class="pre">Country211</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.DTD"><code class="docutils literal notranslate"><span class="pre">DTD</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.DatasetFolder"><code class="docutils literal notranslate"><span class="pre">DatasetFolder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EMNIST"><code class="docutils literal notranslate"><span class="pre">EMNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EuroSAT"><code class="docutils literal notranslate"><span class="pre">EuroSAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.FER2013"><code class="docutils literal notranslate"><span class="pre">FER2013</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.FGVCAircraft"><code class="docutils literal notranslate"><span class="pre">FGVCAircraft</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.FakeData"><code class="docutils literal notranslate"><span class="pre">FakeData</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.FashionMNIST"><code class="docutils literal notranslate"><span class="pre">FashionMNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flickr30k"><code class="docutils literal notranslate"><span class="pre">Flickr30k</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flickr8k"><code class="docutils literal notranslate"><span class="pre">Flickr8k</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flowers102"><code class="docutils literal notranslate"><span class="pre">Flowers102</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Food101"><code class="docutils literal notranslate"><span class="pre">Food101</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.GTSRB"><code class="docutils literal notranslate"><span class="pre">GTSRB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.HMDB51"><code class="docutils literal notranslate"><span class="pre">HMDB51</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.INaturalist"><code class="docutils literal notranslate"><span class="pre">INaturalist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageFolder"><code class="docutils literal notranslate"><span class="pre">ImageFolder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageNet"><code class="docutils literal notranslate"><span class="pre">ImageNet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.KMNIST"><code class="docutils literal notranslate"><span class="pre">KMNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Kinetics"><code class="docutils literal notranslate"><span class="pre">Kinetics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Kitti"><code class="docutils literal notranslate"><span class="pre">Kitti</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LFWPairs"><code class="docutils literal notranslate"><span class="pre">LFWPairs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LFWPeople"><code class="docutils literal notranslate"><span class="pre">LFWPeople</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LSUN"><code class="docutils literal notranslate"><span class="pre">LSUN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.LSUNClass"><code class="docutils literal notranslate"><span class="pre">LSUNClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.MNIST"><code class="docutils literal notranslate"><span class="pre">MNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.MovingMNIST"><code class="docutils literal notranslate"><span class="pre">MovingMNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Omniglot"><code class="docutils literal notranslate"><span class="pre">Omniglot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.OxfordIIITPet"><code class="docutils literal notranslate"><span class="pre">OxfordIIITPet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PCAM"><code class="docutils literal notranslate"><span class="pre">PCAM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PhotoTour"><code class="docutils literal notranslate"><span class="pre">PhotoTour</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Places365"><code class="docutils literal notranslate"><span class="pre">Places365</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.QMNIST"><code class="docutils literal notranslate"><span class="pre">QMNIST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.RenderedSST2"><code class="docutils literal notranslate"><span class="pre">RenderedSST2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SBDataset"><code class="docutils literal notranslate"><span class="pre">SBDataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SBU"><code class="docutils literal notranslate"><span class="pre">SBU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SEMEION"><code class="docutils literal notranslate"><span class="pre">SEMEION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.STL10"><code class="docutils literal notranslate"><span class="pre">STL10</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SUN397"><code class="docutils literal notranslate"><span class="pre">SUN397</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SVHN"><code class="docutils literal notranslate"><span class="pre">SVHN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.StanfordCars"><code class="docutils literal notranslate"><span class="pre">StanfordCars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.UCF101"><code class="docutils literal notranslate"><span class="pre">UCF101</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.USPS"><code class="docutils literal notranslate"><span class="pre">USPS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.VOCDetection"><code class="docutils literal notranslate"><span class="pre">VOCDetection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.VOCSegmentation"><code class="docutils literal notranslate"><span class="pre">VOCSegmentation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.VisionDataset"><code class="docutils literal notranslate"><span class="pre">VisionDataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.WIDERFace"><code class="docutils literal notranslate"><span class="pre">WIDERFace</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -450,7 +524,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.loggers.html">cyto_dl.loggers package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.loggers.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger"><code class="docutils literal notranslate"><span class="pre">MLFlowLogger</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -478,8 +555,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.models.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel"><code class="docutils literal notranslate"><span class="pre">BaseModel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModelMeta"><code class="docutils literal notranslate"><span class="pre">BaseModelMeta</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.basic_model.html#cyto_dl.models.basic_model.BasicModel"><code class="docutils literal notranslate"><span class="pre">BasicModel</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -505,10 +589,23 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html#cyto_dl.nn.hr_skip.HRSkip"><code class="docutils literal notranslate"><span class="pre">HRSkip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html#cyto_dl.nn.mlp.MLP"><code class="docutils literal notranslate"><span class="pre">MLP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit"><code class="docutils literal notranslate"><span class="pre">ResidualUnit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU"><code class="docutils literal notranslate"><span class="pre">ConvPoolReLU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.STN"><code class="docutils literal notranslate"><span class="pre">STN</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -538,7 +635,11 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.config.html#cyto_dl.utils.config.remove_aux_key"><code class="docutils literal notranslate"><span class="pre">remove_aux_key()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset"><code class="docutils literal notranslate"><span class="pre">DummyDataset</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.pylogger.html#cyto_dl.utils.pylogger.get_pylogger"><code class="docutils literal notranslate"><span class="pre">get_pylogger()</span></code></a></li>
 </ul>
@@ -548,8 +649,23 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.print_config_tree"><code class="docutils literal notranslate"><span class="pre">print_config_tree()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.RotationModule"><code class="docutils literal notranslate"><span class="pre">RotationModule</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.get_rotation_matrix_so2"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so2()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.get_rotation_matrix_so3"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.close_loggers"><code class="docutils literal notranslate"><span class="pre">close_loggers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.extras"><code class="docutils literal notranslate"><span class="pre">extras()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.get_metric_value"><code class="docutils literal notranslate"><span class="pre">get_metric_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_callbacks"><code class="docutils literal notranslate"><span class="pre">instantiate_callbacks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_loggers"><code class="docutils literal notranslate"><span class="pre">instantiate_loggers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.log_hyperparameters"><code class="docutils literal notranslate"><span class="pre">log_hyperparameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.save_file"><code class="docutils literal notranslate"><span class="pre">save_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.task_wrapper"><code class="docutils literal notranslate"><span class="pre">task_wrapper()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -562,8 +678,14 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.compile.html">cyto_dl.compile module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.eval.html">cyto_dl.eval module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.train.html">cyto_dl.train module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.eval.html">cyto_dl.eval module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.eval.html#cyto_dl.eval.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.train.html">cyto_dl.train module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.train.html#cyto_dl.train.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

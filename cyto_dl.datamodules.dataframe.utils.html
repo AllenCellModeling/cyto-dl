@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,69 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-datamodules-dataframe-utils-module">
-<h1>cyto_dl.datamodules.dataframe.utils module<a class="headerlink" href="#cyto-dl-datamodules-dataframe-utils-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.datamodules.dataframe.utils">
+<span id="cyto-dl-datamodules-dataframe-utils-module"></span><h1>cyto_dl.datamodules.dataframe.utils module<a class="headerlink" href="#module-cyto_dl.datamodules.dataframe.utils" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.AlternatingBatchSampler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">AlternatingBatchSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset:</span> <span class="pre">~torch.utils.data.dataset.Subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_columns:</span> <span class="pre">~typing.Sequence[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grouping_column:</span> <span class="pre">~typing.Sequence[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler:</span> <span class="pre">~torch.utils.data.sampler.Sampler</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'torch.utils.data.sampler.SubsetRandomSampler'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#AlternatingBatchSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.AlternatingBatchSampler" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BatchSampler</span></code></p>
+<p>Subclass of pytorch’s <cite>BatchSampler</cite> that alternates between sampling from mutually
+exclusive columns of a dataframe dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subset</strong> (<em>Subset</em>) – Subset of monai dataset wrapping a dataframe</p></li>
+<li><p><strong>target_columns</strong> (<em>Sequence[str]</em>) – names of columns in <cite>subset</cite> dataframe representing types of ground truth images to alternate between</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em>) – Size of batch</p></li>
+<li><p><strong>drop_last</strong> (<em>bool=False</em>) – Whether to drop last incomplete batch</p></li>
+<li><p><strong>shuffle</strong> (<em>bool=False</em>) – Whether to randomly select between columns in <cite>target_columns</cite>. If False, batches will follow the order of
+<cite>target_columns</cite></p></li>
+<li><p><strong>sampler</strong> (<em>Sampler=SubsetRandomSampler</em>) – Sampler to sample from each column in <cite>target_columns</cite></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">RemoveNaNKeysd</span></span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#RemoveNaNKeysd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<p>Transform to remove ‘nan’ keys from data dictionary.</p>
+<p>When combined with adding <cite>allow_missing_keys=True</cite> to transforms and the alternating batch
+sampler, this allows multi-task training when only one target is available at a time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.get_canonical_split_name">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">get_canonical_split_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#get_canonical_split_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.get_canonical_split_name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.get_dataset">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.get_dataset" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">make_multiple_dataframe_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">just_inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#make_multiple_dataframe_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.make_single_dataframe_splits">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">make_single_dataframe_splits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">just_inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#make_single_dataframe_splits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.make_single_dataframe_splits" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.datamodules.dataframe.utils.parse_transforms">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.dataframe.utils.</span></span><span class="sig-name descname"><span class="pre">parse_transforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transforms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/dataframe/utils.html#parse_transforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.dataframe.utils.parse_transforms" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +480,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.datamodules.dataframe.utils module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.AlternatingBatchSampler"><code class="docutils literal notranslate"><span class="pre">AlternatingBatchSampler</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd"><code class="docutils literal notranslate"><span class="pre">RemoveNaNKeysd</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.get_canonical_split_name"><code class="docutils literal notranslate"><span class="pre">get_canonical_split_name()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.get_dataset"><code class="docutils literal notranslate"><span class="pre">get_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits"><code class="docutils literal notranslate"><span class="pre">make_multiple_dataframe_splits()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.make_single_dataframe_splits"><code class="docutils literal notranslate"><span class="pre">make_single_dataframe_splits()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.datamodules.dataframe.utils.parse_transforms"><code class="docutils literal notranslate"><span class="pre">parse_transforms()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

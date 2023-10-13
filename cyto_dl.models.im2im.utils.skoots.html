@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,114 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-im2im-utils-skoots-module">
-<h1>cyto_dl.models.im2im.utils.skoots module<a class="headerlink" href="#cyto-dl-models-im2im-utils-skoots-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.im2im.utils.skoots">
+<span id="cyto-dl-models-im2im-utils-skoots-module"></span><h1>cyto_dl.models.im2im.utils.skoots module<a class="headerlink" href="#module-cyto_dl.models.im2im.utils.skoots" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsCluster">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.skoots.</span></span><span class="sig-name descname"><span class="pre">SkootsCluster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">anisotropy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skel_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semantic_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsCluster"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsCluster" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Clustering for SKOOTS - finds skeletons and assigns semantic points to skeleton based on spatial embedding and nearest neighbor distances.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsCluster.kd_clustering">
+<span class="sig-name descname"><span class="pre">kd_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embed_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsCluster.kd_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsCluster.kd_clustering" title="Permalink to this definition">#</a></dt>
+<dd><p>assign embedded points to closest skeleton.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.skoots.</span></span><span class="sig-name descname"><span class="pre">SkootsLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsLoss" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Loss function for Skoots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dim</strong> (<em>int=3</em>) – Spatial dimension of input images.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.skoots.</span></span><span class="sig-name descname"><span class="pre">SkootsPreprocessd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anisotropy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label_keys</strong> (<em>Union[Sequence[str], str]</em>) – Keys of instance segmentations in input dictionary to convert to Skoots ground truth images.</p></li>
+<li><p><strong>kernel_size</strong> (<em>int=3</em>) – Size of kernel for gaussian smoothing of flows</p></li>
+<li><p><strong>thin</strong> (<em>int=5</em>) – Amount to thin to create psuedo-skeleton</p></li>
+<li><p><strong>dim</strong> (<em>int=3</em>) – Spatial dimension of images</p></li>
+<li><p><strong>anisotropy</strong> (<em>float=2.6</em>) – Anisotropy of images</p></li>
+<li><p><strong>allow_missing_keys</strong> (<em>bool=False</em>) – Whether to raise error if key in <cite>label_keys</cite> is not present</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.embed_from_skel">
+<span class="sig-name descname"><span class="pre">embed_from_skel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iseg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.embed_from_skel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.embed_from_skel" title="Permalink to this definition">#</a></dt>
+<dd><p>Find per-pixel embedding vector to closest point on skeleton.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.label_2d">
+<span class="sig-name descname"><span class="pre">label_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.label_2d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.label_2d" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.shrink">
+<span class="sig-name descname"><span class="pre">shrink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.shrink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.shrink" title="Permalink to this definition">#</a></dt>
+<dd><p>Topology-preserving thinning of a binary image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.skeleton_tall">
+<span class="sig-name descname"><span class="pre">skeleton_tall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_label</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.skeleton_tall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.skeleton_tall" title="Permalink to this definition">#</a></dt>
+<dd><p>Skeletonize 3d image with increased thickness in z.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.smooth_embedding">
+<span class="sig-name descname"><span class="pre">smooth_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.smooth_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.smooth_embedding" title="Permalink to this definition">#</a></dt>
+<dd><p>Smooths embedding by convolving with a mean kernel, excluding non-object pixels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.topology_preserving_thinning">
+<span class="sig-name descname"><span class="pre">topology_preserving_thinning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsPreprocessd.topology_preserving_thinning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.topology_preserving_thinning" title="Permalink to this definition">#</a></dt>
+<dd><p>Topology-preserving thinning of a binary image.</p>
+<p>Use skeleton to bridge gaps created by erosion.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.utils.skoots.SkootsRandFlipd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.im2im.utils.skoots.</span></span><span class="sig-name descname"><span class="pre">SkootsRandFlipd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial_axis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/utils/skoots.html#SkootsRandFlipd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.utils.skoots.SkootsRandFlipd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomizableTransform</span></code></p>
+<p>Flipping Augmentation for Skoots training.</p>
+<p>When flipping ground truths generated by <cite>SkootsPreprocessD</cite>, the sign of gradients have to be
+changed after flipping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spatial_axis</strong> (<em>int</em>) – axis to flip across</p></li>
+<li><p><strong>label_keys</strong> (<em>Union[str, Sequence[str]]=[]</em>) – key or list of keys generated by SkootsPreprocessD to flip</p></li>
+<li><p><strong>image_keys</strong> (<em>Union[str, Sequence[str]]=[]</em>) – key or list of keys NOT generated by SkootsPreprocessd to flip</p></li>
+<li><p><strong>prob</strong> (<em>float=0.1</em>) – probability of flipping</p></li>
+<li><p><strong>dim</strong> (<em>int=3</em>) – spatial dimensions of images</p></li>
+<li><p><strong>allow_missing_keys</strong> (<em>bool=False</em>) – Whether to raise error if a provided key is missing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +525,41 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.im2im.utils.skoots module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsCluster"><code class="docutils literal notranslate"><span class="pre">SkootsCluster</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsCluster.kd_clustering"><code class="docutils literal notranslate"><span class="pre">SkootsCluster.kd_clustering()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsLoss"><code class="docutils literal notranslate"><span class="pre">SkootsLoss</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.embed_from_skel"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.embed_from_skel()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.label_2d"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.label_2d()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.shrink"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.shrink()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.skeleton_tall"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.skeleton_tall()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.smooth_embedding"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.smooth_embedding()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsPreprocessd.topology_preserving_thinning"><code class="docutils literal notranslate"><span class="pre">SkootsPreprocessd.topology_preserving_thinning()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.utils.skoots.SkootsRandFlipd"><code class="docutils literal notranslate"><span class="pre">SkootsRandFlipd</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

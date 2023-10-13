@@ -378,16 +378,31 @@
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-utils-package">
-<h1>cyto_dl.utils package<a class="headerlink" href="#cyto-dl-utils-package" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.utils">
+<span id="cyto-dl-utils-package"></span><h1>cyto_dl.utils package<a class="headerlink" href="#module-cyto_dl.utils" title="Permalink to this heading">#</a></h1>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.spharm.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_image_from_shcoeffs"><code class="docutils literal notranslate"><span class="pre">get_image_from_shcoeffs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_mesh_from_series"><code class="docutils literal notranslate"><span class="pre">get_mesh_from_series()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_coeffs"><code class="docutils literal notranslate"><span class="pre">get_reconstruction_from_coeffs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html#cyto_dl.utils.spharm.reconstruction.get_reconstruction_from_grid"><code class="docutils literal notranslate"><span class="pre">get_reconstruction_from_grid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.build_rot_matrices"><code class="docutils literal notranslate"><span class="pre">build_rot_matrices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.expand_rot_matrices"><code class="docutils literal notranslate"><span class="pre">expand_rot_matrices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.flatten"><code class="docutils literal notranslate"><span class="pre">flatten()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.flip_spharm"><code class="docutils literal notranslate"><span class="pre">flip_spharm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.get_band_indices"><code class="docutils literal notranslate"><span class="pre">get_band_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.get_indices"><code class="docutils literal notranslate"><span class="pre">get_indices()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.rotate_spharm"><code class="docutils literal notranslate"><span class="pre">rotate_spharm()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -405,7 +420,21 @@
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.config.html#cyto_dl.utils.config.remove_aux_key"><code class="docutils literal notranslate"><span class="pre">remove_aux_key()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.get_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.get_dataloader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.predict_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.predict_dataloader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.test_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.test_dataloader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.train_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.train_dataloader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.val_dataloader"><code class="docutils literal notranslate"><span class="pre">DummyDatamodule.val_dataloader()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset"><code class="docutils literal notranslate"><span class="pre">DummyDataset</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img"><code class="docutils literal notranslate"><span class="pre">DummyDataset.generate_img()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.pylogger.html#cyto_dl.utils.pylogger.get_pylogger"><code class="docutils literal notranslate"><span class="pre">get_pylogger()</span></code></a></li>
 </ul>
@@ -415,8 +444,26 @@
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.print_config_tree"><code class="docutils literal notranslate"><span class="pre">print_config_tree()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.RotationModule"><code class="docutils literal notranslate"><span class="pre">RotationModule</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.RotationModule.compute_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">RotationModule.compute_rotation_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.get_rotation_matrix_so2"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so2()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.get_rotation_matrix_so3"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_so3()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.close_loggers"><code class="docutils literal notranslate"><span class="pre">close_loggers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.extras"><code class="docutils literal notranslate"><span class="pre">extras()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.get_metric_value"><code class="docutils literal notranslate"><span class="pre">get_metric_value()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_callbacks"><code class="docutils literal notranslate"><span class="pre">instantiate_callbacks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_loggers"><code class="docutils literal notranslate"><span class="pre">instantiate_loggers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.log_hyperparameters"><code class="docutils literal notranslate"><span class="pre">log_hyperparameters()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.save_file"><code class="docutils literal notranslate"><span class="pre">save_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.task_wrapper"><code class="docutils literal notranslate"><span class="pre">task_wrapper()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

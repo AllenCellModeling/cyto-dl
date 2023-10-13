@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,42 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-nn-losses-chamfer-loss-module">
-<h1>cyto_dl.nn.losses.chamfer_loss module<a class="headerlink" href="#cyto-dl-nn-losses-chamfer-loss-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.losses.chamfer_loss">
+<span id="cyto-dl-nn-losses-chamfer-loss-module"></span><h1>cyto_dl.nn.losses.chamfer_loss module<a class="headerlink" href="#module-cyto_dl.nn.losses.chamfer_loss" title="Permalink to this heading">#</a></h1>
+<p>Adapted from: <a class="reference external" href="https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/chamfer_distance.py">https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/chamfer_distance.py</a>
+LICENSE: <a class="reference external" href="https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_AnTao">https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_AnTao</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.nn.losses.chamfer_loss.ChamferLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.losses.chamfer_loss.</span></span><span class="sig-name descname"><span class="pre">ChamferLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/chamfer_loss.html#ChamferLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist">
+<span class="sig-name descname"><span class="pre">batch_pairwise_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/chamfer_loss.html#ChamferLoss.batch_pairwise_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist2">
+<span class="sig-name descname"><span class="pre">batch_pairwise_dist2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/chamfer_loss.html#ChamferLoss.batch_pairwise_dist2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist2" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.losses.chamfer_loss.ChamferLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/chamfer_loss.html#ChamferLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.nn.losses.chamfer_loss.ChamferLoss.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +453,33 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.nn.losses.chamfer_loss module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss"><code class="docutils literal notranslate"><span class="pre">ChamferLoss</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist"><code class="docutils literal notranslate"><span class="pre">ChamferLoss.batch_pairwise_dist()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist2"><code class="docutils literal notranslate"><span class="pre">ChamferLoss.batch_pairwise_dist2()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.forward"><code class="docutils literal notranslate"><span class="pre">ChamferLoss.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.training"><code class="docutils literal notranslate"><span class="pre">ChamferLoss.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

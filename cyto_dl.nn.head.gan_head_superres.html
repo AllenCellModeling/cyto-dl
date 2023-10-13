@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,43 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-nn-head-gan-head-superres-module">
-<h1>cyto_dl.nn.head.gan_head_superres module<a class="headerlink" href="#cyto-dl-nn-head-gan-head-superres-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.head.gan_head_superres">
+<span id="cyto-dl-nn-head-gan-head-superres-module"></span><h1>cyto_dl.nn.head.gan_head_superres module<a class="headerlink" href="#module-cyto_dl.nn.head.gan_head_superres" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.nn.head.gan_head_superres.GANHead_resize">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.gan_head_superres.</span></span><span class="sig-name descname"><span class="pre">GANHead_resize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gan_loss=Pix2PixHD(</span>&#160;&#160; <span class="pre">(gan_loss):</span> <span class="pre">GANLoss(</span>&#160;&#160;&#160;&#160; <span class="pre">(loss):</span> <span class="pre">BCEWithLogitsLoss()</span>&#160;&#160; <span class="pre">)</span>&#160;&#160; <span class="pre">(feature_matching_loss):</span> <span class="pre">L1Loss()</span> <span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss=MSELoss()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss_weight=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">final_act:</span> <span class="pre">~typing.Callable</span> <span class="pre">=</span> <span class="pre">Identity()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution='lr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_convs=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_method='pixelshuffle'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upsample_ratio=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_layer=Identity()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dense:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/gan_head_superres.html#GANHead_resize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead" title="cyto_dl.nn.head.gan_head.GANHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">GANHead</span></code></a></p>
+<p>GAN Task head with upsampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gan_loss=Pix2PixHD(scales=1)</strong> – Loss for optimizing GAN</p></li>
+<li><p><strong>reconstruction_loss=torch.nn.MSELoss()</strong> – Loss for optimizing generator’s image reconstructions</p></li>
+<li><p><strong>reconstruction_loss_weight=100</strong> – Weighting of reconstruction loss</p></li>
+<li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing for <cite>input</cite> and <cite>predictions</cite> of head</p></li>
+<li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric during training. Not used by GAN head.</p></li>
+<li><p><strong>save_raw=False</strong> – Whether to save out example input images during training</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.head.gan_head_superres.GANHead_resize.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/gan_head_superres.html#GANHead_resize.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.nn.head.gan_head_superres.GANHead_resize.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +454,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.nn.head.gan_head_superres module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize"><code class="docutils literal notranslate"><span class="pre">GANHead_resize</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize.forward"><code class="docutils literal notranslate"><span class="pre">GANHead_resize.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.head.gan_head_superres.GANHead_resize.training"><code class="docutils literal notranslate"><span class="pre">GANHead_resize.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

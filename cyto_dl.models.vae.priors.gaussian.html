@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -372,14 +372,96 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-vae-priors-gaussian-module">
-<h1>cyto_dl.models.vae.priors.gaussian module<a class="headerlink" href="#cyto-dl-models-vae-priors-gaussian-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.models.vae.priors.gaussian">
+<span id="cyto-dl-models-vae-priors-gaussian-module"></span><h1>cyto_dl.models.vae.priors.gaussian module<a class="headerlink" href="#module-cyto_dl.models.vae.priors.gaussian" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.priors.gaussian.</span></span><span class="sig-name descname"><span class="pre">DiagonalGaussianPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimensionality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learn_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learn_logvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_logvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_penalty_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#DiagonalGaussianPrior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior" title="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior"><code class="xref py py-class docutils literal notranslate"><span class="pre">IsotropicGaussianPrior</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#DiagonalGaussianPrior.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kl_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_penalty_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#DiagonalGaussianPrior.kl_divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the Kullback-Leibler divergence between two diagonal
+gaussians (not necessarily isotropic). It also works batch-wise.
+:Parameters: * <strong>mu1</strong> (<em>torch.Tensor</em>) – Mean of the first gaussian (or batch of first gaussians)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>mu2</strong> (<em>torch.Tensor</em>) – Mean of the second gaussian (or batch of second gaussians)</p></li>
+<li><p><strong>logvar1</strong> (<em>torch.Tensor</em>) – Log-variance of the first gaussian (or batch of first gaussians)</p></li>
+<li><p><strong>logvar2</strong> (<em>torch.Tensor</em>) – Log-variance of the second gaussian (or batch of second gaussians)</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.param_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">param_size</span></span><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.param_size" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.priors.gaussian.</span></span><span class="sig-name descname"><span class="pre">IsotropicGaussianPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimensionality</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clamp_logvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_penalty_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#IsotropicGaussianPrior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cyto_dl.models.vae.priors.abstract_prior.html#cyto_dl.models.vae.priors.abstract_prior.Prior" title="cyto_dl.models.vae.priors.abstract_prior.Prior"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prior</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#IsotropicGaussianPrior.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.kl_divergence">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kl_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_penalty_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#IsotropicGaussianPrior.kl_divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.kl_divergence" title="Permalink to this definition">#</a></dt>
+<dd><p>Computes the Kullback-Leibler divergence between a diagonal gaussian and an isotropic
+(0,1) gaussian. It also works batch-wise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>torch.Tensor</em>) – Mean of the gaussian (or batch of gaussians)</p></li>
+<li><p><strong>logvar</strong> (<em>torch.Tensor</em>) – Log-variance of the gaussian (or batch of gaussians)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.param_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">param_size</span></span><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.param_size" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.sample">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#IsotropicGaussianPrior.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.sample" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.training" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.compute_tc_penalty">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.priors.gaussian.</span></span><span class="sig-name descname"><span class="pre">compute_tc_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logvar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#compute_tc_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.compute_tc_penalty" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 
         </article>
@@ -425,8 +507,42 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.models.vae.priors.gaussian module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior"><code class="docutils literal notranslate"><span class="pre">DiagonalGaussianPrior</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.forward"><code class="docutils literal notranslate"><span class="pre">DiagonalGaussianPrior.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence"><code class="docutils literal notranslate"><span class="pre">DiagonalGaussianPrior.kl_divergence()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.param_size"><code class="docutils literal notranslate"><span class="pre">DiagonalGaussianPrior.param_size</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.training"><code class="docutils literal notranslate"><span class="pre">DiagonalGaussianPrior.training</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.forward"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.kl_divergence"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior.kl_divergence()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.param_size"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior.param_size</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.sample"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior.sample()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.training"><code class="docutils literal notranslate"><span class="pre">IsotropicGaussianPrior.training</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.models.vae.priors.gaussian.compute_tc_penalty"><code class="docutils literal notranslate"><span class="pre">compute_tc_penalty()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

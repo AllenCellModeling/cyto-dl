@@ -378,17 +378,54 @@
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-nn-head-package">
-<h1>cyto_dl.nn.head package<a class="headerlink" href="#cyto-dl-nn-head-package" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.head">
+<span id="cyto-dl-nn-head-package"></span><h1>cyto_dl.nn.head package<a class="headerlink" href="#module-cyto_dl.nn.head" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead"><code class="docutils literal notranslate"><span class="pre">BaseHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseHead.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseHead.run_head()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseHead.save_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.training"><code class="docutils literal notranslate"><span class="pre">BaseHead.training</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.update_params"><code class="docutils literal notranslate"><span class="pre">BaseHead.update_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html#cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html#cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer.training"><code class="docutils literal notranslate"><span class="pre">ConvProjectionLayer.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead"><code class="docutils literal notranslate"><span class="pre">GANHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.run_head"><code class="docutils literal notranslate"><span class="pre">GANHead.run_head()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.training"><code class="docutils literal notranslate"><span class="pre">GANHead.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html#cyto_dl.nn.head.gan_head_superres.GANHead_resize"><code class="docutils literal notranslate"><span class="pre">GANHead_resize</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html#cyto_dl.nn.head.gan_head_superres.GANHead_resize.forward"><code class="docutils literal notranslate"><span class="pre">GANHead_resize.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html#cyto_dl.nn.head.gan_head_superres.GANHead_resize.training"><code class="docutils literal notranslate"><span class="pre">GANHead_resize.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html#cyto_dl.nn.head.res_blocks_head.ResBlocksHead"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.forward"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.head.res_blocks_head.html#cyto_dl.nn.head.res_blocks_head.ResBlocksHead.training"><code class="docutils literal notranslate"><span class="pre">ResBlocksHead.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
