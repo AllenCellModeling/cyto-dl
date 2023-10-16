@@ -2,6 +2,7 @@
 # Please do not edit it manually.
 
 aicsimageio==4.11.0
+aicspylibczi==3.1.2
 aiobotocore==2.5.4
 aiohttp==3.8.5
 aioitertools==0.11.0
@@ -52,6 +53,7 @@ Flask==2.3.3
 fonttools==4.42.1
 frozenlist==1.4.0
 fsspec==2023.9.0
+geomloss==0.2.6
 gitdb==4.0.10
 gitpython==3.1.35
 greenlet==2.0.2
