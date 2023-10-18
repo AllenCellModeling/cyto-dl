@@ -58,11 +58,6 @@ spharm = [
     "aicscytoparam~=0.1",
     "pyshtools~=4.9",
 ]
-omnipose = [
-    "edt>=0.56.4",
-    "torchvf~=0.1.2",
-    "omnipose @ git+https://github.com/kevinjohncutler/omnipose.git@ce2e9aa",
-]
 s3 = [
     "boto3>=1.23.5,<1.24.5",
     "s3fs~=2023.1"
@@ -82,7 +77,7 @@ pcloud = [
     "torchio>=0.19.1",
 ]
 all = [
-    "cyto-dl[equiv,spharm,omnipose,s3,torchserve,pcloud]",
+    "cyto-dl[equiv,spharm,s3,torchserve,pcloud]",
 ]
 test = [
     "cyto-dl[all]",
