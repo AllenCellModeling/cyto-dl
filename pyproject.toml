@@ -35,7 +35,7 @@ dependencies = [
     "universal-pathlib~=0.0",
     "ome-zarr~=0.6",
     "anndata~=0.8",
-    "bfio~=2.3",
+    "bfio==2.3.0",
     "monai-weekly>=1.2.dev2308",
     "tifffile~=2023.2",
     "tqdm~=4.64",
