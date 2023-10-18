@@ -39,7 +39,7 @@ _aux:
     - - ${target_col}
       - _target_: cyto_dl.nn.BaseHead
         loss:
-          _target_: cyto_dl.models.im2im.utils.SkootsLoss
+          _target_: cyto_dl.models.im2im.utils.InstanceSegLoss
           dim: ${spatial_dims}
         save_raw: True
         postprocess:

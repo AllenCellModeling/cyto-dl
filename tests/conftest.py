@@ -13,7 +13,7 @@ OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
 # Experiment configs to test
-experiment_types = ["gan", "segmentation", "labelfree", "skoots"]
+experiment_types = ["gan", "segmentation", "labelfree", "instance_seg"]
 
 
 @pytest.fixture(scope="package", params=experiment_types)

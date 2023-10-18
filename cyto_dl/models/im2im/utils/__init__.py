@@ -1,8 +1,8 @@
 try:
-    from .skoots import SkootsCluster, SkootsLoss, SkootsPreprocessd
+    from .instance_seg import InstanceSegCluster, InstanceSegLoss, InstanceSegPreprocessd
 except (ModuleNotFoundError, ImportError):
-    SkootsCluster = None
-    SkootsLoss = None
-    SkootsPreprocessd = None
+    InstanceSegCluster = None
+    InstanceSegLoss = None
+    InstanceSegPreprocessd = None
 
 from .postprocessing import ActThreshLabel, DictToIm, detach

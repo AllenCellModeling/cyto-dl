@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: im2im/skoots.yaml
-  - override /model: im2im/skoots.yaml
+  - override /data: im2im/instance_seg.yaml
+  - override /model: im2im/instance_seg.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
