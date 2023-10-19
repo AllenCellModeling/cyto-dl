@@ -29,7 +29,8 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
-      - _target_: monai.transforms.AddChanneld
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
@@ -76,7 +77,8 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
-      - _target_: monai.transforms.AddChanneld
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
@@ -96,7 +98,8 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 5
-      - _target_: monai.transforms.AddChanneld
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
@@ -125,7 +128,8 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
             C: 0
-      - _target_: monai.transforms.AddChanneld
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}

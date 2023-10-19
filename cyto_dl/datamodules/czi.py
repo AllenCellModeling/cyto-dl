@@ -4,7 +4,7 @@ from typing import Callable, Optional, Union
 import numpy as np
 import pandas as pd
 from aicsimageio.aics_image import AICSImage
-from monai.data import DataLoader, Dataset
+from monai.data import DataLoader, Dataset, MetaTensor
 from monai.transforms import Compose, apply_transform
 from omegaconf import ListConfig
 
@@ -129,13 +129,17 @@ class CZIDataset(Dataset):
         img.set_scene(img_data.pop("scene"))
         data_i = img.get_image_dask_data(**img_data).compute()
         data_i = self._ensure_channel_first(data_i)
+        output_img = (
+            apply_transform(self.transform, data_i) if self.transform is not None else data_i
+        )
+
         return {
-            self.out_key: apply_transform(self.transform, data_i)
-            if self.transform is not None
-            else data_i,
-            f"{self.out_key}_meta_dict": {
-                "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
-            },
+            self.out_key: MetaTensor(
+                output_img,
+                meta={
+                    "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
+                },
+            )
         }
 
     def __len__(self):

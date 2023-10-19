@@ -174,6 +174,7 @@ class GAN(BaseModel):
         return self._sum_losses(loss)
 
     def model_step(self, stage, batch, batch_idx):
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -210,6 +211,7 @@ class GAN(BaseModel):
         return loss_dict, None, None
 
     def predict_step(self, batch, batch_idx):
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
