@@ -1,5 +1,9 @@
 try:
-    from .instance_seg import InstanceSegCluster, InstanceSegLoss, InstanceSegPreprocessd
+    from .instance_seg import (
+        InstanceSegCluster,
+        InstanceSegLoss,
+        InstanceSegPreprocessd,
+    )
 except (ModuleNotFoundError, ImportError):
     InstanceSegCluster = None
     InstanceSegLoss = None
