@@ -1,15 +1,12 @@
 try:
-    from .omnipose import OmniposeClustering, OmniposeLoss, OmniposePreprocessd
+    from .instance_seg import (
+        InstanceSegCluster,
+        InstanceSegLoss,
+        InstanceSegPreprocessd,
+    )
 except (ModuleNotFoundError, ImportError):
-    OmniposeClustering = None
-    OmniposeLoss = None
-    OmniposePreprocessd = None
-
-try:
-    from .skoots import SkootsCluster, SkootsLoss, SkootsPreprocessd
-except (ModuleNotFoundError, ImportError):
-    SkootsCluster = None
-    SkootsLoss = None
-    SkootsPreprocessd = None
+    InstanceSegCluster = None
+    InstanceSegLoss = None
+    InstanceSegPreprocessd = None
 
 from .postprocessing import ActThreshLabel, DictToIm, detach

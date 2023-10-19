@@ -35,7 +35,7 @@ transforms:
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -86,7 +86,7 @@ transforms:
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -141,7 +141,7 @@ transforms:
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord

@@ -8,7 +8,7 @@ backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: ${spatial_dims}
   in_channels: ${raw_im_channels}
-  out_channels: 5
+  out_channels: 6
   strides: [1, 2, 2, 2]
   kernel_size: [3, 3, 3, 3]
   upsample_kernel_size: [2, 2, 2]
@@ -39,7 +39,7 @@ _aux:
     - - ${target_col}
       - _target_: cyto_dl.nn.BaseHead
         loss:
-          _target_: cyto_dl.models.im2im.utils.OmniposeLoss
+          _target_: cyto_dl.models.im2im.utils.InstanceSegLoss
           dim: ${spatial_dims}
         save_raw: True
         postprocess:
