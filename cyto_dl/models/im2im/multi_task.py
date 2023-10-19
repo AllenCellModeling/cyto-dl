@@ -168,6 +168,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
@@ -175,17 +176,13 @@ class MultiTaskIm2Im(BaseModel):
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
 
-        if stage != "predict":
-            losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-            losses = self._sum_losses(losses)
-            return losses, None, None
-
-        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
-
-        return None, preds, None
+        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+        losses = self._sum_losses(losses)
+        return losses, None, None
 
     def predict_step(self, batch, batch_idx):
         stage = "predict"
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):

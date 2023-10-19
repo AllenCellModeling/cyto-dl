@@ -31,7 +31,8 @@ transforms:
     threshold: -2.
     above: true
     cval: -2.
-  - _target_: monai.transforms.AddChanneld
+  - _target_: monai.transforms.EnsureChannelFirstd
+    channel_dim: "no_channel"
     keys: image
   - _target_: monai.transforms.ToTensord
     keys: [image]

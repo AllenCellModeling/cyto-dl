@@ -1,6 +1,7 @@
 from typing import List
 
 from aicsimageio import AICSImage
+from monai.data import MetaTensor
 from monai.transforms import Transform
 
 
@@ -52,7 +53,6 @@ class AICSImageLoaderd(Transform):
             img.set_scene(data[self.scene_key])
         kwargs = {k: data[k] for k in self.kwargs_keys}
         img = img.get_image_dask_data(**kwargs).compute()
-        data[self.out_key] = img
-        data[f"{self.out_key}_meta_dict"] = {"filename_or_obj": path, "kwargs": kwargs}
+        data[self.out_key] = MetaTensor(img, meta={"filename_or_obj": path, "kwargs": kwargs})
 
         return data
