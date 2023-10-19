@@ -157,7 +157,7 @@ class InstanceSegPreprocessd(Transform):
             skel_points = skel_boundary.eq(i).nonzero()
             if skel_points.numel() == 0:
                 continue
-            #distances should take into account z anisotropy
+            # distances should take into account z anisotropy
             point_embeddings = self._get_point_embeddings(
                 object_points.mul(self.anisotropy), skel_points.mul(self.anisotropy)
             )

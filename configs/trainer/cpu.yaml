@@ -3,4 +3,3 @@ defaults:
 
 accelerator: cpu
 devices: 1
-precision: 16
