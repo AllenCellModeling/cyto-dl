@@ -235,9 +235,8 @@
 <li class="toctree-l7"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.instance_seg.html">cyto_dl.models.im2im.utils.instance_seg module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.omnipose.html">cyto_dl.models.im2im.utils.omnipose module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.skoots.html">cyto_dl.models.im2im.utils.skoots module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.im2im.gan.html">cyto_dl.models.im2im.gan module</a></li>
@@ -404,7 +403,7 @@ Ground truth images should also be normalized based on your use case, e.g. binar
 <li><dl class="simple">
 <dt>Image augmentation</dt><dd><p>Targeted image augmentation can increase model robustness. Again, monai provides excellent options for <a class="reference external" href="https://docs.monai.io/en/stable/transforms.html#intensity-dict">intensity</a> and <a class="reference external" href="https://docs.monai.io/en/stable/transforms.html#spatial-dict">spatial</a> augmentations.
 For spatial augmentations, ensure that your input and ground truth images are both passed to the transformation, while for intensity augmentations ensure that only the input image is changed.
-<strong>Note</strong> For Omnipose, use Omnipose-specific spatial transforms. Naive implementations of flipping/rotation/ other spatial transforms will make augmented vector fields incorrect.</p>
+<strong>Note</strong> For instance segmentation, use instance segmentation-specific spatial transforms. Naive implementations of flipping/rotation/ other spatial transforms will make augmented vector fields incorrect.</p>
 </dd>
 </dl>
 </li>
@@ -423,7 +422,7 @@ For multi-task learning, it is important to increase the number of <cite>out_cha
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Modifying the <cite>task_heads</cite></dt><dd><p><cite>task_heads</cite> can be modified by changing their loss function (suggested if you are changing e.g. from labelfree to segmentation), postprocessing (if you are changing from segmentation to omnipose), and <cite>task-head</cite> type (if you are changing from a segmentation network to a GAN).
+<dt>Modifying the <cite>task_heads</cite></dt><dd><p><cite>task_heads</cite> can be modified by changing their loss function (suggested if you are changing e.g. from labelfree to segmentation), postprocessing (if you are changing from segmentation to instance segmentation), and <cite>task-head</cite> type (if you are changing from a segmentation network to a GAN).
 <a class="reference external" href="https://pytorch.org/docs/stable/nn.html#loss-functions">torch</a> and <a class="reference external" href="https://docs.monai.io/en/stable/losses.html">monai</a> provide many loss functions. We provide basic [postprocessing](cyto_dl/models/utils/postprocessing) functions.
 Additional <cite>task_heads</cite> can be added for multi-task learning. The name of each <cite>task_head</cite> should line up with the name of an image in your training batch. For example, if our batch looks like <cite>{‘raw’:torch.Tensor, ‘segmentation’:torch.Tensor, ‘distance’:torch.Tensor}</cite> and <cite>raw</cite> is our input image,
 we should provide <cite>task_heads</cite>  for <cite>segmentation</cite> and <cite>distance</cite> that predict a segmentation and distance map respectively.</p>

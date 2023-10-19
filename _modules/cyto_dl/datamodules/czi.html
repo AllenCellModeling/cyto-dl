@@ -234,9 +234,8 @@
 <li class="toctree-l7"><a class="reference internal" href="../../../cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="../../../cyto_dl.models.im2im.utils.instance_seg.html">cyto_dl.models.im2im.utils.instance_seg module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../cyto_dl.models.im2im.utils.omnipose.html">cyto_dl.models.im2im.utils.omnipose module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../cyto_dl.models.im2im.utils.skoots.html">cyto_dl.models.im2im.utils.skoots module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.models.im2im.gan.html">cyto_dl.models.im2im.gan module</a></li>
@@ -383,7 +382,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">aicsimageio.aics_image</span> <span class="kn">import</span> <span class="n">AICSImage</span>
-<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">MetaTensor</span>
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">apply_transform</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span>
 
@@ -508,13 +507,17 @@
         <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scene&quot;</span><span class="p">))</span>
         <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
         <span class="n">data_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_channel_first</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span>
+        <span class="n">output_img</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">data_i</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data_i</span>
+        <span class="p">)</span>
+
         <span class="k">return</span> <span class="p">{</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">out_key</span><span class="p">:</span> <span class="n">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">data_i</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">data_i</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">out_key</span><span class="si">}</span><span class="s2">_meta_dict&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;filename_or_obj&quot;</span><span class="p">:</span> <span class="n">original_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_to_str</span><span class="p">(</span><span class="n">img_data</span><span class="p">))</span>
-            <span class="p">},</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_key</span><span class="p">:</span> <span class="n">MetaTensor</span><span class="p">(</span>
+                <span class="n">output_img</span><span class="p">,</span>
+                <span class="n">meta</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;filename_or_obj&quot;</span><span class="p">:</span> <span class="n">original_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata_to_str</span><span class="p">(</span><span class="n">img_data</span><span class="p">))</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

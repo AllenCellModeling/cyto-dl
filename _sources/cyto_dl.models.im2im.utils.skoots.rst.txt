@@ -1,7 +1,0 @@
-cyto\_dl.models.im2im.utils.skoots module
-=========================================
-
-.. automodule:: cyto_dl.models.im2im.utils.skoots
-   :members:
-   :undoc-members:
-   :show-inheritance:

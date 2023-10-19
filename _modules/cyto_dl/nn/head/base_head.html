@@ -234,9 +234,8 @@
 <li class="toctree-l7"><a class="reference internal" href="../../../../cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.im2im.utils.instance_seg.html">cyto_dl.models.im2im.utils.instance_seg module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.im2im.utils.omnipose.html">cyto_dl.models.im2im.utils.omnipose module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.models.im2im.utils.skoots.html">cyto_dl.models.im2im.utils.skoots module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.models.im2im.gan.html">cyto_dl.models.im2im.gan module</a></li>
@@ -447,15 +446,13 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_raw</span><span class="p">:</span>
                 <span class="n">raw_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_key</span><span class="p">],</span> <span class="n">img_type</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">metadata_filenames</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_key</span><span class="si">}</span><span class="s2">_meta_dict&quot;</span><span class="p">][</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
+            <span class="n">metadata_filenames</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;filenames&quot;</span><span class="p">]</span>
             <span class="n">filename_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">metadata_filenames</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="n">metadata_filenames</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="si">}</span><span class="s2">.tif&quot;</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">metadata_filenames</span>
             <span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Please ensure your batches contain key `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x_key</span><span class="si">}</span><span class="s2">_meta_dict[&#39;filename_or_obj&#39;]`&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please ensure your batches have key `filenames`&quot;</span><span class="p">)</span>
         <span class="n">save_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">global_step</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="si">}</span><span class="s2">.tif&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span>

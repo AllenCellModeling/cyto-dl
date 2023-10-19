@@ -1,0 +1,7 @@
+cyto\_dl.models.im2im.utils.instance\_seg module
+================================================
+
+.. automodule:: cyto_dl.models.im2im.utils.instance_seg
+   :members:
+   :undoc-members:
+   :show-inheritance:
