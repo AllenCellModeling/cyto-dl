@@ -37,7 +37,7 @@ class GAN(BaseModel):
         save_images_every_n_epochs=1,
         automatic_optimization: bool = False,
         inference_args: Dict = {},
-        compile: True,
+        compile: False,
         **base_kwargs,
     ):
         """
