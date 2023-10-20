@@ -22,7 +22,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
         inference_heads: Union[List, None] = None,
-        compile=True,
+        compile=False,
         **base_kwargs,
     ):
         """
