@@ -10,9 +10,10 @@ backbone:
   spatial_dims: ${spatial_dims}
   in_channels: ${raw_im_channels}
   out_channels: 1
-  strides: [1, 2, 2, 2, 2]
-  kernel_size: [3, 3, 3, 3, 3]
-  upsample_kernel_size: [2, 2, 2, 2]
+  strides: [1, 2, 2]
+  kernel_size: [3, 3, 3]
+  upsample_kernel_size: [2, 2]
+  filters: [16, 32, 64]
   dropout: 0.0
   res_block: True
 
