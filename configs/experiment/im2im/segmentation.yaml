@@ -30,4 +30,7 @@ data:
   subsample:
   batch_size: 1
   _aux:
+    # 2D
+    # patch_shape: [64, 64]
+    # 3D
     patch_shape: [16, 32, 32]
