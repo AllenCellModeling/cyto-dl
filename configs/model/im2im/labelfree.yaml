@@ -35,6 +35,8 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
+  overlap: 0.25
+  mode: "gaussian"
 
 _aux:
   _tasks:
