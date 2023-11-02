@@ -14,7 +14,7 @@ from monai.utils import ensure_tuple, require_pkg
 class MonaiBioReader(ImageReader):
     def __init__(self, **reader_kwargs):
         super().__init__()
-        self.reader_kwargs = reader_kwargs
+        self.reader_kwargs = {k: v for k, v in reader_kwargs.items() if v is not None}
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
