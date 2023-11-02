@@ -390,10 +390,10 @@ class InstanceSegCluster:
         return im == largest_cc
 
     def __call__(self, image):
-        image = image.detach().cpu()
+        image = image.detach().cpu().float()
         skel = image[0].numpy()
         semantic = image[1]
-        embedding = image[2 : 2 + self.dim].float()
+        embedding = image[2 : 2 + self.dim]
         # z embeddings are anisotropic, have to adjust to coordinates in real space, not pixel space
         anisotropic_shape = torch.as_tensor(semantic.shape).mul(self.anisotropy)
 
