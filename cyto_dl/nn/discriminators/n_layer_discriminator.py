@@ -12,6 +12,7 @@ class NLayerDiscriminator(nn.Module):
         input_nc: int = 2,
         ndf: int = 64,
         n_layers: int = 3,
+        dim: int = 3,
         norm_layer=nn.InstanceNorm3d,
         noise_annealer=None,
     ):
@@ -21,19 +22,23 @@ class NLayerDiscriminator(nn.Module):
             input_nc:int=2
                 Number of channels of input images. Generally, `n_channels(input_im)+n_channels(model_output)`
             ndf:int=64
-                Number of filters in the first conv layer. Later layers are multiples of `ndf`.
+                Number of filters in the first conv_fn layer. Later layers are multiples of `ndf`.
             n_layers:int=3
-                Number of conv layers in the discriminator
+                Number of conv_fn layers in the discriminator
             norm_layer=nn.InstanceNorm3d
                 normalization layer
             noise_annealer=None
                 Noise annealer object
         """
         super().__init__()
+        if dim not in (2, 3):
+            raise ValueError(f"dim must be 2 or 3, got {dim}")
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func != nn.BatchNorm3d
         else:
             use_bias = norm_layer != nn.BatchNorm3d
+
+        conv_fn = nn.Conv3d if dim == 3 else nn.Conv2d
 
         modules = nn.ModuleDict()
 
@@ -42,7 +47,7 @@ class NLayerDiscriminator(nn.Module):
         modules.update(
             {
                 "block_0": nn.Sequential(
-                    nn.Conv3d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
+                    conv_fn(input_nc, ndf, kernel_size=kw, stride=2, padding=padw),
                     nn.LeakyReLU(0.2, True),
                 )
             }
@@ -55,7 +60,7 @@ class NLayerDiscriminator(nn.Module):
             modules.update(
                 {
                     f"block_{n}": nn.Sequential(
-                        nn.Conv3d(
+                        conv_fn(
                             ndf * nf_mult_prev,
                             ndf * nf_mult,
                             kernel_size=kw,
@@ -74,8 +79,8 @@ class NLayerDiscriminator(nn.Module):
 
         modules.update(
             {
-                f"block_{n+1}": nn.Sequential(
-                    nn.Conv3d(
+                f"block_{n_layers}": nn.Sequential(
+                    conv_fn(
                         ndf * nf_mult_prev,
                         ndf * nf_mult,
                         kernel_size=kw,
@@ -91,8 +96,8 @@ class NLayerDiscriminator(nn.Module):
 
         modules.update(
             {
-                f"block_{n+2}": nn.Sequential(
-                    nn.Conv3d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)
+                f"block_{n_layers+1}": nn.Sequential(
+                    conv_fn(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)
                 )
             }
         )
@@ -106,7 +111,7 @@ class NLayerDiscriminator(nn.Module):
         if x.shape != im.shape:
             x = torch.nn.functional.interpolate(
                 input=x,
-                size=im.shape[-3:],
+                size=im.shape[2:],
             )
         output_im = torch.cat([x, im], 1)
         if requires_features:
