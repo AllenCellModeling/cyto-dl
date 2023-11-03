@@ -6,7 +6,7 @@ from typing import List
 from omegaconf import OmegaConf, open_dict
 from hydra.core.global_hydra import GlobalHydra
 from hydra import compose, initialize_config_dir
-from scripts.download_test_data import download_test_data
+# from ..scripts.download_test_data import download_test_data
 
 from cyto_dl.utils.rich_utils import print_config_tree
 
@@ -29,8 +29,8 @@ class CytoDLModel:
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
         )
 
-    def download_example_data(self):
-        download_test_data()
+    # def download_example_data(self):
+    #     download_test_data()
 
     def load_config_from_file(self, config_path: str):
         """Load configuration file."""
