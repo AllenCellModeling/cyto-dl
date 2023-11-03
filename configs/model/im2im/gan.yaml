@@ -23,7 +23,9 @@ discriminator:
   _target_: cyto_dl.nn.discriminators.MultiScaleDiscriminator
   n_scales: 1
   input_nc: 2 #conditioning image+real/fake image
-  n_layers: 2
+  n_layers: 1
+  ndf: 16 #number of filters per layer
+  dim: ${spatial_dims}
 
 optimizer:
   generator:

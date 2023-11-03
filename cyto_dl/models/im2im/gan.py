@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
@@ -57,6 +57,8 @@ class GAN(BaseModel):
             Frequency to save out images during training
         inference_args: Dict = {}
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -67,7 +69,7 @@ class GAN(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile and not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.discriminator = torch.compile(discriminator)
             self.task_heads = torch.nn.ModuleDict(

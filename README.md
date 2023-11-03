@@ -5,6 +5,7 @@
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/AllenCellModeling/cyto-dl/blob/b73e6f357727e3b42adea8540c86f2475ea60379/docs/CytoDL-logo-1C-onLight.png">
   <img src="https://github.com/AllenCellModeling/cyto-dl/blob/b73e6f357727e3b42adea8540c86f2475ea60379/docs/CytoDL-logo-1C-onLight.png">
 </picture> -->
+
 <h1>CytoDL</h1>
 
 <a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-ee4c2c?logo=pytorch&logoColor=white"></a>
@@ -28,7 +29,7 @@ As part of the [Allen Institute for Cell Science's](allencell.org) mission to un
 
 The bulk of `CytoDL`'s underlying structure bases the [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) organization - we highly recommend that you familiarize yourself with their (short) docs for detailed instructions on running training, overrides, etc.
 
-Our currently available code is roughly split into two domains: image-to-image transformations and representation learning. The image-to-image code (denoted im2im) contains configuration files detailing how to train and predict using models for resolution enhancement (e.g. predicting 100x images from 20x images), semantic and instance segmentation, and label-free prediction. Representation learning code includes a wide variety of Variational Auto Encoder (VAE) architectures.
+Our currently available code is roughly split into two domains: image-to-image transformations and representation learning. The image-to-image code (denoted im2im) contains configuration files detailing how to train and predict using models for resolution enhancement (e.g. predicting 100x images from 20x images), semantic and instance segmentation, and label-free prediction. Representation learning code includes a wide variety of Variational Auto Encoder (VAE) architectures. Note that these default models are very small and by default run on heavily downsampled data in order to make tests run efficiently - for best performance, the model size should be increased and downsampling removed.
 
 As we rely on recent versions of pytorch, users wishing to train and run models on GPU hardware will need up-to-date NVIDIA drivers. Users with older GPUs should not expect code to work out of the box. Similarly, we do not currently support training/predicting on Mac GPUs. In most cases, cpu-based training should work when GPU training fails.
 

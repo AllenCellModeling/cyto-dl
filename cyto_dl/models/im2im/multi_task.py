@@ -42,6 +42,8 @@ class MultiTaskIm2Im(BaseModel):
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         inference_heads: Union[List, None] = None
             Optional list of heads to run during inference. Defaults to running all heads.
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -68,7 +70,7 @@ class MultiTaskIm2Im(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile and not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.task_heads = torch.nn.ModuleDict(
                 {k: torch.compile(v) for k, v in task_heads.items()}
