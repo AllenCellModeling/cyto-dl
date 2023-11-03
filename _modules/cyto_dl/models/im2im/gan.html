@@ -384,7 +384,7 @@
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">monai.data.meta_tensor</span> <span class="kn">import</span> <span class="n">MetaTensor</span>
 <span class="kn">from</span> <span class="nn">monai.inferers</span> <span class="kn">import</span> <span class="n">sliding_window_inference</span>
-<span class="kn">from</span> <span class="nn">torchmetrics</span> <span class="kn">import</span> <span class="n">MeanMetric</span><span class="p">,</span> <span class="n">MinMetric</span>
+<span class="kn">from</span> <span class="nn">torchmetrics</span> <span class="kn">import</span> <span class="n">MeanMetric</span>
 
 <span class="kn">from</span> <span class="nn">cyto_dl.models.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -435,6 +435,8 @@
 <span class="sd">            Frequency to save out images during training</span>
 <span class="sd">        inference_args: Dict = {}</span>
 <span class="sd">            Arguments passed to monai&#39;s [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)</span>
+<span class="sd">        compile: False</span>
+<span class="sd">            Whether to compile the model using torch.compile</span>
 <span class="sd">        **base_kwargs:</span>
 <span class="sd">            Additional arguments passed to BaseModel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -445,7 +447,7 @@
         <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
             <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_images&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">compile</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">compile</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">backbone</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">discriminator</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span>

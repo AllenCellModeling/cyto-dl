@@ -390,6 +390,7 @@
         <span class="n">input_nc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">ndf</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
         <span class="n">n_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">norm_layer</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">InstanceNorm3d</span><span class="p">,</span>
         <span class="n">noise_annealer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -399,19 +400,23 @@
 <span class="sd">            input_nc:int=2</span>
 <span class="sd">                Number of channels of input images. Generally, `n_channels(input_im)+n_channels(model_output)`</span>
 <span class="sd">            ndf:int=64</span>
-<span class="sd">                Number of filters in the first conv layer. Later layers are multiples of `ndf`.</span>
+<span class="sd">                Number of filters in the first conv_fn layer. Later layers are multiples of `ndf`.</span>
 <span class="sd">            n_layers:int=3</span>
-<span class="sd">                Number of conv layers in the discriminator</span>
+<span class="sd">                Number of conv_fn layers in the discriminator</span>
 <span class="sd">            norm_layer=nn.InstanceNorm3d</span>
 <span class="sd">                normalization layer</span>
 <span class="sd">            noise_annealer=None</span>
 <span class="sd">                Noise annealer object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dim must be 2 or 3, got </span><span class="si">{</span><span class="n">dim</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">norm_layer</span><span class="p">)</span> <span class="o">==</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">:</span>
             <span class="n">use_bias</span> <span class="o">=</span> <span class="n">norm_layer</span><span class="o">.</span><span class="n">func</span> <span class="o">!=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm3d</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">use_bias</span> <span class="o">=</span> <span class="n">norm_layer</span> <span class="o">!=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm3d</span>
+
+        <span class="n">conv_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span> <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span>
 
         <span class="n">modules</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">()</span>
 
@@ -420,7 +425,7 @@
         <span class="n">modules</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;block_0&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                    <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span><span class="n">input_nc</span><span class="p">,</span> <span class="n">ndf</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padw</span><span class="p">),</span>
+                    <span class="n">conv_fn</span><span class="p">(</span><span class="n">input_nc</span><span class="p">,</span> <span class="n">ndf</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padw</span><span class="p">),</span>
                     <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">}</span>
@@ -433,7 +438,7 @@
             <span class="n">modules</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                        <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span>
+                        <span class="n">conv_fn</span><span class="p">(</span>
                             <span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult_prev</span><span class="p">,</span>
                             <span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult</span><span class="p">,</span>
                             <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span>
@@ -452,8 +457,8 @@
 
         <span class="n">modules</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                    <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">n_layers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                    <span class="n">conv_fn</span><span class="p">(</span>
                         <span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult_prev</span><span class="p">,</span>
                         <span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult</span><span class="p">,</span>
                         <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span>
@@ -469,8 +474,8 @@
 
         <span class="n">modules</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-                    <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padw</span><span class="p">)</span>
+                <span class="sa">f</span><span class="s2">&quot;block_</span><span class="si">{</span><span class="n">n_layers</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                    <span class="n">conv_fn</span><span class="p">(</span><span class="n">ndf</span> <span class="o">*</span> <span class="n">nf_mult</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kw</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padw</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">}</span>
         <span class="p">)</span>
@@ -484,7 +489,7 @@
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
                 <span class="nb">input</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-                <span class="n">size</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:],</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">im</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span>
             <span class="p">)</span>
         <span class="n">output_im</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">im</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">requires_features</span><span class="p">:</span>
