@@ -21,6 +21,7 @@ class CytoDLModel:
         self._training = False
         self._predicting = False
         print('__file__:', __file__)
+        breakpoint()
 
         self.root = pyrootutils.setup_root(
             search_from=__file__,
