@@ -6,7 +6,7 @@ from typing import List
 from omegaconf import OmegaConf, open_dict
 from hydra.core.global_hydra import GlobalHydra
 from hydra import compose, initialize_config_dir
-# from ..scripts.download_test_data import download_test_data
+from cyto_dl.utils.download_test_data import download_test_data
 
 from cyto_dl.utils.rich_utils import print_config_tree
 
@@ -21,8 +21,6 @@ class CytoDLModel:
         self._training = False
         self._predicting = False
 
-        print('__file__:', __file__)
-
         self.root = pyrootutils.setup_root(
             search_from=__file__,
             project_root_env_var=True,
@@ -31,23 +29,9 @@ class CytoDLModel:
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
             indicator= ('pyproject.toml', 'README.md')
         )
-    # def set_root(self):
-    #     import sys
-    #     print(sys.path)
-    #     print('__file__:', __file__)
-    #     breakpoint()
 
-    #     self.root = pyrootutils.setup_root(
-    #         search_from=__file__,
-    #         project_root_env_var=True,
-    #         dotenv=True,
-    #         pythonpath=True,
-    #         cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
-    #         indicator= ('pyproject.toml', 'README.md')
-    #     )
-
-    # def download_example_data(self):
-    #     download_test_data()
+    def download_example_data(self):
+        download_test_data()
 
     def load_config_from_file(self, config_path: str):
         """Load configuration file."""
@@ -62,7 +46,7 @@ class CytoDLModel:
         """Load configuration from dictionary."""
         self.cfg = config
 
-    def load_default_experiment(self, experiment_name: str, train = True, overrides: List = []):
+    def load_default_experiment(self, experiment_name: str, output_dir:str, train = True, overrides: List = []):
         """Load configuration from directory."""
         assert experiment_name in DEFAULT_EXPERIMENTS
         config_dir = self.root / 'configs'
@@ -70,13 +54,14 @@ class CytoDLModel:
         GlobalHydra.instance().clear()
         with initialize_config_dir(version_base="1.2", config_dir=str(config_dir)):
             cfg = compose(config_name='train.yaml' if train else 'eval.yaml', return_hydra_config=True, overrides=[f'experiment=im2im/{experiment_name}'] + overrides)
+        
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         with open_dict(cfg):
             del cfg['hydra']
             cfg.extras.enforce_tags = False
             cfg.extras.print_config = False
-            output_dir = self.root / 'outputs' / experiment_name / cfg['run_name']
-            output_dir.mkdir(exist_ok=True, parents=True)
             cfg['paths']['output_dir'] = str(output_dir)
             cfg['paths']['work_dir'] = str(output_dir)
 
@@ -98,21 +83,12 @@ class CytoDLModel:
     async def train(self):
         if self.cfg is None:
             raise ValueError('Configuration must be loaded before training!')
-        if not self._training:
-            self._training = True
-            train(self.cfg)
-        else:
-            print('Model is already training!')
-
+        train(self.cfg)
 
     async def predict(self):
         if self.cfg is None:
             raise ValueError('Configuration must be loaded before predicting!')
-        if not self._predicting:
-            self._predicting = True
-            evaluate(self.cfg)
-        else:
-            print('Model is already predicting!')
+        evaluate(self.cfg)
 
     def get_progress(self):
         print(self.progress)
