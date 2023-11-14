@@ -21,19 +21,7 @@ class CytoDLModel:
         self._training = False
         self._predicting = False
 
-        # self.root = pyrootutils.setup_root(
-        #     search_from=__file__,
-        #     project_root_env_var=True,
-        #     dotenv=True,
-        #     pythonpath=True,
-        #     cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
-        #     indicator= ('pyproject.toml', 'README.md')
-        # )
-    def set_root(self):
-        import sys
-        print(sys.path)
         print('__file__:', __file__)
-        breakpoint()
 
         self.root = pyrootutils.setup_root(
             search_from=__file__,
@@ -43,6 +31,20 @@ class CytoDLModel:
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
             indicator= ('pyproject.toml', 'README.md')
         )
+    # def set_root(self):
+    #     import sys
+    #     print(sys.path)
+    #     print('__file__:', __file__)
+    #     breakpoint()
+
+    #     self.root = pyrootutils.setup_root(
+    #         search_from=__file__,
+    #         project_root_env_var=True,
+    #         dotenv=True,
+    #         pythonpath=True,
+    #         cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
+    #         indicator= ('pyproject.toml', 'README.md')
+    #     )
 
     # def download_example_data(self):
     #     download_test_data()
