@@ -13,6 +13,12 @@ EXAMPLE_DATA_DIR = None
 EXAMPLE_DATA_FILENAME = "s3_paths.csv"
 
 
+DATA_PATHS={
+    "raw":"s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff",
+    "seg":"s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff"
+}
+
+
 def parse_s3_path(fn):
     path = Path(fn)
     assert path.parts[0] == "s3:", f"Expected an s3 path, got {fn}"
@@ -29,6 +35,7 @@ def setup_paths():
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
             indicator= ('pyproject.toml', 'README.md')
     )
+    print(root)
     EXAMPLE_DATA_DIR = root/ "data"/"example_experiment_data"
     for subdir in ("s3_data", "segmentation", "labelfree"):
         (EXAMPLE_DATA_DIR / subdir).mkdir(exist_ok=True, parents=True)
@@ -38,7 +45,9 @@ def download_test_data(limit=-1):
     setup_paths()
 
     s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
-    df = pd.read_csv(EXAMPLE_DATA_DIR / EXAMPLE_DATA_FILENAME)
+
+    df = pd.DataFrame(DATA_PATHS, index=[0])
+
     if limit > 0:
         df = df.iloc[:limit]
 
