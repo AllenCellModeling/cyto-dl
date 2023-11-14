@@ -7,7 +7,7 @@ import pandas as pd
 from botocore import UNSIGNED
 from botocore.client import Config
 
-EXAMPLE_DATA_DIR = Path("./data/example_experiment_data")
+EXAMPLE_DATA_DIR = Path(__file__).parent.parent/"data/example_experiment_data"
 EXAMPLE_DATA_FILENAME = "s3_paths.csv"
 
 
