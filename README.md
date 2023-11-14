@@ -60,6 +60,15 @@ pip install -e .
 python scripts download_test_data.py
 ```
 
+### API
+```python
+model = CytoDLModel()
+model.load_default_experiment('segmentation_plugin' , output_dir = './output', overrides = ['trainer=cpu'])
+model.download_example_data()
+model.print_config()
+await model.train()
+```
+
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)
 
 ```bash
