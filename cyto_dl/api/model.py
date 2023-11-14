@@ -17,7 +17,7 @@ DEFAULT_EXPERIMENTS=[
 
 class CytoDLModel:
     def __init__(self):
-        self.fg  = None
+        self.cfg  = None
         self._training = False
         self._predicting = False
         print('__file__:', __file__)
