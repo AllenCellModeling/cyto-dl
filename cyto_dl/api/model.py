@@ -20,6 +20,7 @@ class CytoDLModel:
         self.fg  = None
         self._training = False
         self._predicting = False
+        print('__file__:', __file__)
 
         self.root = pyrootutils.setup_root(
             search_from=__file__,
@@ -27,6 +28,7 @@ class CytoDLModel:
             dotenv=True,
             pythonpath=True,
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
+            indicator= ('pyproject.toml', 'README.md')
         )
 
     # def download_example_data(self):
