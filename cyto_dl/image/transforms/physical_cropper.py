@@ -47,8 +47,10 @@ class RandomPhysicalDimsCropper(RandomizableTransform):
 
     @staticmethod
     def _parse_pixel_str(pixel_str):
+        if isinstance(pixel_str, (list, tuple, np.ndarray)):
+            return np.asarray(pixel_str)
         try:
-            pix = np.array(pixel_str[1:-1].split(","), dtype="float")
+            pix = np.array(pixel_str.split(","), dtype="float")
         except ValueError:
             raise ValueError('Check that your pixel sizes are of form "[1.0,2.0,3.0]"')
         return pix

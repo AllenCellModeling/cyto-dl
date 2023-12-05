@@ -6,10 +6,11 @@
 """Modules to compute the matching cost and solve the corresponding LSAP."""
 import torch
 import torch.nn.functional as F
-from aics_im2im.nn.bfm.common import point_sample
 from scipy.optimize import linear_sum_assignment
 from torch import nn
 from torch.cuda.amp import autocast
+
+from cyto_dl.nn.bfm.common import point_sample
 
 
 def batch_dice_loss(inputs: torch.Tensor, targets: torch.Tensor):

@@ -1,2 +1,4 @@
 from .dataframe_datamodule import DataframeDatamodule
 from .grouped_dataframe_datamodule import GroupedDataframeDatamodule
+from .grouped_smartcache import GroupedSmartcacheDatamodule
+from .smartcache import SmartcacheDatamodule

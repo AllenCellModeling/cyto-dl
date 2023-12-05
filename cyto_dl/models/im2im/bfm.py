@@ -6,14 +6,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from aics_im2im.models.base_model import BaseModel
 from aicsimageio.writers import OmeTiffWriter
 from einops import rearrange
 from monai.losses import DiceFocalLoss
 from torch.nn.modules.loss import _Loss as Loss
 from torchmetrics import MeanMetric
 
-from aics_im2im.nn.bfm import (
+from cyto_dl.models.base_model import BaseModel
+from cyto_dl.nn.bfm import (
     HungarianMatcher,
     MaskDecoder,
     PromptEncoder,

@@ -1,10 +1,6 @@
-from pathlib import Path
-from typing import Sequence, Union
+from typing import Sequence
 
 import numpy as np
-import torch
-from aicsimageio.writers import OmeTiffWriter
-from monai.data.meta_tensor import MetaTensor
 from monai.transforms import Transform
 from omegaconf import ListConfig
 from skimage.segmentation import relabel_sequential

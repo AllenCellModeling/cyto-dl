@@ -1,6 +1,4 @@
-import torch
 from hydra._internal.utils import _locate
-from hydra.utils import instantiate
 
 
 def load_model_from_checkpoint(ckpt_path, key, model_class, strict=True):

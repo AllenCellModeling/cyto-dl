@@ -3,11 +3,12 @@ from typing import Dict
 
 import torch
 import torch.nn as nn
-from aics_im2im.models.base_model import BaseModel
 from aicsimageio.writers import OmeTiffWriter
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
 from torchmetrics import MeanMetric, MinMetric
+
+from cyto_dl.models.base_model import BaseModel
 
 
 class MaskedAutoEncoder(BaseModel):
@@ -74,6 +75,13 @@ class MaskedAutoEncoder(BaseModel):
             batch_idx == 0  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
+
+    def on_train_epoch_start(self):
+        self.trainer.datamodule.train_dataloader().dataset.start()
+        self.trainer.datamodule.train_dataloader().dataset.update_cache()
+
+    def on_train_end(self, trainer, pl_module):
+        self.trainer.datamodule.train_dataloader().dataset.shutdown()
 
     def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors

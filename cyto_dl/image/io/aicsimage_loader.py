@@ -1,5 +1,6 @@
 from typing import List
 
+import torch
 from aicsimageio import AICSImage
 from monai.transforms import Transform
 
@@ -52,7 +53,7 @@ class AICSImageLoaderd(Transform):
             img.set_scene(data[self.scene_key])
         kwargs = {k: data[k] for k in self.kwargs_keys}
         img = img.get_image_dask_data(**kwargs).compute()
+
         data[self.out_key] = img
         data[f"{self.out_key}_meta_dict"] = {"filename_or_obj": path, "kwargs": kwargs}
-
         return data
