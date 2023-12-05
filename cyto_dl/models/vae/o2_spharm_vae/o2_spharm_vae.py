@@ -85,7 +85,6 @@ class O2SpharmVAE(BaseVAE):
         )
 
     def encode(self, batch):
-
         # reorder x's columns to match the encoder
         x = batch[self.hparams.x_label][:, self.flat_indices]
 

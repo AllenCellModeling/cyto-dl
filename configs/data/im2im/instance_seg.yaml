@@ -3,10 +3,9 @@ _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 path:
 cache_dir:
 
-num_workers: 8
+num_workers: 1
 batch_size: 1
 pin_memory: True
-persistent_workers: False
 split_column:
 columns:
   - ${source_col}
@@ -16,51 +15,60 @@ transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
-            C: 4
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      # transforms require CZYX images, but we are loading as ZYX
+      - _target_: monai.transforms.EnsureChannelFirstd
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
+        channel_dim: "no_channel"
+      # 4x downsample to speed up default
+      - _target_: monai.transforms.Zoomd
         keys:
           - ${source_col}
           - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+        zoom: 0.25
+        keep_size: False
+        mode: ["area", "nearest"]
+      # preprocess instance segmentation into vector field
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
+      # z-score normalization
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      # randomly select patches for training
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image: 4
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+      # augmentation transforms
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
         keys: ${source_col}
         num_control_points: [90, 500]
-
       - _target_: monai.transforms.RandStdShiftIntensityd
         prob: 0.1
         keys: ${source_col}
         factors: 0.1
-
       - _target_: monai.transforms.RandAdjustContrastd
         prob: 0.1
         keys: ${source_col}
@@ -69,29 +77,33 @@ transforms:
   test:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
+      - _target_: monai.transforms.Zoomd
         keys:
           - ${source_col}
           - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+        zoom: 0.25
+        keep_size: False
+        mode: ["area", "nearest"]
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord
@@ -103,15 +115,24 @@ transforms:
   predict:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 5
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
+      - _target_: monai.transforms.Zoomd
+        keys:
+          - ${source_col}
+          - ${target_col}
+        zoom: 0.25
+        keep_size: False
+        mode: ["area", "nearest"]
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
@@ -121,30 +142,34 @@ transforms:
   valid:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
         expand_user: False
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
-      - _target_: cyto_dl.image.transforms.Resized
+      - _target_: monai.transforms.Zoomd
         keys:
           - ${source_col}
           - ${target_col}
-        scale_factor: 0.25
-        spatial_dims: ${spatial_dims}
-      - _target_: cyto_dl.models.im2im.utils.SkootsPreprocessd
+        zoom: 0.25
+        keep_size: False
+        mode: ["area", "nearest"]
+      - _target_: cyto_dl.models.im2im.utils.InstanceSegPreprocessd
         label_keys: ${target_col}
         dim: ${spatial_dims}
       - _target_: monai.transforms.ToTensord

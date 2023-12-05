@@ -63,7 +63,7 @@ class ImageVAE(BaseVAE):
         first_conv_padding_mode: str = "replicate",
         encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
-        **base_kwargs
+        **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
 
@@ -103,6 +103,9 @@ class ImageVAE(BaseVAE):
                 self.mask_output = None
         else:
             self.mask = None
+
+        if encoder_padding is None:
+            encoder_padding = [None] * len(kernel_sizes)
 
         for k, s, p in zip(kernel_sizes, strides, encoder_padding):
             padding = same_padding(k) if p is None else p
@@ -169,7 +172,7 @@ class ImageVAE(BaseVAE):
             *decode_blocks,
             # decoder,
             last_act if last_act is not None else nn.Identity(),
-            _Scale(last_scale)
+            _Scale(last_scale),
         )
 
         if isinstance(prior, (str, type(None))):
@@ -200,7 +203,11 @@ class ImageVAE(BaseVAE):
             self.rotation_module = None
 
         super().__init__(
-            encoder=encoder, decoder=decoder, latent_dim=latent_dim, prior=prior, **base_kwargs
+            encoder=encoder,
+            decoder=decoder,
+            latent_dim=latent_dim,
+            prior=prior,
+            **base_kwargs,
         )
 
     def encode(self, batch):

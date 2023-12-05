@@ -137,19 +137,19 @@ class SmartcacheDatamodule(LightningDataModule):
 
     def setup(self, stage=None):
         if stage == "fit":
-            if self.img_data == {}:
-                # split df into train/test/val
-                img_data = self.get_per_file_args(self.df)
-                self.img_data["train"], self.img_data["valid"] = train_test_split(
-                    img_data, test_size=self.val_size
-                )
-                # generating per_file_args can take a while, save it out
-                pd.DataFrame(self.img_data["train"]).to_csv(
-                    f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv"
-                )
-                pd.DataFrame(self.img_data["valid"]).to_csv(
-                    f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv"
-                )
+            # split df into train/test/val
+            self.df_train, self.df_val = train_test_split(self.df, test_size=self.val_size)
+            # update img_data
+            self.img_data["train"] = self.get_per_file_args(self.df_train)
+            self.img_data["val"] = self.get_per_file_args(self.df_val)
+            pd.DataFrame(self.img_data["train"]).to_csv(
+                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv",
+                index=False,
+            )
+            pd.DataFrame(self.img_data["val"]).to_csv(
+                f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv", index=False
+            )
+
             self.datasets["train"] = SmartCacheDataset(
                 self.img_data["train"],
                 transform=self.transforms["train"],

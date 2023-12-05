@@ -1,3 +1,4 @@
+import os
 from collections.abc import MutableMapping
 from contextlib import suppress
 from pathlib import Path
@@ -117,7 +118,11 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     return metric_dict, object_dict
 
 
-@hydra.main(version_base="1.3", config_path="../configs", config_name="train.yaml")
+@hydra.main(
+    version_base="1.3",
+    config_path=os.environ.get("CYTODL_CONFIG_PATH", "../configs"),
+    config_name="train.yaml",
+)
 def main(cfg: DictConfig) -> Optional[float]:
     if cfg.get("persist_cache", False) or cfg.data.get("cache_dir") is None:
         metric_dict, _ = train(cfg)

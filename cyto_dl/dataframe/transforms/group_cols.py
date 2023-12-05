@@ -51,7 +51,6 @@ class GroupCols(Transform):
 
     def __call__(self, row):
         res = {}
-
         for k, v in self.groups.items():
             if v is None:
                 res[k] = row[k]

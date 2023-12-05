@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
@@ -22,6 +22,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
         inference_heads: Union[List, None] = None,
+        compile=False,
         **base_kwargs,
     ):
         """
@@ -41,6 +42,8 @@ class MultiTaskIm2Im(BaseModel):
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         inference_heads: Union[List, None] = None
             Optional list of heads to run during inference. Defaults to running all heads.
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -67,16 +70,16 @@ class MultiTaskIm2Im(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.task_heads = torch.nn.ModuleDict(
                 {k: torch.compile(v) for k, v in task_heads.items()}
             )
         else:
             self.backbone = backbone
-            self.task_heads = torch.nn.ModuleDict({k: v for k, v in task_heads.items()})
+            self.task_heads = torch.nn.ModuleDict(task_heads)
 
-        self.inference_heads = inference_heads or self.task_heads.keys()
+        self.inference_heads = inference_heads or list(self.task_heads.keys())
 
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
@@ -88,7 +91,10 @@ class MultiTaskIm2Im(BaseModel):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        list(self.backbone.parameters()) + list(self.task_heads.parameters())
+                        filter(
+                            lambda p: p.requires_grad,
+                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
+                        )
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
@@ -164,6 +170,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
@@ -171,11 +178,17 @@ class MultiTaskIm2Im(BaseModel):
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
 
-        if stage != "predict":
-            losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-            losses = self._sum_losses(losses)
-            return losses, None, None
+        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+        losses = self._sum_losses(losses)
+        return losses, None, None
 
-        preds = {head_name: head_result["y_hat_out"] for head_name, head_result in outs.items()}
-
-        return None, preds, None
+    def predict_step(self, batch, batch_idx):
+        stage = "predict"
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
+        # convert monai metatensors to tensors
+        for k, v in batch.items():
+            if isinstance(v, MetaTensor):
+                batch[k] = v.as_tensor()
+        run_heads = self._get_run_heads(batch, stage)
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        return outs[run_heads[0]]["save_path"]

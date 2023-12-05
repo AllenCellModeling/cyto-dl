@@ -8,7 +8,10 @@ class MaxProjectd(Transform):
     """Monai-style transform to take max projection of an image."""
 
     def __init__(
-        self, keys: Union[list, str], projection_dim: int = 1, allow_missing_keys: bool = False
+        self,
+        keys: Union[list, str],
+        projection_dim: int = 1,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters

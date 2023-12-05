@@ -1,0 +1,26 @@
+---
+name: publish
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v2
+        with:
+          python-version: 3.9
+
+      - name: Build package
+        run: pdm build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

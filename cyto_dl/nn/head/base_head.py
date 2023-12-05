@@ -1,11 +1,8 @@
-import math
 from abc import ABC
 from pathlib import Path
 
-import numpy as np
 import torch
 from aicsimageio.writers import OmeTiffWriter
-from monai.networks.blocks import Convolution, UnetOutBlock, UnetResBlock, UpSample
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
 
@@ -51,11 +48,13 @@ class BaseHead(ABC, torch.nn.Module):
         return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
 
     def _save(self, fn, img, stage):
+        out_path = Path(self.save_dir) / f"{stage}_images" / fn
         OmeTiffWriter().save(
-            uri=Path(self.save_dir) / f"{stage}_images" / fn,
-            data=img.squeeze().astype(float),
+            uri=out_path,
+            data=img.squeeze(),
             dims_order="STCZYX"[-len(img.shape)],
         )
+        return out_path
 
     def _calculate_metric(self, y_hat, y):
         raise NotImplementedError
@@ -69,14 +68,13 @@ class BaseHead(ABC, torch.nn.Module):
             if self.save_raw:
                 raw_out = self._postprocess(batch[self.x_key], img_type="input")
         try:
-            metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
+            metadata_filenames = batch["filenames"]
+            filename_map = {"input": metadata_filenames, "output": []}
             metadata_filenames = [
                 f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames
             ]
         except KeyError:
-            raise ValueError(
-                f"Please ensure your batches contain key `{self.x_key}_meta_dict['filename_or_obj']`"
-            )
+            raise ValueError("Please ensure your batches have key `filenames`")
         save_name = (
             [f"{global_step}_{self.head_name}.tif"]
             if stage in ("train", "val")
@@ -84,13 +82,14 @@ class BaseHead(ABC, torch.nn.Module):
         )
         n_save = len(y_hat_out) if stage in ("test", "predict") else 1
         for i in range(n_save):
-            self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+            out_path = self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+            filename_map["output"].append(out_path)
             if stage in ("train", "val"):
                 self._save(save_name[i], y_out[i], stage)
                 if self.save_raw:
                     self._save(save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage)
 
-        return y_hat_out, y_out
+        return y_hat_out, y_out, filename_map
 
     def forward(self, x):
         return self.model(x)
@@ -117,11 +116,17 @@ class BaseHead(ABC, torch.nn.Module):
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name])
 
-        y_hat_out, y_out = None, None
+        y_hat_out, y_out, out_paths = None, None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
 
         metric = None
         if self.calculate_metric and stage in ("val", "test"):
             metric = self._calculate_metric(y_hat, batch[self.head_name])
-        return {"loss": loss, "metric": metric, "y_hat_out": y_hat_out, "y_out": y_out}
+        return {
+            "loss": loss,
+            "metric": metric,
+            "y_hat_out": y_hat_out,
+            "y_out": y_out,
+            "save_path": out_paths,
+        }

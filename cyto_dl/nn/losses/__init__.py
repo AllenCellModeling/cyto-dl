@@ -1,4 +1,5 @@
 from .adversarial_loss import AdversarialLoss
+from .chamfer_loss import ChamferLoss
 from .continuous_bernoulli import CBLogLoss
 from .cosine_loss import CosineLoss
 from .gan_loss import GANLoss, Pix2PixHD
@@ -11,3 +12,8 @@ try:
     from .spharm_loss import SpharmLoss
 except (ModuleNotFoundError, ImportError):
     SpharmLoss = None
+
+try:
+    from .geomloss import GeomLoss
+except (ModuleNotFoundError, ImportError):
+    GeomLoss = None

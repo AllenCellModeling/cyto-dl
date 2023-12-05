@@ -1,8 +1,8 @@
 from .bright_sampler import BrightSampler
+from .contrastadjust import ContrastAdjustd
 from .multiscale_cropper import RandomMultiScaleCropd
 from .physical_cropper import RandomPhysicalDimsCropper
 from .project import MaxProjectd
-from .resize import Resized
 from .save import Save, Saved
 
 try:

@@ -84,7 +84,6 @@ sync-reqs-files: requirements/$(PLATFORM)/requirements.txt \
                  requirements/$(PLATFORM)/torchserve-requirements.txt \
                  requirements/$(PLATFORM)/equiv-requirements.txt \
                  requirements/$(PLATFORM)/spharm-requirements.txt \
-                 requirements/$(PLATFORM)/omnipose-requirements.txt \
                  requirements/$(PLATFORM)/all-requirements.txt \
                  requirements/$(PLATFORM)/test-requirements.txt \
                  requirements/$(PLATFORM)/docs-requirements.txt
