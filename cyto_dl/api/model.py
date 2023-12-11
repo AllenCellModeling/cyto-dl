@@ -54,7 +54,7 @@ class CytoDLModel:
         GlobalHydra.instance().clear()
         with initialize_config_dir(version_base="1.2", config_dir=str(config_dir)):
             cfg = compose(config_name='train.yaml' if train else 'eval.yaml', return_hydra_config=True, overrides=[f'experiment=im2im/{experiment_name}'] + overrides)
-        
+
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -65,7 +65,9 @@ class CytoDLModel:
             cfg['paths']['output_dir'] = str(output_dir)
             cfg['paths']['work_dir'] = str(output_dir)
 
+
         self.cfg = cfg
+        OmegaConf.save(self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml')
 
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
