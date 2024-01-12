@@ -2,7 +2,7 @@ import pyrootutils
 from cyto_dl.train import train
 from cyto_dl.eval import evaluate
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Union
 from omegaconf import OmegaConf, open_dict
 from hydra.core.global_hydra import GlobalHydra
 from hydra import compose, initialize_config_dir
@@ -72,11 +72,13 @@ class CytoDLModel:
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
 
-    def override_config(self, overrides: List):
+    def override_config(self, overrides: Dict[str, Union[str, int, float, bool]]):
         """Override configuration from list of overrides."""
         if self.cfg is None:
             raise ValueError('Configuration must be loaded before overriding!')
-        self.cfg = OmegaConf.merge(self.cfg, OmegaConf.from_dotlist(overrides))
+
+        for k, v in overrides.items():
+            OmegaConf.update(self.cfg, k, v)
     
     async def train(self):
         if self.cfg is None:
