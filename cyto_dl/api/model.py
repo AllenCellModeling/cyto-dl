@@ -37,7 +37,7 @@ class CytoDLModel:
         """Load configuration file."""
         config_path = Path(config_path)
         assert config_path.exists(), f"config file {config_path} does not exist"
-        assert config_path.endswith('.yaml'), f"config file {config_path} must be a yaml file"
+        assert config_path.suffix == '.yaml', f"config file {config_path} must be a yaml file"
 
         #load config
         self.cfg = OmegaConf.load(config_path)
@@ -72,15 +72,11 @@ class CytoDLModel:
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
 
-
     def override_config(self, overrides: List):
-        for override in overrides:
-            tmp_cfg = self.cfg
-            keys, value = override.split('=')
-            keys = keys.split('.')
-            for key in keys[:-1]:
-                tmp_cfg = tmp_cfg.set_default(key, {})
-            tmp_cfg[keys[-1]] = value
+        """Override configuration from list of overrides."""
+        if self.cfg is None:
+            raise ValueError('Configuration must be loaded before overriding!')
+        self.cfg = OmegaConf.merge(self.cfg, OmegaConf.from_dotlist(overrides))
     
     async def train(self):
         if self.cfg is None:
