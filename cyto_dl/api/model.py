@@ -89,7 +89,3 @@ class CytoDLModel:
         if self.cfg is None:
             raise ValueError('Configuration must be loaded before predicting!')
         evaluate(self.cfg)
-
-    def get_progress(self):
-        print(self.progress)
-        self.progress += 1
