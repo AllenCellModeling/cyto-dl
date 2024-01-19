@@ -35,7 +35,6 @@ def setup_paths():
             cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
             indicator= ('pyproject.toml', 'README.md')
     )
-    print(root)
     EXAMPLE_DATA_DIR = root/ "data"/"example_experiment_data"
     for subdir in ("s3_data", "segmentation", "labelfree"):
         (EXAMPLE_DATA_DIR / subdir).mkdir(exist_ok=True, parents=True)
