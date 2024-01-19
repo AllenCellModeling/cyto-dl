@@ -2,20 +2,18 @@ import shutil
 from pathlib import Path
 
 import boto3
-import pyrootutils
-
 import pandas as pd
+import pyrootutils
 from botocore import UNSIGNED
 from botocore.client import Config
-
 
 EXAMPLE_DATA_DIR = None
 EXAMPLE_DATA_FILENAME = "s3_paths.csv"
 
 
-DATA_PATHS={
-    "raw":"s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff",
-    "seg":"s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff"
+DATA_PATHS = {
+    "raw": "s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff",
+    "seg": "s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff",
 }
 
 
@@ -28,14 +26,14 @@ def parse_s3_path(fn):
 def setup_paths():
     global EXAMPLE_DATA_DIR
     root = pyrootutils.setup_root(
-            search_from=__file__,
-            project_root_env_var=True,
-            dotenv=True,
-            pythonpath=True,
-            cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
-            indicator= ('pyproject.toml', 'README.md')
+        search_from=__file__,
+        project_root_env_var=True,
+        dotenv=True,
+        pythonpath=True,
+        cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
+        indicator=("pyproject.toml", "README.md"),
     )
-    EXAMPLE_DATA_DIR = root/ "data"/"example_experiment_data"
+    EXAMPLE_DATA_DIR = root / "data" / "example_experiment_data"
     for subdir in ("s3_data", "segmentation", "labelfree"):
         (EXAMPLE_DATA_DIR / subdir).mkdir(exist_ok=True, parents=True)
 
@@ -71,6 +69,3 @@ def download_test_data(limit=-1):
 def delete_test_data():
     for subdir in ("segmentation", "labelfree", "s3_data"):
         shutil.rmtree(EXAMPLE_DATA_DIR / subdir)
-
-
-

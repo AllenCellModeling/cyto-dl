@@ -49,7 +49,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
         lightning.seed_everything(cfg.seed, workers=True)
 
     # resolve config to avoid unresolvable interpolations in the stored config
-    
+
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating

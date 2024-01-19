@@ -61,11 +61,13 @@ python scripts download_test_data.py
 ```
 
 ### API
+
 ```python
 from cyto_dl.api import CytoDLModel
+
 model = CytoDLModel()
 model.download_example_data()
-model.load_default_experiment('segmentation' , output_dir = './output', overrides = ['trainer=cpu'])
+model.load_default_experiment("segmentation", output_dir="./output", overrides=["trainer=cpu"])
 model.print_config()
 await model.train()
 ```

@@ -1,9 +1,9 @@
 from .bright_sampler import BrightSampler
 from .contrastadjust import ContrastAdjustd
+from .merge import Merged
 from .multiscale_cropper import RandomMultiScaleCropd
 from .project import MaxProjectd
 from .save import Save, Saved
-from .merge import Merged
 
 try:
     from .rotation_mask_transform import RotationMask, RotationMaskd

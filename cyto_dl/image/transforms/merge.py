@@ -4,7 +4,8 @@ from monai.transforms import Transform
 
 
 class Merged(Transform):
-    """Use mask to merge two images"""
+    """Use mask to merge two images."""
+
     def __init__(
         self,
         mask_key: str,
@@ -24,15 +25,12 @@ class Merged(Transform):
         """
         super().__init__()
         self.mask_key = mask_key
-        if len(image_keys) !=2:
-            raise ValueError(
-                f"image_keys must be a list of length 2. Got {image_keys}"
-            )
+        if len(image_keys) != 2:
+            raise ValueError(f"image_keys must be a list of length 2. Got {image_keys}")
         self.image_keys = list(image_keys)
         self.base_image_key = base_image_key
         self.output_name = output_name
 
-        
     def __call__(self, input_dict):
         """
         Parameters
@@ -51,12 +49,12 @@ class Merged(Transform):
                 f"key `{self.base_image_key}` not available. Available keys are {input_dict.keys()}"
             )
         base_image_name = input_dict[self.base_image_key]
-        
+
         if base_image_name not in self.image_keys:
             raise KeyError(
                 f"Base image name `{base_image_name}` must match provided image keys `{self.image_keys}`"
             )
-        
+
         for key in self.image_keys:
             if key not in input_dict.keys():
                 raise KeyError(

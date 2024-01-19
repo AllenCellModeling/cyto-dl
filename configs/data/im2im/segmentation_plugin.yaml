@@ -19,7 +19,7 @@ transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
-      # load 
+      # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
@@ -40,17 +40,17 @@ transforms:
             C: 0
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${merge_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'ignore'
+        missing_key_mode: "ignore"
       # load excluding mask - assumed to be all ones by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${exclude_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'create'
-      # normalize 
+        missing_key_mode: "create"
+      # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
@@ -64,7 +64,7 @@ transforms:
         output_name: target
       #crop
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -74,21 +74,21 @@ transforms:
 
       # augmentation
       - _target_: monai.transforms.RandRotate90d
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
         prob: 0.5
         spatial_axes: [0, 1]
       - _target_: monai.transforms.RandFlipd
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -96,27 +96,27 @@ transforms:
         spatial_axis: 1
       - _target_: monai.transforms.RandHistogramShiftd
         prob: 0.1
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
         num_control_points: [90, 500]
       - _target_: monai.transforms.RandStdShiftIntensityd
         prob: 0.1
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
         factors: 0.1
       - _target_: monai.transforms.RandAdjustContrastd
         prob: 0.1
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
         gamma: [0.9, 1.5]
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -124,7 +124,7 @@ transforms:
   test:
     _target_: monai.transforms.Compose
     transforms:
-      # load 
+      # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
@@ -145,20 +145,20 @@ transforms:
             C: 0
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${merge_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'ignore'
+        missing_key_mode: "ignore"
       # load excluding mask - assumed to be all ones by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${exclude_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'create'
-      # normalize 
+        missing_key_mode: "create"
+      # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-        
+
         channel_wise: True
       # merge masks
       - _target_: cyto_dl.image.transforms.merge.Merged
@@ -169,7 +169,7 @@ transforms:
         base_image_key: ${base_image_col}
         output_name: target
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -177,19 +177,19 @@ transforms:
   predict:
     _target_: monai.transforms.Compose
     transforms:
-      # load 
+      # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: ${input_channel}
-      # normalize 
+      # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -197,7 +197,7 @@ transforms:
   valid:
     _target_: monai.transforms.Compose
     transforms:
-     # load 
+      # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
@@ -216,24 +216,24 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 0
-            
+
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${merge_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'ignore'
+        missing_key_mode: "ignore"
       # load excluding mask - assumed to be all ones by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
-        keys: 
+        keys:
           - ${exclude_mask_col}
         shape_reference_key: ${target_col1}
-        missing_key_mode: 'create'
-        
-      # normalize 
+        missing_key_mode: "create"
+
+      # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-        
+
         channel_wise: True
       # merge masks
       - _target_: cyto_dl.image.transforms.merge.Merged
@@ -246,7 +246,7 @@ transforms:
 
       # #crop
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
@@ -254,7 +254,7 @@ transforms:
         patch_per_image: 1
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}

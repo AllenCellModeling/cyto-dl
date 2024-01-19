@@ -5,7 +5,8 @@ from cyto_dl.nn.head import BaseHead
 
 
 class MaskHead(BaseHead):
-    """Task Head using a masked loss function"""
+    """Task Head using a masked loss function."""
+
     def __init__(
         self,
         loss,

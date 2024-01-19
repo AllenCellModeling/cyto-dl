@@ -38,10 +38,7 @@ data:
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1
   _aux:
-    patch_shape: 
-
-
-
+    patch_shape:
 # small, medium, large
 # 32 pix, 64 pix, 128 pix
 
