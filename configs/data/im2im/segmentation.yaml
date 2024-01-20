@@ -123,7 +123,7 @@ transforms:
         channel_dim: "no_channel"
         keys: ${source_col}
       - _target_: monai.transforms.Zoomd
-        keys: ${data.columns}
+        keys: ${source_col}
         zoom: 0.25
         keep_size: False
       - _target_: monai.transforms.ToTensord
