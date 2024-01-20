@@ -60,15 +60,15 @@ class CytoDLModel:
                 overrides=[f"experiment=im2im/{experiment_name}"] + overrides,
             )
 
-        output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-
         with open_dict(cfg):
             del cfg["hydra"]
             cfg.extras.enforce_tags = False
             cfg.extras.print_config = False
-            cfg["paths"]["output_dir"] = str(output_dir)
-            cfg["paths"]["work_dir"] = str(output_dir)
+            cfg["paths"]["output_dir"] = output_dir
+            cfg["paths"]["work_dir"] = output_dir
+
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         self.cfg = cfg
         OmegaConf.save(self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml')

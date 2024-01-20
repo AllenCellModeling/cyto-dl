@@ -2,7 +2,7 @@
 Using the API
 ============
 
-CytoDL can be imported as a Python package and used programatically with the `cyto_dl.api.CytoDLModel` class in addition to the command line interface. We provide utilities for loading configuration files, training models, and making predictions.
+CytoDL can be imported as a Python package and used programmatically with the `cyto_dl.api.CytoDLModel` class in addition to the command line interface. We provide utilities for loading configuration files, training models, and making predictions.
 
 +++++++++++++++
 Loading Configs
@@ -31,7 +31,7 @@ or by name from one of our default configs. Available options are 'gan', 'instan
     model.load_default_experiment('gan', overrides = ['data.batch_size=16'])
     ```
 
-Once a config is loaded, attributes can be overriden using `model.override_config()`, which takes in a dictionary of values to be overriden.
+Once a config is loaded, attributes can be overridden using `model.override_config()`, which takes in a dictionary of values to be overridden.
     ```python
     from cyto_dl.api import CytoDLModel
     model = CytoDLModel()
