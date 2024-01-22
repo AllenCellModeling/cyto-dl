@@ -131,7 +131,7 @@ transforms:
           - ${source_col}
         zoom: 0.25
         keep_size: False
-        mode: ["area", "nearest"]
+        mode: ["area"]
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
