@@ -16,4 +16,5 @@ Submodules
    cyto_dl.nn.head.conv_proj_layer
    cyto_dl.nn.head.gan_head
    cyto_dl.nn.head.gan_head_superres
+   cyto_dl.nn.head.mask_head
    cyto_dl.nn.head.res_blocks_head

@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   cyto_dl.api
    cyto_dl.callbacks
    cyto_dl.dataframe
    cyto_dl.datamodules

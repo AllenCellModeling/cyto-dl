@@ -16,4 +16,5 @@ Submodules
    cyto_dl.image.io.monai_bio_reader
    cyto_dl.image.io.numpy_reader
    cyto_dl.image.io.ome_zarr_reader
+   cyto_dl.image.io.polygon_loader
    cyto_dl.image.io.skimage_reader
