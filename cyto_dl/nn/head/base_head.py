@@ -48,7 +48,11 @@ class BaseHead(ABC, torch.nn.Module):
         return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
 
     def _save(self, fn, img, stage):
-        out_path = Path(self.save_dir) / f"{stage}_images" / fn
+        if stage in ("train", "val", "test"):
+            (Path(self.save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
+            out_path = Path(self.save_dir) / f"{stage}_images" / fn
+        else:
+            out_path = Path(self.save_dir) / fn
         OmeTiffWriter().save(
             uri=out_path,
             data=img.squeeze(),
