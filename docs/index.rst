@@ -8,4 +8,5 @@
    Home <self>
    installation
    using_examples
+   api
    Package modules <modules>
