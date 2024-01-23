@@ -16,6 +16,7 @@ Subpackages
    cyto_dl.nn.head
    cyto_dl.nn.losses
    cyto_dl.nn.point_cloud
+   cyto_dl.nn.vits
 
 Submodules
 ----------
