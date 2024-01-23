@@ -31,7 +31,7 @@ transforms:
         keys: ${source_col}
         channel_wise: True
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
-        keys: 
+        keys:
           - ${source_col}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1
@@ -97,7 +97,7 @@ transforms:
         keys: ${source_col}
         channel_wise: True
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
-        keys: 
+        keys:
           - ${source_col}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: 1

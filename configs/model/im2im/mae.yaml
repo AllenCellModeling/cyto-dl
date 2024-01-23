@@ -8,7 +8,7 @@ x_key: ${source_col}
 backbone:
   _target_: cyto_dl.nn.vits.MAE_ViT
   # base_patch_size* num_patches should be your patch shape
-  base_patch_size: [2, 2, 2] 
+  base_patch_size: [2, 2, 2]
   num_patches: [8, 16, 16]
   emb_dim: 16
   encoder_layer: 2

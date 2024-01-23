@@ -1,2 +1,2 @@
-from .mae import MAE_Encoder, MAE_Decoder, MAE_ViT
-from .seg import SupperresDecoder, Seg_ViT
+from .mae import MAE_Decoder, MAE_Encoder, MAE_ViT
+from .seg import Seg_ViT, SupperresDecoder

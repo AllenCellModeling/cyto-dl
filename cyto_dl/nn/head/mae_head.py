@@ -1,6 +1,3 @@
-import torch
-
-from cyto_dl.models.im2im.utils.postprocessing import detach
 from cyto_dl.nn.head import BaseHead
 
 

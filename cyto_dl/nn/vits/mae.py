@@ -1,13 +1,13 @@
 # modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 
+from typing import List, Optional
+
 import numpy as np
 import torch
 from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
-
-from typing import List, Optional
 
 
 def random_indexes(size: int):
@@ -45,9 +45,11 @@ class PatchShuffle(torch.nn.Module):
 
 class Patchify(torch.nn.Module):
     # based on https://github.com/google-research/big_vision/blob/main/big_vision/models/proj/flexi/vit.py
+    """Class for flexibly turning image into sequence of patches.
+
+    Convolutional weights are resized to match the `base_patch_size`.
     """
-    Class for flexibly turning image into sequence of patches. Convolutional weights are resized to match the `base_patch_size`.
-    """
+
     def __init__(self, base_patch_size, emb_dim, n_patches):
         super().__init__()
         self.n_patches = np.asarray(n_patches)
@@ -73,11 +75,11 @@ class MAE_Encoder(torch.nn.Module):
     def __init__(
         self,
         num_patches: List[int],
-        base_patch_size: List[int]=(16, 16, 16),
-        emb_dim: Optional[int]=192,
-        num_layer: Optional[int]=12,
-        num_head: Optional[int]=3,
-        mask_ratio: Optional[int]=0.75,
+        base_patch_size: List[int] = (16, 16, 16),
+        emb_dim: Optional[int] = 192,
+        num_layer: Optional[int] = 12,
+        num_head: Optional[int] = 3,
+        mask_ratio: Optional[int] = 0.75,
     ) -> None:
         """
         Parameters
@@ -88,7 +90,7 @@ class MAE_Encoder(torch.nn.Module):
             Size of each patch
         emb_dim: int
             Dimension of embedding
-        num_layer: int  
+        num_layer: int
             Number of transformer layers
         num_head: int
             Number of heads in transformer
@@ -144,10 +146,10 @@ class MAE_Decoder(torch.nn.Module):
     def __init__(
         self,
         num_patches: List[int],
-        base_patch_size: Optional[List[int]]=[4, 8, 8],
-        emb_dim: Optional[int]=192,
-        num_layer: Optional[int]=4,
-        num_head: Optional[int]=3,
+        base_patch_size: Optional[List[int]] = [4, 8, 8],
+        emb_dim: Optional[int] = 192,
+        num_layer: Optional[int] = 4,
+        num_head: Optional[int] = 3,
     ) -> None:
         """
         Parameters
@@ -239,21 +241,21 @@ class MAE_Decoder(torch.nn.Module):
 class MAE_ViT(torch.nn.Module):
     def __init__(
         self,
-        num_patches: Optional[List[int]]=[2, 32, 32],
-        base_patch_size: Optional[List[int]]=[16, 16, 16],
-        emb_dim: Optional[int]=768,
-        encoder_layer: Optional[int]=12,
-        encoder_head: Optional[int]=8,
-        decoder_layer: Optional[int]=4,
-        decoder_head: Optional[int]=8,
-        mask_ratio: Optional[int]=0.75,
+        num_patches: Optional[List[int]] = [2, 32, 32],
+        base_patch_size: Optional[List[int]] = [16, 16, 16],
+        emb_dim: Optional[int] = 768,
+        encoder_layer: Optional[int] = 12,
+        encoder_head: Optional[int] = 8,
+        decoder_layer: Optional[int] = 4,
+        decoder_head: Optional[int] = 8,
+        mask_ratio: Optional[int] = 0.75,
     ) -> None:
         """
         Parameters
         ----------
         num_patches: List[int]
             Number of patches in each dimension (ZYX order)
-        base_patch_size: List[int] 
+        base_patch_size: List[int]
             Size of each patch (ZYX order)
         emb_dim: int
             Dimension of encoder embedding
