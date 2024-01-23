@@ -28,6 +28,16 @@ from skimage.segmentation import find_boundaries, relabel_sequential
 from cyto_dl.nn.losses.loss_wrapper import CMAP_loss
 
 
+
+def pad_slice(s, padding, constraints):
+    # pad slice by padding subject to image size constraints
+    new_slice = []
+    for slice_part, c in zip(s, constraints):
+        start = max(0, slice_part.start - padding)
+        stop = min(c, slice_part.stop + padding)
+        new_slice.append(slice(start, stop, None))
+    return tuple(new_slice)
+
 class InstanceSegPreprocessd(Transform):
     def __init__(
         self,
@@ -76,7 +86,7 @@ class InstanceSegPreprocessd(Transform):
             if coords is None:
                 continue
             # add 1 pix boundary to prevent "ball + stick" artifacts
-            coords = self.pad_slice(coords, 1, im.shape)
+            coords = pad_slice(coords, 1, im.shape)
             skel[coords] += self.topology_preserving_thinning(im[coords] == lab)
         return skel * im  # relabel shrunk object
 
@@ -154,16 +164,6 @@ class InstanceSegPreprocessd(Transform):
             conv_embed[np.isnan(embedding[i])] = 0
             embedding[i] = conv_embed
         return embedding
-
-    def pad_slice(self, s, padding, constraints):
-        # pad slice by padding subject to image size constraints
-        new_slice = []
-        for slice_part, c in zip(s, constraints):
-            start = max(0, slice_part.start - padding)
-            stop = min(c, slice_part.stop + padding)
-            new_slice.append(slice(start, stop, None))
-        return tuple(new_slice)
-
 
     def embed_from_skel(self, skel: np.ndarray, iseg: np.ndarray):
         """Find per-pixel embedding vector to closest point on skeleton."""
@@ -508,10 +508,8 @@ class InstanceSegCluster:
         # assign each embedded point the label of the closest skeleton
         labeled_embed = self.kd_clustering(embeddings, skel)
         # propagate embedding label to semantic segmentation
-        semantic_points = np.nonzero(semantic)
-        out = skel.copy()
-        out[semantic_points[0], semantic_points[1], semantic_points[2]] = labeled_embed
-        out, _, _ = relabel_sequential(out)
+        skel[semantic] = labeled_embed
+        out, _, _ = relabel_sequential(skel)
         return out
 
     def __call__(self, image):
@@ -528,6 +526,7 @@ class InstanceSegCluster:
         highest_cell_idx = 0
         out_image = np.zeros_like(naive_labeling, dtype=np.uint16)
         for val, region in tqdm(regions) if self.progress else regions:
+            region = pad_slice(region, 1, naive_labeling.shape)
             mask = self.cluster_object(
                 (naive_labeling[region] == val).copy(),
                 skel[region].copy(),
