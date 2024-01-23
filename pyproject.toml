@@ -29,6 +29,7 @@ dependencies = [
     "mlflow~=2.1",
     "omegaconf~=2.3",
     "pyarrow~=10.0",
+    "pyrootutils~=1.0",
     "PyYAML~=6.0",
     "scikit-learn~=1.2",
     "aicsimageio~=4.11.0",
@@ -38,6 +39,7 @@ dependencies = [
     "bfio==2.3.0",
     "monai-weekly>=1.2.dev2308",
     "tifffile~=2023.2",
+    "timm>=0.9.7",
     "tqdm~=4.64",
     "protobuf<=3.20.1",
     "lightning>=2.0,<2.1",
@@ -75,7 +77,6 @@ pcloud = [
     "point-cloud-utils>=0.29.6",
     "geomloss>=0.2.6",
     "Ninja>=1.11.1",
-    "timm>=0.9.7",
     "torchio>=0.19.1",
 ]
 all = [
@@ -83,7 +84,6 @@ all = [
 ]
 test = [
     "cyto-dl[all]",
-    "pyrootutils~=1.0",
     "pytest~=7.2",
     "pytest-cov[toml]~=4.0",
 ]
