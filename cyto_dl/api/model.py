@@ -7,7 +7,7 @@ from hydra.core.global_hydra import GlobalHydra
 from omegaconf import OmegaConf, open_dict
 
 from cyto_dl.eval import evaluate
-from cyto_dl.train import train
+from cyto_dl.train import train as train_model
 from cyto_dl.utils.download_test_data import download_test_data
 from cyto_dl.utils.rich_utils import print_config_tree
 
@@ -84,12 +84,22 @@ class CytoDLModel:
         for k, v in overrides.items():
             OmegaConf.update(self.cfg, k, v)
 
-    async def train(self):
+    async def _train_async(self):
+        return train_model(self.cfg)
+
+    async def _predict_async(self):
+        return evaluate(self.cfg)
+
+    def train(self, run_async=False):
         if self.cfg is None:
             raise ValueError("Configuration must be loaded before training!")
-        train(self.cfg)
+        if run_async:
+            return self._train_async()
+        return train_model(self.cfg)
 
-    async def predict(self):
+    def predict(self, run_async=False):
         if self.cfg is None:
             raise ValueError("Configuration must be loaded before predicting!")
-        evaluate(self.cfg)
+        if run_async:
+            return self._predict_async()
+        return evaluate(self.cfg)
