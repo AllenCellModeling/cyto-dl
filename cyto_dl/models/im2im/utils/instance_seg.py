@@ -515,7 +515,7 @@ class InstanceSegCluster:
     def __call__(self, image):
         import time
         t0 = time.time()
-        image = image.detach().cpu().numpy()
+        image = image.detach().cpu().half().numpy()
 
         skel = image[0]
         naive_labeling, _ = label(image[1]> self.semantic_threshold)
