@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union, List
 
 import edt
 import numpy as np
@@ -420,6 +420,7 @@ class InstanceSegCluster:
         semantic_threshold: float = 0,
         min_size: int = 1000,
         distance_threshold: int = 100,
+        rescale_factor: List[int] = [1, 1, 1],
     ):
         self.dim = dim
         self.anisotropy = np.array([anisotropy if dim == 3 else 1] + [1] * (dim - 1))
@@ -427,6 +428,8 @@ class InstanceSegCluster:
         self.semantic_threshold = semantic_threshold
         self.min_size = min_size
         self.distance_threshold = distance_threshold
+        self.rescale_factor = np.array(rescale_factor)
+        self.do_resize = np.any(self.rescale_factor != 1)
 
     def _get_point_embeddings(self, object_points, skeleton_points):
         """
@@ -477,6 +480,10 @@ class InstanceSegCluster:
         elif num_objects == 1:
             return semantic
 
+        if self.do_resize:
+            semantic_original= semantic.copy()
+            semantic, skel, embedding = self.resize(semantic, skel, embedding)
+
         # z embeddings are anisotropic, have to adjust to coordinates in real space, not pixel space
         anisotropic_shape = np.array(semantic.shape) * self.anisotropy
         coordinates = np.stack(
@@ -505,40 +512,41 @@ class InstanceSegCluster:
         out = skel.copy()
         out[semantic_points[0], semantic_points[1], semantic_points[2]] = labeled_embed
         out, _, _ = relabel_sequential(out)
+        if self.do_resize:
+            out = self.unresize(semantic_original, out)
         return out
 
     def resize(self, semantic,skel, embedding):
-        raise NotImplementedError
         from skimage.transform import rescale
         semantic = rescale(semantic, self.rescale_factor, order=0, preserve_range=True, anti_aliasing=False)
         skel = rescale(skel, self.rescale_factor, order=0, preserve_range=True, anti_aliasing=False)
-        embedding = rescale(embedding, self.rescale_factor, order=3, preserve_range=True, anti_aliasing=False)
+        embedding = rescale(embedding, self.rescale_factor, order=3, preserve_range=True, anti_aliasing=False, channel_axis=0)
         for r in range(len(self.rescale_factor)):
-            embedding[r +1 ] /= self.rescale_factor[r]
+            embedding[r] *= self.rescale_factor[r]
         return semantic, skel, embedding
 
     def unresize(self, semantic_original_res, instance_seg_resized):
         from skimage.segmentation import expand_labels
         from skimage.transform import resize
         instance_seg_resized = resize(instance_seg_resized, semantic_original_res.shape, order=0, preserve_range=True, anti_aliasing=False)
-        instance_seg_resizes= expand_labels(instance_seg_resized, 3)
+        instance_seg_resized= expand_labels(instance_seg_resized, 3)
         return semantic_original_res * instance_seg_resized
 
     def __call__(self, image):
         import time
-
         t0 = time.time()
         image = image.detach().cpu().numpy()
-        skel = image[0]
-        semantic = image[1]
-        embedding = image[2 : 2 + self.dim]
 
-        naive_labeling, _ = label(semantic > self.semantic_threshold)
-
-        regions = find_objects(naive_labeling)
         # create instances from skeletons, removing small, anomalous skeletons
+        skel = image[0]
         skel, _ = label(skel > self.skel_threshold)
         skel = self.remove_small_skeletons(skel)
+
+        semantic = image[1]> self.semantic_threshold
+        embedding = image[2 : 2 + self.dim]
+    
+        naive_labeling, _ = label(semantic)
+        regions = find_objects(naive_labeling)
 
         highest_cell_idx = 0
         out_image = np.zeros_like(naive_labeling, dtype=np.uint16)
