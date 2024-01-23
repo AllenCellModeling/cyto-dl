@@ -1,10 +1,8 @@
-from typing import Dict, Optional, Sequence, Union, List
+from typing import Dict, List, Optional, Sequence, Union
 
 import edt
 import numpy as np
 import torch
-from tqdm import tqdm
-
 
 # implements a nan-ignoring convolution
 from astropy.convolution import convolve
@@ -24,9 +22,9 @@ from skimage.morphology import (
     skeletonize,
 )
 from skimage.segmentation import find_boundaries, relabel_sequential
+from tqdm import tqdm
 
 from cyto_dl.nn.losses.loss_wrapper import CMAP_loss
-
 
 
 def pad_slice(s, padding, constraints):
@@ -37,6 +35,7 @@ def pad_slice(s, padding, constraints):
         stop = min(c, slice_part.stop + padding)
         new_slice.append(slice(start, stop, None))
     return tuple(new_slice)
+
 
 class InstanceSegPreprocessd(Transform):
     def __init__(
@@ -193,7 +192,9 @@ class InstanceSegPreprocessd(Transform):
             if len(object_points) == 2:
                 crop_embedding[:, object_points[0], object_points[1]] = point_embeddings
             elif len(object_points) == 3:
-                crop_embedding[:, object_points[0], object_points[1], object_points[2]] = point_embeddings
+                crop_embedding[
+                    :, object_points[0], object_points[1], object_points[2]
+                ] = point_embeddings
 
             crop_embedding = torch.from_numpy(self.smooth_embedding(crop_embedding))
 
@@ -257,7 +258,7 @@ class InstanceSegPreprocessd(Transform):
                 largest_cc = (img[coords] == lab) * lab
             new_im[coords] += largest_cc
         return new_im
-    
+
     def __call__(self, image_dict):
         for key in self.label_keys:
             if key not in image_dict:
@@ -286,6 +287,7 @@ class InstanceSegPreprocessd(Transform):
 
             print(time.time() - t0)
         return image_dict
+
 
 class InstanceSegRandFlipd(RandomizableTransform):
     """Flipping Augmentation for InstanceSeg training.
@@ -408,6 +410,7 @@ class InstanceSegLoss:
         )
         return vector_loss + skeleton_loss + semantic_loss + boundary_loss
 
+
 class InstanceSegCluster:
     """
     Clustering for InstanceSeg - finds skeletons and assigns semantic points to skeleton based on spatial embedding and nearest neighbor distances.
@@ -514,14 +517,15 @@ class InstanceSegCluster:
 
     def __call__(self, image):
         import time
+
         t0 = time.time()
         image = image.detach().cpu().half().numpy()
 
         skel = image[0]
-        naive_labeling, _ = label(image[1]> self.semantic_threshold)
+        naive_labeling, _ = label(image[1] > self.semantic_threshold)
 
         embedding = image[2 : 2 + self.dim]
-        regions = enumerate(find_objects(naive_labeling), start = 1)
+        regions = enumerate(find_objects(naive_labeling), start=1)
 
         highest_cell_idx = 0
         out_image = np.zeros_like(naive_labeling, dtype=np.uint16)
