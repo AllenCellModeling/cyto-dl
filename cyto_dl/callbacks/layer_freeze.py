@@ -11,6 +11,16 @@ class LayerFreeze(Callback):
         contains: Optional[Union[str, List[str]]] = None,
         excludes: Optional[Union[str, List[str]]] = None,
     ):
+        """
+        Parameters
+        ----------
+        modules: Union[str, List[str]]
+            List of modules to search within
+        contains: Optional[Union[str, List[str]]]
+            List of strings that must be contained in the layer name to freeze
+        excludes: Optional[Union[str, List[str]]]
+            List of strings that must not be contained in the layer name to freeze
+        """
         assert (
             contains is not None or excludes is not None
         ), "One of `contains` or `excludes` must be provided"
