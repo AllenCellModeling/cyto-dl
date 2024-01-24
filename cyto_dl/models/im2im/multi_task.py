@@ -192,10 +192,9 @@ class MultiTaskIm2Im(BaseModel):
         # create input-> per head output mapping
         io_map = {}
         for head, output in outs.items():
-            head_io_map = output['save_path']
-            for in_file, out_file in zip(head_io_map['input'], head_io_map['output']):
+            head_io_map = output["save_path"]
+            for in_file, out_file in zip(head_io_map["input"], head_io_map["output"]):
                 if in_file not in io_map:
                     io_map[in_file] = {}
                 io_map[in_file][head] = out_file
         return io_map
-
