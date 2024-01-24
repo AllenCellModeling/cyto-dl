@@ -4,6 +4,7 @@ from .merge import Merged
 from .multiscale_cropper import RandomMultiScaleCropd
 from .project import MaxProjectd
 from .save import Save, Saved
+from .clip import Clip, Clipd
 
 try:
     from .rotation_mask_transform import RotationMask, RotationMaskd
