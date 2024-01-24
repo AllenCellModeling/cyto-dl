@@ -69,7 +69,10 @@ model = CytoDLModel()
 model.download_example_data()
 model.load_default_experiment("segmentation", output_dir="./output", overrides=["trainer=cpu"])
 model.print_config()
-await model.train()
+model.train()
+
+# [OPTIONAL] async training
+await model.train(run_async=True)
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)

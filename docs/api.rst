@@ -46,13 +46,16 @@ Once a config is loaded, attributes can be overridden using `model.override_conf
 +++++++++++++++
 Training and Prediction
 +++++++++++++++
-Once a config is loaded, the model can be trained using `model.train()`.
+Once a config is loaded, the model can be trained using `model.train()`. Model training can be made async by passing `run_async=True`.
     ```python
     from cyto_dl.api import CytoDLModel
 
     model = CytoDLModel()
     model.load_default_experiment("gan")
-    await model.train()
+    model.train()
+
+    # [OPTIONAL] async training
+    await model.train(run_async=True)
     ```
 The model can be used to make predictions using `model.predict()`
     ```python
@@ -60,6 +63,9 @@ The model can be used to make predictions using `model.predict()`
 
     model = CytoDLModel()
     model.load_default_experiment("gan")
+    model.predict()
+
+    # [OPTIONAL] async prediction
     await model.predict()
     ```
 
