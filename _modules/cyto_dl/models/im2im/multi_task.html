@@ -582,7 +582,15 @@
                 <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
         <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">outs</span><span class="p">[</span><span class="n">run_heads</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;save_path&quot;</span><span class="p">]</span></div></div>
+        <span class="c1"># create input-&gt; per head output mapping</span>
+        <span class="n">io_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">head_io_map</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;save_path&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">in_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">io_map</span><span class="p">:</span>
+                    <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">][</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_file</span>
+        <span class="k">return</span> <span class="n">io_map</span></div></div>
 </pre></div>
         </article>
       </div>
