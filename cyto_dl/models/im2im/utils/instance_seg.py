@@ -1,4 +1,4 @@
-from typing import Sequence, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import edt
 import numpy as np
@@ -10,10 +10,9 @@ from monai.data import MetaTensor
 from monai.losses import TverskyLoss
 from monai.transforms import Flip, RandomizableTransform, Transform
 from omegaconf import ListConfig
-from scipy.ndimage import find_objects
+from scipy.ndimage import find_objects, label
 from scipy.spatial import KDTree
-from skimage.filters import apply_hysteresis_threshold, gaussian
-from skimage.measure import label
+from skimage.filters import gaussian
 from skimage.morphology import (
     ball,
     dilation,
@@ -22,9 +21,20 @@ from skimage.morphology import (
     remove_small_objects,
     skeletonize,
 )
-from skimage.segmentation import find_boundaries
+from skimage.segmentation import find_boundaries, relabel_sequential
+from tqdm import tqdm
 
 from cyto_dl.nn.losses.loss_wrapper import CMAP_loss
+
+
+def pad_slice(s, padding, constraints):
+    # pad slice by padding subject to image size constraints
+    new_slice = []
+    for slice_part, c in zip(s, constraints):
+        start = max(0, slice_part.start - padding)
+        stop = min(c, slice_part.stop + padding)
+        new_slice.append(slice(start, stop, None))
+    return tuple(new_slice)
 
 
 class InstanceSegPreprocessd(Transform):
@@ -35,13 +45,14 @@ class InstanceSegPreprocessd(Transform):
         thin: int = 5,
         dim: int = 3,
         anisotropy: float = 2.6,
+        keep_largest: bool = True,
         allow_missing_keys: bool = False,
     ):
         """
         Parameters
         ----------
         label_keys: Union[Sequence[str], str]
-            Keys of instance segmentations in input dictionary to convert to InstanceSeg ground truth images.
+            Keys of instance segmentations in input dictionary to convert to Instance Seg ground truth images.
         kernel_size: int=3
             Size of kernel for gaussian smoothing of flows
         thin: int=5
@@ -50,6 +61,8 @@ class InstanceSegPreprocessd(Transform):
             Spatial dimension of images
         anisotropy:float=2.6
             Anisotropy of images
+        keep_largest:bool=True
+            Whether to keep only the largest connected component of each label
         allow_missing_keys:bool=False
             Whether to raise error if key in `label_keys` is not present
         """
@@ -60,8 +73,9 @@ class InstanceSegPreprocessd(Transform):
         self.dim = dim
         self.allow_missing_keys = allow_missing_keys
         self.kernel_size = kernel_size
-        self.anisotropy = torch.as_tensor([anisotropy if dim == 3 else 1] + [1] * (dim - 1))
+        self.anisotropy = np.array([anisotropy, 1, 1]) if dim == 3 else np.array([1, 1])
         self.thin = thin
+        self.keep_largest = keep_largest
 
     def shrink(self, im):
         """Topology-preserving thinning of a binary image."""
@@ -70,6 +84,8 @@ class InstanceSegPreprocessd(Transform):
         for lab, coords in enumerate(regions, start=1):
             if coords is None:
                 continue
+            # add 1 pix boundary to prevent "ball + stick" artifacts
+            coords = pad_slice(coords, 1, im.shape)
             skel[coords] += self.topology_preserving_thinning(im[coords] == lab)
         return skel * im  # relabel shrunk object
 
@@ -80,10 +96,17 @@ class InstanceSegPreprocessd(Transform):
         tall_skeleton = np.stack([skeletonize(np.max(img, 0))] * img.shape[0])
         return tall_skeleton
 
-    def label_slice(self, img):
+    def label_2d(self, img):
+        """
+        dim = 2: return labeled image
+        dim = 3: label each z slice separately
+        """
+        if self.dim == 2:
+            out, _ = label(img)
+            return out
         out = np.zeros_like(img, dtype=np.int16)
         for z in range(img.shape[0]):
-            lab = label(img[z])
+            lab, _ = label(img[z])
             lab[lab > 0] += np.max(out)
             out[z] = lab
         return out
@@ -98,20 +121,20 @@ class InstanceSegPreprocessd(Transform):
         # only want to preserve connections between significantly-sized objects
 
         eroded = remove_small_objects(eroded, min_size)
-        eroded, max_label = label(eroded, return_num=True)
-
+        eroded, max_label = label(eroded)
         # single object is preserved by erosion
         if max_label == 1:
             return eroded
 
         skel = self.skeleton_tall(bw, max_label)
+
         if max_label == 0:
             return skel
 
         # if erosion separates object into multiple pieces, use skeleton to bridge those pieces into single object
         # 1. isolate pieces of skeleton that are outside of eroded objects (i.e. could bridge between objects)
         skel[eroded != 0] = 0
-        skel = self.label_slice(skel) if self.dim == 3 else label(skel)
+        skel = self.label_2d(skel)
 
         for i in np.unique(skel)[1:]:
             # 3. find number of non-background objects overlapped by piece of skeleton, add back in pieces that overlap multiple obj
@@ -133,48 +156,64 @@ class InstanceSegPreprocessd(Transform):
 
     def smooth_embedding(self, embedding):
         """Smooths embedding by convolving with a mean kernel, excluding non-object pixels."""
-        kernel = np.ones([self.kernel_size] * self.dim) / self.kernel_size**self.dim
-        nan_embed = embedding.clone()
-        nan_embed[nan_embed == 0] = torch.nan
+        kernel = np.ones([self.kernel_size] * self.dim) / (self.kernel_size**self.dim)
+        embedding[embedding == 0] = np.nan
         for i in range(embedding.shape[0]):
-            conv_embed = convolve(nan_embed[i].numpy(), kernel, boundary="extend")
-            conv_embed[torch.isnan(nan_embed[i])] = 0
-            embedding[i] = torch.from_numpy(conv_embed)
+            conv_embed = convolve(embedding[i], kernel, boundary="extend")
+            conv_embed[np.isnan(embedding[i])] = 0
+            embedding[i] = conv_embed
         return embedding
 
-    def embed_from_skel(self, skel, iseg):
+    def embed_from_skel(self, skel: np.ndarray, iseg: np.ndarray):
         """Find per-pixel embedding vector to closest point on skeleton."""
         iseg[skel != 0] = 0
-
         # 3ZYX vector field for 3d, 2YX for 2d
         embed = torch.zeros([self.dim] + [iseg.shape[i] for i in range(self.dim)])
+        skel_boundary = find_boundaries(skel, mode="inner") * skel  # propagate labels
 
-        # propagate labels to boundaries
-        skel_boundary = torch.from_numpy(find_boundaries(skel.numpy(), mode="inner")) * skel
-        for i in np.unique(iseg)[1:]:
-            object_mask = iseg.eq(i)
-            # distances should take into account z anisotropy
-            object_points = object_mask.nonzero().mul(self.anisotropy)
-            skel_points = skel_boundary.eq(i).nonzero().mul(self.anisotropy)
-            if skel_points.numel() == 0:
+        regions = find_objects(iseg)
+        for lab, coords in enumerate(regions, start=1):
+            if coords is None:
                 continue
-            point_embeddings = self._get_point_embeddings(object_points, skel_points)
-            embed[:, object_mask] = point_embeddings
-        # smooth sharp transitions from spatial embedding
-        embed = self.smooth_embedding(embed)
-
-        # turn spatial embedding into offset vector by subtracting pixel coordinates
-        anisotropic_shape = torch.as_tensor(iseg.shape).mul(self.anisotropy)
-        coordinates = torch.stack(
-            torch.meshgrid(
-                *[
-                    torch.linspace(0, anisotropic_shape[i] - 1, iseg.shape[i])
-                    for i in range(self.dim)
-                ]
+            seg_crop = iseg[coords]
+            # find objects + np.where is much faster than just np.where on full fov
+            object_points = np.asarray(np.where(seg_crop == lab))
+            skel_points = np.asarray(np.where(skel_boundary[coords] == lab))
+            if skel_points[0].size == 0:
+                continue
+            # distances should take into account z anisotropy and be in n_points x n_dims array
+            point_embeddings = self._get_point_embeddings(
+                object_points.T * self.anisotropy, skel_points.T * self.anisotropy
             )
-        )
-        embed_pts = embed.ne(0)
-        embed[embed_pts] -= coordinates[embed_pts]
+
+            # smooth embeddings per-object to avoid smearing of boundaries across objects
+            crop_embedding = np.zeros((self.dim, *seg_crop.shape))
+
+            if len(object_points) == 2:
+                crop_embedding[:, object_points[0], object_points[1]] = point_embeddings
+            elif len(object_points) == 3:
+                crop_embedding[
+                    :, object_points[0], object_points[1], object_points[2]
+                ] = point_embeddings
+
+            crop_embedding = torch.from_numpy(self.smooth_embedding(crop_embedding))
+
+            # turn spatial embedding into offset vector by subtracting pixel coordinates
+            anisotropic_shape = torch.as_tensor(seg_crop.shape).mul(
+                torch.from_numpy(self.anisotropy)
+            )
+            coordinates = torch.stack(
+                torch.meshgrid(
+                    *[
+                        torch.linspace(0, anisotropic_shape[i] - 1, seg_crop.shape[i])
+                        for i in range(self.dim)
+                    ]
+                )
+            )
+            crop_embedding[crop_embedding != 0] -= coordinates[crop_embedding != 0]
+
+            # pad coords with channel dimension
+            embed[(slice(None),) + coords] += crop_embedding
         return embed
 
     def _get_object_contacts(self, img):
@@ -189,14 +228,12 @@ class InstanceSegPreprocessd(Transform):
 
     def _get_cmap(self, skel_edt, im):
         """Create costmap to increase loss in boundary areas."""
-        points_with_vecs = im.clone().squeeze()
+        points_with_vecs = im.copy()
         points_with_vecs[skel_edt > 0] = 0
-        # emphasize very thin areas
         add_in_thin = np.logical_and(skel_edt > 0, skel_edt < 3)
-        # emphasize areas where vector field is nonzero
         points_with_vecs = np.logical_or(points_with_vecs, add_in_thin)
-        sigma = torch.as_tensor([2] * self.dim) / self.anisotropy
-        sigma = torch.max(sigma, torch.ones(self.dim)).numpy()
+        sigma = np.asarray([2] * self.dim) / self.anisotropy
+        sigma = np.maximum(sigma, np.ones(self.dim))
         cmap = gaussian(points_with_vecs > 0, sigma=sigma)
         # emphasize boundary points
         cmap /= cmap.max()
@@ -204,8 +241,23 @@ class InstanceSegPreprocessd(Transform):
         cmap[im.squeeze() > 0] += 0.5
         cmap += 0.5
         # very emphasize object contact points
-        cmap += self._get_object_contacts(im.numpy())
+        cmap += self._get_object_contacts(im)
         return torch.from_numpy(cmap).unsqueeze(0)
+
+    def keep_largest_cc(self, img):
+        regions = find_objects(img)
+        new_im = np.zeros_like(img, dtype=img.dtype)
+        for lab, coords in enumerate(regions, start=1):
+            if lab == 0:
+                continue
+            labeled_crop, n_labels = label(img[coords] == lab)
+            if n_labels > 1:
+                largest_cc = np.argmax(np.bincount(labeled_crop.flat)[1:]) + 1
+                largest_cc = (labeled_crop == largest_cc) * lab
+            else:
+                largest_cc = (img[coords] == lab) * lab
+            new_im[coords] += largest_cc
+        return new_im
 
     def __call__(self, image_dict):
         for key in self.label_keys:
@@ -217,15 +269,18 @@ class InstanceSegPreprocessd(Transform):
                 continue
             im = image_dict.pop(key)
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
-            im_numpy = im.numpy().astype(int).squeeze()
-            skel = self.shrink(im_numpy)
+            im = im.numpy().astype(int).squeeze()
+            if self.keep_largest:
+                im = self.keep_largest_cc(im)
+            im, _, _ = relabel_sequential(im)
+            skel = self.shrink(im)
             skel_edt = torch.from_numpy(edt.edt(skel > 0)).unsqueeze(0)
             skel_edt[skel_edt == 0] = -10
-            skel = torch.from_numpy(skel)
-            embed = self.embed_from_skel(skel, im.squeeze(0).clone())
+            embed = self.embed_from_skel(skel, im.copy())
             cmap = self._get_cmap(skel_edt.squeeze(), im)
-            bound = torch.from_numpy(find_boundaries(im_numpy)).unsqueeze(0)
-            image_dict[key] = torch.cat([skel_edt, im > 0, embed, bound, cmap]).float()
+            bound = torch.from_numpy(find_boundaries(im, mode="inner")).unsqueeze(0)
+            semantic_seg = torch.from_numpy(im > 0).unsqueeze(0)
+            image_dict[key] = torch.cat([skel_edt, semantic_seg, embed, bound, cmap]).float()
         return image_dict
 
 
@@ -301,18 +356,21 @@ class InstanceSegRandFlipd(RandomizableTransform):
 class InstanceSegLoss:
     """Loss function for InstanceSeg."""
 
-    def __init__(self, dim: int = 3):
+    def __init__(self, dim: int = 3, weights: Optional[Dict[str, float]] = {}):
         """
         Parameters
         --------------
         dim:int=3
             Spatial dimension of input images.
+        weights:Optional[Dict[str, float]]={}
+            Dictionary of weights for each loss component.
         """
         self.dim = dim
         self.skeleton_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.vector_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.boundary_loss = CMAP_loss(torch.nn.BCEWithLogitsLoss(reduction="none"))
         self.semantic_loss = TverskyLoss(sigmoid=True)
+        self.weights = weights
 
     def __call__(self, y_hat, y):
         """
@@ -333,10 +391,18 @@ class InstanceSegLoss:
 
         """
         cmap = y[:, -1:]
-        skeleton_loss = self.skeleton_loss(y_hat[:, :1], y[:, :1], cmap)
-        semantic_loss = self.semantic_loss(y_hat[:, 1:2], y[:, 1:2])
-        boundary_loss = self.boundary_loss(y_hat[:, -1:], y[:, -2:-1], cmap)
-        vector_loss = self.vector_loss(y_hat[:, 2:-1], y[:, 2:-2], cmap) * 10
+        skeleton_loss = self.skeleton_loss(y_hat[:, :1], y[:, :1], cmap) * float(
+            self.weights.get("skeleton", 1.0)
+        )
+        semantic_loss = self.semantic_loss(y_hat[:, 1:2], y[:, 1:2]) * float(
+            self.weights.get("semantic", 40.0)
+        )
+        boundary_loss = self.boundary_loss(y_hat[:, -1:], y[:, -2:-1], cmap) * float(
+            self.weights.get("boundary", 1.0)
+        )
+        vector_loss = self.vector_loss(y_hat[:, 2:-1], y[:, 2:-2], cmap) * float(
+            self.weights.get("vector", 10.0)
+        )
         return vector_loss + skeleton_loss + semantic_loss + boundary_loss
 
 
@@ -353,13 +419,15 @@ class InstanceSegCluster:
         semantic_threshold: float = 0,
         min_size: int = 1000,
         distance_threshold: int = 100,
+        progress: bool = True,
     ):
         self.dim = dim
-        self.anisotropy = torch.as_tensor([anisotropy if dim == 3 else 1] + [1] * (dim - 1))
+        self.anisotropy = np.array([anisotropy if dim == 3 else 1] + [1] * (dim - 1))
         self.skel_threshold = skel_threshold
         self.semantic_threshold = semantic_threshold
         self.min_size = min_size
         self.distance_threshold = distance_threshold
+        self.progress = progress
 
     def _get_point_embeddings(self, object_points, skeleton_points):
         """
@@ -384,51 +452,85 @@ class InstanceSegCluster:
         embedding_labels[dist_to_closest_skel > self.distance_threshold] = 0
         return embedding_labels
 
-    def _get_largest_cc(self, im):
-        im = label(im)
-        largest_cc = np.argmax(np.bincount(im.flatten())[1:]) + 1
-        return im == largest_cc
+    def remove_small_skeletons(self, skel):
+        """remove small skeletons below self.min_size that are not touching the edge of the
+        image."""
+        skel_removed = skel.copy()
+        regions = find_objects(skel)
+        for lab, coords in enumerate(regions, start=1):
+            if coords is None:
+                continue
+            is_edge = np.any(
+                [np.logical_or(s.start == 0, s.stop >= c) for s, c in zip(coords, skel.shape)]
+            )
+            if not is_edge and np.sum(skel[coords]) < self.min_size:
+                skel_removed[coords][skel[coords] == lab] = 0
 
-    def __call__(self, image):
-        image = image.detach().cpu().float()
-        skel = image[0].numpy()
-        semantic = image[1]
-        embedding = image[2 : 2 + self.dim]
+        return skel_removed
+
+    def cluster_object(self, semantic, skel, embedding):
+        skel[semantic == 0] = -np.inf
+        # create instances from skeletons, removing small, anomalous skeletons
+        skel, _ = label(skel > self.skel_threshold)
+        skel = self.remove_small_skeletons(skel)
+        num_objects = len(np.unique(skel)) - 1
+
+        if num_objects == 0:
+            # don't include objects corresponding to bad skeletons in final segmentation
+            return np.zeros_like(semantic)
+        elif num_objects == 1:
+            # if only one skeleton, return largest connected component of semantic segmentation
+            return semantic
+
         # z embeddings are anisotropic, have to adjust to coordinates in real space, not pixel space
-        anisotropic_shape = torch.as_tensor(semantic.shape).mul(self.anisotropy)
-
-        coordinates = torch.stack(
-            torch.meshgrid(
+        anisotropic_shape = np.array(semantic.shape) * self.anisotropy
+        coordinates = np.stack(
+            np.meshgrid(
                 *[
-                    torch.linspace(0, anisotropic_shape[i] - 1, semantic.shape[i])
+                    np.linspace(0, anisotropic_shape[i] - 1, semantic.shape[i])
                     for i in range(self.dim)
-                ]
+                ],
+                indexing="ij",
             )
         )
         embedding += coordinates
+        semantic = np.logical_and(semantic, skel == 0)
 
-        # create instances from skeletons, removing small, anomalous skeletons
-        skel = apply_hysteresis_threshold(
-            skel, high=self.skel_threshold, low=self.skel_threshold - 1
-        )
-        skel = label(skel)
-        skel = remove_small_objects(skel, self.min_size)
-
-        semantic = semantic > self.semantic_threshold
-        # if only one skeleton, return largest connected component of semantic segmentation
-        if len(np.unique(skel)) == 2:
-            return self._get_largest_cc(semantic).astype(np.uint8)
-
-        out = np.zeros_like(semantic, dtype=np.uint16)
-        # find pixel coordinates pointed to by each z, y, x point within semantic segmentation
+        # find pixel coordinates pointed to by each z, y, x point within semantic segmentation and outside skeleton
         embeddings = []
         for i in range(embedding.shape[0]):
             dim_embed = embedding[i][semantic] / self.anisotropy[i]
-            dim_embed = dim_embed.clip(0, semantic.shape[i] - 1).round().int()
+            dim_embed = np.clip(dim_embed, 0, semantic.shape[i] - 1).round().astype(int)
             embeddings.append(dim_embed)
 
         # assign each embedded point the label of the closest skeleton
         labeled_embed = self.kd_clustering(embeddings, skel)
         # propagate embedding label to semantic segmentation
-        out[semantic] = labeled_embed
+        skel[semantic] = labeled_embed
+        out, _, _ = relabel_sequential(skel)
         return out
+
+    def __call__(self, image):
+        image = image.detach().cpu().half().numpy()
+
+        skel = image[0]
+        naive_labeling, _ = label(image[1] > self.semantic_threshold)
+
+        embedding = image[2 : 2 + self.dim]
+        regions = enumerate(find_objects(naive_labeling), start=1)
+
+        highest_cell_idx = 0
+        out_image = np.zeros_like(naive_labeling, dtype=np.uint16)
+        for val, region in tqdm(regions) if self.progress else regions:
+            region = pad_slice(region, 1, naive_labeling.shape)
+            mask = self.cluster_object(
+                (naive_labeling[region] == val).copy(),
+                skel[region].copy(),
+                embedding[(slice(None),) + region].copy(),
+            )
+            mask = mask.astype(np.uint16)
+            max_mask = np.max(mask)
+            mask[mask > 0] += highest_cell_idx
+            out_image[region] += mask
+            highest_cell_idx += max_mask
+        return out_image
