@@ -269,9 +269,6 @@ class InstanceSegPreprocessd(Transform):
                 continue
             im = image_dict.pop(key)
             im = im.as_tensor() if isinstance(im, MetaTensor) else im
-            import time
-
-            t0 = time.time()
             im = im.numpy().astype(int).squeeze()
             if self.keep_largest:
                 im = self.keep_largest_cc(im)
@@ -284,8 +281,6 @@ class InstanceSegPreprocessd(Transform):
             bound = torch.from_numpy(find_boundaries(im, mode="inner")).unsqueeze(0)
             semantic_seg = torch.from_numpy(im > 0).unsqueeze(0)
             image_dict[key] = torch.cat([skel_edt, semantic_seg, embed, bound, cmap]).float()
-
-            print(time.time() - t0)
         return image_dict
 
 
@@ -400,13 +395,13 @@ class InstanceSegLoss:
             self.weights.get("skeleton", 1.0)
         )
         semantic_loss = self.semantic_loss(y_hat[:, 1:2], y[:, 1:2]) * float(
-            self.weights.get("skeleton", 40.0)
+            self.weights.get("semantic", 40.0)
         )
         boundary_loss = self.boundary_loss(y_hat[:, -1:], y[:, -2:-1], cmap) * float(
-            self.weights.get("skeleton", 1.0)
+            self.weights.get("boundary", 1.0)
         )
         vector_loss = self.vector_loss(y_hat[:, 2:-1], y[:, 2:-2], cmap) * float(
-            self.weights.get("skeleton", 10.0)
+            self.weights.get("vector", 10.0)
         )
         return vector_loss + skeleton_loss + semantic_loss + boundary_loss
 
@@ -516,9 +511,6 @@ class InstanceSegCluster:
         return out
 
     def __call__(self, image):
-        import time
-
-        t0 = time.time()
         image = image.detach().cpu().half().numpy()
 
         skel = image[0]
@@ -541,5 +533,4 @@ class InstanceSegCluster:
             mask[mask > 0] += highest_cell_idx
             out_image[region] += mask
             highest_cell_idx += max_mask
-        print(time.time() - t0)
         return out_image
