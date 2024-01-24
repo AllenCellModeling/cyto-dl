@@ -8,12 +8,20 @@ from monai.config import PathLike
 from monai.data import ImageReader
 from monai.data.image_reader import _stack_images
 from monai.utils import ensure_tuple, require_pkg
-from omegaconf import ListConfig
 
 
 @require_pkg(pkg_name="aicsimageio")
 class VarianceReader(ImageReader):
+    """
+    Reader for images from Variance dataset
+    """
     def __init__(self, channels = ['Cell', 'Nuc', 'Struct']):
+        """
+        Parameters
+        ----------
+        channels: List[str]
+            List of channels to read from Variance dataset. Options are ['Cell', 'Nuc', 'Struct', 'Brightfield']
+        """
         super().__init__()
 
         name_map = {'Cell': ['cmdrp'], 'Nuc':['h3342'], 'Struct': ['egfp', 'mtagrfpt'], 'Brightfield':['bright100', 'bright100x', 'tl100x', 'bright2']}
