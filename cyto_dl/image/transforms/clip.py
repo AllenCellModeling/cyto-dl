@@ -1,8 +1,7 @@
 import torch
 from monai.transforms import Transform
-from omegaconf import ListConfig
 from monai.transforms.utils_pytorch_numpy_unification import clip, percentile
-
+from omegaconf import ListConfig
 
 
 class Clip(Transform):
@@ -76,7 +75,5 @@ class Clipd(Transform):
                 else:
                     img_dict[key] = self.clipper(img_dict[key])
             elif not self.allow_missing_keys:
-                raise KeyError(
-                    f"key `{key}` not available. Available keys are {img_dict.keys()}"
-                )
+                raise KeyError(f"key `{key}` not available. Available keys are {img_dict.keys()}")
         return img_dict

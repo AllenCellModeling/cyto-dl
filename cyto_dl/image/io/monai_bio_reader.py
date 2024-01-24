@@ -15,7 +15,11 @@ from omegaconf import Container, OmegaConf
 class MonaiBioReader(ImageReader):
     def __init__(self, **reader_kwargs):
         super().__init__()
-        self.reader_kwargs = {k: OmegaConf.to_container(v) if isinstance(v, Container) else v for k, v in reader_kwargs.items() if v is not None}
+        self.reader_kwargs = {
+            k: OmegaConf.to_container(v) if isinstance(v, Container) else v
+            for k, v in reader_kwargs.items()
+            if v is not None
+        }
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)

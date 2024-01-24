@@ -86,7 +86,7 @@ class CZIDataset(Dataset):
         start = row.get(self.time_start_column, -1)
         stop = row.get(self.time_stop_column, -1)
         step = row.get(self.time_step_column, 1)
-        timepoints = list(range(start, stop+1, step))
+        timepoints = list(range(start, stop + 1, step))
         if np.any(np.array((start, stop, step)) == -1):
             timepoints = list(range(img.dims.T))
         return timepoints
@@ -127,7 +127,7 @@ class CZIDataset(Dataset):
         scene = img_data.pop("scene")
         img.set_scene(scene)
         data_i = img.get_image_dask_data(**img_data).compute()
-        img_data['scene'] = scene
+        img_data["scene"] = scene
         data_i = self._ensure_channel_first(data_i)
         output_img = (
             apply_transform(self.transform, data_i) if self.transform is not None else data_i
