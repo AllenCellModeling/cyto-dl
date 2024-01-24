@@ -18,7 +18,7 @@ class ActThreshLabel:
         threshold: float = None,
         label: bool = False,
         dtype: DTypeLike = np.uint8,
-        ch: int = 0,
+        ch: int = -1,
         rescale_dtype: DTypeLike = None,
     ):
         """
@@ -57,7 +57,9 @@ class ActThreshLabel:
             raise ValueError(f"Expected dtype to be DtypeLike, string, or None, got {type(dtype)}")
 
     def __call__(self, img: torch.Tensor) -> np.ndarray:
-        img = self.activation(img[self.ch].detach().cpu().float()).numpy()
+        if self.ch > 0:
+            img = img[self.ch]
+        img = self.activation(img.detach().cpu().float()).numpy()
         if self.threshold is not None:
             img = img > self.threshold
         if self.label:
