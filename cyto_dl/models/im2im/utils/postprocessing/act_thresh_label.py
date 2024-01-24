@@ -32,8 +32,8 @@ class ActThreshLabel:
             whether to label image after thresholding
         dtype:DTypeLike=np.uint8
             data type of output image, defaults to np.uint8
-        ch:int=0
-            channel of image to apply postprocessing to, default 0
+        ch:int=-1
+            channel of image to apply postprocessing to, default -1 for all channels
         rescale_dtype=None
             dtype to rescale intensity range to, defaults to no rescaling.
         """
