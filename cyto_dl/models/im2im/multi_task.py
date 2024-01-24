@@ -189,4 +189,13 @@ class MultiTaskIm2Im(BaseModel):
                 batch[k] = v.as_tensor()
         run_heads = self._get_run_heads(batch, stage)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        return outs[run_heads[0]]["save_path"]
+        # create input-> per head output mapping
+        io_map = {}
+        for head, output in outs.items():
+            head_io_map = output['save_path']
+            for in_file, out_file in zip(head_io_map['input'], head_io_map['output']):
+                if in_file not in io_map:
+                    io_map[in_file] = {}
+                io_map[in_file][head] = out_file
+        return io_map
+
