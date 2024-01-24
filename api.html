@@ -435,17 +435,21 @@ model.override_config(overrides)
 <section id="training-and-prediction">
 <h2>Training and Prediction<a class="headerlink" href="#training-and-prediction" title="Permalink to this heading">#</a></h2>
 <dl>
-<dt>Once a config is loaded, the model can be trained using <cite>model.train()</cite>.</dt><dd><p><a href="#id33"><span class="problematic" id="id34">``</span></a><a href="#id35"><span class="problematic" id="id36">`</span></a>python
+<dt>Once a config is loaded, the model can be trained using <cite>model.train()</cite>. Model training can be made async by passing <cite>run_async=True</cite>.</dt><dd><p><a href="#id33"><span class="problematic" id="id34">``</span></a><a href="#id35"><span class="problematic" id="id36">`</span></a>python
 from cyto_dl.api import CytoDLModel</p>
 <p>model = CytoDLModel()
 model.load_default_experiment(“gan”)
-await model.train()
+model.train()</p>
+<p># [OPTIONAL] async training
+await model.train(run_async=True)
 <a href="#id37"><span class="problematic" id="id38">``</span></a><a href="#id39"><span class="problematic" id="id40">`</span></a></p>
 </dd>
 <dt>The model can be used to make predictions using <cite>model.predict()</cite></dt><dd><p><a href="#id41"><span class="problematic" id="id42">``</span></a><a href="#id43"><span class="problematic" id="id44">`</span></a>python
 from cyto_dl.api import CytoDLModel</p>
 <p>model = CytoDLModel()
 model.load_default_experiment(“gan”)
+model.predict()</p>
+<p># [OPTIONAL] async prediction
 await model.predict()
 <a href="#id45"><span class="problematic" id="id46">``</span></a><a href="#id47"><span class="problematic" id="id48">`</span></a></p>
 </dd>
