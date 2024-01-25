@@ -1,78 +1,96 @@
-_target_: cyto_dl.datamodules.track_classification.TrackClassificationDatamodule
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 
-# csv_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/data/well_predicted_tracks
-csv_path: //allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/data/new_goldilocks
-# csv_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/cyto-dl/logs/train/runs/breakdown_classification/transformer_4class_smooth_padding_goldilocks_mamabear/2023-12-07_16-37-40"
+path: //allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/data/precalculated_movies
+cache_dir:
 
+num_workers: 1
 batch_size: 1
-num_workers: 64
 pin_memory: True
-shuffle: True
 
 
-augmentations:
+transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
-      # dataset is loaded into track images
-      - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
+      - _target_: monai.transforms.LoadImaged
+        keys: img
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+      - _target_: cyto_dl.image.transforms.track_transforms.GenerateTrackLabels
       - _target_: cyto_dl.image.transforms.track_transforms.TrackCrop
       - _target_: monai.transforms.ToTensord
-        keys: 'img'
+        keys: img
         dtype: float16
       - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: ['img']
-        transform: 
+        keys: [img]
+        transform:
           _target_: monai.transforms.RandShiftIntensity
           offsets: 3
           prob: 0.5
       - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: ['img']
-        transform: 
+        keys: [img]
+        transform:
           _target_: monai.transforms.RandScaleIntensity
           factors: 0.5
           prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: 'img'
+        keys: img
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: 'img'
+        keys: img
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandRotate90d
-        keys: 'img'
+        keys: img
         prob: 0.75
       - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: ['img']
-        transform: 
+        keys: [img]
+        transform:
           _target_: monai.transforms.RandAdjustContrast
           gamma: [0.8, 1.2]
           prob: 0.5
       - _target_: cyto_dl.image.transforms.track_transforms.CropResize
-        keys: ['img']
+        keys: [img]
 
   val:
     _target_: monai.transforms.Compose
     transforms:
-      - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
-
+      - _target_: monai.transforms.LoadImaged
+        keys: img
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+      - _target_: cyto_dl.image.transforms.track_transforms.GenerateTrackLabels
       - _target_: monai.transforms.ToTensord
-        keys: 'img'
+        keys: img
         dtype: float16
 
-  test: 
+
+  test:
     _target_: monai.transforms.Compose
     transforms:
-      - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
+      - _target_: monai.transforms.LoadImaged
+        keys: img
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
+      - _target_: cyto_dl.image.transforms.track_transforms.GenerateTrackLabels
       - _target_: monai.transforms.ToTensord
-        keys: 'img'
+        keys: img
         dtype: float16
-  
+
+
   predict:
     _target_: monai.transforms.Compose
     transforms:
+      - _target_: monai.transforms.LoadImaged
+        keys: img
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: "ZYX"
       - _target_: monai.transforms.ToTensord
-        keys: 'img'
+        keys: img
         dtype: float16
-      
+
