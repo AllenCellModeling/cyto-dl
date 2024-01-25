@@ -16,7 +16,6 @@ augmentations:
     transforms:
       # dataset is loaded into track images
       - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
-      # - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabelsRegression
       - _target_: cyto_dl.image.transforms.track_transforms.TrackCrop
       - _target_: monai.transforms.ToTensord
         keys: 'img'
@@ -57,7 +56,6 @@ augmentations:
     _target_: monai.transforms.Compose
     transforms:
       - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
-      # - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabelsRegression
 
       - _target_: monai.transforms.ToTensord
         keys: 'img'
@@ -66,7 +64,6 @@ augmentations:
   test: 
     _target_: monai.transforms.Compose
     transforms:
-      # - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabelsSmoothFourClass
       - _target_: cyto_dl.image.transforms.track_transforms.GenerateLabels
       - _target_: monai.transforms.ToTensord
         keys: 'img'

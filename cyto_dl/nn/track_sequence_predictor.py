@@ -13,7 +13,7 @@ class TrackClassifier(torch.nn.Module):
         emb_dim=128,
         num_layer=8,
         num_head=4,
-        num_classes = 4,
+        num_classes = 2,
     ) -> None:
         super().__init__()
 
@@ -35,7 +35,7 @@ class TrackClassifier(torch.nn.Module):
         img = img.as_tensor()
         # assume batch size 1 so we don't have to pad tracks
         # embed each image in track
-        img = rearrange(img, 'b c h w -> c b  h w')
+        img = rearrange(img, 'b c h w -> c b h w')
         # return  t b c
         patches = self.image_encoder(img).unsqueeze(1)
         patches = patches + self.pos_embedding[:len(patches)]
