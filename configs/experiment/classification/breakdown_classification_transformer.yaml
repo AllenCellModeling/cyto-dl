@@ -4,7 +4,7 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: classification/breakdown_classification_transformer.yaml
+  - override /data: classification/normal.yaml
   - override /model: classification/breakdown_classification_transformer.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
@@ -18,6 +18,7 @@ seed: 12345
 
 experiment_name: breakdown_classification
 run_name: add_shift_aug
+persist_cache: False
 
 # ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/cyto-dl/logs/train/runs/breakdown_classification/per_tp_class_per_window_regress_emphasize_formation/2023-12-14_11-47-04/checkpoints/epoch_059.ckpt"
 ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/cyto-dl/logs/train/runs/breakdown_classification/add_shift_aug/2024-01-08_15-13-49/checkpoints/last.ckpt"
@@ -26,7 +27,5 @@ trainer:
   max_epochs: 130
   check_val_every_n_epoch: 10
   gradient_clip_val: 10.0
-
-data:
-  splits: ['predict']
-
+# data:
+#   splits: ["predict"]

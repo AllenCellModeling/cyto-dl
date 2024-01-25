@@ -6,7 +6,7 @@ model:
   max_track_length: 250
   num_classes: ${model._aux.num_classes}
 
-x_key: 'img'
+x_key: "img"
 save_dir: ${paths.output_dir}
 save_images_every_n_epochs: 1
 
@@ -25,4 +25,3 @@ lr_scheduler:
 
 _aux:
   num_classes: 2
-
