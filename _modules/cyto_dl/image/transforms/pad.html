@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.head.gan_head - cyto-dl 0.0.0 documentation</title>
+        <title>cyto_dl.image.transforms.pad - cyto-dl 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -391,106 +391,74 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.head.gan_head</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">math</span>
+          <h1>Source code for cyto_dl.image.transforms.pad</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
-
-<span class="kn">from</span> <span class="nn">cyto_dl.models.im2im.utils.postprocessing</span> <span class="kn">import</span> <span class="n">detach</span>
-<span class="kn">from</span> <span class="nn">cyto_dl.nn.losses</span> <span class="kn">import</span> <span class="n">Pix2PixHD</span>
-
-<span class="kn">from</span> <span class="nn">.base_head</span> <span class="kn">import</span> <span class="n">BaseHead</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">monai.transforms.croppad.functional</span> <span class="kn">import</span> <span class="n">pad_nd</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
 
 
-<div class="viewcode-block" id="GANHead"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead">[docs]</a><span class="k">class</span> <span class="nc">GANHead</span><span class="p">(</span><span class="n">BaseHead</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;GAN Task head.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PadZd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.pad.html#cyto_dl.image.transforms.pad.PadZd">[docs]</a><span class="k">class</span> <span class="nc">PadZd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform for randomly padding top or bottom of crop by repeating first/last slice.</span>
+
+<span class="sd">    Only applied if no segmentation is present in first/last slice</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">gan_loss</span><span class="o">=</span><span class="n">Pix2PixHD</span><span class="p">(</span><span class="n">scales</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-        <span class="n">reconstruction_loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
-        <span class="n">reconstruction_loss_weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">save_raw</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">image_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">segmentation_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">pad_amount</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">pad_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">segmentation_ch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        gan_loss=Pix2PixHD(scales=1)</span>
-<span class="sd">            Loss for optimizing GAN</span>
-<span class="sd">        reconstruction_loss=torch.nn.MSELoss()</span>
-<span class="sd">            Loss for optimizing generator&#39;s image reconstructions</span>
-<span class="sd">        reconstruction_loss_weight=100</span>
-<span class="sd">            Weighting of reconstruction loss</span>
-<span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
-<span class="sd">            Postprocessing for `input` and `predictions` of head</span>
-<span class="sd">        calculate_metric=False</span>
-<span class="sd">            Whether to calculate a metric during training. Not used by GAN head.</span>
-<span class="sd">        save_raw=False</span>
-<span class="sd">            Whether to save out example input images during training</span>
+<span class="sd">        image_key: str</span>
+<span class="sd">            name of images to pad</span>
+<span class="sd">        segmentation_key: str</span>
+<span class="sd">            name of segmentation. Used for checking whether top or bottom can be offset</span>
+<span class="sd">        pad_amount: int</span>
+<span class="sd">            number of slices to pad</span>
+<span class="sd">        segmentation_ch: int</span>
+<span class="sd">            channel of segmentation to check for presence of segmentation</span>
+<span class="sd">        allow_missing_keys: bool</span>
+<span class="sd">            allow missing keys</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">calculate_metric</span><span class="p">,</span> <span class="n">save_raw</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gan_loss</span> <span class="o">=</span> <span class="n">gan_loss</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span> <span class="o">=</span> <span class="n">reconstruction_loss</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss_weight</span> <span class="o">=</span> <span class="n">reconstruction_loss_weight</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_key</span> <span class="o">=</span> <span class="n">image_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_key</span> <span class="o">=</span> <span class="n">segmentation_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">image_key</span><span class="p">,</span> <span class="n">segmentation_key</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pad_amount</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">pad_amount</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_ch</span> <span class="o">=</span> <span class="n">segmentation_ch</span>
 
-    <span class="k">def</span> <span class="nf">_calculate_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">discriminator</span><span class="p">):</span>
-        <span class="c1"># extract intermediate activations from discriminator for real and predicted images</span>
-        <span class="n">features_discriminator</span> <span class="o">=</span> <span class="n">discriminator</span><span class="p">(</span>
-            <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_key</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span> <span class="n">y_hat</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="n">loss_D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gan_loss</span><span class="p">(</span><span class="n">features_discriminator</span><span class="p">,</span> <span class="s2">&quot;discriminator&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_dict</span><span class="p">):</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">img_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">]</span>
+        <span class="n">segmentation</span> <span class="o">=</span> <span class="n">img_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">segmentation_key</span><span class="p">]</span>
 
-        <span class="c1"># passability of generated images</span>
-        <span class="n">features_generator</span> <span class="o">=</span> <span class="n">discriminator</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x_key</span><span class="p">],</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span> <span class="n">y_hat</span><span class="p">)</span>
-        <span class="n">loss_G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gan_loss</span><span class="p">(</span><span class="n">features_generator</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">)</span>
-        <span class="c1"># image reconstruction quality</span>
-        <span class="n">loss_reconstruction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span> <span class="n">y_hat</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss_D</span><span class="p">,</span> <span class="n">loss_G</span> <span class="o">+</span> <span class="n">loss_reconstruction</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss_weight</span>
-
-<div class="viewcode-block" id="GANHead.run_head"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.run_head">[docs]</a>    <span class="k">def</span> <span class="nf">run_head</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">backbone_features</span><span class="p">,</span>
-        <span class="n">batch</span><span class="p">,</span>
-        <span class="n">stage</span><span class="p">,</span>
-        <span class="n">save_image</span><span class="p">,</span>
-        <span class="n">global_step</span><span class="p">,</span>
-        <span class="n">discriminator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">run_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">y_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="k">if</span> <span class="n">run_forward</span><span class="p">:</span>
-            <span class="n">y_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">backbone_features</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">y_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">segmentation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_ch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;y_hat must be provided, either by passing it in or setting `run_forward=True`&quot;</span>
+                <span class="s2">&quot;segmentation_ch must be specified if segmentation has more than one channel&quot;</span>
             <span class="p">)</span>
-        <span class="n">loss_D</span><span class="p">,</span> <span class="n">loss_G</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">stage</span> <span class="o">!=</span> <span class="s2">&quot;predict&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">discriminator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Discriminator must be specified for train, test, and validation steps.&quot;</span>
-                <span class="p">)</span>
-            <span class="n">loss_D</span><span class="p">,</span> <span class="n">loss_G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_loss</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">discriminator</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">segmentation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">ch_seg</span> <span class="o">=</span> <span class="n">segmentation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ch_seg</span> <span class="o">=</span> <span class="n">segmentation</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">segmentation_ch</span><span class="p">]</span>
 
-        <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">out_paths</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
-            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">out_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">)</span>
-
-        <span class="n">metric</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_metric</span> <span class="ow">and</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">):</span>
-            <span class="n">metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_metric</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;loss_D&quot;</span><span class="p">:</span> <span class="n">loss_D</span><span class="p">,</span>
-            <span class="s2">&quot;loss_G&quot;</span><span class="p">:</span> <span class="n">loss_G</span><span class="p">,</span>
-            <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span>
-            <span class="s2">&quot;y_hat_out&quot;</span><span class="p">:</span> <span class="n">y_hat_out</span><span class="p">,</span>
-            <span class="s2">&quot;y_out&quot;</span><span class="p">:</span> <span class="n">y_out</span><span class="p">,</span>
-            <span class="s2">&quot;save_path&quot;</span><span class="p">:</span> <span class="n">out_paths</span><span class="p">,</span>
-        <span class="p">}</span></div></div>
+        <span class="n">pad_mode</span> <span class="o">=</span> <span class="s2">&quot;replicate&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;edge&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_keys</span><span class="p">:</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># high/low CZYX</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ch_seg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="n">pad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pad_amount</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ch_seg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="c1"># add upper padding</span>
+                <span class="n">pad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">pad</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pad_amount</span><span class="p">[</span><span class="n">key</span><span class="p">])],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">img_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">pad_nd</span><span class="p">(</span><span class="n">img_dict</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">pad</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">pad_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">img_dict</span></div>
 </pre></div>
         </article>
       </div>

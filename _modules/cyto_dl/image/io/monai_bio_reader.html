@@ -214,6 +214,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.pad.html">cyto_dl.image.transforms.pad module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
@@ -401,13 +402,18 @@
 <span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">ImageReader</span>
 <span class="kn">from</span> <span class="nn">monai.data.image_reader</span> <span class="kn">import</span> <span class="n">_stack_images</span>
 <span class="kn">from</span> <span class="nn">monai.utils</span> <span class="kn">import</span> <span class="n">ensure_tuple</span><span class="p">,</span> <span class="n">require_pkg</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">Container</span><span class="p">,</span> <span class="n">OmegaConf</span>
 
 
 <div class="viewcode-block" id="MonaiBioReader"><a class="viewcode-back" href="../../../../cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader">[docs]</a><span class="nd">@require_pkg</span><span class="p">(</span><span class="n">pkg_name</span><span class="o">=</span><span class="s2">&quot;aicsimageio&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MonaiBioReader</span><span class="p">(</span><span class="n">ImageReader</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reader_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reader_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Container</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">reader_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">}</span>
 
 <div class="viewcode-block" id="MonaiBioReader.read"><a class="viewcode-back" href="../../../../cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PathLike</span><span class="p">],</span> <span class="n">PathLike</span><span class="p">]):</span>
         <span class="n">filenames</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="n">ensure_tuple</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>

@@ -214,6 +214,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.pad.html">cyto_dl.image.transforms.pad module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
@@ -460,7 +461,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`spatial_dims` must be 2 or 3, got </span><span class="si">{</span><span class="n">spatial_dims</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
         <span class="n">scenes</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -479,20 +480,18 @@
         <span class="n">start</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_start_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_stop_column</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step_column</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dims</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">timepoints</span>
 
 <div class="viewcode-block" id="CZIDataset.get_per_file_args"><a class="viewcode-back" href="../../../cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args">[docs]</a>    <span class="k">def</span> <span class="nf">get_per_file_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
-        <span class="n">n_files</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">img_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">():</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>
             <span class="n">img</span> <span class="o">=</span> <span class="n">AICSImage</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">])</span>
             <span class="n">scenes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenes</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
             <span class="n">timepoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timepoints</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
-            <span class="n">n_files</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">scenes</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">timepoints</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">scenes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">timepoint</span> <span class="ow">in</span> <span class="n">timepoints</span><span class="p">:</span>
                     <span class="n">img_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -505,7 +504,7 @@
                             <span class="s2">&quot;original_path&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">],</span>
                         <span class="p">}</span>
                     <span class="p">)</span>
-        <span class="k">return</span> <span class="n">img_data</span><span class="p">,</span> <span class="n">n_files</span></div>
+        <span class="k">return</span> <span class="n">img_data</span></div>
 
     <span class="k">def</span> <span class="nf">_metadata_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="k">return</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
@@ -519,8 +518,10 @@
         <span class="n">img_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">img</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;img&quot;</span><span class="p">)</span>
         <span class="n">original_path</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;original_path&quot;</span><span class="p">)</span>
-        <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scene&quot;</span><span class="p">))</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scene&quot;</span><span class="p">)</span>
+        <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
         <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;scene&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scene</span>
         <span class="n">data_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_channel_first</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span>
         <span class="n">output_img</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">data_i</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">data_i</span>
@@ -536,7 +537,7 @@
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_files</span></div>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="make_CZI_dataloader"><a class="viewcode-back" href="../../../cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.make_CZI_dataloader">[docs]</a><span class="k">def</span> <span class="nf">make_CZI_dataloader</span><span class="p">(</span>

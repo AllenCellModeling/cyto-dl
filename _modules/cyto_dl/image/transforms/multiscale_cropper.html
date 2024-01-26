@@ -214,6 +214,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.pad.html">cyto_dl.image.transforms.pad module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
@@ -502,7 +503,7 @@
             <span class="n">max_start_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">max_start_indices_img</span><span class="p">,</span> <span class="n">max_start_indices</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">max_start_indices</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Crop size </span><span class="si">{</span><span class="n">roi_size</span><span class="si">}</span><span class="s2"> is too large for image size </span><span class="si">{</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">max_start_indices</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># range doesn&#39;t include end</span>
+        <span class="k">return</span> <span class="n">max_start_indices</span>
 
 <div class="viewcode-block" id="RandomMultiScaleCropd.generate_slices"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.multiscale_cropper.html#cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd.generate_slices">[docs]</a>    <span class="k">def</span> <span class="nf">generate_slices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate dictionary of slices at all scales starting at random point.&quot;&quot;&quot;</span>
@@ -534,7 +535,7 @@
                     <span class="s2">&quot;Max attempts reached. Please check your selection function &quot;</span>
                     <span class="s2">&quot;or adjust max_attempts&quot;</span>
                 <span class="p">)</span>
-            <span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_slices</span><span class="p">(</span><span class="n">image_dict</span><span class="p">)</span>
+            <span class="n">slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_slices</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">image_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">available_keys</span><span class="p">})</span>
 
             <span class="n">patch_dict</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_slice</span><span class="p">(</span><span class="n">image_dict</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">slices</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">available_keys</span>
