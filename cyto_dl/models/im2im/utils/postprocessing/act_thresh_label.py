@@ -18,7 +18,7 @@ class ActThreshLabel:
         threshold: float = None,
         label: bool = False,
         dtype: DTypeLike = np.uint8,
-        ch: int = 0,
+        ch: int = -1,
         rescale_dtype: DTypeLike = None,
     ):
         """
@@ -32,8 +32,8 @@ class ActThreshLabel:
             whether to label image after thresholding
         dtype:DTypeLike=np.uint8
             data type of output image, defaults to np.uint8
-        ch:int=0
-            channel of image to apply postprocessing to, default 0
+        ch:int=-1
+            channel of image to apply postprocessing to, default -1 for all channels
         rescale_dtype=None
             dtype to rescale intensity range to, defaults to no rescaling.
         """
@@ -57,7 +57,9 @@ class ActThreshLabel:
             raise ValueError(f"Expected dtype to be DtypeLike, string, or None, got {type(dtype)}")
 
     def __call__(self, img: torch.Tensor) -> np.ndarray:
-        img = self.activation(img[self.ch].detach().cpu().float()).numpy()
+        if self.ch > 0:
+            img = img[self.ch]
+        img = self.activation(img.detach().cpu().float()).numpy()
         if self.threshold is not None:
             img = img > self.threshold
         if self.label:
