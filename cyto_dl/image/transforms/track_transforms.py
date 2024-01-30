@@ -22,17 +22,18 @@ class GenerateTrackLabels(Transform):
         Parameters
         ----------
         img_key: str
-            Key for column with image
+            Key with image
         formation_key: str
-            Key for column with formation
+            Key with formation
         breakdown_key: str
-            Key for column with breakdown
+            Key with breakdown
         track_start_key: str
-            Key for column with track start
+            Key with track start
         label_key: str
             Key to save label into
         """
         super().__init__()
+        self.img_key = img_key
         self.formation_key = formation_key
         self.breakdown_key = breakdown_key
         self.track_start_key = track_start_key
@@ -40,8 +41,8 @@ class GenerateTrackLabels(Transform):
 
     def __call__(self, img_dict):
         n_timepoints = img_dict[self.img_key].shape[0]
-        formation_idx = int(img_dict[self.formation_key] - img_dict[self.track_start])
-        breakdown_idx = int(img_dict[self.breakdown_key] - img_dict[self.track_start])
+        formation_idx = int(img_dict[self.formation_key] - img_dict[self.track_start_key])
+        breakdown_idx = int(img_dict[self.breakdown_key] - img_dict[self.track_start_key])
 
         # 0: normal, 1: mitotic
         tp_labels = np.zeros(n_timepoints)
@@ -70,7 +71,7 @@ class TrackCrop(RandomizableTransform):
         Parameters
         ----------
         img_key: str
-            Key for column with image
+            Key with image
         p_first: float
             Probability of cropping to start of track
         p_last: float
@@ -92,6 +93,7 @@ class TrackCrop(RandomizableTransform):
         new_im_dict = copy.deepcopy(img_dict)
         new_im = img_dict[self.img_key]
 
+        # randomly select number of timepoints between percentage range of track length
         n = self.R.randint(*(self.percentage * new_im.shape[0]).astype(int), size=1)[0]
         n = min(self.max_crop_length, n)
         # crop to start of track
@@ -161,7 +163,6 @@ class CropResize(RandomizableTransform):
         self.allow_missing_keys = allow_missing_keys
 
     def __call__(self, img_dict):
-        breakpoint()
         new_im_dict = copy.deepcopy(img_dict)
 
         for key in self.keys:

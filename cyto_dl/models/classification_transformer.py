@@ -1,19 +1,19 @@
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import torch
-import math
 import torch.nn as nn
 from aicsimageio.writers import OmeTiffWriter
 from matplotlib import pyplot as plt
+from PIL import Image, ImageDraw, ImageFont
 from skimage.exposure import rescale_intensity
 from torchmetrics import MeanMetric
 from torchmetrics.classification import MulticlassF1Score
 
 from cyto_dl.models.base_model import BaseModel
-from PIL import Image, ImageDraw, ImageFont
 
 
 class Classifier(BaseModel):
@@ -23,6 +23,7 @@ class Classifier(BaseModel):
         model: nn.Module,
         x_key: str,
         num_classes: int,
+        y_key: str = "label",
         save_dir="./",
         save_movie: bool = True,
         save_images_every_n_epochs=10,
@@ -66,15 +67,14 @@ class Classifier(BaseModel):
 
         self.loss_fn = nn.CrossEntropyLoss()
 
-        self.predictions = []
-
-
     def forward(self, x):
         return self.model(x)
 
     def should_save_image(self, batch_idx, stage):
-        return stage in ("test", "predict") or (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == batch_idx ==0
-        
+        return (
+            stage in ("test", "predict")
+            or (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == batch_idx == 0
+        )
 
     def save_images(self, batch, stage, logits, name=None):
         pred = torch.argmax(logits, dim=1)
@@ -82,7 +82,7 @@ class Classifier(BaseModel):
         if stage == "predict":
             label = torch.zeros_like(pred)
         else:
-            label = batch["label"].squeeze(0)
+            label = batch[self.hparams.y_key].squeeze(0)
         # save labeled movie of prediction
 
         font = ImageFont.load_default()
@@ -114,7 +114,7 @@ class Classifier(BaseModel):
 
     def model_step(self, stage, batch, batch_idx):
         logits = self(batch[self.hparams.x_key]).squeeze(0)
-        labels = batch["label"].squeeze(0)
+        labels = batch[self.hparams.y_key].squeeze(0)
         if self.should_save_image(batch_idx, stage):
             self.save_images(batch, stage, logits)
         loss = self.loss_fn(logits, labels.long())
@@ -129,9 +129,6 @@ class Classifier(BaseModel):
             sets.append(indices)
         return np.asarray(list(set.intersection(*sets)), dtype=int)
 
-    def on_predict_epoch_end(self):
-        pd.DataFrame(self.predictions).to_csv(Path(self.hparams.save_dir) / "predictions.csv", index=False)
-
     def predict_step(self, batch, batch_idx):
         logits = self(batch[self.hparams.x_key]).squeeze(0)
         if self.hparams.save_movie:
@@ -139,34 +136,44 @@ class Classifier(BaseModel):
                 batch,
                 "predict",
                 logits,
-                name=f"{batch['movie'][0]}_{batch['track_id'].cpu().item()}",
+                name=f"{batch['track_id'].cpu().item()}",
             )
-    
+
         preds = torch.argmax(logits, dim=1).cpu().numpy()
+        track_midpoint = preds.shape[0] // 2
         track_start = batch["track_start"].cpu().item()
         track_id = batch["track_id"].cpu().item()
 
         # breakdowns are transitions from interphase (0) to mitotic (1)
-        breakdowns = self.find_indices(preds, [0,1])
+        breakdowns = self.find_indices(preds, [0, 1])
         # formations are transitions from mitotic (1) to interphase (0)
         formations = self.find_indices(preds, [1, 0])
 
         # -1 -> no formation/breakdown
-        if formations.size==0:
+        if formations.size == 0:
             formation = -1
         else:
             # when multiple formations present, take first
             formation = np.min(formations)
+            # formation should occur in the first half of the track
+            formation = formation if formation > track_midpoint else -1
 
-        if breakdowns.size==0:
+        if breakdowns.size == 0:
             breakdown = -1
         else:
             # when multiple breakdowns present, take last
             breakdown = np.max(breakdowns)
+            # breakdown should occur in the second half of the track
+            breakdown = breakdown if breakdown > track_midpoint else -1
 
-        self.predictions.append({
-            'movie': batch['movie'][0],
-            'track_id': track_id,
-            'formation': formation + track_start if formation >=0 else -1,
-            'breakdown': breakdown + track_start if breakdown >=0 else -1,
-        })
+        predictions = {
+            "track_id": track_id,
+            "formation": formation + track_start if formation >= 0 else -1,
+            "breakdown": breakdown + track_start if breakdown >= 0 else -1,
+        }
+
+        pd.DataFrame(predictions).to_csv(
+            Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv", index=False
+        )
+
+        return predictions
