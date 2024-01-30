@@ -3,7 +3,7 @@ num_classes: ${model._aux.num_classes}
 model:
   _target_: cyto_dl.nn.track_sequence_predictor.TrackClassifier
   patch_size: [1, 64, 64]
-  max_track_length: 250
+  pos_embedding_length: 150
   num_classes: ${model._aux.num_classes}
 
 x_key: "img"

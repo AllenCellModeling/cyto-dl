@@ -7,7 +7,6 @@ num_workers: 1
 batch_size: 1
 pin_memory: True
 
-
 transforms:
   train:
     _target_: monai.transforms.Compose
@@ -67,7 +66,6 @@ transforms:
         keys: img
         dtype: float16
 
-
   test:
     _target_: monai.transforms.Compose
     transforms:
@@ -81,7 +79,6 @@ transforms:
         keys: img
         dtype: float16
 
-
   predict:
     _target_: monai.transforms.Compose
     transforms:
@@ -93,4 +90,3 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: img
         dtype: float16
-
