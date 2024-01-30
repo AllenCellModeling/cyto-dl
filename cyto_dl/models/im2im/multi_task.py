@@ -64,13 +64,11 @@ class MultiTaskIm2Im(BaseModel):
             )
 
         if "hr_skip" in base_kwargs:
-            base_kwargs.pop('hr_skip')
+            base_kwargs.pop("hr_skip")
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
         super().__init__(metrics=metrics, **base_kwargs)
 
         self.automatic_optimization = True
-        for stage in ("train", "val", "test", "predict"):
-            (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
         if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
@@ -162,7 +160,7 @@ class MultiTaskIm2Im(BaseModel):
     def _sum_losses(self, losses):
         summ = 0
         for k, v in losses.items():
-            if k != 'egfp':
+            if k != "egfp":
                 summ += v
         losses["loss"] = summ
         return losses
@@ -186,10 +184,9 @@ class MultiTaskIm2Im(BaseModel):
             batch, stage, self.should_save_image(batch_idx, stage), run_heads
         )
 
-        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-        # if self.current_epoch < 35:
-        #     losses['loss'] = losses['egfp']
-        # else:
+        losses = {
+            head_name: head_result["loss"] for head_name, head_result in outs.items()
+        }
         losses = self._sum_losses(losses)
         return losses, None, None
 
@@ -204,4 +201,12 @@ class MultiTaskIm2Im(BaseModel):
         outs = self.run_forward(
             batch, stage, self.should_save_image(batch_idx, stage), run_heads
         )
-        return outs[run_heads[0]]["save_path"]
+        # create input-> per head output mapping
+        io_map = {}
+        for head, output in outs.items():
+            head_io_map = output["save_path"]
+            for in_file, out_file in zip(head_io_map["input"], head_io_map["output"]):
+                if in_file not in io_map:
+                    io_map[in_file] = {}
+                io_map[in_file][head] = out_file
+        return io_map

@@ -67,7 +67,7 @@ class CZIDataset(Dataset):
             raise ValueError(f"`spatial_dims` must be 2 or 3, got {spatial_dims}")
         self.spatial_dims = spatial_dims
 
-        self.img_data, self.n_files = self.get_per_file_args(df)
+        self.img_data = self.get_per_file_args(df)
 
     def _get_scenes(self, row, img):
         scenes = row.get(self.scene_column, -1)
@@ -86,20 +86,18 @@ class CZIDataset(Dataset):
         start = row.get(self.time_start_column, -1)
         stop = row.get(self.time_stop_column, -1)
         step = row.get(self.time_step_column, 1)
-        timepoints = list(range(start, stop, step))
-        if np.any((start, stop, step) == -1):
+        timepoints = list(range(start, stop + 1, step))
+        if np.any(np.array((start, stop, step)) == -1):
             timepoints = list(range(img.dims.T))
         return timepoints
 
     def get_per_file_args(self, df):
-        n_files = 0
         img_data = []
         for row in df.itertuples():
             row = row._asdict()
             img = AICSImage(row[self.img_path_column])
             scenes = self._get_scenes(row, img)
             timepoints = self._get_timepoints(row, img)
-            n_files += len(scenes) * len(timepoints)
             for scene in scenes:
                 for timepoint in timepoints:
                     img_data.append(
@@ -112,7 +110,7 @@ class CZIDataset(Dataset):
                             "original_path": row[self.img_path_column],
                         }
                     )
-        return img_data, n_files
+        return img_data
 
     def _metadata_to_str(self, metadata):
         return "_".join([] + [f"{k}={v}" for k, v in metadata.items()])
@@ -126,24 +124,30 @@ class CZIDataset(Dataset):
         img_data = self.img_data.pop()
         img = img_data.pop("img")
         original_path = img_data.pop("original_path")
-        img.set_scene(img_data.pop("scene"))
+        scene = img_data.pop("scene")
+        img.set_scene(scene)
         data_i = img.get_image_dask_data(**img_data).compute()
+        img_data["scene"] = scene
         data_i = self._ensure_channel_first(data_i)
         output_img = (
-            apply_transform(self.transform, data_i) if self.transform is not None else data_i
+            apply_transform(self.transform, data_i)
+            if self.transform is not None
+            else data_i
         )
 
         return {
             self.out_key: MetaTensor(
                 output_img,
                 meta={
-                    "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
+                    "filename_or_obj": original_path.replace(
+                        ".", self._metadata_to_str(img_data)
+                    )
                 },
             )
         }
 
     def __len__(self):
-        return self.n_files
+        return len(self.img_data)
 
 
 def make_CZI_dataloader(
