@@ -3,6 +3,7 @@ from .contrastadjust import ContrastAdjustd
 from .multiscale_cropper import RandomMultiScaleCropd
 from .project import MaxProjectd
 from .save import Save, Saved
+from .sample_point_cloud import SamplePointCloud, SamplePointCloudd
 
 try:
     from .rotation_mask_transform import RotationMask, RotationMaskd

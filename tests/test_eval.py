@@ -2,7 +2,7 @@ import os
 
 import pytest
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import OmegaConf, open_dict
+from omegaconf import open_dict
 
 from cyto_dl.eval import evaluate
 from cyto_dl.train import train
@@ -12,16 +12,21 @@ from .utils import resolve_readonly
 
 
 @pytest.mark.slow
+@pytest.mark.parametrize("spatial_dims", [2, 3])
 @pytest.mark.parametrize(
     "cfg_train_global, cfg_eval_global",
     zip(experiment_types, experiment_types),
     indirect=True,
 )
-def test_train_eval(tmp_path, cfg_train, cfg_eval):
+def test_train_eval(tmp_path, cfg_train, cfg_eval, spatial_dims):
     """Train for 1 epoch with `train.py` and evaluate with `eval.py`"""
     assert str(tmp_path) == cfg_train.paths.output_dir == cfg_eval.paths.output_dir
     with open_dict(cfg_train):
         cfg_train.trainer.max_epochs = 1
+
+        cfg_train.spatial_dims = spatial_dims
+        if spatial_dims == 2:
+            cfg_train.data._aux.patch_shape = [64, 64]
 
     HydraConfig().set_config(cfg_train)
     resolve_readonly(cfg_train)
@@ -33,9 +38,13 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval):
         cfg_eval.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
         cfg_eval.test = True
 
+        cfg_eval.spatial_dims = spatial_dims
+        if spatial_dims == 2:
+            cfg_eval.data._aux.patch_shape = [64, 64]
+
     HydraConfig().set_config(cfg_eval)
     resolve_readonly(cfg_eval)
-    test_metric_dict, _ = evaluate(cfg_eval)
+    test_metric_dict, _, _ = evaluate(cfg_eval)
 
     assert test_metric_dict["test/loss"] > 0.0
     assert (

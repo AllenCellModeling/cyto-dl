@@ -10,6 +10,7 @@ from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
 from cyto_dl.nn.point_cloud import DGCNN, FoldingNet
+
 # from topologylayer.nn import AlphaLayer, BarcodePolyFeature
 from cyto_dl.nn.losses import TopoLoss
 
@@ -73,11 +74,16 @@ class PointCloudVAE(BaseVAE):
         metric_keys: Optional[list] = None,
         include_top_loss: Optional[bool] = False,
         inference_mask_dict: Optional[dict] = None,
+        target_key: Optional[list] = None,
+        target_mask_keys: Optional[list] = None,
         parse: Optional[bool] = False,
+        mean: Optional[bool] = True,
         **base_kwargs,
     ):
         self.get_rotation = get_rotation
         self.symmetry_breaking_axis = symmetry_breaking_axis
+        self.target_key = target_key
+        self.target_mask_keys = target_mask_keys
         self.metric_keys = metric_keys
         self.scalar_inds = scalar_inds
         self.decoder_type = decoder_type
@@ -177,26 +183,34 @@ class PointCloudVAE(BaseVAE):
         self.basal_head = nn.ModuleDict(basal_head)
         self.basal_head_loss = nn.ModuleDict(basal_head_loss)
         self.inference_mask_dict = inference_mask_dict
+        self.target_label = None
+        self.mean = mean
         if self.include_top_loss:
             # self.top_layer = nn.ModuleDict({x_label: AlphaLayer(maxdim=1)})
             # self.top_loss = nn.ModuleDict({x_label: BarcodePolyFeature(1,2,0)})
-            self.top_loss = nn.ModuleDict({x_label: TopoLoss()})
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1)}) # 0.1 works well for earthmovers
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1, farthest_point=True, num_groups=256)})
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=10, farthest_point=True, num_groups=256)})
+            self.top_loss = nn.ModuleDict(
+                {
+                    x_label: TopoLoss(
+                        topo_lambda=0.001,
+                        farthest_point=True,
+                        num_groups=256,
+                        mean=self.mean,
+                    )
+                }
+            )
 
     def encode(self, batch, **kwargs):
         ret_dict = {}
         for part, encoder in self.encoder.items():
             this_batch_part = batch[part]
-            if self.mask_keys:
-                # if mask, then mask this batch part
-                if f"{part}" in self.mask_keys:
-                    # mask is 1 for batch elements to mask, 0 otherwise
-                    this_mask = batch[f"{part}_mask"].byte().repeat(1, this_batch_part.shape[-1])
-                    # multiply inverse mask with batch part, so every mask element of 1 is set to 0
-                    this_batch_part = this_batch_part * ~this_mask.bool()
             this_ret = encoder(
                 this_batch_part,
                 **{k: v for k, v in kwargs.items() if k in self.encoder_args[part]},
             )
+
             if isinstance(this_ret, dict):  # deal with multiple outputs for an encoder
                 for key in this_ret.keys():
                     ret_dict[key] = this_ret[key]
@@ -232,7 +246,7 @@ class PointCloudVAE(BaseVAE):
 
         return {self.hparams.x_label: xhat}
 
-    def encoder_compose_function(self, z_parts):
+    def encoder_compose_function(self, z_parts, batch):
         batch_size = z_parts[self.hparams.x_label].shape[0]
         if self.basal_head:
             z_parts[self.hparams.x_label + "_basal"] = z_parts[self.hparams.x_label]
@@ -252,7 +266,19 @@ class PointCloudVAE(BaseVAE):
                 if j == 0:
                     cond_feats = this_z_parts
                 else:
+                    if self.mask_keys:
+                        # if mask, then mask this batch part
+                        if f"{key}" in self.mask_keys:
+                            # mask is 1 for batch elements to mask, 0 otherwise
+                            this_mask = (
+                                batch[f"{key}_mask"]
+                                .byte()
+                                .repeat(1, this_z_parts.shape[-1])
+                            )
+                            # multiply inverse mask with batch part, so every mask element of 1 is set to 0
+                            this_z_parts = this_z_parts * ~this_mask.bool()
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
+
             # shared encoder
             z_parts[self.hparams.x_label] = self.condition_encoder[
                 self.hparams.x_label
@@ -264,13 +290,19 @@ class PointCloudVAE(BaseVAE):
         return z_parts
 
     def decoder_compose_function(self, z_parts, batch):
-        if (self.condition_keys is not None) & (len(self.condition_decoder.keys()) != 0):
+        # if (self.condition_keys is not None) & (len(self.condition_decoder.keys()) != 0):
+        if self.condition_keys:
             for j, key in enumerate(self.condition_keys):
                 this_batch_part = batch[key]
+                this_batch_part = this_batch_part.view(this_batch_part.shape[0], -1)
                 if self.mask_keys:
                     # if mask, then mask this batch part
                     if f"{key}" in self.mask_keys:
-                        this_mask = batch[f"{key}_mask"].byte().repeat(1, this_batch_part.shape[-1])
+                        this_mask = (
+                            batch[f"{key}_mask"]
+                            .byte()
+                            .repeat(1, this_batch_part.shape[-1])
+                        )
                         # multiply inverse mask with batch part, so every mask element of 1 is set to 0
                         this_batch_part = this_batch_part * ~this_mask.bool()
 
@@ -279,9 +311,10 @@ class PointCloudVAE(BaseVAE):
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, this_batch_part), dim=1)
-                cond_feats = torch.cat(
-                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-                )
+            # cond_feats = torch.cat(
+            #     (z_parts[self.hparams.x_label],cond_inputs), dim=1
+            # )
+            cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
             z_parts[self.hparams.x_label] = self.condition_decoder[
                 self.hparams.x_label
@@ -291,14 +324,15 @@ class PointCloudVAE(BaseVAE):
     def calculate_rcl(self, batch, xhat, input_key, target_key=None):
         if not target_key:
             target_key = input_key
+
         rcl_per_input_dimension = self.reconstruction_loss[input_key](
             batch[target_key], xhat[input_key]
         )
 
-        if self.mask_keys is not None:
-            if f"{input_key}_mask" in batch.keys():
-                C_mask = batch[f"{input_key}_mask"].byte().squeeze()
-                rcl_per_input_dimension[C_mask] = 0
+        if (self.mask_keys is not None) and (self.target_mask_keys is not None):
+            this_mask = batch["target_mask"].type_as(rcl_per_input_dimension).byte()
+            rcl_per_input_dimension = rcl_per_input_dimension * ~this_mask.bool()
+
         return rcl_per_input_dimension
 
     def calculate_rcl_dict(self, batch, xhat, z):
@@ -306,7 +340,7 @@ class PointCloudVAE(BaseVAE):
         rcl_reduced = {}
         for key in xhat.keys():
             rcl_per_input_dimension[key] = self.calculate_rcl(
-                batch, xhat, key, self.occupancy_label
+                batch, xhat, key, self.target_label  # used to be self.occupancy label
             )
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
@@ -316,8 +350,10 @@ class PointCloudVAE(BaseVAE):
                     # and sum across each batch element's dimensions
                     .sum(dim=1)
                 )
-
-                rcl_reduced[key] = rcl.mean()
+                if self.mean:
+                    rcl_reduced[key] = rcl.mean()
+                else:
+                    rcl_reduced[key] = rcl
             else:
                 rcl_reduced[key] = rcl_per_input_dimension[key]
 
@@ -334,7 +370,7 @@ class PointCloudVAE(BaseVAE):
                 ](z[key], x[key])
 
         # if (self.include_top_loss) & (self.current_epoch > 10):
-        if (self.include_top_loss):
+        if self.include_top_loss:
             for key in self.top_loss.keys():
                 # top_losses = []
                 # for i in range(xhat[key].shape[0]):
@@ -342,15 +378,16 @@ class PointCloudVAE(BaseVAE):
                 #         key
                 #     ](xhat[key][i])))
                 # rcl_reduced['top'] = torch.stack(top_losses).mean()
-                rcl_reduced['top'] = self.top_loss[key](batch[key], xhat[key])
+                rcl_reduced["top"] = self.top_loss[key](batch[key], xhat[key])
 
         return rcl_reduced
 
-    def parse_batch(self, batch, inference):
+    def parse_batch(self, batch):
         if self.parse:
             for key in batch.keys():
                 if len(batch[key].shape) == 1:
                     batch[key] = batch[key].unsqueeze(dim=-1)
+
             if self.mask_keys is not None:
                 for key in self.mask_keys:
                     C = batch[key]
@@ -362,32 +399,68 @@ class PointCloudVAE(BaseVAE):
                     C_mask = torch.zeros(C.shape[0]).bernoulli_(this_mask).byte()
                     batch[f"{key}_mask"] = C_mask.unsqueeze(dim=-1).float().type_as(C)
 
+            if self.target_key is not None:
+                for j, key in enumerate(self.target_key):
+                    this_mask = 0
+                    if key in self.target_mask_keys:
+                        this_mask = 1
+
+                    if j == 0:
+                        batch["target"] = batch[f"{key}"]
+                        batch["target_mask"] = (
+                            torch.zeros(batch[f"{key}"].shape)
+                            .bernoulli_(this_mask)
+                            .byte()
+                        )
+                    else:
+                        batch["target"] = torch.cat(
+                            [batch["target"], batch[f"{key}"]], dim=1
+                        )
+                        this_part_mask = (
+                            torch.zeros(batch[f"{key}"].shape)
+                            .bernoulli_(this_mask)
+                            .byte()
+                        )
+                        batch["target_mask"] = torch.cat(
+                            [batch["target_mask"], this_part_mask], dim=1
+                        )
+
+                self.target_label = "target"
+            else:
+                self.target_label = self.hparams.x_label
+
         return batch
+
+    def get_embeddings(self, batch, inference=True):
+        #torch.isnan(z_params['pcloud']).any()
+        batch = self.parse_batch(batch)
+        z_params = self.encode(batch, get_rotation=self.get_rotation)
+        z_params = self.encoder_compose_function(z_params, batch)
+        z = self.sample_z(z_params, inference=inference)
+        return z, z_params
+
+    def decode_embeddings(self, z, batch, decode=True, return_canonical=False):
+        z = self.decoder_compose_function(z, batch)
+        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
+            if self.encoder[self.hparams.x_label].generate_grid_feats:
+                xhat = self.decode(z, return_canonical=return_canonical, batch=batch)
+            else:
+                xhat = self.decode(z, return_canonical=return_canonical)
+        else:
+            xhat = self.decode(z, return_canonical=return_canonical)
+
+        return xhat
 
     def forward(self, batch, decode=False, inference=True, return_params=False):
         is_inference = inference or not self.training
-
-        batch = self.parse_batch(batch, inference=inference)
-        z_params = self.encode(batch, get_rotation=self.get_rotation)
-        z_params = self.encoder_compose_function(z_params)
-
-        z = self.sample_z(z_params, inference=inference)
-
-        z = self.decoder_compose_function(z, batch)
+        z, z_params = self.get_embeddings(batch, inference)
 
         if not decode:
             return z
 
-        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
-            if self.encoder[self.hparams.x_label].generate_grid_feats:
-                xhat = self.decode(z, batch=batch)
-            else:
-                xhat = self.decode(z)
-        else:
-            xhat = self.decode(z)
+        xhat = self.decode_embeddings(z, batch)
 
         if return_params:
             return xhat, z, z_params
 
         return xhat, z
-

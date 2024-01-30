@@ -22,7 +22,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
         inference_heads: Union[List, None] = None,
-        compile=True,
+        compile=False,
         **base_kwargs,
     ):
         """
@@ -42,6 +42,8 @@ class MultiTaskIm2Im(BaseModel):
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         inference_heads: Union[List, None] = None
             Optional list of heads to run during inference. Defaults to running all heads.
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -61,6 +63,8 @@ class MultiTaskIm2Im(BaseModel):
                 }
             )
 
+        if "hr_skip" in base_kwargs:
+            base_kwargs.pop('hr_skip')
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
         super().__init__(metrics=metrics, **base_kwargs)
 
@@ -68,7 +72,7 @@ class MultiTaskIm2Im(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile and not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.task_heads = torch.nn.ModuleDict(
                 {k: torch.compile(v) for k, v in task_heads.items()}
@@ -158,7 +162,8 @@ class MultiTaskIm2Im(BaseModel):
     def _sum_losses(self, losses):
         summ = 0
         for k, v in losses.items():
-            summ += v
+            if k != 'egfp':
+                summ += v
         losses["loss"] = summ
         return losses
 
@@ -171,6 +176,7 @@ class MultiTaskIm2Im(BaseModel):
 
     def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
@@ -180,23 +186,16 @@ class MultiTaskIm2Im(BaseModel):
             batch, stage, self.should_save_image(batch_idx, stage), run_heads
         )
 
-        if stage != "predict":
-            losses = {
-                head_name: head_result["loss"]
-                for head_name, head_result in outs.items()
-            }
-            losses = self._sum_losses(losses)
-            return losses, None, None
-
-        preds = {
-            head_name: head_result["y_hat_out"]
-            for head_name, head_result in outs.items()
-        }
-
-        return None, preds, None
+        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
+        # if self.current_epoch < 35:
+        #     losses['loss'] = losses['egfp']
+        # else:
+        losses = self._sum_losses(losses)
+        return losses, None, None
 
     def predict_step(self, batch, batch_idx):
         stage = "predict"
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):

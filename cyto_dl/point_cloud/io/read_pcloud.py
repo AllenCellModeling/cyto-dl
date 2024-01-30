@@ -71,62 +71,114 @@ class ReadPointCloud(MapTransform):
         pc = pc / m
         return pc
 
+    # def __call__(self, row):
+    #     res = dict(**row)
+
+    #     with TemporaryDirectory() as tmp_dir:
+    #         for key in self.keys:
+    #             if self.remote:
+    #                 path = Path(row[key])
+    #                 ext = path.suffix
+
+    #                 fifo_path = str(Path(tmp_dir) / f"{uuid.uuid4()}{ext}")
+    #                 os.mkfifo(fifo_path)
+
+    #                 with path.open("rb") as f_input:
+    #                     Path(fifo_path).write_bytes(f_input.read())
+    #                 path = fifo_path
+    #             else:
+    #                 path = str(row[key])
+
+    #             points = PyntCloud.from_file(path).points
+
+    #             if "s" in points.columns:
+    #                 points = points[["z", "y", "x", "s"]]
+    #             else:
+    #                 points = points[["z", "y", "x"]]
+    #             if len(set(points['z'].values)) == 1:
+    #                 points['z'] = 1e-5
+    #             points = points.values[:, : self.num_cols]
+
+    #             if self.rotate:
+    #                 points = rotate_pointcloud(points)
+
+    #             if self.flip_dims:
+    #                 if self.num_cols == 3:
+    #                     points = points[:, -1::-1].copy()
+    #                 else:
+    #                     points = np.concatenate(
+    #                         [points[:, -2::-1], points[:, -1:]], axis=1
+    #                     )
+
+    #             if self.scale:
+    #                 points = points * self.scale
+    #             if self.norm:
+    #                 points[:, :3] = self.pc_norm(points[:, :3])
+    #             res[key] = torch.tensor(
+    #                 points,
+    #                 dtype=torch.get_default_dtype(),
+    #             )
+    #             if self.num_cols > 3:
+    #                 res[key][:, self.num_cols - 1 :] = (
+    #                     res[key][:, self.num_cols - 1 :] * self.scalar_scale
+    #                 )
+
+    #             if self.sample:
+    #                 self.sample_idx = np.random.randint(
+    #                     res[key].shape[0], size=self.sample
+    #                 )
+    #                 res[key] = res[key][self.sample_idx]
+    #             if self.final_columns:
+    #                 res[key] = res[key][:, self.final_columns]
+
+    #     return res
     def __call__(self, row):
         res = dict(**row)
 
-        with TemporaryDirectory() as tmp_dir:
-            for key in self.keys:
-                if self.remote:
-                    path = Path(row[key])
-                    ext = path.suffix
+        for key in self.keys:
+            path = str(row[key])
 
-                    fifo_path = str(Path(tmp_dir) / f"{uuid.uuid4()}{ext}")
-                    os.mkfifo(fifo_path)
+            points = PyntCloud.from_file(path).points
 
-                    with path.open("rb") as f_input:
-                        Path(fifo_path).write_bytes(f_input.read())
-                    path = fifo_path
+            if "s" in points.columns:
+                points = points[["z", "y", "x", "s"]]
+            else:
+                points = points[["z", "y", "x"]]
+            if len(set(points['z'].values)) == 1:
+                points['z'] = 1e-5
+            points = points.values[:, : self.num_cols]
+
+            if self.rotate:
+                points = rotate_pointcloud(points)
+
+            if self.flip_dims:
+                if self.num_cols == 3:
+                    points = points[:, -1::-1].copy()
                 else:
-                    path = str(row[key])
-                points = PyntCloud.from_file(path).points
+                    points = np.concatenate(
+                        [points[:, -2::-1], points[:, -1:]], axis=1
+                    )
 
-                if "s" in points.columns:
-                    points = points[["z", "y", "x", "s"]]
-                else:
-                    points = points[["z", "y", "x"]]
-                points = points.values[:, : self.num_cols]
-
-                if self.rotate:
-                    points = rotate_pointcloud(points)
-
-                if self.flip_dims:
-                    if self.num_cols == 3:
-                        points = points[:, -1::-1].copy()
-                    else:
-                        points = np.concatenate(
-                            [points[:, -2::-1], points[:, -1:]], axis=1
-                        )
-
-                if self.scale:
-                    points = points * self.scale
-                if self.norm:
-                    points[:, :3] = self.pc_norm(points[:, :3])
-                res[key] = torch.tensor(
-                    points,
-                    dtype=torch.get_default_dtype(),
+            if self.scale:
+                points = points * self.scale
+            if self.norm:
+                points[:, :3] = self.pc_norm(points[:, :3])
+            res[key] = torch.tensor(
+                points,
+                dtype=torch.get_default_dtype(),
+            )
+            if self.num_cols > 3:
+                res[key][:, self.num_cols - 1 :] = (
+                    res[key][:, self.num_cols - 1 :] * self.scalar_scale
                 )
-                if self.num_cols > 3:
-                    res[key][:, self.num_cols - 1 :] = (
-                        res[key][:, self.num_cols - 1 :] * self.scalar_scale
-                    )
 
-                if self.sample:
-                    self.sample_idx = np.random.randint(
-                        res[key].shape[0], size=self.sample
-                    )
-                    res[key] = res[key][self.sample_idx]
-                if self.final_columns:
-                    res[key] = res[key][:, self.final_columns]
+            if self.sample:
+                self.sample_idx = np.random.randint(
+                    res[key].shape[0], size=self.sample
+                )
+                res[key] = res[key][self.sample_idx]
+            if self.final_columns:
+                res[key] = res[key][:, self.final_columns]
 
         return res
 

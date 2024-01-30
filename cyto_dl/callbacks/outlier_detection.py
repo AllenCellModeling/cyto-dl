@@ -126,7 +126,7 @@ class OutlierDetection(Callback):
 
     def _inference_batch_end(self, batch):
         if self._run:
-            batch_names = batch["raw_meta_dict"]["filename_or_obj"]
+            batch_names = batch["raw"].meta["filename_or_obj"]
             # activations are saved per-patch
             distances_per_image = len(
                 self.mahalanobis_distances[self.layer_names[0]]

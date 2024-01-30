@@ -17,17 +17,22 @@ class SkimageReader(ImageReader):
         channels: Optional[list] = None,
         transforms: Optional[list] = None,
         project: Optional[int] = None,
+        expand_dims: Optional[bool] = False,
     ):
         super().__init__()
         self.channels = channels
         self.transforms = transforms
         self.project = project
+        self.expand_dims = expand_dims
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
         img_ = []
         for name in filenames:
             this_im = imread(f"{name}")
+            if (len(this_im.shape) == 2) or self.expand_dims:
+                this_im = np.expand_dims(this_im, axis=0)
+                this_im = np.expand_dims(this_im, axis=0)
             if self.channels:
                 this_im = this_im[self.channels]
             if isinstance(self.project, int):

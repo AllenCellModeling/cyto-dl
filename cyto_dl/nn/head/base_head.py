@@ -68,15 +68,13 @@ class BaseHead(ABC, torch.nn.Module):
             if self.save_raw:
                 raw_out = self._postprocess(batch[self.x_key], img_type="input")
         try:
-            metadata_filenames = batch[f"{self.x_key}_meta_dict"]["filename_or_obj"]
+            metadata_filenames = batch["filenames"]
             filename_map = {"input": metadata_filenames, "output": []}
             metadata_filenames = [
                 f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames
             ]
         except KeyError:
-            raise ValueError(
-                f"Please ensure your batches contain key `{self.x_key}_meta_dict['filename_or_obj']`"
-            )
+            raise ValueError("Please ensure your batches have key `filenames`")
         save_name = (
             [f"{global_step}_{self.head_name}.tif"]
             if stage in ("train", "val")

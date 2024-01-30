@@ -15,27 +15,33 @@ transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       # target is the nuclear dyeimage
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
-          - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
-            C: 4
+          - _target_:
+              cyto_dl.image.io.MonaiBioReader
+              # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       # source image is the segmentation
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
+        keep_size: False
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
@@ -61,27 +67,31 @@ transforms:
   test:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       # target is the nuclear dyeimage
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
-            C: 4
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       # source image is the segmentation
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
+        keep_size: False
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
@@ -108,13 +118,17 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${source_col}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
+        keep_size: False
+
       - _target_: monai.transforms.ToTensord
         keys: ${source_col}
       # input to synthetic image generation model is a semantic segmentation
@@ -127,27 +141,32 @@ transforms:
   valid:
     _target_: monai.transforms.Compose
     transforms:
-      # channels are [blank, membrane,blank, structure, nuclear dye, brightfield ]
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
       # target is the nuclear dyeimage
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
-            C: 4
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
       # source image is the segmentation
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: "ZYX"
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
             C: 0
-      - _target_: monai.transforms.AddChanneld
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
         keys: ${data.columns}
       - _target_: monai.transforms.Zoomd
         keys: ${data.columns}
         zoom: 0.25
+        keep_size: False
+
       - _target_: monai.transforms.ToTensord
         keys: ${data.columns}
       # GANs use Tanh as final activation, target has to be in range [-1,1]
@@ -171,7 +190,6 @@ transforms:
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
 
 _aux:
-  patch_shape: [32, 512, 512]
   _scales_dict:
     - - ${target_col}
       - [1]
