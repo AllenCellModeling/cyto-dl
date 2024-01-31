@@ -22,3 +22,4 @@ Submodules
    cyto_dl.image.transforms.rotation_mask_transform
    cyto_dl.image.transforms.save
    cyto_dl.image.transforms.so2_random_rotation
+   cyto_dl.image.transforms.track_transforms

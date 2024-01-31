@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.models.utils.mlflow
+   cyto_dl.models.utils.utils

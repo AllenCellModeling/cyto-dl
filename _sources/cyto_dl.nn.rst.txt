@@ -28,3 +28,4 @@ Submodules
    cyto_dl.nn.mlp
    cyto_dl.nn.res_unit
    cyto_dl.nn.spatial_transformer
+   cyto_dl.nn.track_sequence_predictor

@@ -1,0 +1,7 @@
+cyto\_dl.nn.track\_sequence\_predictor module
+=============================================
+
+.. automodule:: cyto_dl.nn.track_sequence_predictor
+   :members:
+   :undoc-members:
+   :show-inheritance:

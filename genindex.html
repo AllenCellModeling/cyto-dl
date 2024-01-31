@@ -218,6 +218,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.so2_random_rotation.html">cyto_dl.image.transforms.so2_random_rotation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.track_transforms.html">cyto_dl.image.transforms.track_transforms module</a></li>
 </ul>
 </li>
 </ul>
@@ -251,6 +252,7 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.utils.html">cyto_dl.models.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.utils.mlflow.html">cyto_dl.models.utils.mlflow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.utils.utils.html">cyto_dl.models.utils.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -277,6 +279,7 @@
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.classification_transformer.html">cyto_dl.models.classification_transformer module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -326,6 +329,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -485,6 +489,8 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Cityscapes">Cityscapes (class in cyto_dl.datamodules.torchvision)</a>
 </li>
+        <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier">Classifier (class in cyto_dl.models.classification_transformer)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CLEVRClassification">CLEVRClassification (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.clip.html#cyto_dl.image.transforms.clip.Clip">Clip (class in cyto_dl.image.transforms.clip)</a>
@@ -530,6 +536,8 @@
         <li><a href="cyto_dl.nn.losses.cosine_loss.html#cyto_dl.nn.losses.cosine_loss.CosineLoss">CosineLoss (class in cyto_dl.nn.losses.cosine_loss)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Country211">Country211 (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.CropResize">CropResize (class in cyto_dl.image.transforms.track_transforms)</a>
 </li>
         <li>
     cyto_dl
@@ -812,6 +820,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.image.transforms.track_transforms
+
+        <ul>
+          <li><a href="cyto_dl.image.transforms.track_transforms.html#module-cyto_dl.image.transforms.track_transforms">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.loggers
 
         <ul>
@@ -844,6 +859,13 @@
 
         <ul>
           <li><a href="cyto_dl.models.basic_model.html#module-cyto_dl.models.basic_model">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.classification_transformer
+
+        <ul>
+          <li><a href="cyto_dl.models.classification_transformer.html#module-cyto_dl.models.classification_transformer">module</a>
 </li>
         </ul></li>
         <li>
@@ -958,6 +980,13 @@
 
         <ul>
           <li><a href="cyto_dl.models.utils.mlflow.html#module-cyto_dl.models.utils.mlflow">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.utils.utils
+
+        <ul>
+          <li><a href="cyto_dl.models.utils.utils.html#module-cyto_dl.models.utils.utils">module</a>
 </li>
         </ul></li>
         <li>
@@ -1255,6 +1284,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.nn.track_sequence_predictor
+
+        <ul>
+          <li><a href="cyto_dl.nn.track_sequence_predictor.html#module-cyto_dl.nn.track_sequence_predictor">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.nn.vits
 
         <ul>
@@ -1492,6 +1528,8 @@
         </ul></li>
         <li><a href="cyto_dl.dataframe.transforms.filter.html#cyto_dl.dataframe.transforms.filter.filter_rows">filter_rows() (in module cyto_dl.dataframe.transforms.filter)</a>
 </li>
+        <li><a href="cyto_dl.models.utils.utils.html#cyto_dl.models.utils.utils.find_indices">find_indices() (in module cyto_dl.models.utils.utils)</a>
+</li>
         <li><a href="cyto_dl.utils.spharm.rotation.html#cyto_dl.utils.spharm.rotation.flatten">flatten() (in module cyto_dl.utils.spharm.rotation)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flickr30k">Flickr30k (class in cyto_dl.datamodules.torchvision)</a>
@@ -1508,6 +1546,8 @@
 
         <ul>
           <li><a href="cyto_dl.models.basic_model.html#cyto_dl.models.basic_model.BasicModel.forward">(cyto_dl.models.basic_model.BasicModel method)</a>
+</li>
+          <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier.forward">(cyto_dl.models.classification_transformer.Classifier method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.forward">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
@@ -1571,6 +1611,8 @@
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.STN.forward">(cyto_dl.nn.spatial_transformer.STN method)</a>
 </li>
+          <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.TrackClassifier.forward">(cyto_dl.nn.track_sequence_predictor.TrackClassifier method)</a>
+</li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.forward">(cyto_dl.nn.vits.mae.MAE_Decoder method)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.forward">(cyto_dl.nn.vits.mae.MAE_Encoder method)</a>
@@ -1607,6 +1649,8 @@
         <li><a href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img">generate_img() (cyto_dl.utils.dummy_dataset.DummyDataset method)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.multiscale_cropper.html#cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd.generate_slices">generate_slices() (cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd method)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.GenerateTrackLabels">GenerateTrackLabels (class in cyto_dl.image.transforms.track_transforms)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.geomloss.html#cyto_dl.nn.losses.geomloss.GeomLoss">GeomLoss (class in cyto_dl.nn.losses.geomloss)</a>
 </li>
@@ -1891,6 +1935,8 @@
         <ul>
           <li><a href="cyto_dl.models.basic_model.html#cyto_dl.models.basic_model.BasicModel.model_step">(cyto_dl.models.basic_model.BasicModel method)</a>
 </li>
+          <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier.model_step">(cyto_dl.models.classification_transformer.Classifier method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.model_step">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
@@ -1984,6 +2030,8 @@
 </li>
           <li><a href="cyto_dl.image.transforms.save.html#module-cyto_dl.image.transforms.save">cyto_dl.image.transforms.save</a>
 </li>
+          <li><a href="cyto_dl.image.transforms.track_transforms.html#module-cyto_dl.image.transforms.track_transforms">cyto_dl.image.transforms.track_transforms</a>
+</li>
           <li><a href="cyto_dl.loggers.html#module-cyto_dl.loggers">cyto_dl.loggers</a>
 </li>
           <li><a href="cyto_dl.loggers.mlflow.html#module-cyto_dl.loggers.mlflow">cyto_dl.loggers.mlflow</a>
@@ -1993,6 +2041,8 @@
           <li><a href="cyto_dl.models.base_model.html#module-cyto_dl.models.base_model">cyto_dl.models.base_model</a>
 </li>
           <li><a href="cyto_dl.models.basic_model.html#module-cyto_dl.models.basic_model">cyto_dl.models.basic_model</a>
+</li>
+          <li><a href="cyto_dl.models.classification_transformer.html#module-cyto_dl.models.classification_transformer">cyto_dl.models.classification_transformer</a>
 </li>
           <li><a href="cyto_dl.models.handlers.html#module-cyto_dl.models.handlers">cyto_dl.models.handlers</a>
 </li>
@@ -2025,6 +2075,8 @@
           <li><a href="cyto_dl.models.utils.html#module-cyto_dl.models.utils">cyto_dl.models.utils</a>
 </li>
           <li><a href="cyto_dl.models.utils.mlflow.html#module-cyto_dl.models.utils.mlflow">cyto_dl.models.utils.mlflow</a>
+</li>
+          <li><a href="cyto_dl.models.utils.utils.html#module-cyto_dl.models.utils.utils">cyto_dl.models.utils.utils</a>
 </li>
           <li><a href="cyto_dl.models.vae.base_vae.html#module-cyto_dl.models.vae.base_vae">cyto_dl.models.vae.base_vae</a>
 </li>
@@ -2109,6 +2161,8 @@
           <li><a href="cyto_dl.nn.res_unit.html#module-cyto_dl.nn.res_unit">cyto_dl.nn.res_unit</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#module-cyto_dl.nn.spatial_transformer">cyto_dl.nn.spatial_transformer</a>
+</li>
+          <li><a href="cyto_dl.nn.track_sequence_predictor.html#module-cyto_dl.nn.track_sequence_predictor">cyto_dl.nn.track_sequence_predictor</a>
 </li>
           <li><a href="cyto_dl.nn.vits.html#module-cyto_dl.nn.vits">cyto_dl.nn.vits</a>
 </li>
@@ -2237,15 +2291,19 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PCAM">PCAM (class in cyto_dl.datamodules.torchvision)</a>
 </li>
+        <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.PerChannel">PerChannel (class in cyto_dl.image.transforms.track_transforms)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.PhotoTour">PhotoTour (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in cyto_dl.nn.losses.gan_loss)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD">Pix2PixHD (class in cyto_dl.nn.losses.gan_loss)</a>
-</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Places365">Places365 (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.image.io.polygon_loader.html#cyto_dl.image.io.polygon_loader.PolygonLoaderd">PolygonLoaderd (class in cyto_dl.image.io.polygon_loader)</a>
+</li>
+        <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.positionalencoding1d">positionalencoding1d() (in module cyto_dl.nn.track_sequence_predictor)</a>
 </li>
         <li><a href="cyto_dl.models.handlers.base_handler.html#cyto_dl.models.handlers.base_handler.BaseHandler.postprocess">postprocess() (cyto_dl.models.handlers.base_handler.BaseHandler method)</a>
 </li>
@@ -2262,6 +2320,8 @@
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.predict_step">predict_step() (cyto_dl.models.base_model.BaseModel method)</a>
 
         <ul>
+          <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier.predict_step">(cyto_dl.models.classification_transformer.Classifier method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.predict_step">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.predict_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
@@ -2409,6 +2469,8 @@
 </li>
         <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.save_image">save_image() (cyto_dl.nn.head.base_head.BaseHead method)</a>
 </li>
+        <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier.save_images">save_images() (cyto_dl.models.classification_transformer.Classifier method)</a>
+</li>
         <li><a href="cyto_dl.image.transforms.save.html#cyto_dl.image.transforms.save.Saved">Saved (class in cyto_dl.image.transforms.save)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SBDataset">SBDataset (class in cyto_dl.datamodules.torchvision)</a>
@@ -2429,9 +2491,11 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.setup_paths">setup_paths() (in module cyto_dl.utils.download_test_data)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.should_save_image">should_save_image() (cyto_dl.models.im2im.gan.GAN method)</a>
+        <li><a href="cyto_dl.models.classification_transformer.html#cyto_dl.models.classification_transformer.Classifier.should_save_image">should_save_image() (cyto_dl.models.classification_transformer.Classifier method)</a>
 
         <ul>
+          <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.should_save_image">(cyto_dl.models.im2im.gan.GAN method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
         </ul></li>
@@ -2488,6 +2552,10 @@
         <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.STN.toggle">toggle() (cyto_dl.nn.spatial_transformer.STN method)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd.topology_preserving_thinning">topology_preserving_thinning() (cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd method)</a>
+</li>
+        <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.TrackClassifier">TrackClassifier (class in cyto_dl.nn.track_sequence_predictor)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.TrackCrop">TrackCrop (class in cyto_dl.image.transforms.track_transforms)</a>
 </li>
         <li><a href="cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.train">train() (cyto_dl.api.model.CytoDLModel method)</a>
 </li>
@@ -2559,6 +2627,8 @@
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU.training">(cyto_dl.nn.spatial_transformer.ConvPoolReLU attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.STN.training">(cyto_dl.nn.spatial_transformer.STN attribute)</a>
+</li>
+          <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.TrackClassifier.training">(cyto_dl.nn.track_sequence_predictor.TrackClassifier attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.training">(cyto_dl.nn.vits.mae.MAE_Decoder attribute)</a>
 </li>
