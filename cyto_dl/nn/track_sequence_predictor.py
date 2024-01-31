@@ -36,23 +36,24 @@ class TrackClassifier(torch.nn.Module):
 
     def forward(self, img):
         img = img.as_tensor()
-        # embed images individually
-        img = rearrange(img, "b c h w -> c b h w")
-        # return  t b c
+        # move track length to front to embed images individually
+        img = rearrange(img, "b track_len h w -> track_len b h w")
+
+        # returns  token x batch x embedding dim
         patches = self.image_encoder(img).unsqueeze(1)
 
         # interpolate positional embedding to match track length
         pe = torch.nn.functional.interpolate(
             self.pos_embedding, size=patches.shape[0], mode="linear"
         )
-        pe = rearrange(pe, "c 1 t -> t 1 c")
+        pe = rearrange(pe, "emb_dim 1 tokens -> tokens 1 emb_dim")
 
         patches = patches + pe
 
         patches = self.layer_norm(self.transformer(patches))
 
         patches = self.classifier(patches)
-        patches = rearrange(patches, "t b c -> b t c")
+        patches = rearrange(patches, "tokens batch emb_dim -> batch tokens emb_dim")
 
         return patches
 
@@ -75,4 +76,4 @@ def positionalencoding1d(d_model, length):
     pe[:, 0::2] = torch.sin(position.float() * div_term)
     pe[:, 1::2] = torch.cos(position.float() * div_term)
 
-    return rearrange(pe, "t c -> c 1 t")
+    return rearrange(pe, "tokens emb_dim -> emb_dim 1 tokens")

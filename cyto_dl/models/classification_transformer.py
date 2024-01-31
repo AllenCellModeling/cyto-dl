@@ -1,4 +1,3 @@
-import math
 import sys
 from pathlib import Path
 
@@ -14,6 +13,7 @@ from torchmetrics import MeanMetric
 from torchmetrics.classification import MulticlassF1Score
 
 from cyto_dl.models.base_model import BaseModel
+from cyto_dl.models.utils import find_indices
 
 
 class Classifier(BaseModel):
@@ -113,6 +113,7 @@ class Classifier(BaseModel):
         )
 
     def model_step(self, stage, batch, batch_idx):
+        assert batch[self.hparams.x_key].shape[0] == 1, "batch size must be 1"
         logits = self(batch[self.hparams.x_key]).squeeze(0)
         labels = batch[self.hparams.y_key].squeeze(0)
         if self.should_save_image(batch_idx, stage):
@@ -120,16 +121,8 @@ class Classifier(BaseModel):
         loss = self.loss_fn(logits, labels.long())
         return loss, logits.argmax(dim=1), labels
 
-    def find_indices(self, lst, vals):
-        arr = np.array(lst)
-
-        sets = []
-        for i, val in enumerate(vals):
-            indices = set(np.where(arr == val)[0] - i)
-            sets.append(indices)
-        return np.asarray(list(set.intersection(*sets)), dtype=int)
-
     def predict_step(self, batch, batch_idx):
+        assert batch[self.hparams.x_key].shape[0] == 1, "batch size must be 1"
         logits = self(batch[self.hparams.x_key]).squeeze(0)
         if self.hparams.save_movie:
             self.save_images(
@@ -145,9 +138,9 @@ class Classifier(BaseModel):
         track_id = batch["track_id"].cpu().item()
 
         # breakdowns are transitions from interphase (0) to mitotic (1)
-        breakdowns = self.find_indices(preds, [0, 1])
+        breakdowns = find_indices(preds, [0, 1])
         # formations are transitions from mitotic (1) to interphase (0)
-        formations = self.find_indices(preds, [1, 0])
+        formations = find_indices(preds, [1, 0])
 
         # -1 -> no formation/breakdown
         if formations.size == 0:

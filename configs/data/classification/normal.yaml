@@ -1,6 +1,6 @@
 _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 
-path: //allen/aics/assay-dev/users/Benji/CurrentProjects/breakdown_classifier_cyto_dl/data/precalculated_movies
+path:
 cache_dir:
 
 num_workers: 1
