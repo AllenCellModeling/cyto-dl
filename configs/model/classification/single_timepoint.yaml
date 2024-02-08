@@ -1,10 +1,11 @@
-_target_: cyto_dl.models.classification_transformer.Classifier
+_target_: cyto_dl.models.classification.Classifier
 num_classes: ${model._aux.num_classes}
 model:
-  _target_: cyto_dl.nn.track_sequence_predictor.TrackClassifier
-  patch_size: [1, 64, 64]
-  pos_embedding_length: 150
-  num_classes: ${model._aux.num_classes}
+  _target_: monai.networks.nets.Regressor
+  in_shape: [1, 64, 64]
+  out_shape: ${model._aux.num_classes}
+  channels: [8, 16, 32]
+  strides: [2, 2, 2]
 
 x_key: "img"
 save_dir: ${paths.output_dir}

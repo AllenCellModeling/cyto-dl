@@ -17,22 +17,20 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: "ZYX"
       - _target_: cyto_dl.image.transforms.track_transforms.GenerateTrackLabels
-      - _target_: cyto_dl.image.transforms.track_transforms.TrackCrop
       - _target_: monai.transforms.ToTensord
         keys: img
         dtype: float16
-      - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: [img]
-        transform:
-          _target_: monai.transforms.RandShiftIntensity
-          offsets: 3
-          prob: 0.5
-      - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: [img]
-        transform:
-          _target_: monai.transforms.RandScaleIntensity
-          factors: 0.5
-          prob: 0.5
+      - _target_: cyto_dl.image.transforms.track_transforms.SplitTrackd
+        img_key: img
+        label_key: label
+      - _target_: monai.transforms.RandShiftIntensityd
+        keys: img
+        offsets: 3
+        prob: 0.5
+      - _target_: monai.transforms.RandScaleIntensityd
+        keys: img
+        factors: 0.5
+        prob: 0.5
       - _target_: monai.transforms.RandFlipd
         keys: img
         prob: 0.5
@@ -44,12 +42,10 @@ transforms:
       - _target_: monai.transforms.RandRotate90d
         keys: img
         prob: 0.75
-      - _target_: cyto_dl.image.transforms.track_transforms.PerChannel
-        keys: [img]
-        transform:
-          _target_: monai.transforms.RandAdjustContrast
-          gamma: [0.8, 1.2]
-          prob: 0.5
+      - _target_: monai.transforms.RandAdjustContrastd
+        keys: img
+        gamma: [0.8, 1.2]
+        prob: 0.5
       - _target_: cyto_dl.image.transforms.track_transforms.CropResize
         keys: [img]
 
@@ -65,6 +61,9 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys: img
         dtype: float16
+      - _target_: cyto_dl.image.transforms.track_transforms.SplitTrackd
+        img_key: img
+        label_key: label
 
   test:
     _target_: monai.transforms.Compose
