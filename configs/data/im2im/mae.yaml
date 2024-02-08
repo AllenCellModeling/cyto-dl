@@ -19,8 +19,10 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: CZYX
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       - _target_: monai.transforms.Zoomd
         keys: ${source_col}
         zoom: 0.25
@@ -45,8 +47,10 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: CZYX
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       - _target_: monai.transforms.Zoomd
         keys: ${source_col}
         zoom: 0.25
@@ -65,8 +69,10 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: CZYX
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       - _target_: monai.transforms.Zoomd
         keys: ${source_col}
         zoom: 0.25
@@ -85,8 +91,10 @@ transforms:
         keys: ${source_col}
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
-            dimension_order_out: CZYX
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
       - _target_: monai.transforms.Zoomd
         keys: ${source_col}
         zoom: 0.25

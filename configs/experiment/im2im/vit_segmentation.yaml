@@ -21,7 +21,6 @@ experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 source_col: raw
 target_col: seg
-# dimensionality of your data - VITs currently on support 3d
 spatial_dims: 3
 # number of channels in your input images
 raw_im_channels: 1
@@ -34,5 +33,7 @@ data:
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1
   _aux:
+    # 2D
+    # patch_shape: [16, 16]
     # 3D
-    patch_shape: [16, 32, 32]
+    patch_shape: [16, 16, 16]

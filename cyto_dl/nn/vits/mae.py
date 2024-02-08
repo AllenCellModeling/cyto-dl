@@ -280,18 +280,18 @@ class MAE_ViT(torch.nn.Module):
         mask_ratio: float
             Ratio of patches to mask out
         """
+        super().__init__()
         assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
+
+        if isinstance(num_patches, int):
+            num_patches = [num_patches] * spatial_dims
+        if isinstance(base_patch_size, int):
+            base_patch_size = [base_patch_size] * spatial_dims
+
         assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
         assert (
             len(base_patch_size) == spatial_dims
         ), "base_patch_size must be of length spatial_dims"
-
-        super().__init__()
-
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * 3
-        if isinstance(base_patch_size, int):
-            base_patch_size = [base_patch_size] * 3
 
         self.encoder = MAE_Encoder(
             num_patches,
