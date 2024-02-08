@@ -253,9 +253,6 @@ class InstanceSegPreprocessd(Transform):
         return new_im
 
     def __call__(self, image_dict):
-        import time
-
-        t0 = time.time()
         for key in self.label_keys:
             if key not in image_dict:
                 if not self.allow_missing_keys:
@@ -277,7 +274,6 @@ class InstanceSegPreprocessd(Transform):
             bound = torch.from_numpy(find_boundaries(im, mode="inner")).unsqueeze(0)
             semantic_seg = torch.from_numpy(im > 0).unsqueeze(0)
             image_dict[key] = torch.cat([skel_edt, semantic_seg, embed, bound, cmap]).float()
-        print(time.time() - t0)
         return image_dict
 
 
@@ -508,16 +504,11 @@ class InstanceSegCluster:
         return out
 
     def __call__(self, image):
-        # import cc3d
-        import time
-
-        t0 = time.time()
         image = image.detach().cpu().half().numpy()
 
         skel = image[0]
         naive_labeling, _ = label(image[1] > self.semantic_threshold)
 
-        # naive_labeling = cc3d.connected_components(image[1] > self.semantic_threshold)
         embedding = image[2 : 2 + self.dim]
         regions = enumerate(find_objects(naive_labeling), start=1)
 
@@ -535,5 +526,4 @@ class InstanceSegCluster:
             mask[mask > 0] += highest_cell_idx
             out_image[region] += mask
             highest_cell_idx += max_mask
-        print(time.time() - t0)
         return out_image
