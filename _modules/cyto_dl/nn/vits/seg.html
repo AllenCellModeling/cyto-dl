@@ -396,7 +396,7 @@
         </div>
         <article role="main">
           <h1>Source code for cyto_dl.nn.vits.seg</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
@@ -408,17 +408,20 @@
 <div class="viewcode-block" id="SupperresDecoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SupperresDecoder">[docs]</a><span class="k">class</span> <span class="nc">SupperresDecoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">num_patches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
         <span class="n">base_patch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
         <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
         <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">n_decoder_filters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
         <span class="n">out_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
-        <span class="n">upsample_factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.6134</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">],</span>
+        <span class="n">upsample_factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.6134</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        spatial_dims: Optional[int]=3</span>
+<span class="sd">            Number of spatial dimensions</span>
 <span class="sd">        num_patches: Optional[List[int]]=[2, 32, 32]</span>
 <span class="sd">            Number of patches in each dimension (ZYX) order</span>
 <span class="sd">        base_patch_size: Optional[List[int]]=[16, 16, 16]</span>
@@ -432,7 +435,7 @@
 <span class="sd">        out_channels: Optional[int] =6</span>
 <span class="sd">            Number of output channels in convolutional decoder. Should be 6 for instance segmentation.</span>
 <span class="sd">        upsample_factor:Optional[List[int]] = [2.6134, 2.5005, 2.5005]</span>
-<span class="sd">            Upsampling factor for each dimension (ZYX) order. Default is AICS 20x to 100x object upsampling</span>
+<span class="sd">            Upsampling factor for each dimension (ZYX) order. Default is AICS 20x to 100x objective upsampling</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -444,7 +447,7 @@
                 <span class="n">num_channels</span> <span class="o">=</span> <span class="mi">16</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lr_conv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">UnetResBlock</span><span class="p">(</span>
-                    <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                    <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
                     <span class="n">in_channels</span><span class="o">=</span><span class="n">num_channels</span><span class="p">,</span>
                     <span class="n">out_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                     <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -458,7 +461,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upsampler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
             <span class="n">UpSample</span><span class="p">(</span>
-                <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                 <span class="n">scale_factor</span><span class="o">=</span><span class="n">upsample_factor</span><span class="p">,</span>
@@ -466,7 +469,7 @@
                 <span class="n">interp_mode</span><span class="o">=</span><span class="s2">&quot;trilinear&quot;</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">UnetResBlock</span><span class="p">(</span>
-                <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                 <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -475,7 +478,7 @@
                 <span class="n">dropout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">UnetOutBlock</span><span class="p">(</span>
-                <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
                 <span class="n">in_channels</span><span class="o">=</span><span class="n">n_decoder_filters</span><span class="p">,</span>
                 <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span>
                 <span class="n">dropout</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -485,15 +488,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-            <span class="s2">&quot;(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) -&gt;  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
-            <span class="n">n_patch_z</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">n_patch_y</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">n_patch_x</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">patch_size_z</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">patch_size_y</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">patch_size_x</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
+                <span class="s2">&quot;(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) -&gt;  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
+                <span class="n">n_patch_z</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">n_patch_y</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">n_patch_x</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="n">patch_size_z</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">patch_size_y</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">patch_size_x</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
+                <span class="s2">&quot;(n_patch_y n_patch_x) b (c patch_size_y patch_size_x) -&gt;  b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
+                <span class="n">n_patch_y</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">n_patch_x</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">patch_size_y</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">patch_size_x</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">)</span>
 
 <div class="viewcode-block" id="SupperresDecoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SupperresDecoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">):</span>
         <span class="c1"># remove global feature</span>
@@ -515,6 +527,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">num_patches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
         <span class="n">base_patch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span>
         <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">768</span><span class="p">,</span>
@@ -526,10 +539,13 @@
         <span class="n">mask_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
         <span class="n">upsample_factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.6134</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">,</span> <span class="mf">2.5005</span><span class="p">],</span>
         <span class="n">encoder_ckpt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">freeze_encoder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        spatial_dims: Optional[int]=3</span>
+<span class="sd">            Number of spatial dimensions</span>
 <span class="sd">        num_patches: Optional[List[int]]=[2, 32, 32]</span>
 <span class="sd">            Number of patches in each dimension (ZYX) order</span>
 <span class="sd">        base_patch_size: Optional[List[int]]=[16, 16, 16]</span>
@@ -554,14 +570,25 @@
 <span class="sd">            Path to pretrained ViT backbone checkpoint</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
+        <span class="k">assert</span> <span class="n">spatial_dims</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_patches</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">num_patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">num_patches</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+            <span class="n">num_patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">num_patches</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">base_patch_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_patch_size</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+            <span class="n">base_patch_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_patch_size</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upsample_factor</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">upsample_factor</span> <span class="o">=</span> <span class="p">[</span><span class="n">upsample_factor</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">==</span> <span class="n">spatial_dims</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">)</span> <span class="o">==</span> <span class="n">spatial_dims</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">upsample_factor</span><span class="p">)</span> <span class="o">==</span> <span class="n">spatial_dims</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">MAE_Encoder</span><span class="p">(</span>
-            <span class="n">num_patches</span><span class="p">,</span> <span class="n">base_patch_size</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">encoder_layer</span><span class="p">,</span> <span class="n">encoder_head</span><span class="p">,</span> <span class="n">mask_ratio</span>
+            <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
+            <span class="n">num_patches</span><span class="o">=</span><span class="n">num_patches</span><span class="p">,</span>
+            <span class="n">base_patch_size</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">,</span>
+            <span class="n">emb_dim</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
+            <span class="n">num_layer</span><span class="o">=</span><span class="n">encoder_layer</span><span class="p">,</span>
+            <span class="n">num_head</span><span class="o">=</span><span class="n">encoder_head</span><span class="p">,</span>
+            <span class="n">mask_ratio</span><span class="o">=</span><span class="n">mask_ratio</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">encoder_ckpt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">encoder_ckpt</span><span class="p">)</span>
@@ -572,12 +599,12 @@
             <span class="p">}</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">enc_state_dict</span><span class="p">)</span>
-
-        <span class="c1"># freeze encoder</span>
-        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
-            <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">freeze_encoder</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+                <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">SupperresDecoder</span><span class="p">(</span>
+            <span class="n">spatial_dims</span><span class="p">,</span>
             <span class="n">num_patches</span><span class="p">,</span>
             <span class="n">base_patch_size</span><span class="p">,</span>
             <span class="n">emb_dim</span><span class="p">,</span>

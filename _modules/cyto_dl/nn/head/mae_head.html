@@ -417,7 +417,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MAE head is only intended for use during training.&quot;</span><span class="p">)</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_hat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
         <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">out_paths</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
