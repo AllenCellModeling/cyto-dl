@@ -168,7 +168,6 @@ class MultiTaskIm2Im(BaseModel):
 
     def model_step(self, stage, batch, batch_idx):
         # convert monai metatensors to tensors
-        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()

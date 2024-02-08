@@ -66,33 +66,25 @@ class BaseHead(ABC, torch.nn.Module):
     def save_image(self, y_hat, batch, stage, global_step):
         y_hat_out = self._postprocess(y_hat, img_type="prediction")
         y_out, raw_out = None, None
+        filename_map = {"input": [], "output": []}
         # filename is determined by step in training during train/val and by its source filename for prediction/testing
         if stage in ("train", "val"):
             y_out = self._postprocess(batch[self.head_name], img_type="input")
             if self.save_raw:
                 raw_out = self._postprocess(batch[self.x_key], img_type="input")
-        try:
-            metadata_filenames = batch["filenames"]
-            filename_map = {"input": metadata_filenames, "output": []}
-            metadata_filenames = [
-                f"{Path(fn).stem}_{self.head_name}.tif" for fn in metadata_filenames
-            ]
-        except KeyError:
-            raise ValueError("Please ensure your batches have key `filenames`")
-        save_name = (
-            [f"{global_step}_{self.head_name}.tif"]
-            if stage in ("train", "val")
-            else metadata_filenames
-        )
+            save_name = [f"{global_step}_{self.head_name}.tif"]
+        else:
+            filename_map["input"] = batch["filenames"]
+            save_name = [f"{Path(fn).stem}_{self.head_name}.tif" for fn in batch["filenames"]]
         n_save = len(y_hat_out) if stage in ("test", "predict") else 1
         for i in range(n_save):
             out_path = self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
-            filename_map["output"].append(out_path)
             if stage in ("train", "val"):
                 self._save(save_name[i], y_out[i], stage)
                 if self.save_raw:
                     self._save(save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage)
-
+            else:
+                filename_map["output"].append(out_path)
         return y_hat_out, y_out, filename_map
 
     def forward(self, x):
