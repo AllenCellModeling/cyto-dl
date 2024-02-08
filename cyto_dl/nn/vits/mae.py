@@ -50,24 +50,25 @@ class Patchify(torch.nn.Module):
     Convolutional weights are resized to match the `base_patch_size`.
     """
 
-    def __init__(self, base_patch_size, emb_dim, n_patches):
+    def __init__(self, base_patch_size, emb_dim, n_patches, spatial_dims=3):
         super().__init__()
         self.n_patches = np.asarray(n_patches)
         self.weight = torch.nn.Parameter(torch.zeros(emb_dim, 1, *base_patch_size))
-        self.norm = torch.nn.LayerNorm([emb_dim, n_patches[0], n_patches[1], n_patches[2]])
+        self.norm = torch.nn.LayerNorm([emb_dim, *n_patches[:spatial_dims]])
         self.emb_dim = emb_dim
+        self.spatial_dims = spatial_dims
+        self.conv = torch.nn.functional.conv3d if spatial_dims == 3 else torch.nn.functional.conv2d
 
     def resample_weight(self, length):
-        return torch.nn.functional.interpolate(self.weight, size=length, mode="trilinear")
+        return torch.nn.functional.interpolate(self.weight, size=length)
 
     def forward(self, img):
-        # all images in batch assumed to be same resolution
-        patch_size = (np.asarray(img.shape[-3:]) / self.n_patches).astype(int).tolist()
-        tokens = torch.nn.functional.conv3d(
-            img, weight=self.resample_weight(patch_size), stride=patch_size
+        patch_size = (
+            (np.asarray(img.shape[-self.spatial_dims :]) / self.n_patches).astype(int).tolist()
         )
+        tokens = self.conv(img, weight=self.resample_weight(patch_size), stride=patch_size)
         tokens = self.norm(tokens)
-        assert np.all(tokens.shape[-3:] == self.n_patches)
+        assert np.all(tokens.shape[-self.spatial_dims :] == self.n_patches)
         return tokens, patch_size
 
 
@@ -75,6 +76,7 @@ class MAE_Encoder(torch.nn.Module):
     def __init__(
         self,
         num_patches: List[int],
+        spatial_dims: int = 3,
         base_patch_size: List[int] = (16, 16, 16),
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
@@ -86,6 +88,8 @@ class MAE_Encoder(torch.nn.Module):
         ----------
         num_patches: List[int]
             Number of patches in each dimension
+        spatial_dims: int
+            Number of spatial dimensions
         base_patch_size: List[int]
             Size of each patch
         emb_dim: int
@@ -98,24 +102,20 @@ class MAE_Encoder(torch.nn.Module):
             Ratio of patches to mask out
         """
         super().__init__()
-
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
         self.shuffle = PatchShuffle(mask_ratio)
-
-        self.patchify = Patchify(base_patch_size, emb_dim, num_patches)
+        self.patchify = Patchify(base_patch_size, emb_dim, num_patches, spatial_dims)
 
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
         )
 
         self.layer_norm = torch.nn.LayerNorm(emb_dim)
-        self.patch2img = Rearrange(
-            "(n_patch_z n_patch_y n_patch_x) b c ->  b c n_patch_z n_patch_y  n_patch_x",
-            n_patch_z=num_patches[0],
-            n_patch_y=num_patches[1],
-            n_patch_x=num_patches[2],
-        )
+        if spatial_dims == 3:
+            self.img2token = Rearrange("b c z y x -> (z y x) b c")
+        elif spatial_dims == 2:
+            self.img2token = Rearrange("b c y x -> (y x) b c")
 
         self.init_weight()
 
@@ -125,7 +125,7 @@ class MAE_Encoder(torch.nn.Module):
 
     def forward(self, img, do_mask=True):
         patches, patch_size = self.patchify(img)
-        patches = rearrange(patches, "b c z y x -> (z y x) b c")
+        patches = self.img2token(patches)
         patches = patches + self.pos_embedding
 
         backward_indexes = None
@@ -138,7 +138,6 @@ class MAE_Encoder(torch.nn.Module):
         features = rearrange(features, "b t c -> t b c")
         if do_mask:
             return features, backward_indexes, patch_size
-
         return features
 
 
@@ -146,6 +145,7 @@ class MAE_Decoder(torch.nn.Module):
     def __init__(
         self,
         num_patches: List[int],
+        spatial_dims: int = 3,
         base_patch_size: Optional[List[int]] = [4, 8, 8],
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
@@ -166,7 +166,6 @@ class MAE_Decoder(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
 
@@ -177,15 +176,24 @@ class MAE_Decoder(torch.nn.Module):
         self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
         self.num_patches = torch.as_tensor(num_patches)
 
-        self.patch2img = Rearrange(
-            "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-            n_patch_z=num_patches[0],
-            n_patch_y=num_patches[1],
-            n_patch_x=num_patches[2],
-            patch_size_z=base_patch_size[0],
-            patch_size_y=base_patch_size[1],
-            patch_size_x=base_patch_size[2],
-        )
+        if spatial_dims == 3:
+            self.patch2img = Rearrange(
+                "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
+                n_patch_z=num_patches[0],
+                n_patch_y=num_patches[1],
+                n_patch_x=num_patches[2],
+                patch_size_z=base_patch_size[0],
+                patch_size_y=base_patch_size[1],
+                patch_size_x=base_patch_size[2],
+            )
+        elif spatial_dims == 2:
+            self.patch2img = Rearrange(
+                "(n_patch_y n_patch_x) b (c patch_size_y patch_size_x) ->  b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
+                n_patch_y=num_patches[0],
+                n_patch_x=num_patches[1],
+                patch_size_y=base_patch_size[0],
+                patch_size_x=base_patch_size[1],
+            )
 
         self.init_weight()
 
@@ -227,20 +235,20 @@ class MAE_Decoder(torch.nn.Module):
         # patches to image
         img = self.patch2img(patches)
         img = torch.nn.functional.interpolate(
-            img, tuple(torch.as_tensor(patch_size) * self.num_patches), mode="trilinear"
+            img, tuple(torch.as_tensor(patch_size) * self.num_patches)
         )
 
         mask = self.patch2img(mask)
         mask = torch.nn.functional.interpolate(
             mask, tuple(torch.as_tensor(patch_size) * self.num_patches), mode="nearest"
         )
-
         return img, mask
 
 
 class MAE_ViT(torch.nn.Module):
     def __init__(
         self,
+        spatial_dims: int = 3,
         num_patches: Optional[List[int]] = [2, 32, 32],
         base_patch_size: Optional[List[int]] = [16, 16, 16],
         emb_dim: Optional[int] = 768,
@@ -253,6 +261,8 @@ class MAE_ViT(torch.nn.Module):
         """
         Parameters
         ----------
+        spatial_dims: int
+            Number of spatial dimensions
         num_patches: List[int]
             Number of patches in each dimension (ZYX order)
         base_patch_size: List[int]
@@ -270,6 +280,11 @@ class MAE_ViT(torch.nn.Module):
         mask_ratio: float
             Ratio of patches to mask out
         """
+        assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
+        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
+        assert (
+            len(base_patch_size) == spatial_dims
+        ), "base_patch_size must be of length spatial_dims"
 
         super().__init__()
 
@@ -279,10 +294,16 @@ class MAE_ViT(torch.nn.Module):
             base_patch_size = [base_patch_size] * 3
 
         self.encoder = MAE_Encoder(
-            num_patches, base_patch_size, emb_dim, encoder_layer, encoder_head, mask_ratio
+            num_patches,
+            spatial_dims,
+            base_patch_size,
+            emb_dim,
+            encoder_layer,
+            encoder_head,
+            mask_ratio,
         )
         self.decoder = MAE_Decoder(
-            num_patches, base_patch_size, emb_dim, decoder_layer, decoder_head
+            num_patches, spatial_dims, base_patch_size, emb_dim, decoder_layer, decoder_head
         )
 
     def forward(self, img):
