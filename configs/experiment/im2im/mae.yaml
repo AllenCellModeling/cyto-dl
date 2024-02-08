@@ -19,7 +19,6 @@ run_name: YOUR_RUN_NAME
 
 # only source_col is needed for masked autoencoder
 source_col: raw
-# only 3d MAE is currently supported
 spatial_dims: 3
 raw_im_channels: 1
 
@@ -33,6 +32,6 @@ data:
   batch_size: 1
   _aux:
     # 2D
-    # patch_shape: [64, 64]
+    # patch_shape: [16, 16]
     # 3D
-    patch_shape: [16, 32, 32]
+    patch_shape: [16, 16, 16]

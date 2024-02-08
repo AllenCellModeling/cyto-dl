@@ -19,7 +19,10 @@ class MAEHead(BaseHead):
         else:
             raise ValueError("MAE head is only intended for use during training.")
         loss = (batch[self.head_name] - y_hat) ** 2
-        loss = loss[mask.bool()].mean()
+        if mask.sum() > 0:
+            loss = loss[mask.bool()].mean()
+        else:
+            loss = loss.mean()
 
         y_hat_out, y_out, out_paths = None, None, None
         if save_image:
