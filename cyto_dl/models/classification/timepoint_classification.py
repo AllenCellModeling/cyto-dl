@@ -52,9 +52,9 @@ class TimepointClassification(Classification):
                 logits,
                 name=f"{batch['track_id'].cpu().item()}",
             )
-        track_midpoint = preds.shape[0] // 2
-        track_start = batch["track_start"].cpu().item()
-        track_id = batch["track_id"].cpu().item()
+
+        timepoints = np.array(batch["timepoints"][0][1:-1].split(",")).astype(int)
+        track_midpoint = (timepoints[0] + timepoints[-1]) // 2
 
         # breakdowns are transitions from interphase (0) to mitotic (1)
         breakdowns = find_indices(preds, [0, 1])
@@ -66,23 +66,24 @@ class TimepointClassification(Classification):
         if formations.size == 0:
             formation = -1
         else:
-            # when multiple formations present, take first
-            formation = np.min(formations)
+            # when multiple formations present, take first, indexing into timepoints
+            formation = timepoints[np.min(formations)]
             # formation should occur in the first half of the track
             formation = formation if formation < track_midpoint else -1
 
         if breakdowns.size == 0:
             breakdown = -1
         else:
-            # when multiple breakdowns present, take last
-            breakdown = np.max(breakdowns)
+            # when multiple breakdowns present, take last, indexing into timepoints
+            breakdown = timepoints[np.max(breakdowns)]
             # breakdown should occur in the second half of the track
             breakdown = breakdown if breakdown > track_midpoint else -1
 
         predictions = {
-            "track_id": track_id,
-            "formation": formation + track_start if formation >= 0 else -1,
-            "breakdown": breakdown + track_start if breakdown >= 0 else -1,
+            "track_id": batch["track_id"].cpu().item(),
+            "formation": formation,
+            "breakdown": breakdown,
+            "timepoints": timepoints,
         }
 
         return predictions
