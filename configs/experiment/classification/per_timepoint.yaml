@@ -19,12 +19,8 @@ seed: 12345
 experiment_name: breakdown_classification
 run_name: single_timepoint
 persist_cache: False
-ckpt_path: "//allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/cyto-dl/logs/train/runs/breakdown_classification/single_timepoint/2024-02-05_13-00-47/checkpoints/epoch_109.ckpt"
+ckpt_path:
 
 trainer:
   max_epochs: 130
   check_val_every_n_epoch: 10
-
-data:
-  path: //allen/aics/assay-dev/users/Benji/hydra_workflow/all_nucmorph/5/formation_breakdown
-  cache_dir: /storage/benji.the.kid/cache/formation_breakdown
