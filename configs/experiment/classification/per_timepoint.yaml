@@ -4,8 +4,8 @@
 # python train.py experiment=example
 
 defaults:
-  - override /data: classification/normal.yaml
-  - override /model: classification/breakdown_classification_transformer.yaml
+  - override /data: classification/single_timepoint.yaml
+  - override /model: classification/single_timepoint.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
   - override /logger: mlflow.yaml
@@ -17,11 +17,10 @@ tags: ["dev"]
 seed: 12345
 
 experiment_name: breakdown_classification
-run_name: add_shift_aug
+run_name: single_timepoint
 persist_cache: False
 ckpt_path:
 
 trainer:
   max_epochs: 130
   check_val_every_n_epoch: 10
-  gradient_clip_val: 10.0

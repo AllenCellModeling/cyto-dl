@@ -55,58 +55,6 @@ class GenerateTrackLabels(Transform):
         return img_dict
 
 
-class TrackCrop(RandomizableTransform):
-    """Transform to randomly crop track to first n or last n timepoints."""
-
-    def __init__(
-        self,
-        img_key: str = "img",
-        label_key: str = "label",
-        p_first: float = 0.15,
-        p_last: float = 0.1,
-        percentage=[0.2, 0.7],
-        max_crop_length: int = 20,
-    ):
-        """
-        Parameters
-        ----------
-        img_key: str
-            Key with image
-        p_first: float
-            Probability of cropping to start of track
-        p_last: float
-            Probability of cropping to end of track
-        percentage: list
-            Range of percentages of track length to crop
-        max_crop_length: int
-            Maximum number of timepoints to crop
-        """
-        super().__init__()
-        self.img_key = img_key
-        self.label_key = label_key
-        self.p_first = p_first
-        self.p_last = p_last
-        self.percentage = np.array(percentage)
-        self.max_crop_length = max_crop_length
-
-    def __call__(self, img_dict):
-        new_im_dict = copy.deepcopy(img_dict)
-        new_im = img_dict[self.img_key]
-
-        # randomly select number of timepoints between percentage range of track length
-        n = self.R.randint(*(self.percentage * new_im.shape[0]).astype(int), size=1)[0]
-        n = min(self.max_crop_length, n)
-        # crop to start of track
-        if self.R.random() < self.p_first:
-            new_im_dict[self.img_key] = new_im[:n]
-            new_im_dict[self.label_key] = new_im_dict[self.label_key][:n]
-        # crop to end of track
-        elif self.R.random() < self.p_last:
-            new_im_dict[self.img_key] = new_im[-n:]
-            new_im_dict[self.label_key] = new_im_dict[self.label_key][-n:]
-        return new_im_dict
-
-
 class PerChannel(Transform):
     """Transform to apply same transform to each channel of image."""
 
@@ -179,3 +127,24 @@ class CropResize(RandomizableTransform):
                 resized_movie.append(im)
             new_im_dict[key] = torch.stack(resized_movie)
         return new_im_dict
+
+
+class SplitTrackd(Transform):
+    def __init__(self, img_key: str = "img", label_key: str = "label"):
+        """
+        Parameters
+        ----------
+        img_key: str
+            Key with image
+        label_key: str
+            Key with label
+        """
+        super().__init__()
+        self.img_key = img_key
+        self.label_key = label_key
+
+    def __call__(self, img_dict):
+        return [
+            {self.img_key: img.unsqueeze(0), self.label_key: label}
+            for img, label in zip(img_dict[self.img_key], img_dict[self.label_key])
+        ]

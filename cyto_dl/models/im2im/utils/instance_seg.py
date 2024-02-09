@@ -10,17 +10,10 @@ from monai.data import MetaTensor
 from monai.losses import TverskyLoss
 from monai.transforms import Flip, RandomizableTransform, Transform
 from omegaconf import ListConfig
-from scipy.ndimage import find_objects, label
+from scipy.ndimage import binary_dilation, binary_erosion, find_objects, label
 from scipy.spatial import KDTree
 from skimage.filters import gaussian
-from skimage.morphology import (
-    ball,
-    dilation,
-    disk,
-    erosion,
-    remove_small_objects,
-    skeletonize,
-)
+from skimage.morphology import ball, disk, remove_small_objects, skeletonize
 from skimage.segmentation import find_boundaries, relabel_sequential
 from tqdm import tqdm
 
@@ -85,7 +78,7 @@ class InstanceSegPreprocessd(Transform):
             if coords is None:
                 continue
             # add 1 pix boundary to prevent "ball + stick" artifacts
-            coords = pad_slice(coords, 1, im.shape)
+            coords = pad_slice(coords, 2, im.shape)
             skel[coords] += self.topology_preserving_thinning(im[coords] == lab)
         return skel * im  # relabel shrunk object
 
@@ -116,8 +109,9 @@ class InstanceSegPreprocessd(Transform):
 
         Use skeleton to bridge gaps created by erosion.
         """
-        selem = ball(self.thin)[:: int(self.anisotropy[0])] if self.dim == 3 else disk(self.thin)
-        eroded = erosion(bw, selem)
+        # NOTE - keeping every self.thin slices does not maintain self.anisotropy ( keeping every self.anisotropy slices would). In practice, keeping every self.anisotropy slices is slower and favors z-gradients over xy.
+        selem = ball(self.thin)[:: self.thin] if self.dim == 3 else disk(self.thin)
+        eroded = binary_erosion(bw, selem, border_value=1)
         # only want to preserve connections between significantly-sized objects
 
         eroded = remove_small_objects(eroded, min_size)
@@ -130,7 +124,6 @@ class InstanceSegPreprocessd(Transform):
 
         if max_label == 0:
             return skel
-
         # if erosion separates object into multiple pieces, use skeleton to bridge those pieces into single object
         # 1. isolate pieces of skeleton that are outside of eroded objects (i.e. could bridge between objects)
         skel[eroded != 0] = 0
@@ -139,12 +132,12 @@ class InstanceSegPreprocessd(Transform):
         for i in np.unique(skel)[1:]:
             # 3. find number of non-background objects overlapped by piece of skeleton, add back in pieces that overlap multiple obj
             dilation_selem = np.expand_dims(disk(3), 0)
-            dilated_skel = dilation(skel == i, dilation_selem)
+            dilated_skel = binary_dilation(skel == i, dilation_selem)
             n_obj_masked = np.sum(np.unique(eroded[dilated_skel]) > 0)
             if n_obj_masked > 1:
                 eroded += dilated_skel
         # make sure dilated skeleton is within object bounds by 1 pix so vectors can point to it
-        one_erode = erosion(bw)
+        one_erode = binary_erosion(bw, border_value=1)
         eroded[one_erode == 0] = 0
         return eroded > 0
 
