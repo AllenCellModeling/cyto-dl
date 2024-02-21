@@ -8,7 +8,7 @@ from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
 from torchmetrics import MeanMetric
 
-from cyto_dl.models.base_model import BaseModel
+from cyto_dl.models.im2im.multi_task import MultiTaskIm2Im
 
 _DEFAULT_METRICS = {
     "train/loss/discriminator_loss": MeanMetric(),
@@ -23,7 +23,7 @@ _DEFAULT_METRICS = {
 }
 
 
-class GAN(BaseModel):
+class GAN(MultiTaskIm2Im):
     """Basic GAN model."""
 
     def __init__(
@@ -64,23 +64,19 @@ class GAN(BaseModel):
         """
 
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
-        super().__init__(metrics=metrics, **base_kwargs)
+        super().__init__(
+            metrics=metrics, backbone=backbone, task_heads=task_heads, x_key=x_key, **base_kwargs
+        )
         self.automatic_optimization = False
-        for stage in ("train", "val", "test", "predict"):
-            (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
         if compile is True and not sys.platform.startswith("win"):
-            self.backbone = torch.compile(backbone)
             self.discriminator = torch.compile(discriminator)
-            self.task_heads = torch.nn.ModuleDict(
-                {k: torch.compile(v) for k, v in task_heads.items()}
-            )
         else:
-            self.backbone = backbone
             self.discriminator = discriminator
-            self.task_heads = torch.nn.ModuleDict(task_heads)
 
         assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
+        self.inference_heads = list(self.task_heads.keys())
+
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
@@ -111,10 +107,6 @@ class GAN(BaseModel):
             for task in run_heads
         }
 
-    def forward(self, x, run_heads):
-        z = self.backbone(x)
-        return {task: self.task_heads[task](z) for task in run_heads}
-
     def _inference_forward(self, batch, stage, save_image, run_heads):
         """during inference, we need to calculate per-fov loss/metrics/postprocessing.
 
@@ -143,31 +135,6 @@ class GAN(BaseModel):
             for head_name, head in self.task_heads.items()
         }
 
-    def run_forward(self, batch, stage, save_image, run_heads):
-        if stage in ("train", "val"):
-            return self._train_forward(batch, stage, save_image, run_heads)
-        return self._inference_forward(batch, stage, save_image, run_heads)
-
-    def should_save_image(self, batch_idx, stage):
-        return stage in ("test", "predict") or (
-            batch_idx == 0  # noqa: FURB124
-            and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
-        )
-
-    def _sum_losses(self, losses):
-        summ = 0
-        for k, v in losses.items():
-            summ += v
-        losses["loss"] = summ
-        return losses
-
-    def _get_run_heads(self, batch, stage):
-        if stage not in ("test", "predict"):
-            run_heads = [key for key in self.task_heads.keys() if key in batch]
-        else:
-            run_heads = list(self.task_heads.keys())
-        return run_heads
-
     def _extract_loss(self, outs, loss_type):
         loss = {
             f"{head_name}_{loss_type}": head_result[loss_type]
@@ -176,13 +143,8 @@ class GAN(BaseModel):
         return self._sum_losses(loss)
 
     def model_step(self, stage, batch, batch_idx):
-        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
-        # convert monai metatensors to tensors
-        for k, v in batch.items():
-            if isinstance(v, MetaTensor):
-                batch[k] = v.as_tensor()
-
-        run_heads = self._get_run_heads(batch, stage)
+        run_heads, _ = self._get_run_heads(batch, stage, batch_idx)
+        batch = self._to_tensor(batch)
         outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
 
         loss_D = self._extract_loss(outs, "loss_D")
@@ -213,20 +175,10 @@ class GAN(BaseModel):
         return loss_dict, None, None
 
     def predict_step(self, batch, batch_idx):
-        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
-        # convert monai metatensors to tensors
-        for k, v in batch.items():
-            if isinstance(v, MetaTensor):
-                batch[k] = v.as_tensor()
         stage = "predict"
-        run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        # create input-> per head output mapping
-        io_map = {}
-        for head, output in outs.items():
-            head_io_map = output["save_path"]
-            for in_file, out_file in zip(head_io_map["input"], head_io_map["output"]):
-                if in_file not in io_map:
-                    io_map[in_file] = {}
-                io_map[in_file][head] = out_file
+        run_heads, io_map = self._get_run_heads(batch, stage, batch_idx)
+        if len(run_heads) > 0:
+            batch = self._to_tensor(batch)
+            save_image = self.should_save_image(batch_idx, stage)
+            self.run_forward(batch, stage, save_image, run_heads)
         return io_map
