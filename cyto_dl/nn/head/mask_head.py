@@ -13,7 +13,7 @@ class MaskHead(BaseHead):
         mask_key: str = "mask",
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
-        save_raw=False,
+        save_input=False,
     ):
         """
         Parameters
@@ -24,7 +24,7 @@ class MaskHead(BaseHead):
             Postprocessing for `input` and `predictions` of head
         calculate_metric=False
             Whether to calculate a metric during training. Not used by GAN head.
-        save_raw=False
+        save_input=False
             Whether to save out example input images during training
         """
         super().__init__()
@@ -34,7 +34,7 @@ class MaskHead(BaseHead):
         self.mask_key = mask_key
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
-        self.save_raw = save_raw
+        self.save_input = save_input
 
     def _calculate_loss(self, y_hat, y, mask):
         return self.loss(y_hat, y, mask)
@@ -61,17 +61,12 @@ class MaskHead(BaseHead):
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name], batch[self.mask_key])
 
-        y_hat_out, y_out, out_paths = None, None, None
+        y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
 
-        metric = None
-        if self.calculate_metric and stage in ("val", "test"):
-            metric = self._calculate_metric(y_hat, batch[self.head_name])
         return {
             "loss": loss,
-            "metric": metric,
             "y_hat_out": y_hat_out,
             "y_out": y_out,
-            "save_path": out_paths,
         }
