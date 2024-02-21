@@ -1,0 +1,44 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=example
+defaults:
+  - override /data: im2im/gan_superres.yaml
+  - override /model: im2im/gan_superres.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: [dev]
+seed: 12345
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+# for synthetic image generation, our source is a segmentation and we are predicting a raw image
+source_col: seg
+target_col: raw
+spatial_dims: 3
+raw_im_channels: 1
+
+trainer:
+  max_epochs: 100
+
+data:
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  subsample:
+  batch_size: 1
+  _aux:
+    # 2D
+    # patch_shape: [64, 64]
+    # 3D
+    patch_shape: [16, 32, 32]
+
+callbacks:
+  model_checkpoint:
+    monitor: val/loss/generator_loss
+
+  early_stopping:
+    monitor: val/loss/generator_loss
