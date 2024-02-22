@@ -6,7 +6,7 @@ groups = ["default", "all", "docs", "equiv", "pcloud", "s3", "spharm", "test", "
 cross_platform = false
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:c392677f3db2f3745ea6275db9235c2d1c74568ca72edc636c8237f1a30a717e"
+content_hash = "sha256:c90aefee5ab3fe56c13f803b43b106b586bad6483a7acd815767b87e85b7330c"
 
 [[package]]
 name = "aicscytoparam"
@@ -199,7 +199,7 @@ files = [
 
 [[package]]
 name = "anyio"
-version = "4.2.0"
+version = "4.3.0"
 requires_python = ">=3.8"
 summary = "High level compatibility layer for multiple asynchronous event loop implementations"
 dependencies = [
@@ -209,8 +209,8 @@ dependencies = [
     "typing-extensions>=4.1; python_version < \"3.11\"",
 ]
 files = [
-    {file = "anyio-4.2.0-py3-none-any.whl", hash = "sha256:745843b39e829e108e518c489b31dc757de7d2131d53fac32bd8df268227bfee"},
-    {file = "anyio-4.2.0.tar.gz", hash = "sha256:e1875bb4b4e2de1669f4bc7869b6d3f54231cdced71605e6e64c9be77e3be50f"},
+    {file = "anyio-4.3.0-py3-none-any.whl", hash = "sha256:048e05d0f6caeed70d731f3db756d35dcc1f35747c8c403364a8332c630441b8"},
+    {file = "anyio-4.3.0.tar.gz", hash = "sha256:f75253795a87df48568485fd18cdd2a3fa5c4f7c5be8e5e36637733fce06fed6"},
 ]
 
 [[package]]
@@ -435,7 +435,7 @@ files = [
 
 [[package]]
 name = "cliff"
-version = "4.5.0"
+version = "4.6.0"
 requires_python = ">=3.8"
 summary = "Command Line Interface Formulation Framework"
 dependencies = [
@@ -446,8 +446,8 @@ dependencies = [
     "stevedore>=2.0.1",
 ]
 files = [
-    {file = "cliff-4.5.0-py3-none-any.whl", hash = "sha256:0cb50f41e13fb90d32e5a66969966427cbbef98ef397cef4eb78bfad52ef747c"},
-    {file = "cliff-4.5.0.tar.gz", hash = "sha256:61beeac238530beb3ae19eefb421b8b290b97dcc9efee01fc32fe62fb75a31d9"},
+    {file = "cliff-4.6.0-py3-none-any.whl", hash = "sha256:58a90e87738b9a7df672a5f9627bcd668564d01d8e567170dfe2d3a0026adb31"},
+    {file = "cliff-4.6.0.tar.gz", hash = "sha256:2f38ce8bd1ea4958d66f15b066ac47e65d61f600b9319b921e12e9e9cbcd99d0"},
 ]
 
 [[package]]
@@ -527,27 +527,27 @@ files = [
 
 [[package]]
 name = "coverage"
-version = "7.4.1"
+version = "7.4.2"
 requires_python = ">=3.8"
 summary = "Code coverage measurement for Python"
 files = [
-    {file = "coverage-7.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:869b5046d41abfea3e381dd143407b0d29b8282a904a19cb908fa24d090cc018"},
-    {file = "coverage-7.4.1.tar.gz", hash = "sha256:1ed4b95480952b1a26d863e546fa5094564aa0065e1e5f0d4d0041f293251d04"},
+    {file = "coverage-7.4.2-cp310-cp310-win_amd64.whl", hash = "sha256:7df95fdd1432a5d2675ce630fef5f239939e2b3610fe2f2b5bf21fa505256fa3"},
+    {file = "coverage-7.4.2.tar.gz", hash = "sha256:1a5ee18e3a8d766075ce9314ed1cb695414bae67df6a4b0805f5137d93d6f1cb"},
 ]
 
 [[package]]
 name = "coverage"
-version = "7.4.1"
+version = "7.4.2"
 extras = ["toml"]
 requires_python = ">=3.8"
 summary = "Code coverage measurement for Python"
 dependencies = [
-    "coverage==7.4.1",
+    "coverage==7.4.2",
     "tomli; python_full_version <= \"3.11.0a6\"",
 ]
 files = [
-    {file = "coverage-7.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:869b5046d41abfea3e381dd143407b0d29b8282a904a19cb908fa24d090cc018"},
-    {file = "coverage-7.4.1.tar.gz", hash = "sha256:1ed4b95480952b1a26d863e546fa5094564aa0065e1e5f0d4d0041f293251d04"},
+    {file = "coverage-7.4.2-cp310-cp310-win_amd64.whl", hash = "sha256:7df95fdd1432a5d2675ce630fef5f239939e2b3610fe2f2b5bf21fa505256fa3"},
+    {file = "coverage-7.4.2.tar.gz", hash = "sha256:1a5ee18e3a8d766075ce9314ed1cb695414bae67df6a4b0805f5137d93d6f1cb"},
 ]
 
 [[package]]
@@ -718,15 +718,15 @@ files = [
 
 [[package]]
 name = "edt"
-version = "2.3.2"
+version = "2.4.0"
 requires_python = ">=3.7,<4"
 summary = "Multi-Label Anisotropic Euclidean Distance Transform 3D"
 dependencies = [
     "numpy",
 ]
 files = [
-    {file = "edt-2.3.2-cp310-cp310-win_amd64.whl", hash = "sha256:2d22e7fe48c66159bae3570000ff4dfe6972c543a2cab3348b5ce0dfeecfb26f"},
-    {file = "edt-2.3.2.tar.gz", hash = "sha256:c975c5b2591e149dfc84350c508e37792ad75fc52746d4eb1b91e21f3a4f4a1f"},
+    {file = "edt-2.4.0-cp310-cp310-win_amd64.whl", hash = "sha256:5f2b4f629f70a589aa5366bf5da1c0ea8bcb6219d92a35a3c52e4235435739a0"},
+    {file = "edt-2.4.0.tar.gz", hash = "sha256:1c0bd88ab81a22cf01d0b53d6a0b584e56301a14658318a9b41bd636fc5e03cf"},
 ]
 
 [[package]]
@@ -741,12 +741,12 @@ files = [
 
 [[package]]
 name = "elementpath"
-version = "4.2.1"
+version = "4.3.0"
 requires_python = ">=3.8"
 summary = "XPath 1.0/2.0/3.0/3.1 parsers and selectors for ElementTree and lxml"
 files = [
-    {file = "elementpath-4.2.1-py3-none-any.whl", hash = "sha256:bbb05220460fc5ac6c3687a0f70870a80e457c61d1c547e1430bac931aa2fe0a"},
-    {file = "elementpath-4.2.1.tar.gz", hash = "sha256:2afd3839732b60854946928f413d6ae869d0a2071c6fcfd5d2cf8937688e0b24"},
+    {file = "elementpath-4.3.0-py3-none-any.whl", hash = "sha256:ecc885f2bb5bd5322fd68ace071f134a8fabf05f0019d77c638b906b844f6593"},
+    {file = "elementpath-4.3.0.tar.gz", hash = "sha256:8d25db9150f5a6aa978c9f58e607fcd5ab6e6e3017140563439a9884ab1eb304"},
 ]
 
 [[package]]
@@ -855,13 +855,13 @@ files = [
 
 [[package]]
 name = "fonttools"
-version = "4.48.1"
+version = "4.49.0"
 requires_python = ">=3.8"
 summary = "Tools to manipulate font files"
 files = [
-    {file = "fonttools-4.48.1-cp310-cp310-win_amd64.whl", hash = "sha256:f7449493886da6a17472004d3818cc050ba3f4a0aa03fb47972e4fa5578e6703"},
-    {file = "fonttools-4.48.1-py3-none-any.whl", hash = "sha256:e3e33862fc5261d46d9aae3544acb36203b1a337d00bdb5d3753aae50dac860e"},
-    {file = "fonttools-4.48.1.tar.gz", hash = "sha256:8b8a45254218679c7f1127812761e7854ed5c8e34349aebf581e8c9204e7495a"},
+    {file = "fonttools-4.49.0-cp310-cp310-win_amd64.whl", hash = "sha256:1fac1b7eebfce75ea663e860e7c5b4a8831b858c17acd68263bc156125201abf"},
+    {file = "fonttools-4.49.0-py3-none-any.whl", hash = "sha256:af281525e5dd7fa0b39fb1667b8d5ca0e2a9079967e14c4bfe90fd1cd13e0f18"},
+    {file = "fonttools-4.49.0.tar.gz", hash = "sha256:ebf46e7f01b7af7861310417d7c49591a85d99146fc23a5ba82fdb28af156321"},
 ]
 
 [[package]]
@@ -934,11 +934,12 @@ files = [
 
 [[package]]
 name = "future"
-version = "0.18.3"
+version = "1.0.0"
 requires_python = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Clean single-source support for Python 3 and 2"
 files = [
-    {file = "future-0.18.3.tar.gz", hash = "sha256:34a17436ed1e96697a86f9de3d15a3b0be01d8bc8de9c1dffd59fb8234ed5307"},
+    {file = "future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216"},
+    {file = "future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05"},
 ]
 
 [[package]]
@@ -969,15 +970,15 @@ files = [
 
 [[package]]
 name = "gitpython"
-version = "3.1.41"
+version = "3.1.42"
 requires_python = ">=3.7"
 summary = "GitPython is a Python library used to interact with Git repositories"
 dependencies = [
     "gitdb<5,>=4.0.1",
 ]
 files = [
-    {file = "GitPython-3.1.41-py3-none-any.whl", hash = "sha256:c36b6634d069b3f719610175020a9aed919421c87552185b085e04fbbdb10b7c"},
-    {file = "GitPython-3.1.41.tar.gz", hash = "sha256:ed66e624884f76df22c8e16066d567aaa5a37d5b5fa19db2c6df6f7156db9048"},
+    {file = "GitPython-3.1.42-py3-none-any.whl", hash = "sha256:1bf9cd7c9e7255f77778ea54359e54ac22a72a5b51288c457c881057b7bb9ecd"},
+    {file = "GitPython-3.1.42.tar.gz", hash = "sha256:2d99869e0fef71a73cbd242528105af1d6c1b108c60dfabd994bf292f76c3ceb"},
 ]
 
 [[package]]
@@ -1433,7 +1434,7 @@ files = [
 
 [[package]]
 name = "matplotlib"
-version = "3.7.4"
+version = "3.7.5"
 requires_python = ">=3.8"
 summary = "Python plotting package"
 dependencies = [
@@ -1448,8 +1449,8 @@ dependencies = [
     "python-dateutil>=2.7",
 ]
 files = [
-    {file = "matplotlib-3.7.4-cp310-cp310-win_amd64.whl", hash = "sha256:3fa193286712c3b6c3cfa5fe8a6bb563f8c52cc750006c782296e0807ce5e799"},
-    {file = "matplotlib-3.7.4.tar.gz", hash = "sha256:7cd4fef8187d1dd0d9dcfdbaa06ac326d396fb8c71c647129f0bf56835d77026"},
+    {file = "matplotlib-3.7.5-cp310-cp310-win_amd64.whl", hash = "sha256:f098ffbaab9df1e3ef04e5a5586a1e6b1791380698e84938d8640961c79b1fc0"},
+    {file = "matplotlib-3.7.5.tar.gz", hash = "sha256:1e5c971558ebc811aa07f54c7b7c677d78aa518ef4c390e14673a09e0860184a"},
 ]
 
 [[package]]
@@ -1510,7 +1511,7 @@ files = [
 
 [[package]]
 name = "monai-weekly"
-version = "1.4.dev2406"
+version = "1.4.dev2407"
 requires_python = ">=3.8"
 summary = "AI Toolkit for Healthcare Imaging"
 dependencies = [
@@ -1518,8 +1519,8 @@ dependencies = [
     "torch>=1.9",
 ]
 files = [
-    {file = "monai-weekly-1.4.dev2406.tar.gz", hash = "sha256:1b9a2e7b372f443d2f364e07036597e4ceb1922162b742ddce67e7099a324675"},
-    {file = "monai_weekly-1.4.dev2406-py3-none-any.whl", hash = "sha256:5de750a0b612b599cb35401eb954dda75800809529cc22fe3c6a2e5ae4f60eac"},
+    {file = "monai-weekly-1.4.dev2407.tar.gz", hash = "sha256:9321dfb0390ed3aca01a45e213df782bbd79eccc4bb3dd7d7007fff2b106f75d"},
+    {file = "monai_weekly-1.4.dev2407-py3-none-any.whl", hash = "sha256:5a594df7c826df28082c3ebe09c3ecf8dcee6e03ef2c59c7244cd37e7a2674b0"},
 ]
 
 [[package]]
@@ -1620,17 +1621,17 @@ files = [
 
 [[package]]
 name = "ome-types"
-version = "0.4.5"
+version = "0.5.0"
 requires_python = ">=3.7"
 summary = "Python dataclasses for the OME data model"
 dependencies = [
     "pydantic-compat>=0.1.0",
     "pydantic>=1.9.0",
-    "xsdata>=23.5",
+    "xsdata<25,>=23.6",
 ]
 files = [
-    {file = "ome_types-0.4.5-py3-none-any.whl", hash = "sha256:002650fb7f4577a5519e657659383c8e5b56df256cb1bd96b9c84f3750d86c90"},
-    {file = "ome_types-0.4.5.tar.gz", hash = "sha256:5027dca479ed23f60035e7b097a745db7de029cc6034a2a2eb39a29848eff3f3"},
+    {file = "ome_types-0.5.0-py3-none-any.whl", hash = "sha256:7109d2e986dd9f2c6496703f3895afbccdc65d629b2aa40458a0279607b9566f"},
+    {file = "ome_types-0.5.0.tar.gz", hash = "sha256:c34d5f2523e495abf9f2470d2f0d1d5cf9f7c1bc3d4c550bef549a99878d6a53"},
 ]
 
 [[package]]
@@ -1830,7 +1831,7 @@ files = [
 
 [[package]]
 name = "pooch"
-version = "1.8.0"
+version = "1.8.1"
 requires_python = ">=3.7"
 summary = "\"Pooch manages your Python library's sample data files: it automatically downloads and stores them in a local directory, with support for versioning and corruption checks.\""
 dependencies = [
@@ -1839,21 +1840,21 @@ dependencies = [
     "requests>=2.19.0",
 ]
 files = [
-    {file = "pooch-1.8.0-py3-none-any.whl", hash = "sha256:1bfba436d9e2ad5199ccad3583cca8c241b8736b5bb23fe67c213d52650dbb66"},
-    {file = "pooch-1.8.0.tar.gz", hash = "sha256:f59981fd5b9b5d032dcde8f4a11eaa492c2ac6343fae3596a2fdae35fc54b0a0"},
+    {file = "pooch-1.8.1-py3-none-any.whl", hash = "sha256:6b56611ac320c239faece1ac51a60b25796792599ce5c0b1bb87bf01df55e0a9"},
+    {file = "pooch-1.8.1.tar.gz", hash = "sha256:27ef63097dd9a6e4f9d2694f5cfbf2f0a5defa44fccafec08d601e731d746270"},
 ]
 
 [[package]]
 name = "prettytable"
-version = "3.9.0"
+version = "3.10.0"
 requires_python = ">=3.8"
 summary = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
 dependencies = [
     "wcwidth",
 ]
 files = [
-    {file = "prettytable-3.9.0-py3-none-any.whl", hash = "sha256:a71292ab7769a5de274b146b276ce938786f56c31cf7cea88b6f3775d82fe8c8"},
-    {file = "prettytable-3.9.0.tar.gz", hash = "sha256:f4ed94803c23073a90620b201965e5dc0bccf1760b7a7eaf3158cab8aaffdf34"},
+    {file = "prettytable-3.10.0-py3-none-any.whl", hash = "sha256:6536efaf0757fdaa7d22e78b3aac3b69ea1b7200538c2c6995d649365bddab92"},
+    {file = "prettytable-3.10.0.tar.gz", hash = "sha256:9665594d137fb08a1117518c25551e0ede1687197cf353a4fdc78d27e1073568"},
 ]
 
 [[package]]
@@ -2043,13 +2044,13 @@ files = [
 
 [[package]]
 name = "pyshtools"
-version = "4.11.10"
+version = "4.10.3"
 requires_python = ">=3.6"
 summary = "SHTOOLS - Spherical Harmonic Tools"
 dependencies = [
     "astropy>=4.0",
     "matplotlib>=3.3",
-    "numpy",
+    "numpy>=1.24.3",
     "pooch>=1.1",
     "requests",
     "scipy>=0.14.0",
@@ -2057,7 +2058,8 @@ dependencies = [
     "xarray",
 ]
 files = [
-    {file = "pyshtools-4.11.10.tar.gz", hash = "sha256:d544586f03d508282198bee5221bffa2dddd481b59ff156336ded16f70f72677"},
+    {file = "pyshtools-4.10.3-cp310-cp310-win_amd64.whl", hash = "sha256:11751ddbc706e0439796ba35498a7afbbb23c0c7148d17154c966d408e9ae315"},
+    {file = "pyshtools-4.10.3.tar.gz", hash = "sha256:38f55e5c3ff76a244adbe9ee6b2dc6bca171a6546fc80b8f116dee4c2880fb3d"},
 ]
 
 [[package]]
@@ -2607,15 +2609,15 @@ files = [
 
 [[package]]
 name = "stevedore"
-version = "5.1.0"
+version = "5.2.0"
 requires_python = ">=3.8"
 summary = "Manage dynamic plugins for Python applications"
 dependencies = [
     "pbr!=2.1.0,>=2.0.0",
 ]
 files = [
-    {file = "stevedore-5.1.0-py3-none-any.whl", hash = "sha256:8cc040628f3cea5d7128f2e76cf486b2251a4e543c7b938f58d9a377f6694a2d"},
-    {file = "stevedore-5.1.0.tar.gz", hash = "sha256:a54534acf9b89bc7ed264807013b505bf07f74dbe4bcfa37d32bd063870b087c"},
+    {file = "stevedore-5.2.0-py3-none-any.whl", hash = "sha256:1c15d95766ca0569cad14cb6272d4d31dae66b011a929d7c18219c176ea1b5c9"},
+    {file = "stevedore-5.2.0.tar.gz", hash = "sha256:46b93ca40e1114cea93d738a6c1e365396981bb6bb78c27045b7587c9473544d"},
 ]
 
 [[package]]
@@ -2676,19 +2678,19 @@ files = [
 
 [[package]]
 name = "timm"
-version = "0.9.12"
-requires_python = ">=3.7"
+version = "0.9.16"
+requires_python = ">=3.8"
 summary = "PyTorch Image Models"
 dependencies = [
     "huggingface-hub",
     "pyyaml",
     "safetensors",
-    "torch>=1.7",
+    "torch",
     "torchvision",
 ]
 files = [
-    {file = "timm-0.9.12-py3-none-any.whl", hash = "sha256:2a828afac5b710a80ec66d0f85807e171e342faf5c0703b33102d8aa206f19dc"},
-    {file = "timm-0.9.12.tar.gz", hash = "sha256:9121d1cf320f7f32490d893340fd33117bda0a0270eb8282dfd52ae5fd3e1af6"},
+    {file = "timm-0.9.16-py3-none-any.whl", hash = "sha256:bf5704014476ab011589d3c14172ee4c901fd18f9110a928019cac5be2945914"},
+    {file = "timm-0.9.16.tar.gz", hash = "sha256:891e54f375d55adf31a71ab0c117761f0e472f9f3971858ecdd1e7376b7071e6"},
 ]
 
 [[package]]
@@ -2729,10 +2731,12 @@ files = [
 
 [[package]]
 name = "torch-geometric"
-version = "2.4.0"
+version = "2.5.0"
 requires_python = ">=3.8"
 summary = "Graph Neural Network Library for PyTorch"
 dependencies = [
+    "aiohttp",
+    "fsspec",
     "jinja2",
     "numpy",
     "psutil>=5.8.0",
@@ -2743,14 +2747,14 @@ dependencies = [
     "tqdm",
 ]
 files = [
-    {file = "torch_geometric-2.4.0-py3-none-any.whl", hash = "sha256:9d8eb5eec44382f4072aa5e835450f144e9edb9d164627e532e311880b6bdad0"},
-    {file = "torch_geometric-2.4.0.tar.gz", hash = "sha256:343c6906d0678f16553c2d02b7267d0ec77eafb5b44324070ebcf7da8a934557"},
+    {file = "torch_geometric-2.5.0-py3-none-any.whl", hash = "sha256:9322fef81189d870b08b5a8b44957c768c9e0ba431a81e6bd0d7cb39fcb87de8"},
+    {file = "torch_geometric-2.5.0.tar.gz", hash = "sha256:f4f4a57fd885c74e982d570df3a259ffff5adbb4ad7a3a95aabf5ace5fa7a240"},
 ]
 
 [[package]]
 name = "torchio"
-version = "0.19.5"
-requires_python = "<3.12,>=3.8"
+version = "0.19.6"
+requires_python = "<3.13,>=3.8"
 summary = "Tools for medical image processing with PyTorch"
 dependencies = [
     "Deprecated",
@@ -2764,8 +2768,8 @@ dependencies = [
     "typer[all]",
 ]
 files = [
-    {file = "torchio-0.19.5-py2.py3-none-any.whl", hash = "sha256:fa9921a9afc0b15bc4be5abcb876b76087e262c91de5e5002c6d4710f693c34e"},
-    {file = "torchio-0.19.5.tar.gz", hash = "sha256:f52b52caa874ed491e2fbf065fd2644f903c9233612b5e8fd12c5ea36983f434"},
+    {file = "torchio-0.19.6-py2.py3-none-any.whl", hash = "sha256:ffa06bae3e8cda2c8abcbb952f2d3f9318a1e92bfe3a994845e70f40e8aacfbb"},
+    {file = "torchio-0.19.6.tar.gz", hash = "sha256:c3afe16c3d822b6cb4aa103ffd6ec28816c95faa03cbeb22f33ff4cf81ec05df"},
 ]
 
 [[package]]
@@ -2899,15 +2903,15 @@ files = [
 
 [[package]]
 name = "universal-pathlib"
-version = "0.2.0"
+version = "0.2.1"
 requires_python = ">=3.8"
 summary = "pathlib api extended to use fsspec backends"
 dependencies = [
     "fsspec>=2022.1.0",
 ]
 files = [
-    {file = "universal_pathlib-0.2.0-py3-none-any.whl", hash = "sha256:e842d1d95ee2d5685f5512039cb9d3d70abac670046ed794b034bfffd4d02576"},
-    {file = "universal_pathlib-0.2.0.tar.gz", hash = "sha256:1cbd589d1c3ebbb787ad866527f785daff0de20b7540aa557b8285a05a176912"},
+    {file = "universal_pathlib-0.2.1-py3-none-any.whl", hash = "sha256:bb14881f1c6c025c654a658c253b4cf89e8238dff6d3c847aa5723899227f85e"},
+    {file = "universal_pathlib-0.2.1.tar.gz", hash = "sha256:fda2f484d875c26079771f94acfef58647eed80efce75f0bf8824373b432e802"},
 ]
 
 [[package]]
@@ -3037,28 +3041,28 @@ files = [
 
 [[package]]
 name = "xmlschema"
-version = "3.0.1"
+version = "3.0.2"
 requires_python = ">=3.8"
 summary = "An XML Schema validator and decoder"
 dependencies = [
-    "elementpath<5.0.0,>=4.1.5",
+    "elementpath<5.0.0,>=4.3.0",
 ]
 files = [
-    {file = "xmlschema-3.0.1-py3-none-any.whl", hash = "sha256:116243b2ad38cd2df9ee0606d4e4e898a6f156736b39ab0017e6f49862c0809e"},
-    {file = "xmlschema-3.0.1.tar.gz", hash = "sha256:bb24a5f4738e49d85d9eb03a2b5af26bbbbfdb055517ad953d98925094b8c026"},
+    {file = "xmlschema-3.0.2-py3-none-any.whl", hash = "sha256:c8935f81e1645df3e71136805c7206871268aa8c6e31e3667ea23746f22fea0a"},
+    {file = "xmlschema-3.0.2.tar.gz", hash = "sha256:b2526e91695905aa62d4aa2b68349565a168fedf88ada0005f5e0dd21da9734b"},
 ]
 
 [[package]]
 name = "xsdata"
-version = "24.1"
+version = "24.2.1"
 requires_python = ">=3.8"
 summary = "Python XML Binding"
 dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "xsdata-24.1-py3-none-any.whl", hash = "sha256:314eba1e50219e3393fa3814f51b426646ae0bb9a416ecc5b6d93bcb08e88416"},
-    {file = "xsdata-24.1.tar.gz", hash = "sha256:e36fc8b4624bbbaf2d34d0857c6d78ede99ec1d3240cc7dd50546177fbb52442"},
+    {file = "xsdata-24.2.1-py3-none-any.whl", hash = "sha256:b5fa19482a059a58dd0f6a237d7a1dee742f7acc5267b51faa7a4d1830603e41"},
+    {file = "xsdata-24.2.1.tar.gz", hash = "sha256:4630515935eb23a43942c4c2c4596e6ee11fab6223850380155b4f29d65d67c1"},
 ]
 
 [[package]]
