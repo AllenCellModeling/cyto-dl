@@ -115,7 +115,6 @@ class PointCloudVAE(BaseVAE):
                 reso_plane=reso_plane,
                 plane_type=plane_type,
                 scatter_type=scatter_type,
-                grid_feats_vae=(embedding_prior=="gaussian"),
             )
             encoder = {x_label: encoder}
 

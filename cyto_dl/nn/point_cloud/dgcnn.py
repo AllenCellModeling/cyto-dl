@@ -111,7 +111,7 @@ class DGCNN(nn.Module):
         scatter_type="max",
         x_label="pcloud",
         grid_feats_latent_dim=None,
-        grid_feats_vae=True,
+        grid_feats_vae=False,
         **base_kwargs,
     ):
         super().__init__()
