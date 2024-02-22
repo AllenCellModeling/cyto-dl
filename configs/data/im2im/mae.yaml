@@ -1,0 +1,117 @@
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 0
+batch_size: 1
+pin_memory: True
+split_column:
+columns:
+  - ${source_col}
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+
+_aux:
+  _scales_dict:
+    - - ${source_col}
+      - [1]

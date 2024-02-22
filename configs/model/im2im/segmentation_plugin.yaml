@@ -1,0 +1,58 @@
+_target_: cyto_dl.models.im2im.MultiTaskIm2Im
+
+save_images_every_n_epochs: 1
+save_dir: ${paths.output_dir}
+
+x_key: ${source_col}
+
+backbone:
+  _target_: monai.networks.nets.DynUNet
+  spatial_dims: ${spatial_dims}
+  in_channels: ${raw_im_channels}
+  out_channels: 1
+  strides: ${model._aux.strides}
+  kernel_size: ${model._aux.kernel_size}
+  upsample_kernel_size: ${model._aux.upsample_kernel_size}
+  dropout: 0.0
+  res_block: True
+
+task_heads:
+  target:
+    _target_: cyto_dl.nn.BaseHead
+    loss:
+      _target_: monai.losses.MaskedDiceLoss
+      sigmoid: True
+    postprocess:
+      input:
+        _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+        rescale_dtype: numpy.uint8
+      prediction:
+        _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
+        activation:
+          _target_: torch.nn.Sigmoid
+        rescale_dtype: numpy.uint8
+    save_raw: True
+
+optimizer:
+  generator:
+    _partial_: True
+    _target_: torch.optim.Adam
+    lr: 0.0001
+    weight_decay: 0.0001
+
+lr_scheduler:
+  generator:
+    _partial_: True
+    _target_: torch.optim.lr_scheduler.ExponentialLR
+    gamma: 0.995
+
+inference_args:
+  sw_batch_size: 1
+  roi_size: ${data._aux.patch_shape}
+  overlap: 0.25
+  mode: "gaussian"
+
+_aux:
+  strides:
+  kernel_size:
+  upsample_kernel_size:

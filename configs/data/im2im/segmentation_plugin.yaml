@@ -1,0 +1,268 @@
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 0
+batch_size: 1
+pin_memory: True
+split_column:
+columns:
+  - ${source_col}
+  - ${target_col1}
+  - ${target_col2}
+  - ${merge_mask_col}
+  - ${exclude_mask_col}
+  - ${base_image_col}
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      # load
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: ${input_channel}
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col1}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col2}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+      # load merging mask - assumed not to exist by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${merge_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "ignore"
+      # load excluding mask - assumed to be all ones by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${exclude_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "create"
+      # normalize
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      # merge masks
+      - _target_: cyto_dl.image.transforms.merge.Merged
+        mask_key: ${merge_mask_col}
+        image_keys:
+          - ${target_col1}
+          - ${target_col2}
+        base_image_key: ${base_image_col}
+        output_name: target
+      #crop
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+
+      # augmentation
+      - _target_: monai.transforms.RandRotate90d
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        prob: 0.5
+        spatial_axes: [0, 1]
+      - _target_: monai.transforms.RandFlipd
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        prob: 0.5
+        spatial_axis: 0
+      - _target_: monai.transforms.RandFlipd
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        prob: 0.5
+        spatial_axis: 1
+      - _target_: monai.transforms.RandHistogramShiftd
+        prob: 0.1
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        num_control_points: [90, 500]
+      - _target_: monai.transforms.RandStdShiftIntensityd
+        prob: 0.1
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        factors: 0.1
+      - _target_: monai.transforms.RandAdjustContrastd
+        prob: 0.1
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        gamma: [0.9, 1.5]
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # load
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: ${input_channel}
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col1}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col2}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+      # load merging mask - assumed not to exist by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${merge_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "ignore"
+      # load excluding mask - assumed to be all ones by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${exclude_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "create"
+      # normalize
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+
+        channel_wise: True
+      # merge masks
+      - _target_: cyto_dl.image.transforms.merge.Merged
+        mask_key: ${merge_mask_col}
+        image_keys:
+          - ${target_col1}
+          - ${target_col2}
+        base_image_key: ${base_image_col}
+        output_name: target
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # load
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: ${input_channel}
+      # normalize
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      # load
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: ${input_channel}
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col1}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col2}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 0
+
+      # load merging mask - assumed not to exist by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${merge_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "ignore"
+      # load excluding mask - assumed to be all ones by default
+      - _target_: cyto_dl.image.io.PolygonLoaderd
+        keys:
+          - ${exclude_mask_col}
+        shape_reference_key: ${target_col1}
+        missing_key_mode: "create"
+
+      # normalize
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+
+        channel_wise: True
+      # merge masks
+      - _target_: cyto_dl.image.transforms.merge.Merged
+        mask_key: ${merge_mask_col}
+        image_keys:
+          - ${target_col1}
+          - ${target_col2}
+        base_image_key: ${base_image_col}
+        output_name: target
+
+      # #crop
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+_aux:
+  _scales_dict:
+    - - target
+      - [1]
+    - - ${source_col}
+      - [1]
+    - - ${exclude_mask_col}
+      - [1]

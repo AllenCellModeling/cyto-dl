@@ -30,7 +30,8 @@ data:
     - _target_: cyto_dl.image.io.ReadNumpyFile
       keys: [image]
       remote: false
-    - _target_: monai.transforms.AddChanneld
+    - _target_: monai.transforms.EnsureChannelFirstd
+      channel_dim: "no_channel"
       keys: image
     - _target_: monai.transforms.NormalizeIntensityd
       keys: image

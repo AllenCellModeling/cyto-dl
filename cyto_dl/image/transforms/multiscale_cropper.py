@@ -127,7 +127,6 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
     def __call__(self, image_dict):
-
         available_keys = self.keys
         if self.allow_missing_keys:
             available_keys = [k for k in self.keys if k in image_dict]
@@ -142,7 +141,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
                     "Max attempts reached. Please check your selection function "
                     "or adjust max_attempts"
                 )
-            slices = self.generate_slices(image_dict)
+            slices = self.generate_slices({k: image_dict[k] for k in available_keys})
 
             patch_dict = {
                 key: self._apply_slice(image_dict[key], slices[key]) for key in available_keys

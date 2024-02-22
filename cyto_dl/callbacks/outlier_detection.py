@@ -38,7 +38,11 @@ class OutlierDetection(Callback):
         pd.DataFrame(init_activation_csv).to_csv(self.save_dir / "activations.csv", index=False)
 
     def on_save_checkpoint(self, trainer, pl_module, checkpoint):
-        checkpoint["outlier_detection"] = {"md_cov": self.cov, "md_mu": self.mu, "md_n": self.n}
+        checkpoint["outlier_detection"] = {
+            "md_cov": self.cov,
+            "md_mu": self.mu,
+            "md_n": self.n,
+        }
 
     def on_load_checkpoint(self, trainer, pl_module, checkpoint):
         od_params = checkpoint.get("outlier_detection", {})
@@ -114,7 +118,7 @@ class OutlierDetection(Callback):
 
     def _inference_batch_end(self, batch):
         if self._run:
-            batch_names = batch["raw_meta_dict"]["filename_or_obj"]
+            batch_names = batch["raw"].meta["filename_or_obj"]
             # activations are saved per-patch
             distances_per_image = len(self.mahalanobis_distances[self.layer_names[0]]) // len(
                 batch_names

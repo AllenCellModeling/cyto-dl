@@ -20,7 +20,6 @@ class WeibullLogLoss(Loss):
         self.eps = eps
 
     def forward(self, a, b, target):
-
         if self.mode == "explicit":
             log_probs = weibull_log_probs(b, a, target, self.eps)
         else:

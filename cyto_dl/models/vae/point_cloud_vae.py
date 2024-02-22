@@ -23,26 +23,30 @@ class PointCloudVAE(BaseVAE):
         self,
         latent_dim: int,
         x_label: str,
-        num_points: int,
-        hidden_dim=64,
-        hidden_conv2d_channels: list = [64, 64, 64, 64],
-        hidden_conv1d_channels: list = [512, 20],
-        hidden_decoder_dim: int = 512,
-        k=20,
-        mode="scalar",
-        get_rotation=False,
-        include_cross=True,
-        include_coords=True,
-        id_label: Optional[str] = None,
+        encoder: dict,
+        decoder: dict,
+        reconstruction_loss: dict,
+        prior: dict,
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
+        get_rotation=False,
         beta: float = 1.0,
-        embedding_prior: str = "identity",
-        decoder_type: str = "foldingnet",
-        loss_type: str = "chamfer",
-        eps: float = 1e-6,
-        shape: str = "sphere",
-        num_coords: int = 3,
-        std: float = 0.3,
+        num_points: Optional[int] = None,
+        hidden_dim: Optional[int] = 64,
+        hidden_conv2d_channels: Optional[list] = [64, 64, 64, 64],
+        hidden_conv1d_channels: Optional[list] = [512, 20],
+        hidden_decoder_dim: Optional[int] = 512,
+        k: Optional[int] = 20,
+        mode: Optional[str] = "scalar",
+        include_cross: Optional[bool] = False,
+        include_coords: Optional[bool] = True,
+        id_label: Optional[str] = None,
+        embedding_prior: Optional[str] = "identity",
+        decoder_type: Optional[str] = "foldingnet",
+        loss_type: Optional[str] = "chamfer",
+        eps: Optional[float] = 1e-6,
+        shape: Optional[str] = "sphere",
+        num_coords: Optional[int] = 3,
+        std: Optional[float] = 0.3,
         use_aux_vae: Optional[bool] = False,
         sphere_path: Optional[str] = None,
         gaussian_path: Optional[str] = None,
@@ -55,16 +59,16 @@ class PointCloudVAE(BaseVAE):
         scatter_type: Optional[str] = "max",
         point_label: Optional[str] = "points",
         occupancy_label: Optional[str] = "points.df",
-        encoder: Optional[dict] = None,
-        decoder: Optional[dict] = None,
         embedding_head: Optional[dict] = None,
         embedding_head_loss: Optional[dict] = None,
         embedding_head_weight: Optional[dict] = None,
+        basal_head: Optional[dict] = None,
+        basal_head_loss: Optional[dict] = None,
+        basal_head_weight: Optional[dict] = None,
         condition_encoder: Optional[dict] = None,
         condition_decoder: Optional[dict] = None,
         condition_keys: Optional[list] = None,
-        reconstruction_loss: Optional[dict] = None,
-        prior: Optional[dict] = None,
+        disable_metrics: Optional[bool] = False,
         grid_feats_loss: Optional[bool] = False,
         grid_feats_recon_loss_fn: Loss = nn.MSELoss(reduction="none"),
         grid_feats_recon_loss_weight: Optional[float]=1,
@@ -82,6 +86,10 @@ class PointCloudVAE(BaseVAE):
         self.embedding_head = embedding_head
         self.embedding_head_loss = embedding_head_loss
         self.embedding_head_weight = embedding_head_weight
+        self.basal_head = basal_head
+        self.basal_head_loss = basal_head_loss
+        self.basal_head_weight = basal_head_weight
+        self.disable_metrics = disable_metrics
         self.grid_feats_loss = grid_feats_loss
         self.grid_feats_recon_loss_weight = grid_feats_recon_loss_weight
 
@@ -155,12 +163,15 @@ class PointCloudVAE(BaseVAE):
             reconstruction_loss=reconstruction_loss,
             optimizer=optimizer,
             prior=prior,
+            disable_metrics=disable_metrics,
         )
 
         self.condition_encoder = nn.ModuleDict(condition_encoder)
         self.condition_decoder = nn.ModuleDict(condition_decoder)
         self.embedding_head = nn.ModuleDict(embedding_head)
         self.embedding_head_loss = nn.ModuleDict(embedding_head_loss)
+        self.basal_head = nn.ModuleDict(basal_head)
+        self.basal_head_loss = nn.ModuleDict(basal_head_loss)
         self.grid_feats_recon_loss_fn = grid_feats_recon_loss_fn
 
     def decode(self, z_parts, return_canonical=False, batch=None):
@@ -194,15 +205,23 @@ class PointCloudVAE(BaseVAE):
         return {self.hparams.x_label: xhat}
 
     def encoder_compose_function(self, z_parts):
+        if self.basal_head:
+            z_parts[self.hparams.x_label + "_basal"] = z_parts[self.hparams.x_label]
+            for key in self.basal_head.keys():
+                z_parts[key] = self.basal_head[key](z_parts[self.hparams.x_label + "_basal"])
+
         if self.condition_keys:
             for j, key in enumerate([self.hparams.x_label] + self.condition_keys):
                 this_z_parts = z_parts[key]
                 if len(this_z_parts.shape) == 3:
-                    this_z_parts = this_z_parts.argmax(dim=1)
+                    this_z_parts = torch.squeeze(z_parts[key], dim=(-1))
+                    z_parts[key] = this_z_parts
+                    # this_z_parts = this_z_parts.argmax(dim=1)
                 if j == 0:
                     cond_feats = this_z_parts
                 else:
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
+            # shared encoder
             z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
                 cond_feats
             )
@@ -213,13 +232,17 @@ class PointCloudVAE(BaseVAE):
         return z_parts
 
     def decoder_compose_function(self, z_parts, batch):
+        # import ipdb
+        # ipdb.set_trace()
         if self.condition_keys:
             for j, key in enumerate(self.condition_keys):
                 if j == 0:
                     cond_inputs = batch[key]
+                    # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
                 cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
+            # shared decoder
             z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
                 cond_feats
             )
@@ -267,6 +290,12 @@ class PointCloudVAE(BaseVAE):
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
                 rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](
+                    z[key], x[key]
+                )
+
+        if self.basal_head_loss:
+            for key in self.basal_head_loss.keys():
+                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[key](
                     z[key], x[key]
                 )
         return rcl_reduced

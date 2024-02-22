@@ -33,12 +33,14 @@ class TestSampler:
 def test_alternating_batch_sampler(shuffle, sampler):
     root_dir = pyrootutils.find_root()
     transforms = monai.transforms.Compose(
-        RemoveNaNKeysd(),
-        monai.transforms.LoadImaged(
-            keys=["raw", "seg1", "seg2"],
-            reader=MonaiBioReader(dimension_order_out="CZYX"),
-            allow_missing_keys=True,
-        ),
+        [
+            RemoveNaNKeysd(),
+            monai.transforms.LoadImaged(
+                keys=["raw", "seg1", "seg2"],
+                reader=MonaiBioReader(dimension_order_out="CZYX"),
+                allow_missing_keys=True,
+            ),
+        ]
     )
     transform_dict = {key: transforms for key in ["train", "test", "val", "predict"]}
     data = make_multiple_dataframe_splits(root_dir / "tests" / "resources", transform_dict)

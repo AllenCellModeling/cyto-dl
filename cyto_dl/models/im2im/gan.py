@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
-from torchmetrics import MeanMetric, MinMetric
+from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
@@ -37,7 +37,7 @@ class GAN(BaseModel):
         save_images_every_n_epochs=1,
         automatic_optimization: bool = False,
         inference_args: Dict = {},
-        compile: True,
+        compile: False,
         **base_kwargs,
     ):
         """
@@ -57,6 +57,8 @@ class GAN(BaseModel):
             Frequency to save out images during training
         inference_args: Dict = {}
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -67,7 +69,7 @@ class GAN(BaseModel):
         for stage in ("train", "val", "test", "predict"):
             (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile and not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.discriminator = torch.compile(discriminator)
             self.task_heads = torch.nn.ModuleDict(
@@ -163,7 +165,7 @@ class GAN(BaseModel):
         if stage not in ("test", "predict"):
             run_heads = [key for key in self.task_heads.keys() if key in batch]
         else:
-            run_heads = self.task_heads.keys()
+            run_heads = list(self.task_heads.keys())
         return run_heads
 
     def _extract_loss(self, outs, loss_type):
@@ -174,6 +176,7 @@ class GAN(BaseModel):
         return self._sum_losses(loss)
 
     def model_step(self, stage, batch, batch_idx):
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
@@ -210,11 +213,20 @@ class GAN(BaseModel):
         return loss_dict, None, None
 
     def predict_step(self, batch, batch_idx):
+        batch["filenames"] = batch[self.hparams.x_key].meta["filename_or_obj"]
         # convert monai metatensors to tensors
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
         stage = "predict"
         run_heads = self._get_run_heads(batch, stage)
-        self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
-        return (None, None, None)
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        # create input-> per head output mapping
+        io_map = {}
+        for head, output in outs.items():
+            head_io_map = output["save_path"]
+            for in_file, out_file in zip(head_io_map["input"], head_io_map["output"]):
+                if in_file not in io_map:
+                    io_map[in_file] = {}
+                io_map[in_file][head] = out_file
+        return io_map

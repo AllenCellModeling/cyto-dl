@@ -83,7 +83,6 @@ class GetKLDRanks(BaseCallback):
 
 
 def log_artifacts(outputs, prefix, current_epoch, latent_dim):
-
     input_key = [i for i in outputs[0].keys() if "z_parts_params" in i][0]
     input_key = input_key.split("/")[1]
     _bs = len(outputs[0][f"z_parts_params/{input_key}"])

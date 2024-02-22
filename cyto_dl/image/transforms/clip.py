@@ -1,14 +1,13 @@
-from typing import Union
-
 import torch
 from monai.transforms import Transform
+from monai.transforms.utils_pytorch_numpy_unification import clip, percentile
 from omegaconf import ListConfig
 
 
 class Clip(Transform):
     """Transform for clipping image intensities based on absolute or percentile values."""
 
-    def __init__(self, low: float = 0.0001, high: float = 0.9999, percentile=True):
+    def __init__(self, low: float = 0.01, high: float = 99.99, percentile=True):
         """
         Parameters
         ----------
@@ -28,8 +27,8 @@ class Clip(Transform):
         low = self.low
         high = self.high
         if self.percentile:
-            low = torch.quantile(img, self.percentile_low)
-            high = torch.quantile(img, self.percentile_high)
+            low = percentile(img, low)
+            high = percentile(img, high)
 
         return torch.clip(img, low, high)
 
@@ -41,10 +40,11 @@ class Clipd(Transform):
     def __init__(
         self,
         keys: str,
-        low: float = 0.0001,
-        high: float = 0.9999,
+        low: float = 00.01,
+        high: float = 99.99,
         percentile=True,
         allow_missing_keys: bool = False,
+        per_channel=True,
     ):
         """
         Parameters
@@ -65,10 +65,15 @@ class Clipd(Transform):
         self.keys = keys if isinstance(keys, (list, ListConfig)) else [keys]
         self.allow_missing_keys = allow_missing_keys
         self.clipper = Clip(low, high, percentile)
+        self.per_channel = per_channel
 
     def __call__(self, img_dict):
         for key in self.keys:
-            if key not in img_dict.keys() and not self.allow_missing_keys:
-                raise KeyError(f"Key {key} not in img_dict")
-            img_dict[key] = self.clipper(img_dict[key])
+            if key in img_dict.keys():
+                if self.per_channel:
+                    img_dict[key] = torch.stack([self.clipper(img) for img in img_dict[key]])
+                else:
+                    img_dict[key] = self.clipper(img_dict[key])
+            elif not self.allow_missing_keys:
+                raise KeyError(f"key `{key}` not available. Available keys are {img_dict.keys()}")
         return img_dict

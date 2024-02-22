@@ -33,7 +33,8 @@ data:
     - _target_: monai.transforms.Transposed
       keys: [image]
       indices: [2, 1, 0]
-    - _target_: monai.transforms.AddChanneld
+    - _target_: monai.transforms.EnsureChannelFirstd
+      channel_dim: "no_channel"
       keys: image
     - _target_: monai.transforms.ThresholdIntensityd
       keys: [image]

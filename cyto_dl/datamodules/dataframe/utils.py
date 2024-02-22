@@ -135,7 +135,6 @@ class AlternatingBatchSampler(BatchSampler):
 
     def __iter__(self) -> Iterator[List[int]]:
         for sampler_ix in self.sampler_order:
-
             try:
                 yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
             except StopIteration:

@@ -90,10 +90,10 @@ class ReadPointCloud(MapTransform):
                     path = str(row[key])
                 points = PyntCloud.from_file(path).points
 
-                if 's' in points.columns:
-                    points = points[['z', 'y', 'x', 's']]
+                if "s" in points.columns:
+                    points = points[["z", "y", "x", "s"]]
                 else:
-                    points = points[['z', 'y', 'x']]
+                    points = points[["z", "y", "x"]]
                 points = points.values[:, : self.num_cols]
 
                 if self.rotate:
@@ -114,7 +114,9 @@ class ReadPointCloud(MapTransform):
                     dtype=torch.get_default_dtype(),
                 )
                 if self.num_cols > 3:
-                    res[key][:, self.num_cols - 1 :] = res[key][:, self.num_cols - 1 :] * self.scalar_scale
+                    res[key][:, self.num_cols - 1 :] = (
+                        res[key][:, self.num_cols - 1 :] * self.scalar_scale
+                    )
 
                 if self.sample:
                     self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
