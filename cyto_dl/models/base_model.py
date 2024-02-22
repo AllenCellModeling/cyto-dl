@@ -82,6 +82,7 @@ class BaseModel(LightningModule, metaclass=BaseModelMeta):
         optimizer: Optional[torch.optim.Optimizer] = None,
         lr_scheduler: Optional[torch.optim.lr_scheduler.LRScheduler] = None,
         metrics=_DEFAULT_METRICS,
+        **base_kwargs,
     ):
         super().__init__()
 
