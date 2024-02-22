@@ -11,6 +11,7 @@ from torch import nn
 from torch_scatter import scatter_max, scatter_mean
 
 from cyto_dl import utils
+import torch.nn.functional as F
 
 from .graph_functions import (
     coordinate2index,
@@ -21,6 +22,14 @@ from .graph_functions import (
 from .vnn import VNLeakyReLU, VNLinear, VNLinearLeakyReLU, VNRotationMatrix
 
 log = utils.get_pylogger(__name__)
+
+
+def _conv_layer(in_channels, h_dim, k, s, p):
+    return nn.Sequential(
+                nn.Conv2d(in_channels, h_dim, kernel_size=k, stride=s, padding=p),
+                nn.BatchNorm2d(h_dim),
+                nn.LeakyReLU()
+            )
 
 
 def _make_conv(
@@ -101,6 +110,9 @@ class DGCNN(nn.Module):
         generate_grid_feats=False,
         scatter_type="max",
         x_label="pcloud",
+        grid_feats_latent_dim=None,
+        grid_feats_vae=True,
+        **base_kwargs,
     ):
         super().__init__()
         self.k = k
@@ -122,6 +134,8 @@ class DGCNN(nn.Module):
         self.unet3d = None
         self.unet = None
         self.symmetry_breaking_axis = symmetry_breaking_axis
+        self.grid_feats_latent_dim = grid_feats_latent_dim
+        self.grid_feats_vae = grid_feats_vae
 
         include_symmetry = 0
         if self.symmetry_breaking_axis is not None:
@@ -199,6 +213,18 @@ class DGCNN(nn.Module):
 
         self.convs = nn.ModuleList(convs)
         self.final_conv = nn.ModuleList(self.final_conv)
+
+        if self.generate_grid_feats and self.grid_feats_latent_dim is not None:
+            grid_modules = [
+                _conv_layer(self.num_features*3, self.grid_feats_latent_dim, 4, 2, 1),
+                _conv_layer(self.grid_feats_latent_dim, self.grid_feats_latent_dim//2, 4, 2, 1),
+                _conv_layer(self.grid_feats_latent_dim//2, self.num_features, 4, 2, 1),
+                _conv_layer(self.num_features, self.num_features//2, 4, 2, 1),
+            ]
+            self.grid_to_latent = nn.Sequential(*grid_modules)
+            self.grid_to_latent_fc_mu = nn.Linear((self.num_features//2)*4*4, self.grid_feats_latent_dim)
+            if self.grid_feats_vae:
+                self.grid_to_latent_fc_logvar = nn.Linear((self.num_features//2)*4*4, self.grid_feats_latent_dim)
 
         if self.scatter_type == "max":
             self.scatter = scatter_max
@@ -296,6 +322,7 @@ class DGCNN(nn.Module):
             fea = fea.gather(dim=2, index=index[key].expand(-1, fea_dim, -1))
             c_out += fea
         return c_out.permute(0, 2, 1)
+        
 
     def forward(self, x, get_rotation=False):
         input_pc = x.clone()
@@ -350,6 +377,7 @@ class DGCNN(nn.Module):
                 _, rot = self.rotation(pre_repeat.squeeze(dim=-1))
                 rot = rot.mT
                 x = torch.norm(x, dim=-2)
+                # inv_repeat = x
             x = x.permute(0, 2, 1).contiguous()
 
             fea = {}
@@ -361,7 +389,31 @@ class DGCNN(nn.Module):
                 fea["xy"] = self._generate_plane_features(input_pc, x, plane="xy")
             if "yz" in self.plane_type:
                 fea["yz"] = self._generate_plane_features(input_pc, x, plane="yz")
-            return {self.x_label: pre_repeat, "rotation": rot, "grid_feats": fea}
+            
+            if self.grid_feats_latent_dim is not None:
+                xy_feats = fea["xy"]
+                yz_feats = fea["yz"]
+                xz_feats = fea["xz"]
+
+                grid_feats = torch.cat([xy_feats,yz_feats,xz_feats],dim=1)
+                z = self.grid_to_latent(grid_feats)
+                z = z.view(z.size(0), -1)
+                mu = self.grid_to_latent_fc_mu(z)
+                if self.grid_feats_vae:
+                    logvar = self.grid_to_latent_fc_logvar(z)
+                    z_params = torch.cat([mu, logvar], dim=1)
+                else:
+                    z_params = mu
+
+                # if "inv_repeat" in locals():
+                #     return {self.x_label: z_params, "rotation": rot, "grid_feats": fea, 
+                #         "pre_repeat":pre_repeat, "inv_repeat": inv_repeat}
+                # else:
+                return {self.x_label: z_params, "rotation": rot, "grid_feats": fea, 
+                    "pre_repeat":pre_repeat}
+            else:
+                return {self.x_label: pre_repeat, "rotation": rot, "grid_feats": fea}
+
 
         if self.mode == "vector":
             x, rot = self.rotation(x)

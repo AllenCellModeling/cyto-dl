@@ -6,10 +6,12 @@ import torch
 from omegaconf import DictConfig
 from torch import nn
 
+from torch.nn.modules.loss import _Loss as Loss
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
 from cyto_dl.nn.point_cloud import DGCNN, FoldingNet
+from pointcloudutils.networks import LatentLocalDecoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -41,6 +43,7 @@ class PointCloudVAE(BaseVAE):
         shape: str = "sphere",
         num_coords: int = 3,
         std: float = 0.3,
+        use_aux_vae: Optional[bool] = False,
         sphere_path: Optional[str] = None,
         gaussian_path: Optional[str] = None,
         symmetry_breaking_axis: Optional[Union[str, int]] = None,
@@ -62,6 +65,10 @@ class PointCloudVAE(BaseVAE):
         condition_keys: Optional[list] = None,
         reconstruction_loss: Optional[dict] = None,
         prior: Optional[dict] = None,
+        grid_feats_loss: Optional[bool] = False,
+        grid_feats_recon_loss_fn: Loss = nn.MSELoss(reduction="none"),
+        grid_feats_recon_loss_weight: Optional[float]=1,
+        grid_feats_latent_dim: Optional[int]=128,
         **base_kwargs,
     ):
         self.get_rotation = get_rotation
@@ -75,6 +82,8 @@ class PointCloudVAE(BaseVAE):
         self.embedding_head = embedding_head
         self.embedding_head_loss = embedding_head_loss
         self.embedding_head_weight = embedding_head_weight
+        self.grid_feats_loss = grid_feats_loss
+        self.grid_feats_recon_loss_weight = grid_feats_recon_loss_weight
 
         if embedding_prior == "gaussian":
             self.encoder_out_size = 2 * latent_dim
@@ -98,6 +107,7 @@ class PointCloudVAE(BaseVAE):
                 reso_plane=reso_plane,
                 plane_type=plane_type,
                 scatter_type=scatter_type,
+                grid_feats_vae=(embedding_prior=="gaussian"),
             )
             encoder = {x_label: encoder}
 
@@ -151,13 +161,20 @@ class PointCloudVAE(BaseVAE):
         self.condition_decoder = nn.ModuleDict(condition_decoder)
         self.embedding_head = nn.ModuleDict(embedding_head)
         self.embedding_head_loss = nn.ModuleDict(embedding_head_loss)
+        self.grid_feats_recon_loss_fn = grid_feats_recon_loss_fn
 
     def decode(self, z_parts, return_canonical=False, batch=None):
         if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
-                base_xhat = self.decoder[self.hparams.x_label](
-                    batch[self.point_label], z_parts["grid_feats"]
-                )
+                if isinstance(self.decoder[self.hparams.x_label], LatentLocalDecoder):
+                    base_xhat, gridfeats_hat = self.decoder[self.hparams.x_label](
+                        batch[self.point_label], z_parts[self.hparams.x_label])
+                    return {self.hparams.x_label: base_xhat, 
+                            "gridfeats_hat": gridfeats_hat}
+                else:
+                    base_xhat = self.decoder[self.hparams.x_label](
+                        batch[self.point_label], z_parts["grid_feats"]
+                    )
             else:
                 base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
         else:
@@ -212,19 +229,40 @@ class PointCloudVAE(BaseVAE):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, self.occupancy_label)
-            if len(rcl_per_input_dimension[key].shape) > 0:
-                rcl = (
-                    rcl_per_input_dimension[key]
-                    # flatten
-                    .view(rcl_per_input_dimension[key].shape[0], -1)
-                    # and sum across each batch element's dimensions
-                    .sum(dim=1)
-                )
+            if key != "gridfeats_hat":
+                rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, self.occupancy_label)
+                if len(rcl_per_input_dimension[key].shape) > 0:
+                    rcl = (
+                        rcl_per_input_dimension[key]
+                        # flatten
+                        .view(rcl_per_input_dimension[key].shape[0], -1)
+                        # and sum across each batch element's dimensions
+                        .sum(dim=1)
+                    )
+    
+                    rcl_reduced[key] = rcl.mean()
+                else:
+                    rcl_reduced[key] = rcl_per_input_dimension[key]
+                
 
-                rcl_reduced[key] = rcl.mean()
-            else:
-                rcl_reduced[key] = rcl_per_input_dimension[key]
+        if self.grid_feats_loss:
+            gridfeats = z["grid_feats"]
+            gridfeats_hat = xhat["gridfeats_hat"]
+            xy_loss = self.grid_feats_recon_loss_fn(gridfeats_hat["xy"],
+                                                 gridfeats["xy"])
+
+            xy_loss = (xy_loss.view(xy_loss.shape[0], -1).sum(dim=1))
+            
+            yz_loss = self.grid_feats_recon_loss_fn(gridfeats_hat["yz"],
+                                                             gridfeats["yz"])
+            yz_loss = (yz_loss.view(yz_loss.shape[0], -1).sum(dim=1))
+                       
+            xz_loss = self.grid_feats_recon_loss_fn(gridfeats_hat["xz"],
+                                                             gridfeats["xz"])
+            xz_loss = (xz_loss.view(xz_loss.shape[0], -1).sum(dim=1))
+        
+            loss = torch.stack([xy_loss,yz_loss,xz_loss]).mean(axis=0)
+            rcl_reduced["grid_feats"] = loss.mean()*self.grid_feats_recon_loss_weight
 
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
@@ -243,7 +281,10 @@ class PointCloudVAE(BaseVAE):
         z = self.decoder_compose_function(z, batch)
 
         if not decode:
-            return z
+            if not return_params:
+                return z
+            else:
+                return z, z_params
 
         if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
