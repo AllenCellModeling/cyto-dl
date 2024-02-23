@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.head.gan_head_superres module" href="cyto_dl.nn.head.gan_head_superres.html" /><link rel="prev" title="cyto_dl.nn.head.conv_proj_layer module" href="cyto_dl.nn.head.conv_proj_layer.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.head.gan_head_superres module" href="cyto_dl.nn.head.gan_head_superres.html" /><link rel="prev" title="cyto_dl.nn.head.base_head module" href="cyto_dl.nn.head.base_head.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
         <title>cyto_dl.nn.head.gan_head module - cyto-dl 0.1.1 documentation</title>
@@ -296,7 +296,6 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -405,7 +404,7 @@
 <span id="cyto-dl-nn-head-gan-head-module"></span><h1>cyto_dl.nn.head.gan_head module<a class="headerlink" href="#module-cyto_dl.nn.head.gan_head" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cyto_dl.nn.head.gan_head.GANHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.gan_head.</span></span><span class="sig-name descname"><span class="pre">GANHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gan_loss=Pix2PixHD(</span>&#160;&#160; <span class="pre">(gan_loss):</span> <span class="pre">GANLoss(</span>&#160;&#160;&#160;&#160; <span class="pre">(loss):</span> <span class="pre">BCEWithLogitsLoss()</span>&#160;&#160; <span class="pre">)</span>&#160;&#160; <span class="pre">(feature_matching_loss):</span> <span class="pre">L1Loss()</span> <span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss=MSELoss()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss_weight=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/gan_head.html#GANHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.gan_head.GANHead" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.gan_head.</span></span><span class="sig-name descname"><span class="pre">GANHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gan_loss=Pix2PixHD(</span>&#160;&#160; <span class="pre">(gan_loss):</span> <span class="pre">GANLoss(</span>&#160;&#160;&#160;&#160; <span class="pre">(loss):</span> <span class="pre">BCEWithLogitsLoss()</span>&#160;&#160; <span class="pre">)</span>&#160;&#160; <span class="pre">(feature_matching_loss):</span> <span class="pre">L1Loss()</span> <span class="pre">)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss=MSELoss()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction_loss_weight=100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_input=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/gan_head.html#GANHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.gan_head.GANHead" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead" title="cyto_dl.nn.head.base_head.BaseHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseHead</span></code></a></p>
 <p>GAN Task head.</p>
 <dl class="field-list simple">
@@ -416,7 +415,7 @@
 <li><p><strong>reconstruction_loss_weight=100</strong> – Weighting of reconstruction loss</p></li>
 <li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing for <cite>input</cite> and <cite>predictions</cite> of head</p></li>
 <li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric during training. Not used by GAN head.</p></li>
-<li><p><strong>save_raw=False</strong> – Whether to save out example input images during training</p></li>
+<li><p><strong>save_input=False</strong> – Whether to save out example input images during training</p></li>
 </ul>
 </dd>
 </dl>
@@ -448,14 +447,14 @@
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.nn.head.conv_proj_layer.html">
+          <a class="prev-page" href="cyto_dl.nn.head.base_head.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.nn.head.conv_proj_layer module</div>
+                <div class="title">cyto_dl.nn.head.base_head module</div>
                 
               </div>
             </a>

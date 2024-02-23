@@ -295,7 +295,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -420,26 +419,21 @@
             <span class="n">y_hat</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">backbone_features</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MAE head is only intended for use during training.&quot;</span><span class="p">)</span>
+
         <span class="n">loss</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_hat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">bool</span><span class="p">()]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-        <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">out_paths</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
-            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">out_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">)</span>
-
-        <span class="n">metric</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_metric</span> <span class="ow">and</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">):</span>
-            <span class="n">metric</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_metric</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">])</span>
+            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
-            <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">metric</span><span class="p">,</span>
             <span class="s2">&quot;y_hat_out&quot;</span><span class="p">:</span> <span class="n">y_hat_out</span><span class="p">,</span>
             <span class="s2">&quot;y_out&quot;</span><span class="p">:</span> <span class="n">y_out</span><span class="p">,</span>
-            <span class="s2">&quot;save_path&quot;</span><span class="p">:</span> <span class="n">out_paths</span><span class="p">,</span>
         <span class="p">}</span></div></div>
 </pre></div>
         </article>

@@ -294,7 +294,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -534,8 +533,6 @@
         <li><a href="cyto_dl.models.vae.image_encoder.html#cyto_dl.models.vae.image_encoder.Convolution">Convolution (class in cyto_dl.models.vae.image_encoder)</a>
 </li>
         <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU">ConvPoolReLU (class in cyto_dl.nn.spatial_transformer)</a>
-</li>
-        <li><a href="cyto_dl.nn.head.conv_proj_layer.html#cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer">ConvProjectionLayer (class in cyto_dl.nn.head.conv_proj_layer)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.cosine_loss.html#cyto_dl.nn.losses.cosine_loss.CosineLoss">CosineLoss (class in cyto_dl.nn.losses.cosine_loss)</a>
 </li>
@@ -1141,13 +1138,6 @@
 </li>
         </ul></li>
         <li>
-    cyto_dl.nn.head.conv_proj_layer
-
-        <ul>
-          <li><a href="cyto_dl.nn.head.conv_proj_layer.html#module-cyto_dl.nn.head.conv_proj_layer">module</a>
-</li>
-        </ul></li>
-        <li>
     cyto_dl.nn.head.gan_head
 
         <ul>
@@ -1567,8 +1557,6 @@
 </li>
           <li><a href="cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.forward">(cyto_dl.models.classification.classification.Classification method)</a>
 </li>
-          <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.forward">(cyto_dl.models.im2im.gan.GAN method)</a>
-</li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.forward">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
           <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.forward">(cyto_dl.models.vae.base_vae.BaseVAE method)</a>
@@ -1666,6 +1654,8 @@
 </li>
         <li><a href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img">generate_img() (cyto_dl.utils.dummy_dataset.DummyDataset method)</a>
 </li>
+        <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.generate_io_map">generate_io_map() (cyto_dl.nn.head.base_head.BaseHead method)</a>
+</li>
         <li><a href="cyto_dl.image.transforms.multiscale_cropper.html#cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd.generate_slices">generate_slices() (cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd method)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.GenerateTrackLabels">GenerateTrackLabels (class in cyto_dl.image.transforms.track_transforms)</a>
@@ -1694,14 +1684,14 @@
           <li><a href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDatamodule.get_dataloader">(cyto_dl.utils.dummy_dataset.DummyDatamodule method)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.get_dataset">get_dataset() (cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
 
         <ul>
           <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_dataset">(in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss">get_feature_matching_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss">get_gan_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
@@ -2138,8 +2128,6 @@
 </li>
           <li><a href="cyto_dl.nn.head.base_head.html#module-cyto_dl.nn.head.base_head">cyto_dl.nn.head.base_head</a>
 </li>
-          <li><a href="cyto_dl.nn.head.conv_proj_layer.html#module-cyto_dl.nn.head.conv_proj_layer">cyto_dl.nn.head.conv_proj_layer</a>
-</li>
           <li><a href="cyto_dl.nn.head.gan_head.html#module-cyto_dl.nn.head.gan_head">cyto_dl.nn.head.gan_head</a>
 </li>
           <li><a href="cyto_dl.nn.head.gan_head_superres.html#module-cyto_dl.nn.head.gan_head_superres">cyto_dl.nn.head.gan_head_superres</a>
@@ -2451,12 +2439,8 @@
 </li>
         <li><a href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.RotationModule">RotationModule (class in cyto_dl.utils.rotation)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.run_forward">run_forward() (cyto_dl.models.im2im.gan.GAN method)</a>
-
-        <ul>
-          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+        <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward">run_forward() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
-        </ul></li>
         <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.run_head">run_head() (cyto_dl.nn.head.base_head.BaseHead method)</a>
 
         <ul>
@@ -2511,15 +2495,13 @@
           <li><a href="cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.setup">(cyto_dl.datamodules.smartcache.SmartcacheDatamodule method)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.setup_paths">setup_paths() (in module cyto_dl.utils.download_test_data)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.setup_paths">setup_paths() (in module cyto_dl.utils.download_test_data)</a>
+</li>
         <li><a href="cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.should_save_image">should_save_image() (cyto_dl.models.classification.classification.Classification method)</a>
 
         <ul>
-          <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.should_save_image">(cyto_dl.models.im2im.gan.GAN method)</a>
-</li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
         </ul></li>
@@ -2617,8 +2599,6 @@
           <li><a href="cyto_dl.nn.discriminators.n_layer_discriminator.html#cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator.training">(cyto_dl.nn.discriminators.n_layer_discriminator.NLayerDiscriminator attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.training">(cyto_dl.nn.head.base_head.BaseHead attribute)</a>
-</li>
-          <li><a href="cyto_dl.nn.head.conv_proj_layer.html#cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer.training">(cyto_dl.nn.head.conv_proj_layer.ConvProjectionLayer attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.training">(cyto_dl.nn.head.gan_head.GANHead attribute)</a>
 </li>

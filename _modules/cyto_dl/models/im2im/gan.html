@@ -295,7 +295,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -410,7 +409,7 @@
 <span class="kn">from</span> <span class="nn">monai.inferers</span> <span class="kn">import</span> <span class="n">sliding_window_inference</span>
 <span class="kn">from</span> <span class="nn">torchmetrics</span> <span class="kn">import</span> <span class="n">MeanMetric</span>
 
-<span class="kn">from</span> <span class="nn">cyto_dl.models.base_model</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">cyto_dl.models.im2im.multi_task</span> <span class="kn">import</span> <span class="n">MultiTaskIm2Im</span>
 
 <span class="n">_DEFAULT_METRICS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;train/loss/discriminator_loss&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
@@ -425,7 +424,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="GAN"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN">[docs]</a><span class="k">class</span> <span class="nc">GAN</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="GAN"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN">[docs]</a><span class="k">class</span> <span class="nc">GAN</span><span class="p">(</span><span class="n">MultiTaskIm2Im</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Basic GAN model.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -466,23 +465,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">metrics</span> <span class="o">=</span> <span class="n">base_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;metrics&quot;</span><span class="p">,</span> <span class="n">_DEFAULT_METRICS</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">backbone</span><span class="o">=</span><span class="n">backbone</span><span class="p">,</span> <span class="n">task_heads</span><span class="o">=</span><span class="n">task_heads</span><span class="p">,</span> <span class="n">x_key</span><span class="o">=</span><span class="n">x_key</span><span class="p">,</span> <span class="o">**</span><span class="n">base_kwargs</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">automatic_optimization</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
-            <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_images&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">compile</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;win&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">backbone</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">discriminator</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span>
-                <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">task_heads</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span> <span class="o">=</span> <span class="n">backbone</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">discriminator</span> <span class="o">=</span> <span class="n">discriminator</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ModuleDict</span><span class="p">(</span><span class="n">task_heads</span><span class="p">)</span>
 
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Only single-head GANs are supported currently.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inference_heads</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">head</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">head</span><span class="o">.</span><span class="n">update_params</span><span class="p">({</span><span class="s2">&quot;head_name&quot;</span><span class="p">:</span> <span class="n">k</span><span class="p">,</span> <span class="s2">&quot;x_key&quot;</span><span class="p">:</span> <span class="n">x_key</span><span class="p">,</span> <span class="s2">&quot;save_dir&quot;</span><span class="p">:</span> <span class="n">save_dir</span><span class="p">})</span>
 
@@ -513,10 +508,6 @@
             <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">run_heads</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="GAN.forward"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">task</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="p">[</span><span class="n">task</span><span class="p">](</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">run_heads</span><span class="p">}</span></div>
-
     <span class="k">def</span> <span class="nf">_inference_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;during inference, we need to calculate per-fov loss/metrics/postprocessing.</span>
 
@@ -545,31 +536,6 @@
             <span class="k">for</span> <span class="n">head_name</span><span class="p">,</span> <span class="n">head</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
 
-<div class="viewcode-block" id="GAN.run_forward"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.run_forward">[docs]</a>    <span class="k">def</span> <span class="nf">run_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="GAN.should_save_image"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.should_save_image">[docs]</a>    <span class="k">def</span> <span class="nf">should_save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="n">batch_idx</span> <span class="o">==</span> <span class="mi">0</span>  <span class="c1"># noqa: FURB124</span>
-            <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">save_images_every_n_epochs</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_sum_losses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">losses</span><span class="p">):</span>
-        <span class="n">summ</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">losses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">summ</span> <span class="o">+=</span> <span class="n">v</span>
-        <span class="n">losses</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summ</span>
-        <span class="k">return</span> <span class="n">losses</span>
-
-    <span class="k">def</span> <span class="nf">_get_run_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">stage</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
-            <span class="n">run_heads</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">run_heads</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">return</span> <span class="n">run_heads</span>
-
     <span class="k">def</span> <span class="nf">_extract_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outs</span><span class="p">,</span> <span class="n">loss_type</span><span class="p">):</span>
         <span class="n">loss</span> <span class="o">=</span> <span class="p">{</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">head_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">loss_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">head_result</span><span class="p">[</span><span class="n">loss_type</span><span class="p">]</span>
@@ -578,13 +544,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum_losses</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GAN.model_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.model_step">[docs]</a>    <span class="k">def</span> <span class="nf">model_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;filenames&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
-        <span class="c1"># convert monai metatensors to tensors</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
-                <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
-
-        <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
+        <span class="n">run_heads</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
 
         <span class="n">loss_D</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_loss</span><span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="s2">&quot;loss_D&quot;</span><span class="p">)</span>
@@ -615,22 +576,12 @@
         <span class="k">return</span> <span class="n">loss_dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="GAN.predict_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.predict_step">[docs]</a>    <span class="k">def</span> <span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;filenames&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
-        <span class="c1"># convert monai metatensors to tensors</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
-                <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
         <span class="n">stage</span> <span class="o">=</span> <span class="s2">&quot;predict&quot;</span>
-        <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
-        <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
-        <span class="c1"># create input-&gt; per head output mapping</span>
-        <span class="n">io_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">head_io_map</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;save_path&quot;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]):</span>
-                <span class="k">if</span> <span class="n">in_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">io_map</span><span class="p">:</span>
-                    <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">][</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_file</span>
+        <span class="n">run_heads</span><span class="p">,</span> <span class="n">io_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_heads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">save_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">io_map</span></div></div>
 </pre></div>
         </article>

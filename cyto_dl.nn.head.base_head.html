@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.head.conv_proj_layer module" href="cyto_dl.nn.head.conv_proj_layer.html" /><link rel="prev" title="cyto_dl.nn.head package" href="cyto_dl.nn.head.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.head.gan_head module" href="cyto_dl.nn.head.gan_head.html" /><link rel="prev" title="cyto_dl.nn.head package" href="cyto_dl.nn.head.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
         <title>cyto_dl.nn.head.base_head module - cyto-dl 0.1.1 documentation</title>
@@ -296,7 +296,6 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -405,7 +404,7 @@
 <span id="cyto-dl-nn-head-base-head-module"></span><h1>cyto_dl.nn.head.base_head module<a class="headerlink" href="#module-cyto_dl.nn.head.base_head" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.base_head.</span></span><span class="sig-name descname"><span class="pre">BaseHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_raw=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.head.base_head.</span></span><span class="sig-name descname"><span class="pre">BaseHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess={'input':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'prediction':</span> <span class="pre">&lt;function</span> <span class="pre">detach&gt;}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_metric=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_input=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Base class for task heads.</p>
 <dl class="field-list simple">
@@ -414,7 +413,7 @@
 <li><p><strong>loss</strong> – Loss function for task</p></li>
 <li><p><strong>postprocess={“input”</strong> (<em>detach, “prediction”: detach}</em>) – Postprocessing for <cite>input</cite> and <cite>predictions</cite> of head</p></li>
 <li><p><strong>calculate_metric=False</strong> – Whether to calculate a metric during training. Not used by GAN head.</p></li>
-<li><p><strong>save_raw=False</strong> – Whether to save out example input images during training</p></li>
+<li><p><strong>save_input=False</strong> – Whether to save out example input images during training</p></li>
 </ul>
 </dd>
 </dl>
@@ -422,6 +421,12 @@
 <dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.forward" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.generate_io_map">
+<span class="sig-name descname"><span class="pre">generate_io_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/head/base_head.html#BaseHead.generate_io_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.head.base_head.BaseHead.generate_io_map" title="Permalink to this definition">#</a></dt>
+<dd><p>generates map between input files and output files for a head.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="cyto_dl.nn.head.base_head.BaseHead.run_head">
@@ -454,12 +459,12 @@ metrics.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.nn.head.conv_proj_layer.html">
+          <a class="next-page" href="cyto_dl.nn.head.gan_head.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.nn.head.conv_proj_layer module</div>
+                <div class="title">cyto_dl.nn.head.gan_head module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -507,6 +512,7 @@ metrics.</p>
 <li><a class="reference internal" href="#">cyto_dl.nn.head.base_head module</a><ul>
 <li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead"><code class="docutils literal notranslate"><span class="pre">BaseHead</span></code></a><ul>
 <li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.forward"><code class="docutils literal notranslate"><span class="pre">BaseHead.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.generate_io_map"><code class="docutils literal notranslate"><span class="pre">BaseHead.generate_io_map()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.run_head"><code class="docutils literal notranslate"><span class="pre">BaseHead.run_head()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.save_image"><code class="docutils literal notranslate"><span class="pre">BaseHead.save_image()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.nn.head.base_head.BaseHead.training"><code class="docutils literal notranslate"><span class="pre">BaseHead.training</span></code></a></li>

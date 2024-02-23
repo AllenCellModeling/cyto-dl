@@ -295,7 +295,6 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.conv_proj_layer.html">cyto_dl.nn.head.conv_proj_layer module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
@@ -555,50 +554,74 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_sum_losses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">losses</span><span class="p">):</span>
-        <span class="n">summ</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">losses</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">summ</span> <span class="o">+=</span> <span class="n">v</span>
-        <span class="n">losses</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">summ</span>
+        <span class="n">losses</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">losses</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
         <span class="k">return</span> <span class="n">losses</span>
 
-    <span class="k">def</span> <span class="nf">_get_run_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">stage</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
-            <span class="n">run_heads</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inference_heads</span>
-        <span class="k">return</span> <span class="n">run_heads</span>
+    <span class="k">def</span> <span class="nf">_get_unrun_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">io_map</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns heads that don&#39;t have outputs yet.&quot;&quot;&quot;</span>
+        <span class="n">updated_run_heads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># check that all output files exist for each head</span>
+        <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">head_io_map</span> <span class="ow">in</span> <span class="n">io_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                    <span class="n">updated_run_heads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">updated_run_heads</span>
 
-<div class="viewcode-block" id="MultiTaskIm2Im.model_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">[docs]</a>    <span class="k">def</span> <span class="nf">model_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;filenames&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
-        <span class="c1"># convert monai metatensors to tensors</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
-                <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
-
-        <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
-        <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
-
-        <span class="n">losses</span> <span class="o">=</span> <span class="p">{</span><span class="n">head_name</span><span class="p">:</span> <span class="n">head_result</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">head_name</span><span class="p">,</span> <span class="n">head_result</span> <span class="ow">in</span> <span class="n">outs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">losses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum_losses</span><span class="p">(</span><span class="n">losses</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">losses</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="MultiTaskIm2Im.predict_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.predict_step">[docs]</a>    <span class="k">def</span> <span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">stage</span> <span class="o">=</span> <span class="s2">&quot;predict&quot;</span>
-        <span class="n">batch</span><span class="p">[</span><span class="s2">&quot;filenames&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">[</span><span class="s2">&quot;filename_or_obj&quot;</span><span class="p">]</span>
-        <span class="c1"># convert monai metatensors to tensors</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
-                <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
-        <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
-        <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">),</span> <span class="n">run_heads</span><span class="p">)</span>
-        <span class="c1"># create input-&gt; per head output mapping</span>
+    <span class="k">def</span> <span class="nf">_combine_io_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">io_maps</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;aggregate io_maps from per-head to per-input image.&quot;&quot;&quot;</span>
         <span class="n">io_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">head_io_map</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="s2">&quot;save_path&quot;</span><span class="p">]</span>
+        <span class="c1"># create input-&gt; per head output mapping</span>
+        <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">head_io_map</span> <span class="ow">in</span> <span class="n">io_maps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">in_file</span><span class="p">,</span> <span class="n">out_file</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">],</span> <span class="n">head_io_map</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="n">in_file</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">io_map</span><span class="p">:</span>
                     <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="n">io_map</span><span class="p">[</span><span class="n">in_file</span><span class="p">][</span><span class="n">head</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_file</span>
+        <span class="k">return</span> <span class="n">io_map</span>
+
+    <span class="k">def</span> <span class="nf">_get_run_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get heads that are either specified as inference heads and don&#39;t have outputs yet or all</span>
+<span class="sd">        heads.&quot;&quot;&quot;</span>
+        <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inference_heads</span>
+        <span class="k">if</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
+            <span class="n">run_heads</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+
+        <span class="n">io_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">h</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="p">[</span><span class="n">h</span><span class="p">]</span><span class="o">.</span><span class="n">generate_io_map</span><span class="p">(</span>
+                <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_step</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">run_heads</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;predict&quot;</span><span class="p">:</span>
+            <span class="c1"># only run heads that don&#39;t have outputs yet for prediction</span>
+            <span class="n">run_heads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unrun_heads</span><span class="p">(</span><span class="n">io_map</span><span class="p">)</span>
+            <span class="n">io_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine_io_maps</span><span class="p">(</span><span class="n">io_map</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">run_heads</span><span class="p">,</span> <span class="n">io_map</span>
+
+    <span class="k">def</span> <span class="nf">_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;convert monai metatensors to tensors.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
+                <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">batch</span>
+
+<div class="viewcode-block" id="MultiTaskIm2Im.model_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">[docs]</a>    <span class="k">def</span> <span class="nf">model_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+        <span class="n">run_heads</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="n">save_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
+        <span class="n">outs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">)</span>
+        <span class="n">losses</span> <span class="o">=</span> <span class="p">{</span><span class="n">head_name</span><span class="p">:</span> <span class="n">head_result</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">head_name</span><span class="p">,</span> <span class="n">head_result</span> <span class="ow">in</span> <span class="n">outs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sum_losses</span><span class="p">(</span><span class="n">losses</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="MultiTaskIm2Im.predict_step"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.predict_step">[docs]</a>    <span class="k">def</span> <span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
+        <span class="n">stage</span> <span class="o">=</span> <span class="s2">&quot;predict&quot;</span>
+        <span class="n">run_heads</span><span class="p">,</span> <span class="n">io_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_run_heads</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">run_heads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">save_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_save_image</span><span class="p">(</span><span class="n">batch_idx</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_forward</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">io_map</span></div></div>
 </pre></div>
         </article>
