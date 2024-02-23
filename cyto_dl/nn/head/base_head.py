@@ -15,7 +15,7 @@ class BaseHead(ABC, torch.nn.Module):
         loss,
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
-        save_raw=False,
+        save_input=False,
     ):
         """
         Parameters
@@ -26,7 +26,7 @@ class BaseHead(ABC, torch.nn.Module):
             Postprocessing for `input` and `predictions` of head
         calculate_metric=False
             Whether to calculate a metric during training. Not used by GAN head.
-        save_raw=False
+        save_input=False
             Whether to save out example input images during training
         """
         super().__init__()
@@ -35,7 +35,7 @@ class BaseHead(ABC, torch.nn.Module):
         self.calculate_metric = calculate_metric
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
-        self.save_raw = save_raw
+        self.save_input = save_input
 
     def update_params(self, params):
         for k, v in params.items():
@@ -47,45 +47,36 @@ class BaseHead(ABC, torch.nn.Module):
     def _postprocess(self, img, img_type):
         return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
 
-    def _save(self, fn, img, stage):
+    def generate_io_map(self, meta, stage, batch_idx, step):
+        """generates map between input files and output files for a head."""
+        # filename is determined by step in training during train/val and by its source filename for prediction/testing
+        filename_map = {"input": meta.get("filename_or_obj", [batch_idx])}
         if stage in ("train", "val", "test"):
-            (Path(self.save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
-            out_path = Path(self.save_dir) / f"{stage}_images" / fn
+            out_paths = [Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"]
         else:
-            out_path = Path(self.save_dir) / fn
-        OmeTiffWriter().save(
-            uri=out_path,
-            data=img.squeeze(),
-            dims_order="STCZYX"[-len(img.shape)],
-        )
-        return out_path
+            out_paths = [
+                Path(self.save_dir) / self.head_name / f"{Path(fn).stem}.tif"
+                for fn in filename_map["input"]
+            ]
+        # create output directory if it doesn't exist
+        out_paths[0].parent.mkdir(exist_ok=True, parents=True)
 
-    def _calculate_metric(self, y_hat, y):
-        raise NotImplementedError
+        filename_map["output"] = out_paths
+        self.filename_map = filename_map
+        return filename_map
 
     def save_image(self, y_hat, batch, stage, global_step):
         y_hat_out = self._postprocess(y_hat, img_type="prediction")
-        y_out, raw_out = None, None
-        filename_map = {"input": [], "output": []}
-        # filename is determined by step in training during train/val and by its source filename for prediction/testing
-        if stage in ("train", "val"):
-            y_out = self._postprocess(batch[self.head_name], img_type="input")
-            if self.save_raw:
-                raw_out = self._postprocess(batch[self.x_key], img_type="input")
-            save_name = [f"{global_step}_{self.head_name}.tif"]
-        else:
-            filename_map["input"] = batch["filenames"]
-            save_name = [f"{Path(fn).stem}_{self.head_name}.tif" for fn in batch["filenames"]]
-        n_save = len(y_hat_out) if stage in ("test", "predict") else 1
-        for i in range(n_save):
-            out_path = self._save(save_name[i].replace(".tif", "_pred.tif"), y_hat_out[i], stage)
+        y_out = None
+        for i, out_path in enumerate(self.filename_map["output"]):
+            OmeTiffWriter.save(data=y_hat_out[i], uri=out_path)
             if stage in ("train", "val"):
-                self._save(save_name[i], y_out[i], stage)
-                if self.save_raw:
-                    self._save(save_name[i].replace(".tif", "_raw.tif"), raw_out[i], stage)
-            else:
-                filename_map["output"].append(out_path)
-        return y_hat_out, y_out, filename_map
+                y_out = self._postprocess(batch[self.head_name], img_type="input")
+                OmeTiffWriter.save(data=y_out[i], uri=str(out_path).replace(".t", "_label.t"))
+                if self.save_input:
+                    raw_out = self._postprocess(batch[self.x_key][i : i + 1], img_type="input")
+                    OmeTiffWriter.save(data=raw_out, uri=str(out_path).replace(".t", "_input.t"))
+        return y_hat_out, y_out
 
     def forward(self, x):
         return self.model(x)
@@ -112,17 +103,12 @@ class BaseHead(ABC, torch.nn.Module):
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name])
 
-        y_hat_out, y_out, out_paths = None, None, None
+        y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out, out_paths = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
 
-        metric = None
-        if self.calculate_metric and stage in ("val", "test"):
-            metric = self._calculate_metric(y_hat, batch[self.head_name])
         return {
             "loss": loss,
-            "metric": metric,
             "y_hat_out": y_hat_out,
             "y_out": y_out,
-            "save_path": out_paths,
         }

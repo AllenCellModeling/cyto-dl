@@ -21,7 +21,7 @@ class ResBlocksHead(BaseHead):
         final_act: Callable = torch.nn.Identity(),
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
-        save_raw=False,
+        save_input=False,
         resolution="lr",
         spatial_dims=3,
         n_convs=1,
@@ -44,7 +44,7 @@ class ResBlocksHead(BaseHead):
             Postprocessing functions for ground truth and model predictions
         calculate_metric=False
             Whether to calculate a metric. Currently not implemented
-        save_raw=False
+        save_input=False
             Whether to save raw image examples during training
         resolution="lr"
             Resolution of output image. If `lr`, no upsampling is done. If `hr`, `upsample_method` and `upsample_ratio` are used
@@ -64,14 +64,15 @@ class ResBlocksHead(BaseHead):
         dense=False
             Whether to use dense connections between convolutional layers
         """
-        super().__init__(loss, postprocess, calculate_metric, save_raw)
+        super().__init__(loss, postprocess, calculate_metric, save_input)
 
         self.resolution = resolution
         conv_input_channels = in_channels
         modules = [first_layer]
         upsample = torch.nn.Identity()
 
-        upsample_ratio = upsample_ratio or [2] * spatial_dims
+        if isinstance(upsample_ratio, int):
+            upsample_ratio = [upsample_ratio] * spatial_dims
 
         if resolution == "hr":
             if upsample_method == "pixelshuffle":

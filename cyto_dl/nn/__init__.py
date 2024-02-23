@@ -1,4 +1,4 @@
-from .head import BaseHead, ConvProjectionLayer, GANHead, ResBlocksHead
+from .head import BaseHead, GANHead, GANHead_resize, ResBlocksHead
 from .hr_skip import HRSkip
 from .losses import (
     AdversarialLoss,

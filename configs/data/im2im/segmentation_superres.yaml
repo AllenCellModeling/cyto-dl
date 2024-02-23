@@ -1,0 +1,192 @@
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 0
+batch_size: 1
+pin_memory: True
+split_column:
+columns:
+  - ${source_col}
+  - ${target_col}
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 0
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
+        keys: ${data.columns}
+      # keep that target at full resolution to test superres
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${data.columns}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: ${target_col}
+        threshold: 0.1
+        above: False
+        cval: 1
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys: ${data.columns}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+      - _target_: monai.transforms.RandHistogramShiftd
+        prob: 0.1
+        keys: ${source_col}
+        num_control_points: [90, 500]
+
+      - _target_: monai.transforms.RandStdShiftIntensityd
+        prob: 0.1
+        keys: ${source_col}
+        factors: 0.1
+
+      - _target_: monai.transforms.RandAdjustContrastd
+        prob: 0.1
+        keys: ${source_col}
+        gamma: [0.9, 1.5]
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 0
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
+        keys: ${data.columns}
+      #crop image so that it is divisible by 4 for downsampling
+      - _target_: monai.transforms.CenterSpatialCropd
+        keys: ${data.columns}
+        roi_size: [64, -1, -1]
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${data.columns}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: ${target_col}
+        threshold: 0.1
+        above: False
+        cval: 1
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
+        keys: ${source_col}
+      #crop image so that it is divisible by 4 for downsampling
+      - _target_: monai.transforms.CenterSpatialCropd
+        keys: ${source_col}
+        roi_size: [64, -1, -1]
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      # channels are [nucseg, cellseg, nuclear boundary seg, cell boundary seg]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${target_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            dimension_order_out: ${eval:'"ZYX" if ${spatial_dims}==3 else "YX"'}
+            C: 0
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.EnsureChannelFirstd
+        channel_dim: "no_channel"
+        keys: ${data.columns}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${data.columns}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: monai.transforms.ThresholdIntensityd
+        keys: ${target_col}
+        threshold: 0.1
+        above: False
+        cval: 1
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys: ${data.columns}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+
+_aux:
+  _scales_dict:
+    - - ${target_col}
+      - [4]
+    - - ${source_col}
+      - [1]
