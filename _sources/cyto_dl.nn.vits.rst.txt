@@ -6,11 +6,20 @@ cyto\_dl.nn.vits package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.vits.blocks
+
 Submodules
 ----------
 
 .. toctree::
    :maxdepth: 4
 
+   cyto_dl.nn.vits.cross_mae
    cyto_dl.nn.vits.mae
    cyto_dl.nn.vits.seg
