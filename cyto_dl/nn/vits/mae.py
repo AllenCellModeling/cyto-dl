@@ -11,7 +11,6 @@ from monai.networks.nets import Regressor
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
-from cyto_dl.nn.vits.blocks.attention_autoencoder import AttentionAutoencoder
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
 
 
