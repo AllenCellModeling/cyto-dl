@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.vits.blocks package" href="cyto_dl.nn.vits.blocks.html" /><link rel="prev" title="cyto_dl.nn.point_cloud.vnn module" href="cyto_dl.nn.point_cloud.vnn.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.vits package - cyto-dl 0.1.2 documentation</title>
+        <title>cyto_dl.nn.vits package - cyto-dl 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">cyto-dl 0.1.2 documentation</div></a>
+      <a href="index.html"><div class="brand">cyto-dl 0.1.3 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">cyto-dl 0.1.2 documentation</span>
+  <span class="sidebar-brand-text">cyto-dl 0.1.3 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -405,8 +405,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-nn-vits-package">
-<h1>cyto_dl.nn.vits package<a class="headerlink" href="#cyto-dl-nn-vits-package" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.vits">
+<span id="cyto-dl-nn-vits-package"></span><h1>cyto_dl.nn.vits package<a class="headerlink" href="#module-cyto_dl.nn.vits" title="Permalink to this heading">#</a></h1>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
@@ -441,8 +441,48 @@
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.take_indexes"><code class="docutils literal notranslate"><span class="pre">take_indexes()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder"><code class="docutils literal notranslate"><span class="pre">MAE_Decoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.forward"><code class="docutils literal notranslate"><span class="pre">MAE_Decoder.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.init_weight"><code class="docutils literal notranslate"><span class="pre">MAE_Decoder.init_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.training"><code class="docutils literal notranslate"><span class="pre">MAE_Decoder.training</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.forward"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.init_weight"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder.init_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.training"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder.training</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT"><code class="docutils literal notranslate"><span class="pre">MAE_ViT</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.forward"><code class="docutils literal notranslate"><span class="pre">MAE_ViT.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.training"><code class="docutils literal notranslate"><span class="pre">MAE_ViT.training</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify"><code class="docutils literal notranslate"><span class="pre">Patchify</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.forward"><code class="docutils literal notranslate"><span class="pre">Patchify.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.resample_weight"><code class="docutils literal notranslate"><span class="pre">Patchify.resample_weight()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.training"><code class="docutils literal notranslate"><span class="pre">Patchify.training</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.patch_shuffle"><code class="docutils literal notranslate"><span class="pre">patch_shuffle()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.random_indexes"><code class="docutils literal notranslate"><span class="pre">random_indexes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.take_indexes"><code class="docutils literal notranslate"><span class="pre">take_indexes()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT"><code class="docutils literal notranslate"><span class="pre">Seg_ViT</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.forward"><code class="docutils literal notranslate"><span class="pre">Seg_ViT.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.training"><code class="docutils literal notranslate"><span class="pre">Seg_ViT.training</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SuperresDecoder"><code class="docutils literal notranslate"><span class="pre">SuperresDecoder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SuperresDecoder.forward"><code class="docutils literal notranslate"><span class="pre">SuperresDecoder.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SuperresDecoder.training"><code class="docutils literal notranslate"><span class="pre">SuperresDecoder.training</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

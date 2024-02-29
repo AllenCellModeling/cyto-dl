@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.vits.cross_mae - cyto-dl 0.1.3 documentation</title>
+        <title>cyto_dl.nn.vits.mae - cyto-dl 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -403,27 +403,148 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.vits.cross_mae</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+          <h1>Source code for cyto_dl.nn.vits.mae</h1><div class="highlight"><pre>
+<span></span><span class="c1"># modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 <span class="kn">from</span> <span class="nn">einops</span> <span class="kn">import</span> <span class="n">rearrange</span><span class="p">,</span> <span class="n">repeat</span>
 <span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
+<span class="kn">from</span> <span class="nn">monai.networks.nets</span> <span class="kn">import</span> <span class="n">Regressor</span>
 <span class="kn">from</span> <span class="nn">timm.models.layers</span> <span class="kn">import</span> <span class="n">trunc_normal_</span>
+<span class="kn">from</span> <span class="nn">timm.models.vision_transformer</span> <span class="kn">import</span> <span class="n">Block</span>
 
-<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.blocks</span> <span class="kn">import</span> <span class="n">CrossAttentionBlock</span>
+<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.cross_mae</span> <span class="kn">import</span> <span class="n">CrossMAE_Decoder</span>
 
 
-<div class="viewcode-block" id="take_indexes"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.take_indexes">[docs]</a><span class="k">def</span> <span class="nf">take_indexes</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="n">indexes</span><span class="p">):</span>
+<div class="viewcode-block" id="random_indexes"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.random_indexes">[docs]</a><span class="k">def</span> <span class="nf">random_indexes</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">forward_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">forward_indexes</span><span class="p">)</span>
+    <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">forward_indexes</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span></div>
+
+
+<div class="viewcode-block" id="take_indexes"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.take_indexes">[docs]</a><span class="k">def</span> <span class="nf">take_indexes</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="n">indexes</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">indexes</span><span class="p">,</span> <span class="s2">&quot;t b -&gt; t b c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="CrossMAE_Decoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder">[docs]</a><span class="k">class</span> <span class="nc">CrossMAE_Decoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masekd tokens only attend</span>
-<span class="sd">    to visible tokens.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="patch_shuffle"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.patch_shuffle">[docs]</a><span class="k">def</span> <span class="nf">patch_shuffle</span><span class="p">(</span><span class="n">patches</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">ratio</span><span class="p">):</span>
+    <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">remain_T</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">T</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">ratio</span><span class="p">))</span>
 
+    <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_indexes</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)]</span>
+    <span class="n">forward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">patches</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">patches</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="c1"># forward indexes : index in image -&gt; shuffledpatch</span>
+    <span class="c1"># backward indexes : shuffled patch -&gt; index in image</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">)</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">patches</span><span class="p">[:</span><span class="n">remain_T</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">patches</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span></div>
+
+
+<div class="viewcode-block" id="Patchify"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify">[docs]</a><span class="k">class</span> <span class="nc">Patchify</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="c1"># based on https://github.com/google-research/big_vision/blob/main/big_vision/models/proj/flexi/vit.py</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for flexibly turning image into sequence of patches.</span>
+
+<span class="sd">    Convolutional weights are resized to match the `base_patch_size`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_patch_size</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">n_patches</span><span class="p">,</span> <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n_patches</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">base_patch_size</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">([</span><span class="n">emb_dim</span><span class="p">,</span> <span class="o">*</span><span class="n">n_patches</span><span class="p">[:</span><span class="n">spatial_dims</span><span class="p">]])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb_dim</span> <span class="o">=</span> <span class="n">emb_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">conv3d</span> <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">conv2d</span>
+
+        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img2token</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;b c z y x -&gt; (z y x) b c&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img2token</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span><span class="s2">&quot;b c y x -&gt; (y x) b c&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Patchify.resample_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.resample_weight">[docs]</a>    <span class="k">def</span> <span class="nf">resample_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">length</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Patchify.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="n">patch_size</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">resample_weight</span><span class="p">(</span><span class="n">patch_size</span><span class="p">),</span> <span class="n">stride</span><span class="o">=</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tokens</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img2token</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">patch_size</span></div></div>
+
+
+<div class="viewcode-block" id="MAE_Encoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder">[docs]</a><span class="k">class</span> <span class="nc">MAE_Encoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">num_patches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">base_patch_size</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+        <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
+        <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="n">num_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        num_patches: List[int]</span>
+<span class="sd">            Number of patches in each dimension</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        base_patch_size: List[int]</span>
+<span class="sd">            Size of each patch</span>
+<span class="sd">        emb_dim: int</span>
+<span class="sd">            Dimension of embedding</span>
+<span class="sd">        num_layer: int</span>
+<span class="sd">            Number of transformer layers</span>
+<span class="sd">        num_head: int</span>
+<span class="sd">            Number of heads in transformer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cls_token</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">num_patches</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patchify</span> <span class="o">=</span> <span class="n">Patchify</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">num_patches</span><span class="p">,</span> <span class="n">spatial_dims</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">Block</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">num_head</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layer</span><span class="p">)]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_weight</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MAE_Encoder.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cls_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MAE_Encoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">mask_ratio</span><span class="o">=</span><span class="mf">0.75</span><span class="p">):</span>
+        <span class="n">patches</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patchify</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+        <span class="n">patches</span> <span class="o">=</span> <span class="n">patches</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span>
+
+        <span class="n">backward_indexes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mask_ratio</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">patches</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">patch_shuffle</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">mask_ratio</span><span class="p">)</span>
+
+        <span class="n">patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">cls_token</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">patches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">patches</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">patches</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">(</span><span class="n">patches</span><span class="p">))</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="s2">&quot;b t c -&gt; t b c&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask_ratio</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span>
+        <span class="k">return</span> <span class="n">features</span></div></div>
+
+
+<div class="viewcode-block" id="MAE_Decoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder">[docs]</a><span class="k">class</span> <span class="nc">MAE_Decoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">num_patches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -441,8 +562,6 @@
 <span class="sd">            Number of patches in each dimension</span>
 <span class="sd">        base_patch_size: Tuple[int]</span>
 <span class="sd">            Size of each patch</span>
-<span class="sd">        enc_dim: int</span>
-<span class="sd">            Dimension of encoder</span>
 <span class="sd">        emb_dim: int</span>
 <span class="sd">            Dimension of embedding</span>
 <span class="sd">        num_layer: int</span>
@@ -451,25 +570,17 @@
 <span class="sd">            Number of heads in transformer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">CrossAttentionBlock</span><span class="p">(</span>
-                    <span class="n">encoder_dim</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
-                    <span class="n">decoder_dim</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
-                    <span class="n">num_heads</span><span class="o">=</span><span class="n">num_head</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layer</span><span class="p">)</span>
-            <span class="p">]</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">decoder_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">enc_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">Block</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">num_head</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layer</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">))</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">out_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
@@ -493,22 +604,17 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">init_weight</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CrossMAE_Decoder.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MAE_Decoder.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
         <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossMAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">):</span>
-        <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span>
-        <span class="c1"># we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now</span>
+<div class="viewcode-block" id="MAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">):</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># project from encoder dimension to decoder dimension</span>
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
 
-        <span class="c1"># add cls token</span>
         <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
             <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">backward_indexes</span><span class="p">),</span> <span class="n">backward_indexes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">forward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">forward_indexes</span><span class="p">),</span> <span class="n">forward_indexes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># fill in masked regions</span>
@@ -521,36 +627,20 @@
             <span class="p">],</span>
             <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="c1"># unshuffle to original positions for positional embedding so we can do cross attention during decoding</span>
+        <span class="c1"># unshuffle to original positions</span>
         <span class="n">features</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">)</span>
         <span class="n">features</span> <span class="o">=</span> <span class="n">features</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span>
 
-        <span class="n">reshuffled</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">)</span>
-        <span class="n">features</span><span class="p">,</span> <span class="n">masked</span> <span class="o">=</span> <span class="n">reshuffled</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="n">reshuffled</span><span class="p">[</span><span class="n">T</span><span class="p">:]</span>
-
-        <span class="n">masked</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
+        <span class="c1"># decode</span>
         <span class="n">features</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">:</span>
-            <span class="n">masked</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
-
-        <span class="c1"># noneed to remove cls token, it&#39;s a part of the features vector</span>
-        <span class="n">masked</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="s2">&quot;b t c -&gt; t b c&quot;</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="s2">&quot;b t c -&gt; t b c&quot;</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># remove global feature</span>
 
         <span class="c1"># (npatches x npatches x npatches) b (emb dim) -&gt; (npatches* npatches * npatches) b (z y x)</span>
-        <span class="n">masked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_norm</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span>
-
-        <span class="c1"># add back in visible/encoded tokens that we don&#39;t calculate loss on</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">patches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">patches</span><span class="p">),</span> <span class="n">patches</span><span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-
+        <span class="n">patches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">T</span><span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># patches to image</span>
         <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
@@ -563,6 +653,88 @@
             <span class="n">mask</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">mask</span></div></div>
+
+
+<div class="viewcode-block" id="MAE_ViT"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT">[docs]</a><span class="k">class</span> <span class="nc">MAE_ViT</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">num_patches</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+        <span class="n">base_patch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span>
+        <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">768</span><span class="p">,</span>
+        <span class="n">encoder_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="n">encoder_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">decoder_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">decoder_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">decoder_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
+        <span class="n">mask_ratio</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
+        <span class="n">use_crossmae</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        num_patches: List[int]</span>
+<span class="sd">            Number of patches in each dimension (ZYX order)</span>
+<span class="sd">        base_patch_size: List[int]</span>
+<span class="sd">            Size of each patch (ZYX order)</span>
+<span class="sd">        emb_dim: int</span>
+<span class="sd">            Dimension of encoder embedding</span>
+<span class="sd">        encoder_layer: int</span>
+<span class="sd">            Number of encoder transformer layers</span>
+<span class="sd">        encoder_head: int</span>
+<span class="sd">            Number of encoder heads</span>
+<span class="sd">        decoder_layer: int</span>
+<span class="sd">            Number of decoder transformer layers</span>
+<span class="sd">        decoder_head: int</span>
+<span class="sd">            Number of decoder heads</span>
+<span class="sd">        mask_ratio: float</span>
+<span class="sd">            Ratio of patches to mask out</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">spatial_dims</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;Spatial dims must be 2 or 3&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">num_patches</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">num_patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">num_patches</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">base_patch_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_patch_size</span><span class="p">]</span> <span class="o">*</span> <span class="n">spatial_dims</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">==</span> <span class="n">spatial_dims</span><span class="p">,</span> <span class="s2">&quot;num_patches must be of length spatial_dims&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">)</span> <span class="o">==</span> <span class="n">spatial_dims</span>
+        <span class="p">),</span> <span class="s2">&quot;base_patch_size must be of length spatial_dims&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask_ratio</span> <span class="o">=</span> <span class="n">mask_ratio</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">MAE_Encoder</span><span class="p">(</span>
+            <span class="n">num_patches</span><span class="p">,</span>
+            <span class="n">spatial_dims</span><span class="p">,</span>
+            <span class="n">base_patch_size</span><span class="p">,</span>
+            <span class="n">emb_dim</span><span class="p">,</span>
+            <span class="n">encoder_layer</span><span class="p">,</span>
+            <span class="n">encoder_head</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">decoder_class</span> <span class="o">=</span> <span class="n">MAE_Decoder</span>
+        <span class="k">if</span> <span class="n">use_crossmae</span><span class="p">:</span>
+            <span class="n">decoder_class</span> <span class="o">=</span> <span class="n">CrossMAE_Decoder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">decoder_class</span><span class="p">(</span>
+            <span class="n">num_patches</span><span class="o">=</span><span class="n">num_patches</span><span class="p">,</span>
+            <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
+            <span class="n">base_patch_size</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">,</span>
+            <span class="n">enc_dim</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
+            <span class="n">emb_dim</span><span class="o">=</span><span class="n">decoder_dim</span><span class="p">,</span>
+            <span class="n">num_layer</span><span class="o">=</span><span class="n">decoder_layer</span><span class="p">,</span>
+            <span class="n">num_head</span><span class="o">=</span><span class="n">decoder_head</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="MAE_ViT.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span>
+            <span class="n">img</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_ratio</span>
+        <span class="p">)</span>
+        <span class="n">predicted_img</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">predicted_img</span><span class="p">,</span> <span class="n">mask</span></div></div>
 </pre></div>
         </article>
       </div>
