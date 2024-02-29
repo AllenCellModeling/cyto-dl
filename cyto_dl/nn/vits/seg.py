@@ -1,5 +1,6 @@
 from typing import List, Optional, Union
 
+import numpy as np
 import torch
 from einops.layers.torch import Rearrange
 from monai.networks.blocks import UnetOutBlock, UnetResBlock, UpSample
@@ -7,7 +8,7 @@ from monai.networks.blocks import UnetOutBlock, UnetResBlock, UpSample
 from cyto_dl.nn.vits.mae import MAE_Encoder
 
 
-class SupperresDecoder(torch.nn.Module):
+class SuperresDecoder(torch.nn.Module):
     def __init__(
         self,
         spatial_dims: int = 3,
@@ -42,15 +43,11 @@ class SupperresDecoder(torch.nn.Module):
         super().__init__()
 
         self.lr_conv = []
-        for i in range(num_layer):
-            if i == 0:
-                num_channels = 1
-            else:
-                num_channels = 16
+        for _ in range(num_layer):
             self.lr_conv.append(
                 UnetResBlock(
                     spatial_dims=spatial_dims,
-                    in_channels=num_channels,
+                    in_channels=n_decoder_filters,
                     out_channels=n_decoder_filters,
                     stride=1,
                     kernel_size=3,
@@ -66,7 +63,7 @@ class SupperresDecoder(torch.nn.Module):
                 spatial_dims=spatial_dims,
                 in_channels=n_decoder_filters,
                 out_channels=n_decoder_filters,
-                scale_factor=upsample_factor,
+                scale_factor=np.array(upsample_factor),
                 mode="nontrainable",
                 interp_mode="trilinear",
             ),
@@ -87,9 +84,10 @@ class SupperresDecoder(torch.nn.Module):
             ),
         )
 
-        self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
+        self.head = torch.nn.Linear(
+            emb_dim, torch.prod(torch.as_tensor(base_patch_size)) * n_decoder_filters
+        )
         self.num_patches = torch.as_tensor(num_patches)
-
         if spatial_dims == 3:
             self.patch2img = Rearrange(
                 "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
@@ -99,6 +97,7 @@ class SupperresDecoder(torch.nn.Module):
                 patch_size_z=base_patch_size[0],
                 patch_size_y=base_patch_size[1],
                 patch_size_x=base_patch_size[2],
+                c=n_decoder_filters,
             )
         elif spatial_dims == 2:
             self.patch2img = Rearrange(
@@ -107,13 +106,14 @@ class SupperresDecoder(torch.nn.Module):
                 n_patch_x=num_patches[1],
                 patch_size_y=base_patch_size[0],
                 patch_size_x=base_patch_size[1],
+                c=n_decoder_filters,
             )
 
     def forward(self, features):
         # remove global feature
         features = features[1:]
 
-        # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (z y x)
+        # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (c z y x)
         patches = self.head(features)
 
         # patches to image
@@ -138,7 +138,6 @@ class Seg_ViT(torch.nn.Module):
         decoder_layer: Optional[int] = 3,
         n_decoder_filters: Optional[int] = 16,
         out_channels: Optional[int] = 6,
-        mask_ratio: Optional[int] = 0.75,
         upsample_factor: Optional[List[int]] = [2.6134, 2.5005, 2.5005],
         encoder_ckpt: Optional[str] = None,
         freeze_encoder: Optional[bool] = True,
@@ -190,22 +189,21 @@ class Seg_ViT(torch.nn.Module):
             emb_dim=emb_dim,
             num_layer=encoder_layer,
             num_head=encoder_head,
-            mask_ratio=mask_ratio,
         )
         if encoder_ckpt is not None:
             model = torch.load(encoder_ckpt)
             enc_state_dict = {
                 k.replace("backbone.encoder.", ""): v
+                # k.replace("model.encoder.", ""): v
                 for k, v in model["state_dict"].items()
                 if "encoder" in k
             }
-
             self.encoder.load_state_dict(enc_state_dict)
         if freeze_encoder:
             for param in self.encoder.parameters():
                 param.requires_grad = False
 
-        self.decoder = SupperresDecoder(
+        self.decoder = SuperresDecoder(
             spatial_dims,
             num_patches,
             base_patch_size,
@@ -217,5 +215,5 @@ class Seg_ViT(torch.nn.Module):
         )
 
     def forward(self, img):
-        features = self.encoder(img, do_mask=False)
+        features = self.encoder(img, mask_ratio=0)
         return self.decoder(features)
