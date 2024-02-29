@@ -263,7 +263,6 @@ class MAE_ViT(torch.nn.Module):
         decoder_head: Optional[int] = 8,
         decoder_dim: Optional[int] = 192,
         mask_ratio: Optional[int] = 0.75,
-        patchify_conv: Optional[bool] = False,
         use_crossmae: Optional[bool] = False,
     ) -> None:
         """
@@ -310,7 +309,6 @@ class MAE_ViT(torch.nn.Module):
             emb_dim,
             encoder_layer,
             encoder_head,
-            patchify_conv=patchify_conv,
         )
 
         decoder_class = MAE_Decoder
