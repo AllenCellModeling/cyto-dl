@@ -15,8 +15,7 @@ backbone:
   encoder_layer: 2
   encoder_head: 1
   decoder_layer: 1
-  mask_ratio: 0.75
-
+  use_crossmae: True
 task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 optimizer:
