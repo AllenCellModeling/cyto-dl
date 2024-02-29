@@ -41,7 +41,6 @@ class CrossAttention(nn.Module):
         super().__init__()
         self.num_heads = num_heads
         head_dim = decoder_dim // num_heads
-        # NOTE scale factor was wrong in my original version, can set manually to be compat with prev weights
         self.scale = qk_scale or head_dim**-0.5
         self.q = nn.Linear(decoder_dim, decoder_dim, bias=qkv_bias)
         self.kv = nn.Linear(encoder_dim, decoder_dim * 2, bias=qkv_bias)
