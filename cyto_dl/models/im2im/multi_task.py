@@ -106,8 +106,7 @@ class MultiTaskIm2Im(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(z, batch, stage, save_image, self.global_step)
-            for task in run_heads
+            task: self.task_heads[task].run_head(z, batch, stage, save_image) for task in run_heads
         }
 
     def forward(self, x, run_heads):
@@ -134,7 +133,6 @@ class MultiTaskIm2Im(BaseModel):
                 batch,
                 stage,
                 save_image,
-                self.global_step,
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
             )

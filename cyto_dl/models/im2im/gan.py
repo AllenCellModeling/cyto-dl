@@ -102,7 +102,7 @@ class GAN(MultiTaskIm2Im):
         z = self.backbone(batch[self.hparams.x_key])
         return {
             task: self.task_heads[task].run_head(
-                z, batch, stage, save_image, self.global_step, self.discriminator
+                z, batch, stage, save_image, discriminator=self.discriminator
             )
             for task in run_heads
         }
