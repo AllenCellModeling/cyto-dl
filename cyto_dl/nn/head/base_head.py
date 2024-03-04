@@ -14,7 +14,6 @@ class BaseHead(ABC, torch.nn.Module):
         self,
         loss,
         postprocess={"input": detach, "prediction": detach},
-        calculate_metric=False,
         save_input=False,
     ):
         """
@@ -24,15 +23,12 @@ class BaseHead(ABC, torch.nn.Module):
             Loss function for task
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        calculate_metric=False
-            Whether to calculate a metric during training. Not used by GAN head.
         save_input=False
             Whether to save out example input images during training
         """
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
-        self.calculate_metric = calculate_metric
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
         self.save_input = save_input
@@ -65,7 +61,7 @@ class BaseHead(ABC, torch.nn.Module):
         self.filename_map = filename_map
         return filename_map
 
-    def save_image(self, y_hat, batch, stage, global_step):
+    def save_image(self, y_hat, batch, stage):
         y_hat_out = self._postprocess(y_hat, img_type="prediction")
         y_out = None
         for i, out_path in enumerate(self.filename_map["output"]):
@@ -87,7 +83,6 @@ class BaseHead(ABC, torch.nn.Module):
         batch,
         stage,
         save_image,
-        global_step,
         run_forward=True,
         y_hat=None,
     ):
@@ -105,7 +100,7 @@ class BaseHead(ABC, torch.nn.Module):
 
         y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
 
         return {
             "loss": loss,

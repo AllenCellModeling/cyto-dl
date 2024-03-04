@@ -12,7 +12,6 @@ class MaskHead(BaseHead):
         loss,
         mask_key: str = "mask",
         postprocess={"input": detach, "prediction": detach},
-        calculate_metric=False,
         save_input=False,
     ):
         """
@@ -30,7 +29,6 @@ class MaskHead(BaseHead):
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
-        self.calculate_metric = calculate_metric
         self.mask_key = mask_key
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
@@ -45,7 +43,6 @@ class MaskHead(BaseHead):
         batch,
         stage,
         save_image,
-        global_step,
         run_forward=True,
         y_hat=None,
     ):
@@ -63,7 +60,7 @@ class MaskHead(BaseHead):
 
         y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
 
         return {
             "loss": loss,

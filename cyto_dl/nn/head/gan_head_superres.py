@@ -23,7 +23,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
-        calculate_metric=False,
         save_input=False,
         final_act: Callable = torch.nn.Identity(),
         resolution="lr",
@@ -46,8 +45,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
             Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        calculate_metric=False
-            Whether to calculate a metric during training. Not used by GAN head.
         save_input=False
             Whether to save out example input images during training
         """
@@ -58,7 +55,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
             out_channels=out_channels,
             final_act=final_act,
             postprocess=postprocess,
-            calculate_metric=calculate_metric,
             save_input=save_input,
             resolution=resolution,
             spatial_dims=spatial_dims,

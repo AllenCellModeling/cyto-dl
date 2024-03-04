@@ -8,7 +8,6 @@ class MAEHead(BaseHead):
         batch,
         stage,
         save_image,
-        global_step,
         run_forward=True,
         y_hat=None,
     ):
@@ -27,7 +26,7 @@ class MAEHead(BaseHead):
 
         y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
 
         return {
             "loss": loss,

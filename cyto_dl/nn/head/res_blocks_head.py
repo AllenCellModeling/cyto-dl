@@ -20,7 +20,6 @@ class ResBlocksHead(BaseHead):
         out_channels: int,
         final_act: Callable = torch.nn.Identity(),
         postprocess={"input": detach, "prediction": detach},
-        calculate_metric=False,
         save_input=False,
         resolution="lr",
         spatial_dims=3,
@@ -42,8 +41,6 @@ class ResBlocksHead(BaseHead):
             Final activation applied to logits
         postprocess={"input": detach, "prediction": detach}
             Postprocessing functions for ground truth and model predictions
-        calculate_metric=False
-            Whether to calculate a metric. Currently not implemented
         save_input=False
             Whether to save raw image examples during training
         resolution="lr"
@@ -64,7 +61,7 @@ class ResBlocksHead(BaseHead):
         dense=False
             Whether to use dense connections between convolutional layers
         """
-        super().__init__(loss, postprocess, calculate_metric, save_input)
+        super().__init__(loss, postprocess, save_input)
 
         self.resolution = resolution
         conv_input_channels = in_channels
