@@ -424,7 +424,6 @@
         <span class="n">reconstruction_loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
         <span class="n">reconstruction_loss_weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">save_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -438,12 +437,10 @@
 <span class="sd">            Weighting of reconstruction loss</span>
 <span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
 <span class="sd">            Postprocessing for `input` and `predictions` of head</span>
-<span class="sd">        calculate_metric=False</span>
-<span class="sd">            Whether to calculate a metric during training. Not used by GAN head.</span>
 <span class="sd">        save_input=False</span>
 <span class="sd">            Whether to save out example input images during training</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">calculate_metric</span><span class="p">,</span> <span class="n">save_input</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">save_input</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gan_loss</span> <span class="o">=</span> <span class="n">gan_loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span> <span class="o">=</span> <span class="n">reconstruction_loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss_weight</span> <span class="o">=</span> <span class="n">reconstruction_loss_weight</span>
@@ -462,13 +459,15 @@
         <span class="n">loss_reconstruction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span> <span class="n">y_hat</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">loss_D</span><span class="p">,</span> <span class="n">loss_G</span> <span class="o">+</span> <span class="n">loss_reconstruction</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">reconstruction_loss_weight</span>
 
+<div class="viewcode-block" id="GANHead.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="GANHead.run_head"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.gan_head.html#cyto_dl.nn.head.gan_head.GANHead.run_head">[docs]</a>    <span class="k">def</span> <span class="nf">run_head</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">backbone_features</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">stage</span><span class="p">,</span>
         <span class="n">save_image</span><span class="p">,</span>
-        <span class="n">global_step</span><span class="p">,</span>
         <span class="n">discriminator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">run_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">y_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -489,7 +488,7 @@
 
         <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
-            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">)</span>
+            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;loss_D&quot;</span><span class="p">:</span> <span class="n">loss_D</span><span class="p">,</span>

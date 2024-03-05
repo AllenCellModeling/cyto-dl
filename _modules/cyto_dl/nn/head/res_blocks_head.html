@@ -426,7 +426,6 @@
         <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">final_act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">(),</span>
         <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">save_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span>
         <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
@@ -448,8 +447,6 @@
 <span class="sd">            Final activation applied to logits</span>
 <span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
 <span class="sd">            Postprocessing functions for ground truth and model predictions</span>
-<span class="sd">        calculate_metric=False</span>
-<span class="sd">            Whether to calculate a metric. Currently not implemented</span>
 <span class="sd">        save_input=False</span>
 <span class="sd">            Whether to save raw image examples during training</span>
 <span class="sd">        resolution=&quot;lr&quot;</span>
@@ -470,7 +467,7 @@
 <span class="sd">        dense=False</span>
 <span class="sd">            Whether to use dense connections between convolutional layers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">calculate_metric</span><span class="p">,</span> <span class="n">save_input</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">save_input</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
         <span class="n">conv_input_channels</span> <span class="o">=</span> <span class="n">in_channels</span>

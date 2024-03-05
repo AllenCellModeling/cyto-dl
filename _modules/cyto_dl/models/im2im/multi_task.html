@@ -512,8 +512,7 @@
 <span class="sd">        metrics, postprocessing etc.&quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">])</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="n">task</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="p">[</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">run_head</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_step</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">run_heads</span>
+            <span class="n">task</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="p">[</span><span class="n">task</span><span class="p">]</span><span class="o">.</span><span class="n">run_head</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">save_image</span><span class="p">)</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">run_heads</span>
         <span class="p">}</span>
 
 <div class="viewcode-block" id="MultiTaskIm2Im.forward"><a class="viewcode-back" href="../../../../cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
@@ -540,7 +539,6 @@
                 <span class="n">batch</span><span class="p">,</span>
                 <span class="n">stage</span><span class="p">,</span>
                 <span class="n">save_image</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">global_step</span><span class="p">,</span>
                 <span class="n">run_forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">y_hat</span><span class="o">=</span><span class="n">raw_pred_images</span><span class="p">[</span><span class="n">head_name</span><span class="p">],</span>
             <span class="p">)</span>

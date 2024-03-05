@@ -420,7 +420,6 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">loss</span><span class="p">,</span>
         <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">save_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -430,15 +429,12 @@
 <span class="sd">            Loss function for task</span>
 <span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
 <span class="sd">            Postprocessing for `input` and `predictions` of head</span>
-<span class="sd">        calculate_metric=False</span>
-<span class="sd">            Whether to calculate a metric during training. Not used by GAN head.</span>
 <span class="sd">        save_input=False</span>
 <span class="sd">            Whether to save out example input images during training</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_metric</span> <span class="o">=</span> <span class="n">calculate_metric</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_input</span> <span class="o">=</span> <span class="n">save_input</span>
@@ -471,7 +467,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filename_map</span> <span class="o">=</span> <span class="n">filename_map</span>
         <span class="k">return</span> <span class="n">filename_map</span></div>
 
-<div class="viewcode-block" id="BaseHead.save_image"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseHead.save_image"><a class="viewcode-back" href="../../../../cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
         <span class="n">y_hat_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">img_type</span><span class="o">=</span><span class="s2">&quot;prediction&quot;</span><span class="p">)</span>
         <span class="n">y_out</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">out_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_map</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]):</span>
@@ -493,7 +489,6 @@
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">stage</span><span class="p">,</span>
         <span class="n">save_image</span><span class="p">,</span>
-        <span class="n">global_step</span><span class="p">,</span>
         <span class="n">run_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">y_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -511,7 +506,7 @@
 
         <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
-            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">global_step</span><span class="p">)</span>
+            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>

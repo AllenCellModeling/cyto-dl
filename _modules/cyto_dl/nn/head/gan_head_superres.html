@@ -429,7 +429,6 @@
         <span class="n">reconstruction_loss</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">(),</span>
         <span class="n">reconstruction_loss_weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">calculate_metric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">save_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">final_act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">(),</span>
         <span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span>
@@ -452,8 +451,6 @@
 <span class="sd">            Weighting of reconstruction loss</span>
 <span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
 <span class="sd">            Postprocessing for `input` and `predictions` of head</span>
-<span class="sd">        calculate_metric=False</span>
-<span class="sd">            Whether to calculate a metric during training. Not used by GAN head.</span>
 <span class="sd">        save_input=False</span>
 <span class="sd">            Whether to save out example input images during training</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -464,7 +461,6 @@
             <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span>
             <span class="n">final_act</span><span class="o">=</span><span class="n">final_act</span><span class="p">,</span>
             <span class="n">postprocess</span><span class="o">=</span><span class="n">postprocess</span><span class="p">,</span>
-            <span class="n">calculate_metric</span><span class="o">=</span><span class="n">calculate_metric</span><span class="p">,</span>
             <span class="n">save_input</span><span class="o">=</span><span class="n">save_input</span><span class="p">,</span>
             <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
             <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
