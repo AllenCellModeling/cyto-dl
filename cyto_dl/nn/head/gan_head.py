@@ -18,7 +18,6 @@ class GANHead(BaseHead):
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
-        calculate_metric=False,
         save_input=False,
     ):
         """
@@ -32,12 +31,10 @@ class GANHead(BaseHead):
             Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        calculate_metric=False
-            Whether to calculate a metric during training. Not used by GAN head.
         save_input=False
             Whether to save out example input images during training
         """
-        super().__init__(None, postprocess, calculate_metric, save_input)
+        super().__init__(None, postprocess, save_input)
         self.gan_loss = gan_loss
         self.reconstruction_loss = reconstruction_loss
         self.reconstruction_loss_weight = reconstruction_loss_weight
@@ -56,13 +53,15 @@ class GANHead(BaseHead):
         loss_reconstruction = self.reconstruction_loss(batch[self.head_name], y_hat)
         return loss_D, loss_G + loss_reconstruction * self.reconstruction_loss_weight
 
+    def forward(self, x):
+        return torch.nn.Tanh()(x)
+
     def run_head(
         self,
         backbone_features,
         batch,
         stage,
         save_image,
-        global_step,
         discriminator=None,
         run_forward=True,
         y_hat=None,
@@ -83,7 +82,7 @@ class GANHead(BaseHead):
 
         y_hat_out, y_out = None, None
         if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage, global_step)
+            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
 
         return {
             "loss_D": loss_D,

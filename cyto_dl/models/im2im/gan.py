@@ -1,10 +1,8 @@
 import sys
-from pathlib import Path
 from typing import Dict
 
 import torch
 import torch.nn as nn
-from monai.data.meta_tensor import MetaTensor
 from monai.inferers import sliding_window_inference
 from torchmetrics import MeanMetric
 
@@ -102,7 +100,7 @@ class GAN(MultiTaskIm2Im):
         z = self.backbone(batch[self.hparams.x_key])
         return {
             task: self.task_heads[task].run_head(
-                z, batch, stage, save_image, self.global_step, self.discriminator
+                z, batch, stage, save_image, discriminator=self.discriminator
             )
             for task in run_heads
         }
@@ -127,7 +125,6 @@ class GAN(MultiTaskIm2Im):
                 batch,
                 stage,
                 save_image,
-                self.global_step,
                 discriminator=self.discriminator if stage == "test" else None,
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
@@ -160,17 +157,9 @@ class GAN(MultiTaskIm2Im):
             d_opt.zero_grad()
             self.manual_backward(loss_D["loss"])
             d_opt.step()
-
-        loss_dict = {}
-        for key, loss in loss_D.items():
-            loss_dict[f"discriminator_{key}"] = loss
-
-        total_loss = 0.0
-        for key, loss in loss_G.items():
-            loss_dict[f"generator_{key}"] = loss
-            total_loss += loss
-
-        loss_dict["loss"] = total_loss
+        loss_dict = {f"discriminator_{key}": loss for key, loss in loss_D.items()}
+        loss_dict.update({f"generator_{key}": loss for key, loss in loss_G.items()})
+        loss_dict["loss"] = loss_dict["generator_loss"]
 
         return loss_dict, None, None
 
