@@ -15,6 +15,9 @@ _DEFAULT_METRICS = {
     "train/loss/generator_loss": MeanMetric(),
     "val/loss/generator_loss": MeanMetric(),
     "test/loss/generator_loss": MeanMetric(),
+    "train/loss": MeanMetric(),
+    "val/loss": MeanMetric(),
+    "test/loss": MeanMetric(),
 }
 
 
