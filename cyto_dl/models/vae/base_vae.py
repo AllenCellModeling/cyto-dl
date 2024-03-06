@@ -171,9 +171,7 @@ class BaseVAE(BaseModel):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.reconstruction_loss[key](
-                xhat[key], x[key]
-            )
+            rcl_per_input_dimension[key] = self.reconstruction_loss[key](xhat[key], x[key])
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -191,12 +189,9 @@ class BaseVAE(BaseModel):
     def calculate_elbo(self, x, xhat, z):
         rcl_reduced = self.calculate_rcl_dict(x, xhat, z)
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none")
-            for part, prior in self.prior.items()
+            part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
         }
-        kld_per_part_summed = {
-            part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()
-        }
+        kld_per_part_summed = {part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()}
 
         total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
@@ -217,9 +212,7 @@ class BaseVAE(BaseModel):
         z = {}
         for part, part_params in z_parts_params.items():
             if part in self.prior:
-                z[part] = self.prior[part](
-                    part_params, mode="sample", inference=inference
-                )
+                z[part] = self.prior[part](part_params, mode="sample", inference=inference)
             else:
                 # if prior for this part isn't in the dict, assume dirac prior
                 # i.e. just return the params, and it won't contribute to kl
@@ -249,9 +242,7 @@ class BaseVAE(BaseModel):
             for part, decoder in self.decoder.items()
         }
 
-    def forward(
-        self, batch, decode=False, inference=True, return_params=False, **kwargs
-    ):
+    def forward(self, batch, decode=False, inference=True, return_params=False, **kwargs):
         is_inference = inference or not self.training
 
         z_params = self.encode(batch, **kwargs)
