@@ -15,7 +15,6 @@ class ExperimentType(Enum):
 class HardwareType(Enum):
     CPU = "cpu"
     GPU = "gpu"
-    MPS = "mps"
     # other hardware types available, but require more complicated config
 
 
