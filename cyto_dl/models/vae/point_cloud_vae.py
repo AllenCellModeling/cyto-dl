@@ -11,6 +11,9 @@ from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
 from cyto_dl.nn.point_cloud import DGCNN, FoldingNet
 
+# from topologylayer.nn import AlphaLayer, BarcodePolyFeature
+from cyto_dl.nn.losses import TopoLoss
+
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
 logger.propagate = False
@@ -65,11 +68,27 @@ class PointCloudVAE(BaseVAE):
         condition_encoder: Optional[dict] = None,
         condition_decoder: Optional[dict] = None,
         condition_keys: Optional[list] = None,
+        mask_keys: Optional[list] = None,
+        masking_ratio: Optional[float] = None,
         disable_metrics: Optional[bool] = False,
+        metric_keys: Optional[list] = None,
+        include_top_loss: Optional[bool] = False,
+        topo_lambda: Optional[float] = None,
+        topo_num_groups: Optional[int] = None,
+        farthest_point: Optional[bool] = True,
+        inference_mask_dict: Optional[dict] = None,
+        target_key: Optional[list] = None,
+        target_mask_keys: Optional[list] = None,
+        parse: Optional[bool] = False,
+        mean: Optional[bool] = True,
+        freeze_encoder: Optional[bool] = False,
         **base_kwargs,
     ):
         self.get_rotation = get_rotation
         self.symmetry_breaking_axis = symmetry_breaking_axis
+        self.target_key = target_key
+        self.target_mask_keys = target_mask_keys
+        self.metric_keys = metric_keys
         self.scalar_inds = scalar_inds
         self.decoder_type = decoder_type
         self.generate_grid_feats = generate_grid_feats
@@ -83,6 +102,14 @@ class PointCloudVAE(BaseVAE):
         self.basal_head_loss = basal_head_loss
         self.basal_head_weight = basal_head_weight
         self.disable_metrics = disable_metrics
+        self.include_top_loss = include_top_loss
+        self.topo_lambda = topo_lambda
+        self.topo_num_groups = topo_num_groups
+        self.farthest_point = farthest_point
+        self.parse = parse
+        self.mask_keys = mask_keys
+        self.masking_ratio = masking_ratio
+        self.freeze_encoder = freeze_encoder
 
         if embedding_prior == "gaussian":
             self.encoder_out_size = 2 * latent_dim
@@ -154,6 +181,7 @@ class PointCloudVAE(BaseVAE):
             optimizer=optimizer,
             prior=prior,
             disable_metrics=disable_metrics,
+            metric_keys=metric_keys,
         )
 
         self.condition_encoder = nn.ModuleDict(condition_encoder)
@@ -162,6 +190,56 @@ class PointCloudVAE(BaseVAE):
         self.embedding_head_loss = nn.ModuleDict(embedding_head_loss)
         self.basal_head = nn.ModuleDict(basal_head)
         self.basal_head_loss = nn.ModuleDict(basal_head_loss)
+        self.inference_mask_dict = inference_mask_dict
+        self.target_label = None
+        self.mean = mean
+        if self.include_top_loss:
+            # self.top_layer = nn.ModuleDict({x_label: AlphaLayer(maxdim=1)})
+            # self.top_loss = nn.ModuleDict({x_label: BarcodePolyFeature(1,2,0)})
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1)}) # 0.1 works well for earthmovers
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1, farthest_point=True, num_groups=256)})
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=10, farthest_point=True, num_groups=256)})
+            self.top_loss = nn.ModuleDict(
+                {
+                    x_label: TopoLoss(
+                        topo_lambda=self.topo_lambda,
+                        farthest_point=self.farthest_point,
+                        num_groups=self.topo_num_groups,
+                        mean=self.mean,
+                    )
+                }
+            )
+            # self.top_loss = nn.ModuleDict(
+            #     {
+            #         x_label: TopoLoss(
+            #             topo_lambda=0.001,
+            #             farthest_point=True,
+            #             num_groups=256,
+            #             mean=self.mean,
+            #         )
+            #     }
+            # )
+
+        if freeze_encoder:
+            for part, encoder in self.encoder.items():
+                for param in self.encoder[part].parameters():
+                    param.requires_grad = False
+
+    def encode(self, batch, **kwargs):
+        ret_dict = {}
+        for part, encoder in self.encoder.items():
+            this_batch_part = batch[part]
+            this_ret = encoder(
+                this_batch_part,
+                **{k: v for k, v in kwargs.items() if k in self.encoder_args[part]},
+            )
+
+            if isinstance(this_ret, dict):  # deal with multiple outputs for an encoder
+                for key in this_ret.keys():
+                    ret_dict[key] = this_ret[key]
+            else:
+                ret_dict[part] = this_ret
+        return ret_dict
 
     def decode(self, z_parts, return_canonical=False, batch=None):
         if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
@@ -170,9 +248,13 @@ class PointCloudVAE(BaseVAE):
                     batch[self.point_label], z_parts["grid_feats"]
                 )
             else:
-                base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
+                base_xhat = self.decoder[self.hparams.x_label](
+                    z_parts[self.hparams.x_label]
+                )
         else:
-            base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
+            base_xhat = self.decoder[self.hparams.x_label](
+                z_parts[self.hparams.x_label]
+            )
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -187,11 +269,14 @@ class PointCloudVAE(BaseVAE):
 
         return {self.hparams.x_label: xhat}
 
-    def encoder_compose_function(self, z_parts):
+    def encoder_compose_function(self, z_parts, batch):
+        batch_size = z_parts[self.hparams.x_label].shape[0]
         if self.basal_head:
             z_parts[self.hparams.x_label + "_basal"] = z_parts[self.hparams.x_label]
             for key in self.basal_head.keys():
-                z_parts[key] = self.basal_head[key](z_parts[self.hparams.x_label + "_basal"])
+                z_parts[key] = self.basal_head[key](
+                    z_parts[self.hparams.x_label + "_basal"]
+                )
 
         if self.condition_keys:
             for j, key in enumerate([self.hparams.x_label] + self.condition_keys):
@@ -200,14 +285,27 @@ class PointCloudVAE(BaseVAE):
                     this_z_parts = torch.squeeze(z_parts[key], dim=(-1))
                     z_parts[key] = this_z_parts
                     # this_z_parts = this_z_parts.argmax(dim=1)
+                this_z_parts = this_z_parts.view(batch_size, -1)
                 if j == 0:
                     cond_feats = this_z_parts
                 else:
+                    if self.mask_keys:
+                        # if mask, then mask this batch part
+                        if f"{key}" in self.mask_keys:
+                            # mask is 1 for batch elements to mask, 0 otherwise
+                            this_mask = (
+                                batch[f"{key}_mask"]
+                                .byte()
+                                .repeat(1, this_z_parts.shape[-1])
+                            )
+                            # multiply inverse mask with batch part, so every mask element of 1 is set to 0
+                            this_z_parts = this_z_parts * ~this_mask.bool()
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
+
             # shared encoder
-            z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
-                cond_feats
-            )
+            z_parts[self.hparams.x_label] = self.condition_encoder[
+                self.hparams.x_label
+            ](cond_feats)
         if self.embedding_head:
             for key in self.embedding_head.keys():
                 z_parts[key] = self.embedding_head[key](z_parts[self.hparams.x_label])
@@ -215,27 +313,59 @@ class PointCloudVAE(BaseVAE):
         return z_parts
 
     def decoder_compose_function(self, z_parts, batch):
-        # import ipdb
-        # ipdb.set_trace()
+        # if (self.condition_keys is not None) & (len(self.condition_decoder.keys()) != 0):
         if self.condition_keys:
             for j, key in enumerate(self.condition_keys):
+                this_batch_part = batch[key]
+                this_batch_part = this_batch_part.view(this_batch_part.shape[0], -1)
+                if self.mask_keys:
+                    # if mask, then mask this batch part
+                    if f"{key}" in self.mask_keys:
+                        this_mask = (
+                            batch[f"{key}_mask"]
+                            .byte()
+                            .repeat(1, this_batch_part.shape[-1])
+                        )
+                        # multiply inverse mask with batch part, so every mask element of 1 is set to 0
+                        this_batch_part = this_batch_part * ~this_mask.bool()
+
                 if j == 0:
-                    cond_inputs = batch[key]
+                    cond_inputs = this_batch_part
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
-                    cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-                cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
+                    cond_inputs = torch.cat((cond_inputs, this_batch_part), dim=1)
+            # cond_feats = torch.cat(
+            #     (z_parts[self.hparams.x_label],cond_inputs), dim=1
+            # )
+            cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
-            z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
-                cond_feats
-            )
+            z_parts[self.hparams.x_label] = self.condition_decoder[
+                self.hparams.x_label
+            ](cond_feats)
         return z_parts
 
-    def calculate_rcl_dict(self, x, xhat, z):
+    def calculate_rcl(self, batch, xhat, input_key, target_key=None):
+        if not target_key:
+            target_key = input_key
+        # import ipdb
+        # ipdb.set_trace()
+        rcl_per_input_dimension = self.reconstruction_loss[input_key](
+            batch[target_key], xhat[input_key]
+        )
+
+        if (self.mask_keys is not None) and (self.target_mask_keys is not None):
+            this_mask = batch["target_mask"].type_as(rcl_per_input_dimension).byte()
+            rcl_per_input_dimension = rcl_per_input_dimension * ~this_mask.bool()
+
+        return rcl_per_input_dimension
+
+    def calculate_rcl_dict(self, batch, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, self.occupancy_label)
+            rcl_per_input_dimension[key] = self.calculate_rcl(
+                batch, xhat, key, self.target_label  # used to be self.occupancy label
+            )
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -244,43 +374,116 @@ class PointCloudVAE(BaseVAE):
                     # and sum across each batch element's dimensions
                     .sum(dim=1)
                 )
-
-                rcl_reduced[key] = rcl.mean()
+                if self.mean:
+                    rcl_reduced[key] = rcl.mean()
+                else:
+                    rcl_reduced[key] = rcl
             else:
                 rcl_reduced[key] = rcl_per_input_dimension[key]
 
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
-                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](
-                    z[key], x[key]
-                )
+                rcl_reduced[key] = self.embedding_head_weight[
+                    key
+                ] * self.embedding_head_loss[key](z[key], x[key])
 
         if self.basal_head_loss:
             for key in self.basal_head_loss.keys():
-                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[key](
-                    z[key], x[key]
-                )
+                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[
+                    key
+                ](z[key], x[key])
+
+        # if (self.include_top_loss) & (self.current_epoch > 10):
+        if self.include_top_loss:
+            for key in self.top_loss.keys():
+                # top_losses = []
+                # for i in range(xhat[key].shape[0]):
+                #     top_losses.append(self.top_loss[key](self.top_layer[
+                #         key
+                #     ](xhat[key][i])))
+                # rcl_reduced['top'] = torch.stack(top_losses).mean()
+                rcl_reduced["top"] = self.top_loss[key](batch[key], xhat[key])
+
         return rcl_reduced
+
+    def parse_batch(self, batch):
+        if self.parse:
+            for key in batch.keys():
+                if len(batch[key].shape) == 1:
+                    batch[key] = batch[key].unsqueeze(dim=-1)
+
+            if self.mask_keys is not None:
+                for key in self.mask_keys:
+                    C = batch[key]
+                    if self.inference_mask_dict:
+                        this_mask = self.inference_mask_dict[key]
+                    else:
+                        this_mask = 0
+                    # get random mask and save to batch
+                    C_mask = torch.zeros(C.shape[0]).bernoulli_(this_mask).byte()
+                    batch[f"{key}_mask"] = C_mask.unsqueeze(dim=-1).float().type_as(C)
+
+            if self.target_key is not None:
+                for j, key in enumerate(self.target_key):
+                    this_mask = 0
+                    if key in self.target_mask_keys:
+                        this_mask = 1
+
+                    if j == 0:
+                        batch["target"] = batch[f"{key}"]
+                        batch["target_mask"] = (
+                            torch.zeros(batch[f"{key}"].shape)
+                            .bernoulli_(this_mask)
+                            .byte()
+                        )
+                    else:
+                        batch["target"] = torch.cat(
+                            [batch["target"], batch[f"{key}"]], dim=1
+                        )
+                        this_part_mask = (
+                            torch.zeros(batch[f"{key}"].shape)
+                            .bernoulli_(this_mask)
+                            .byte()
+                        )
+                        batch["target_mask"] = torch.cat(
+                            [batch["target_mask"], this_part_mask], dim=1
+                        )
+
+                self.target_label = "target"
+            else:
+                self.target_label = self.hparams.x_label
+
+        return batch
+
+    def get_embeddings(self, batch, inference=True):
+        # torch.isnan(z_params['pcloud']).any()
+        batch = self.parse_batch(batch)
+        z_params = self.encode(batch, get_rotation=self.get_rotation)
+        z_params = self.encoder_compose_function(z_params, batch)
+        z = self.sample_z(z_params, inference=inference)
+
+        return z, z_params
+
+    def decode_embeddings(self, z, batch, decode=True, return_canonical=False):
+        z = self.decoder_compose_function(z, batch)
+        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
+            if self.encoder[self.hparams.x_label].generate_grid_feats:
+                xhat = self.decode(z, return_canonical=return_canonical, batch=batch)
+            else:
+                xhat = self.decode(z, return_canonical=return_canonical)
+        else:
+            xhat = self.decode(z, return_canonical=return_canonical)
+
+        return xhat
 
     def forward(self, batch, decode=False, inference=True, return_params=False):
         is_inference = inference or not self.training
-
-        z_params = self.encode(batch, get_rotation=self.get_rotation)
-        z_params = self.encoder_compose_function(z_params)
-        z = self.sample_z(z_params, inference=inference)
-
-        z = self.decoder_compose_function(z, batch)
+        z, z_params = self.get_embeddings(batch, inference)
 
         if not decode:
             return z
 
-        if hasattr(self.encoder[self.hparams.x_label], "generate_grid_feats"):
-            if self.encoder[self.hparams.x_label].generate_grid_feats:
-                xhat = self.decode(z, batch=batch)
-            else:
-                xhat = self.decode(z)
-        else:
-            xhat = self.decode(z)
+        xhat = self.decode_embeddings(z, batch)
 
         if return_params:
             return xhat, z, z_params

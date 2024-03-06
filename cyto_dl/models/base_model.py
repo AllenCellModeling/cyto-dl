@@ -61,7 +61,9 @@ class BaseModelMeta(type):
         # instantiate class with instantiated `init_args`
         # hydra doesn't change the original dict, so we can use it after this
         # with `save_hyperparameters`
-        obj = type.__call__(cls, **instantiate(init_args, _recursive_=True, _convert_=True))
+        obj = type.__call__(
+            cls, **instantiate(init_args, _recursive_=True, _convert_=True)
+        )
 
         # make sure only primitives get stored in the ckpt
         ignore = [arg for arg, v in init_args.items() if not _is_primitive(v)]

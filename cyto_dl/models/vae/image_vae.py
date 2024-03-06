@@ -34,6 +34,7 @@ class _Scale(nn.Module):
 class ImageVAE(BaseVAE):
     def __init__(
         self,
+        x_label: str,
         latent_dim: int,
         spatial_dims: int,
         in_shape: Sequence[int],
@@ -61,14 +62,15 @@ class ImageVAE(BaseVAE):
         num_res_units: int = 2,
         up_kernel_size: int = 3,
         first_conv_padding_mode: str = "replicate",
-        encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         eps: float = 1e-8,
+        encoder_padding: Optional[Union[int, Sequence[int]]] = None,
+        metric_keys: Optional[list] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
 
         self.out_channels = out_channels if out_channels is not None else in_channels
-
+        self.x_label = x_label
         self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
         self.up_kernel_size = up_kernel_size
@@ -125,7 +127,9 @@ class ImageVAE(BaseVAE):
         assert len(_strides) + 1 == len(_channels)
 
         decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(zip(_strides, _channels[:-1], _channels[1:])):
+        for i, (s, c_in, c_out) in enumerate(
+            zip(_strides, _channels[:-1], _channels[1:])
+        ):
             last_block = i + 1 == len(_strides)
 
             size = None if not last_block else in_shape
@@ -160,7 +164,9 @@ class ImageVAE(BaseVAE):
 
             decode_blocks.append(nn.Sequential(upsample, res))
 
-        init_shape = self.final_size if decoder_initial_shape is None else decoder_initial_shape
+        init_shape = (
+            self.final_size if decoder_initial_shape is None else decoder_initial_shape
+        )
 
         first_upsample = nn.Sequential(
             nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
@@ -198,7 +204,9 @@ class ImageVAE(BaseVAE):
         )
 
         if group is not None:
-            self.rotation_module = RotationModule(group, spatial_dims, background_value, eps)
+            self.rotation_module = RotationModule(
+                group, spatial_dims, background_value, eps
+            )
         else:
             self.rotation_module = None
 
@@ -207,6 +215,8 @@ class ImageVAE(BaseVAE):
             decoder=decoder,
             latent_dim=latent_dim,
             prior=prior,
+            x_label=x_label,
+            metric_keys=metric_keys,
             **base_kwargs,
         )
 
