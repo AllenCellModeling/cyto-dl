@@ -36,4 +36,5 @@ class GeomLoss(nn.Module):
         )
 
     def forward(self, gts, preds):
-        return self.loss(preds, gts)
+        loss = self.loss(preds, gts)
+        return loss

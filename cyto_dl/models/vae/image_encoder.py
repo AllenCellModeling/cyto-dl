@@ -127,6 +127,8 @@ class ImageEncoder(torch.nn.Module):
                 subunits=self.num_res_units,
                 bias=bias,
             )
+        if padding is None:
+            padding = same_padding(kernel_size)
 
         return Convolution(
             spatial_dims=self.spatial_dims,

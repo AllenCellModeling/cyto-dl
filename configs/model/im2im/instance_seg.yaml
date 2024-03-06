@@ -8,10 +8,11 @@ backbone:
   _target_: monai.networks.nets.DynUNet
   spatial_dims: ${spatial_dims}
   in_channels: ${raw_im_channels}
-  out_channels: 6
-  strides: [1, 2, 2, 2]
-  kernel_size: [3, 3, 3, 3]
-  upsample_kernel_size: [2, 2, 2]
+  out_channels: ${eval:${spatial_dims}+3}
+  strides: [1, 2, 2]
+  kernel_size: [3, 3, 3]
+  upsample_kernel_size: [2, 2]
+  filters: [16, 32, 64]
   dropout: 0.0
   res_block: True
 
@@ -33,19 +34,22 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
+  overlap: 0.25
+  mode: "gaussian"
 
 _aux:
   _tasks:
     - - ${target_col}
       - _target_: cyto_dl.nn.BaseHead
         loss:
-          _target_: cyto_dl.models.im2im.utils.SkootsLoss
+          _target_: cyto_dl.models.im2im.utils.InstanceSegLoss
           dim: ${spatial_dims}
-        save_raw: True
+        save_input: True
         postprocess:
           input:
             _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
             dtype: numpy.float32
           prediction:
-            _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
-            dtype: numpy.float32
+            _target_: cyto_dl.models.im2im.utils.instance_seg.InstanceSegCluster
+            dim: ${spatial_dims}
+            min_size: 100

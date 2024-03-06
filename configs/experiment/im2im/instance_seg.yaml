@@ -1,0 +1,39 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: im2im/instance_seg.yaml
+  - override /model: im2im/instance_seg.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+source_col: raw
+target_col: seg
+# dimensionality of your data, 2 or 3
+spatial_dims: 3
+# number of channels in your input images
+raw_im_channels: 1
+
+trainer:
+  max_epochs: 100
+
+data:
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  batch_size: 1
+  _aux:
+    # 2D
+    # patch_shape: [64, 64]
+    # 3D
+    patch_shape: [16, 32, 32]

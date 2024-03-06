@@ -5,11 +5,11 @@ import numpy as np
 import torch
 from omegaconf import DictConfig
 from torch import nn
-from cyto_dl.nn.mlp import MLP
-
+import math
 from cyto_dl.models.vae.point_cloud_vae import PointCloudVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
+import cyto_dl
 from torchmetrics import MeanMetric
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
@@ -25,8 +25,6 @@ class PointCloudNFinVAE2(PointCloudVAE):
         latent_dim: int,
         latent_dim_inv: int,
         latent_dim_spur: int,
-        spur_covar_dim: int,
-        inv_covar_dim: int,
         x_label: str,
         encoder: dict,
         decoder: dict,
@@ -48,11 +46,16 @@ class PointCloudNFinVAE2(PointCloudVAE):
         embedding_head_weight: Optional[dict] = None,
         condition_encoder: Optional[dict] = None,
         condition_decoder: Optional[dict] = None,
-        tc_beta: Optional[int] = None,
+        tc_beta: Optional[int] = 1,
         kl_rate: Optional[float] = None,
         elbo_version: Optional[str] = None,
+        condition_decoder_keys: Optional[list] = None,
         inject_covar_in_latent: Optional[bool] = None,
+        one_hot_dict: Optional[dict] = None,
+        dataset_size: Optional[int] = None,
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
+        target_key: Optional[list] = None,
+        x_dim: Optional[int] = None,
         **base_kwargs,
     ):
         super().__init__(
@@ -77,6 +80,7 @@ class PointCloudNFinVAE2(PointCloudVAE):
             disable_metrics=disable_metrics,
         )
         self.tc_beta = tc_beta
+        self.target_key = target_key
         self.kl_rate = kl_rate
         self.elbo_version = elbo_version
         self.inject_covar_in_latent = inject_covar_in_latent
@@ -86,44 +90,14 @@ class PointCloudNFinVAE2(PointCloudVAE):
         self.latent_dim_inv = latent_dim_inv
         self.latent_dim_spur = latent_dim_spur
         self.reg_sm = reg_sm
-        self.inv_covar_dim = inv_covar_dim
-        self.spur_covar_dim = spur_covar_dim
         self.normalize_constant = normalize_constant
         self.automatic_optimization = False
-        self.decoder_var = torch.mul(0.01, torch.ones(256, 3))
-
-        output_dim_prior_nn = 2 * self.latent_dim
-        self.output_dim_prior_nn = output_dim_prior_nn
-        n_layers_prior = 2
-        hidden_dim_prior = 128
-        self.t_nn = nn.Sequential(
-            MLP(
-                *[self.latent_dim_inv, output_dim_prior_nn],
-                hidden_layers=[hidden_dim_prior] * n_layers_prior,
-            )
-        )
-
-        self.params_t_nn = nn.Sequential(
-            MLP(
-                *[self.inv_covar_dim, output_dim_prior_nn],
-                hidden_layers=[hidden_dim_prior] * n_layers_prior,
-            )
-        )
-
-        self.params_t_suff = nn.Sequential(
-            MLP(
-                *[self.inv_covar_dim, 2 * latent_dim_inv],
-                hidden_layers=[hidden_dim_prior] * n_layers_prior,
-            )
-        )
-
-        self.prior_mean_spur = torch.zeros(1)
-        self.logl_spur = nn.Sequential(
-            MLP(
-                *[self.spur_covar_dim, self.latent_dim_spur],
-                hidden_layers=[hidden_dim_prior] * n_layers_prior,
-            )
-        )
+        if x_dim is None:
+            x_dim = 128
+        self.decoder_var = torch.mul(0.01, torch.ones(x_dim))
+        self.one_hot_dict = one_hot_dict
+        self.dataset_size = dataset_size
+        self.condition_decoder_keys = condition_decoder_keys
 
     def warm_up(self, iteration):
         if self.warm_up_iters > 0:
@@ -136,29 +110,48 @@ class PointCloudNFinVAE2(PointCloudVAE):
         eps = torch.randn_like(std)
         return mean + eps * std
 
-    def prior_inv(self, z, inv_covar):
-        t_nn = self.t_nn(z)
-        params_t_nn = self.params_t_nn(inv_covar)
+    def parse_batch(self, batch):
+        if self.one_hot_dict:
+            for key in self.one_hot_dict.keys():
+                batch[key] = torch.nn.functional.one_hot(batch[key].long(), num_classes = self.one_hot_dict[key]['num_classes']).float()
 
-        t_suff = torch.cat((z, z**2), dim=1)
-        params_t_suff = self.params_t_suff(inv_covar)
+        if self.target_key is not None:
+            for j, key in enumerate(self.target_key):                
+                if j == 0:
+                    batch['target'] = batch[f"{key}"]
+                else:
+                    batch['target'] = torch.cat([batch['target'], batch[f"{key}"]], dim=1)
+            self.target_label = 'target'
+        else:
+            self.target_label = self.hparams.x_label
+        return batch
 
-        return t_nn, params_t_nn, t_suff, params_t_suff
-
-    def prior_spur(self, spur_covar):
-        logl_spur = self.logl_spur(spur_covar).exp() + 1e-4
-
-        return self.prior_mean_spur, logl_spur
+    def decoder_compose_function(self, z_parts, batch):
+        if (self.condition_keys is not None) & (self.condition_decoder_keys is not None):
+            for j, key in enumerate(self.condition_decoder_keys):
+                if j == 0:
+                    cond_inputs = batch[key]
+                    # cond_inputs = torch.squeeze(batch[key], dim=(-1))
+                else:
+                    cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
+            cond_feats = torch.cat(
+                (cond_inputs, z_parts[self.hparams.x_label]), dim=1
+            )
+            # shared decoder
+            z_parts[self.hparams.x_label] = self.condition_decoder[
+                self.hparams.x_label
+            ](cond_feats)
+        return z_parts
 
     def calculate_elbo(
-        self, batch, xhat, z_params, stage
+        self, batch, xhat, z, z_params, stage
     ):  # z_params is unsampled, z is sampled with reparametrization trick
         self.decoder_var = self.decoder_var.type_as(xhat[self.hparams.x_label])
-        log_px_z = -100 * self.reconstruction_loss[self.hparams.x_label](
+        log_px_z = -1 * self.reconstruction_loss[self.hparams.x_label](
             batch[self.hparams.x_label], xhat[self.hparams.x_label]
         )
 
-        # log_px_z = log_normal(batch[self.hparams.x_label], xhat[self.hparams.x_label], self.decoder_var)
+        # log_px_z = log_normal(batch[self.target_label], xhat[self.hparams.x_label], self.decoder_var)
 
         if stage != "train":
             return log_px_z, z_params
@@ -166,19 +159,18 @@ class PointCloudNFinVAE2(PointCloudVAE):
         x = batch[self.hparams.x_label]
         device = x.device
         batch_size = x.shape[0]
-        z = z_params[self.hparams.x_label]
-
-        output_dim_prior_nn = self.output_dim_prior_nn
+        z = z[self.hparams.x_label]
+        dataset_size = self.dataset_size
 
         for j, key in enumerate(self.inv_keys):
             if j == 0:
-                inv_covar = z_params[key].squeeze()
+                inv_covar = z_params[key].view(batch_size, -1)
             else:
                 inv_covar = torch.cat((inv_covar, z_params[key]), dim=1)
 
         for j, key in enumerate(self.spur_keys):
             if j == 0:
-                spur_covar = z_params[key].squeeze()
+                spur_covar = z_params[key].view(batch_size, -1)
             else:
                 spur_covar = torch.cat((spur_covar, z_params[key]), dim=1)
 
@@ -189,12 +181,11 @@ class PointCloudNFinVAE2(PointCloudVAE):
 
         # Warm-up for kl term and tc loss
         beta, tc_beta = self._training_hps
-
         latent_mean = z_params["latent_mean"]
         latent_logvar = z_params["latent_logvar"]
 
         log_qz_xde = log_normal(z, latent_mean, (latent_logvar.exp() + 1e-4))
-        log_qz_xde = log_qz_xde.clamp(-30)
+        # log_qz_xde = log_qz_xde.clamp(-30)
 
         if self.tc_beta > 0:
             _logqz = log_normal(
@@ -216,9 +207,22 @@ class PointCloudNFinVAE2(PointCloudVAE):
         # Clone z first then calculate parts of the prior with derivative wrt cloned z
         # prior
         z_inv_copy = z[:, : self.latent_dim_inv].detach().requires_grad_(True)
+        z_spur_copy = z[:, self.latent_dim_inv:].detach().requires_grad_(True)
 
         # Only use the latent invariant space
-        t_nn, params_t_nn, t_suff, params_t_suff = self.prior_inv(z_inv_copy, inv_covar)
+        t_nn, params_t_nn, t_suff, params_t_suff = self.prior[self.hparams.x_label](
+            z_inv_copy, inv_covar
+        )
+        # Only use the latent invariant space
+        t_nn_spur, params_t_nn_spur, t_suff_spur, params_t_suff_spur = self.prior['spurious'](
+            z_spur_copy, spur_covar
+        )
+        output_dim_prior_nn = self.prior[self.hparams.x_label].output_dim_prior_nn
+        output_dim_prior_nn_spur = self.prior['spurious'].output_dim_prior_nn
+
+        self.t_nn = self.prior[self.hparams.x_label].t_nn
+        self.params_t_nn = self.prior[self.hparams.x_label].params_t_nn
+        self.params_t_suff = self.prior[self.hparams.x_label].params_t_suff
 
         # Batched dot product for unnormalized prior probability
         log_pz_d_inv = torch.bmm(
@@ -227,6 +231,16 @@ class PointCloudNFinVAE2(PointCloudVAE):
         ).view(-1) + torch.bmm(
             t_suff.view((-1, 1, self.latent_dim_inv * 2)),
             params_t_suff.view((-1, self.latent_dim_inv * 2, 1)),
+        ).view(
+            -1
+        )
+
+        log_pz_d_spur = torch.bmm(
+            t_nn_spur.view((-1, 1, output_dim_prior_nn_spur)),
+            params_t_nn_spur.view((-1, output_dim_prior_nn_spur, 1)),
+        ).view(-1) + torch.bmm(
+            t_suff_spur.view((-1, 1, self.latent_dim_spur * 2)),
+            params_t_suff_spur.view((-1, self.latent_dim_spur * 2, 1)),
         ).view(
             -1
         )
@@ -259,40 +273,69 @@ class PointCloudNFinVAE2(PointCloudVAE):
         self.params_t_nn.requires_grad_(True)
         self.params_t_suff.requires_grad_(True)
 
+        # Implement constant log prior so prior params are not updated but grads are backpropagated for the encoder
+        self.prior['spurious'].t_nn.requires_grad_(False)
+        self.prior['spurious'].params_t_nn.requires_grad_(False)
+        self.prior['spurious'].params_t_suff.requires_grad_(False)
+
+        t_nn_copy_spur = self.prior['spurious'].t_nn(z[:, self.latent_dim_inv:])
+        params_t_nn_copy_spur = self.prior['spurious'].params_t_nn(spur_covar.float())
+
+        t_suff_copy_spur = torch.cat(
+            (z[:, self.latent_dim_inv:], (z[:, self.latent_dim_inv:]) ** 2), dim=1
+        )
+        params_t_suff_copy_spur = self.prior['spurious'].params_t_suff(spur_covar.float())
+
+        log_pz_d_spur_copy = torch.bmm(
+            t_nn_copy_spur.view((-1, 1, output_dim_prior_nn_spur)),
+            params_t_nn_copy_spur.view((-1, output_dim_prior_nn_spur, 1)),
+        ).view(-1) + torch.bmm(
+            t_suff_copy_spur.view((-1, 1, self.latent_dim_spur * 2)),
+            params_t_suff_copy_spur.view((-1, self.latent_dim_spur * 2, 1)),
+        ).view(
+            -1
+        )
+        # log_pz_d_inv_copy = log_pz_d_inv_copy.clamp(-3)
+        self.prior['spurious'].t_nn.requires_grad_(True)
+        self.prior['spurious'].params_t_nn.requires_grad_(True)
+        self.prior['spurious'].params_t_suff.requires_grad_(True)
+
         # Calculate derivatives of prior automatically
         dprior_dz = grad(
             log_pz_d_inv,
             z_inv_copy,
-            grad_outputs=torch.ones(log_pz_d_inv.shape, device=device),
+            grad_outputs=torch.ones(log_pz_d_inv.shape, device="cuda:0"),
             create_graph=True,
         )[0]
         d2prior_d2z = grad(
             dprior_dz,
             z_inv_copy,
-            grad_outputs=torch.ones(dprior_dz.shape, device=device),
+            grad_outputs=torch.ones(dprior_dz.shape, device="cuda:0"),
             create_graph=True,
         )[0]
 
-        # Spurious prior
-        prior_mean_spur, prior_var_spur = self.prior_spur(spur_covar)
-        prior_mean_spur = prior_mean_spur.type_as(z)
-        prior_var_spur = prior_var_spur.type_as(z)
-
-        if not self.inject_covar_in_latent:
-            log_pz_e_spur = log_normal(
-                z[:, self.latent_dim_inv :],
-                prior_mean_spur
-                * torch.ones(
-                    prior_var_spur.shape, device=device
-                ),  # need for shape match (could change check in log_normal function)
-                prior_var_spur,
-            )
-        else:
-            log_pz_e_spur = 0
+        dprior_dz_spur = grad(
+            log_pz_d_spur,
+            z_spur_copy,
+            grad_outputs=torch.ones(log_pz_d_spur.shape, device="cuda:0"),
+            create_graph=True,
+        )[0]
+        d2prior_d2z_spur = grad(
+            dprior_dz_spur,
+            z_spur_copy,
+            grad_outputs=torch.ones(dprior_dz_spur.shape, device="cuda:0"),
+            create_graph=True,
+        )[0]
 
         if self.reg_sm == 0:
             sm_part = (
                 (d2prior_d2z + torch.mul(0.5, torch.pow(dprior_dz, 2)))
+                .sum(dim=1)
+                .mean()
+            )
+
+            sm_part_spur = (
+                (d2prior_d2z_spur + torch.mul(0.5, torch.pow(dprior_dz_spur, 2)))
                 .sum(dim=1)
                 .mean()
             )
@@ -307,16 +350,26 @@ class PointCloudNFinVAE2(PointCloudVAE):
                 .mean()
             )
 
+            sm_part_spur = (
+                (
+                    d2prior_d2z_spur
+                    + torch.mul(0.5, torch.pow(dprior_dz_spur, 2))
+                    + d2prior_d2z_spur.pow(2).mul(self.reg_sm)
+                )
+                .sum(dim=1)
+                .mean()
+            )
+
         if self.tc_beta > 0:
             objective_function = (
                 log_px_z
-                + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
+                + beta * (log_pz_d_inv_copy + log_pz_d_spur_copy - log_qz_xde)
                 - tc_beta * (logqz - logqz_prodmarginals)
-            ).mean().div(self.normalize_constant) - beta * sm_part
+            ).mean().div(self.normalize_constant) - beta * (sm_part + sm_part_spur)
         else:
             objective_function = (
-                log_px_z + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
-            ).mean().div(self.normalize_constant) - beta * sm_part
+                log_px_z + beta * (log_pz_d_inv_copy + log_pz_d_spur_copy - log_qz_xde)
+            ).mean().div(self.normalize_constant) - beta * (sm_part + sm_part_spur)
         objective_function = objective_function.mul(-1)
         return objective_function, z
 
@@ -327,13 +380,14 @@ class PointCloudNFinVAE2(PointCloudVAE):
         return z_parts_params
 
     def model_step(self, stage, batch, batch_idx):
+
         (
             xhat,
             z,
             z_params,
         ) = self.forward(batch, decode=True, inference=False, return_params=True)
 
-        (loss, z) = self.calculate_elbo(batch, xhat, z_params, stage)
+        (loss, z) = self.calculate_elbo(batch, xhat, z, z_params, stage)
 
         loss = {
             "loss": loss,
@@ -346,6 +400,9 @@ class PointCloudNFinVAE2(PointCloudVAE):
     def training_step(self, batch, batch_idx):
         opt = self.optimizers()
         opt.zero_grad(set_to_none=True)
+        self.warm_up_epochs = 2
+        self.warm_up_iters = self.warm_up_epochs * self.dataset_size/batch[self.hparams.x_label].shape[0]
+        self.warm_up(self.global_step)
         loss, preds, targets = self.model_step("train", batch, batch_idx)
         self.manual_backward(loss["loss"])
         opt.step()

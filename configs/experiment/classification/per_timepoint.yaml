@@ -1,0 +1,26 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: classification/single_timepoint.yaml
+  - override /model: classification/single_timepoint.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: breakdown_classification
+run_name: single_timepoint
+persist_cache: False
+ckpt_path:
+
+trainer:
+  max_epochs: 130
+  check_val_every_n_epoch: 10

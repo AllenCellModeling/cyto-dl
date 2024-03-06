@@ -22,7 +22,7 @@ class MultiTaskIm2Im(BaseModel):
         save_images_every_n_epochs=1,
         inference_args: Dict = {},
         inference_heads: Union[List, None] = None,
-        compile=True,
+        compile=False,
         **base_kwargs,
     ):
         """
@@ -42,6 +42,8 @@ class MultiTaskIm2Im(BaseModel):
             Arguments passed to monai's [sliding window inferer](https://docs.monai.io/en/stable/inferers.html#sliding-window-inference)
         inference_heads: Union[List, None] = None
             Optional list of heads to run during inference. Defaults to running all heads.
+        compile: False
+            Whether to compile the model using torch.compile
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -61,14 +63,14 @@ class MultiTaskIm2Im(BaseModel):
                 }
             )
 
+        if "hr_skip" in base_kwargs:
+            base_kwargs.pop("hr_skip")
         metrics = base_kwargs.pop("metrics", _DEFAULT_METRICS)
         super().__init__(metrics=metrics, **base_kwargs)
 
         self.automatic_optimization = True
-        for stage in ("train", "val", "test", "predict"):
-            (Path(save_dir) / f"{stage}_images").mkdir(exist_ok=True, parents=True)
 
-        if compile and not sys.platform.startswith("win"):
+        if compile is True and not sys.platform.startswith("win"):
             self.backbone = torch.compile(backbone)
             self.task_heads = torch.nn.ModuleDict(
                 {k: torch.compile(v) for k, v in task_heads.items()}
@@ -107,9 +109,7 @@ class MultiTaskIm2Im(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(
-                z, batch, stage, save_image, self.global_step
-            )
+            task: self.task_heads[task].run_head(z, batch, stage, save_image)
             for task in run_heads
         }
 
@@ -137,7 +137,6 @@ class MultiTaskIm2Im(BaseModel):
                 batch,
                 stage,
                 save_image,
-                self.global_step,
                 run_forward=False,
                 y_hat=raw_pred_images[head_name],
             )
@@ -156,53 +155,74 @@ class MultiTaskIm2Im(BaseModel):
         )
 
     def _sum_losses(self, losses):
-        summ = 0
-        for k, v in losses.items():
-            summ += v
-        losses["loss"] = summ
+        losses["loss"] = torch.sum(torch.stack(list(losses.values())))
         return losses
 
-    def _get_run_heads(self, batch, stage):
-        if stage not in ("test", "predict"):
-            run_heads = [key for key in self.task_heads.keys() if key in batch]
-        else:
-            run_heads = self.inference_heads
-        return run_heads
+    def _get_unrun_heads(self, io_map):
+        """returns heads that don't have outputs yet."""
+        updated_run_heads = []
+        # check that all output files exist for each head
+        for head, head_io_map in io_map.items():
+            for fn in head_io_map["output"]:
+                if not Path(fn).exists():
+                    updated_run_heads.append(head)
+                    break
+        return updated_run_heads
 
-    def model_step(self, stage, batch, batch_idx):
-        # convert monai metatensors to tensors
+    def _combine_io_maps(self, io_maps):
+        """aggregate io_maps from per-head to per-input image."""
+        io_map = {}
+        # create input-> per head output mapping
+        for head, head_io_map in io_maps.items():
+            for in_file, out_file in zip(head_io_map["input"], head_io_map["output"]):
+                if in_file not in io_map:
+                    io_map[in_file] = {}
+                io_map[in_file][head] = out_file
+        return io_map
+
+    def _get_run_heads(self, batch, stage, batch_idx):
+        """Get heads that are either specified as inference heads and don't have outputs yet or all
+        heads."""
+        run_heads = self.inference_heads
+        if stage in ("train", "val"):
+            run_heads = [key for key in self.task_heads.keys() if key in batch]
+
+        io_map = {
+            h: self.task_heads[h].generate_io_map(
+                batch[self.hparams.x_key].meta, stage, batch_idx, self.global_step
+            )
+            for h in run_heads
+        }
+
+        if stage == "predict":
+            # only run heads that don't have outputs yet for prediction
+            run_heads = self._get_unrun_heads(io_map)
+            io_map = self._combine_io_maps(io_map)
+
+        return run_heads, io_map
+
+    def _to_tensor(self, batch):
+        """convert monai metatensors to tensors."""
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()
+        return batch
 
-        run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(
-            batch, stage, self.should_save_image(batch_idx, stage), run_heads
-        )
-
-        if stage != "predict":
-            losses = {
-                head_name: head_result["loss"]
-                for head_name, head_result in outs.items()
-            }
-            losses = self._sum_losses(losses)
-            return losses, None, None
-
-        preds = {
-            head_name: head_result["y_hat_out"]
-            for head_name, head_result in outs.items()
+    def model_step(self, stage, batch, batch_idx):
+        run_heads, _ = self._get_run_heads(batch, stage, batch_idx)
+        batch = self._to_tensor(batch)
+        save_image = self.should_save_image(batch_idx, stage)
+        outs = self.run_forward(batch, stage, save_image, run_heads)
+        losses = {
+            head_name: head_result["loss"] for head_name, head_result in outs.items()
         }
-
-        return None, preds, None
+        return self._sum_losses(losses), None, None
 
     def predict_step(self, batch, batch_idx):
         stage = "predict"
-        # convert monai metatensors to tensors
-        for k, v in batch.items():
-            if isinstance(v, MetaTensor):
-                batch[k] = v.as_tensor()
-        run_heads = self._get_run_heads(batch, stage)
-        outs = self.run_forward(
-            batch, stage, self.should_save_image(batch_idx, stage), run_heads
-        )
-        return outs[run_heads[0]]["save_path"]
+        run_heads, io_map = self._get_run_heads(batch, stage, batch_idx)
+        if len(run_heads) > 0:
+            batch = self._to_tensor(batch)
+            save_image = self.should_save_image(batch_idx, stage)
+            self.run_forward(batch, stage, save_image, run_heads)
+        return io_map

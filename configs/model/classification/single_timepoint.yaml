@@ -1,0 +1,28 @@
+_target_: cyto_dl.models.classification.Classifier
+num_classes: ${model._aux.num_classes}
+model:
+  _target_: monai.networks.nets.Regressor
+  in_shape: [1, 64, 64]
+  out_shape: ${model._aux.num_classes}
+  channels: [8, 16, 32]
+  strides: [2, 2, 2]
+
+x_key: "img"
+save_dir: ${paths.output_dir}
+save_images_every_n_epochs: 1
+
+optimizer:
+  _partial_: True
+  _target_: torch.optim.AdamW
+  weight_decay: 0.01
+
+lr_scheduler:
+  _partial_: True
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: 0.0003
+  epochs: ${trainer.max_epochs}
+  steps_per_epoch: 1
+  pct_start: 0.1
+
+_aux:
+  num_classes: 2

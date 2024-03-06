@@ -23,6 +23,7 @@ class ReadPointCloud(MapTransform):
         rotate: bool = False,
         scalar_scale: Optional[float] = 0.1,
         final_columns: Optional[list] = None,
+        jitter: Optional[bool] = False,
     ):
         """
         Parameters
@@ -62,6 +63,7 @@ class ReadPointCloud(MapTransform):
         self.rotate = rotate
         self.scalar_scale = scalar_scale
         self.final_columns = final_columns
+        self.jitter = jitter
 
     def pc_norm(self, pc):
         """pc: NxC, return NxC"""
@@ -71,62 +73,135 @@ class ReadPointCloud(MapTransform):
         pc = pc / m
         return pc
 
+    # def __call__(self, row):
+    #     res = dict(**row)
+
+    #     with TemporaryDirectory() as tmp_dir:
+    #         for key in self.keys:
+    #             if self.remote:
+    #                 path = Path(row[key])
+    #                 ext = path.suffix
+
+    #                 fifo_path = str(Path(tmp_dir) / f"{uuid.uuid4()}{ext}")
+    #                 os.mkfifo(fifo_path)
+
+    #                 with path.open("rb") as f_input:
+    #                     Path(fifo_path).write_bytes(f_input.read())
+    #                 path = fifo_path
+    #             else:
+    #                 path = str(row[key])
+
+    #             points = PyntCloud.from_file(path).points
+
+    #             if "s" in points.columns:
+    #                 points = points[["z", "y", "x", "s"]]
+    #             else:
+    #                 points = points[["z", "y", "x"]]
+    #             if len(set(points['z'].values)) == 1:
+    #                 points['z'] = 1e-5
+    #             points = points.values[:, : self.num_cols]
+
+    #             if self.rotate:
+    #                 points = rotate_pointcloud(points)
+
+    #             if self.flip_dims:
+    #                 if self.num_cols == 3:
+    #                     points = points[:, -1::-1].copy()
+    #                 else:
+    #                     points = np.concatenate(
+    #                         [points[:, -2::-1], points[:, -1:]], axis=1
+    #                     )
+
+    #             if self.scale:
+    #                 points = points * self.scale
+    #             if self.norm:
+    #                 points[:, :3] = self.pc_norm(points[:, :3])
+    #             res[key] = torch.tensor(
+    #                 points,
+    #                 dtype=torch.get_default_dtype(),
+    #             )
+    #             if self.num_cols > 3:
+    #                 res[key][:, self.num_cols - 1 :] = (
+    #                     res[key][:, self.num_cols - 1 :] * self.scalar_scale
+    #                 )
+
+    #             if self.sample:
+    #                 self.sample_idx = np.random.randint(
+    #                     res[key].shape[0], size=self.sample
+    #                 )
+    #                 res[key] = res[key][self.sample_idx]
+    #             if self.final_columns:
+    #                 res[key] = res[key][:, self.final_columns]
+
+    #     return res
     def __call__(self, row):
         res = dict(**row)
 
-        with TemporaryDirectory() as tmp_dir:
-            for key in self.keys:
-                if self.remote:
-                    path = Path(row[key])
-                    ext = path.suffix
+        for key in self.keys:
+            path = str(row[key])
 
-                    fifo_path = str(Path(tmp_dir) / f"{uuid.uuid4()}{ext}")
-                    os.mkfifo(fifo_path)
+            points = PyntCloud.from_file(path).points
 
-                    with path.open("rb") as f_input:
-                        Path(fifo_path).write_bytes(f_input.read())
-                    path = fifo_path
-                else:
-                    path = str(row[key])
-                points = PyntCloud.from_file(path).points
-
-                if "s" in points.columns:
-                    points = points[["z", "y", "x", "s"]]
-                else:
-                    points = points[["z", "y", "x"]]
-                points = points.values[:, : self.num_cols]
-
-                if self.rotate:
-                    points = rotate_pointcloud(points)
-
-                if self.flip_dims:
-                    if self.num_cols == 3:
-                        points = points[:, -1::-1].copy()
-                    else:
-                        points = np.concatenate(
-                            [points[:, -2::-1], points[:, -1:]], axis=1
-                        )
-
-                if self.scale:
-                    points = points * self.scale
-                if self.norm:
-                    points[:, :3] = self.pc_norm(points[:, :3])
-                res[key] = torch.tensor(
-                    points,
-                    dtype=torch.get_default_dtype(),
+            if "s" in points.columns:
+                points = points[["z", "y", "x", "s"]]
+            else:
+                points = points[["z", "y", "x"]]
+            if len(set(points["z"].values)) == 1:
+                points["z"] = 1e-5
+            # try:
+            if self.sample:
+                probs2 = points["s"].values
+                probs2 = np.where(probs2 < 0, 0, probs2)
+                probs2 = probs2 / probs2.sum()
+                idxs2 = np.random.choice(
+                    np.arange(len(probs2)), size=self.sample, replace=True, p=probs2
                 )
-                if self.num_cols > 3:
-                    res[key][:, self.num_cols - 1 :] = (
-                        res[key][:, self.num_cols - 1 :] * self.scalar_scale
-                    )
+                # idxs2 = np.random.choice(
+                #     np.arange(len(probs2)), size=self.sample, replace=False, p=probs2
+                # )
+                points = points.iloc[idxs2].reset_index(drop=True)
+            # except:
+            #     this = np.where(probs2 > 0)[0]
 
-                if self.sample:
-                    self.sample_idx = np.random.randint(
-                        res[key].shape[0], size=self.sample
-                    )
-                    res[key] = res[key][self.sample_idx]
-                if self.final_columns:
-                    res[key] = res[key][:, self.final_columns]
+            #     import ipdb
+            #     ipdb.set_trace()
+
+            points = points.values[:, : self.num_cols]
+
+            if self.rotate:
+                points = rotate_pointcloud(points)
+
+            if self.flip_dims:
+                if self.num_cols == 3:
+                    points = points[:, -1::-1].copy()
+                else:
+                    points = np.concatenate([points[:, -2::-1], points[:, -1:]], axis=1)
+
+            if self.scale:
+                points = points * self.scale
+            if self.norm:
+                points[:, :3] = self.pc_norm(points[:, :3])
+
+            if self.jitter:
+                disp = 0.001
+                points[:,0] = points[:,0] + (np.random.rand(len(points[:,0])) - 0.5) * disp
+                points[:,1] = points[:,1] + (np.random.rand(len(points[:,1])) - 0.5) * disp
+                points[:,2] = points[:,2] + (np.random.rand(len(points[:,2])) - 0.5) * disp
+
+            res[key] = torch.tensor(
+                points,
+                dtype=torch.get_default_dtype(),
+            )
+            if self.num_cols > 3:
+                res[key][:, self.num_cols - 1 :] = (
+                    res[key][:, self.num_cols - 1 :] * self.scalar_scale
+                )
+
+            # if self.sample:
+            #     self.sample_idx = np.random.randint(res[key].shape[0], size=self.sample)
+            #     res[key] = res[key][self.sample_idx]
+            if self.final_columns:
+                res[key] = res[key][:, self.final_columns]
 
         return res
 

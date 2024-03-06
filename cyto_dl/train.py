@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 
 import hydra
 import lightning
+import pyrootutils
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig, OmegaConf
@@ -34,12 +35,21 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     Returns:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
-
+    # set root if not already setup
+    if os.environ.get("PROJECT_ROOT") is None:
+        root = pyrootutils.setup_root(
+            search_from=__file__,
+            project_root_env_var=True,
+            dotenv=True,
+            pythonpath=True,
+            cwd=False,  # do NOT change working directory to root (would cause problems in DDP mode)
+        )
     # set seed for random number generators in pytorch, numpy and python.random
     if cfg.get("seed"):
         lightning.seed_everything(cfg.seed, workers=True)
 
     # resolve config to avoid unresolvable interpolations in the stored config
+
     OmegaConf.resolve(cfg)
 
     # remove aux section after resolving and before instantiating

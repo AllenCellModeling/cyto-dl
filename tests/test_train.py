@@ -10,33 +10,48 @@ from tests.helpers.run_if import RunIf
 from .utils import resolve_readonly
 
 
-def test_train_fast_dev_run(cfg_train):
+@pytest.mark.parametrize("spatial_dims", [2, 3])
+def test_train_fast_dev_run(cfg_train, spatial_dims):
     """Run for 1 train, val and test step."""
     HydraConfig().set_config(cfg_train)
     with open_dict(cfg_train):
         cfg_train.trainer.fast_dev_run = True
         cfg_train.trainer.accelerator = "cpu"
+
+        cfg_train.spatial_dims = spatial_dims
+        if spatial_dims == 2:
+            cfg_train.data._aux.patch_shape = [64, 64]
     resolve_readonly(cfg_train)
     train(cfg_train)
 
 
 @RunIf(min_gpus=1)
-def test_train_fast_dev_run_gpu(cfg_train):
+@pytest.mark.parametrize("spatial_dims", [2, 3])
+def test_train_fast_dev_run_gpu(cfg_train, spatial_dims):
     """Run for 1 train, val and test step on GPU."""
     HydraConfig().set_config(cfg_train)
     with open_dict(cfg_train):
         cfg_train.trainer.fast_dev_run = True
         cfg_train.trainer.accelerator = "gpu"
+
+        cfg_train.spatial_dims = spatial_dims
+        if spatial_dims == 2:
+            cfg_train.data._aux.patch_shape = [64, 64]
     resolve_readonly(cfg_train)
     train(cfg_train)
 
 
 @pytest.mark.slow
-def test_train_resume(tmp_path, cfg_train):
+@pytest.mark.parametrize("spatial_dims", [2, 3])
+def test_train_resume(tmp_path, cfg_train, spatial_dims):
     """Run 1 epoch, finish, and resume for another epoch."""
     with open_dict(cfg_train):
         cfg_train.trainer.max_epochs = 1
         cfg_train.callbacks.model_checkpoint.monitor = None
+
+        cfg_train.spatial_dims = spatial_dims
+        if spatial_dims == 2:
+            cfg_train.data._aux.patch_shape = [64, 64]
 
     HydraConfig().set_config(cfg_train)
 

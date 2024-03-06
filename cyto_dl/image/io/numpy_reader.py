@@ -17,6 +17,8 @@ class ReadNumpyFile(MapTransform):
         remote: bool = False,
         clip_min: Optional[int] = None,
         clip_max: Optional[int] = None,
+        interpolate: Optional[int] = None,
+        noise: Optional[bool] = None,
     ):
         """
         Parameters
@@ -33,6 +35,8 @@ class ReadNumpyFile(MapTransform):
         self.remote = remote
         self.clip_min = clip_min
         self.clip_max = clip_max
+        self.interpolate = interpolate
+        self.noise = noise
 
     def __call__(self, row):
         res = dict(**row)
@@ -65,4 +69,15 @@ class ReadNumpyFile(MapTransform):
                 if isinstance(self.clip_max, int):
                     res[key] = torch.where(res[key] < self.clip_max, res[key], 0)
 
+                if self.interpolate is not None:
+                    res[key] = res[key].unsqueeze(dim=0)
+                    res[key] = torch.nn.functional.interpolate(
+                        res[key], size=(self.interpolate, self.interpolate)
+                    ).squeeze(dim=0)
+                    res[key] = (res[key] - res[key].min()) / (
+                        res[key].max() - res[key].min()
+                    )
+
+                if self.noise:
+                    res[key] = res[key] + (0.001**0.5) * torch.randn(*res[key].shape)
         return res

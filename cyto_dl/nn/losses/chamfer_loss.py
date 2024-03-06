@@ -27,7 +27,10 @@ class ChamferLoss(nn.Module):
         return P
 
     def forward(self, gts, preds):
-        P = self.batch_pairwise_dist2(gts, preds)
+        if isinstance(gts, list):
+            gts = torch.stack(gts, dim=0)
+        # P = self.batch_pairwise_dist2(gts, preds)
+        P = self.batch_pairwise_dist(gts, preds)
         mins, _ = torch.min(P, 1)
         loss_1 = torch.sum(mins, axis=1)
         mins, _ = torch.min(P, 2)

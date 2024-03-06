@@ -112,7 +112,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
                 raise ValueError(
                     f"Crop size {roi_size} is too large for image size {shape}"
                 )
-        return max_start_indices + 1  # range doesn't include end
+        return max_start_indices
 
     def generate_slices(self, image_dict: Dict) -> Dict:
         """Generate dictionary of slices at all scales starting at random point."""
@@ -146,7 +146,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
                     "Max attempts reached. Please check your selection function "
                     "or adjust max_attempts"
                 )
-            slices = self.generate_slices(image_dict)
+            slices = self.generate_slices({k: image_dict[k] for k in available_keys})
 
             patch_dict = {
                 key: self._apply_slice(image_dict[key], slices[key])

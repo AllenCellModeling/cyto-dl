@@ -9,10 +9,12 @@ import math
 from cyto_dl.models.vae.point_cloud_vae import PointCloudVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
+import cyto_dl
 from torchmetrics import MeanMetric
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 from torch.autograd import grad
+from cyto_dl.nn.losses import TopoLoss
 
 logger = logging.getLogger("lightning")
 logger.propagate = False
@@ -53,6 +55,9 @@ class PointCloudNFinVAE(PointCloudVAE):
         one_hot_dict: Optional[dict] = None,
         dataset_size: Optional[int] = None,
         optimizer: torch.optim.Optimizer = torch.optim.Adam,
+        target_key: Optional[list] = None,
+        x_dim: Optional[int] = None,
+        include_top_loss: Optional[bool] = False,
         **base_kwargs,
     ):
         super().__init__(
@@ -77,6 +82,7 @@ class PointCloudNFinVAE(PointCloudVAE):
             disable_metrics=disable_metrics,
         )
         self.tc_beta = tc_beta
+        self.target_key = target_key
         self.kl_rate = kl_rate
         self.elbo_version = elbo_version
         self.inject_covar_in_latent = inject_covar_in_latent
@@ -88,57 +94,89 @@ class PointCloudNFinVAE(PointCloudVAE):
         self.reg_sm = reg_sm
         self.normalize_constant = normalize_constant
         self.automatic_optimization = False
-        self.decoder_var = torch.mul(0.01, torch.ones(128))
+        if x_dim is None:
+            x_dim = 128
+        self.decoder_var = torch.mul(0.01, torch.ones(x_dim))
         self.one_hot_dict = one_hot_dict
         self.dataset_size = dataset_size
         self.condition_decoder_keys = condition_decoder_keys
+        self.include_top_loss = include_top_loss
+
+        if self.include_top_loss:
+            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.001, farthest_point=True, num_groups=50, mean=False)})
+            self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.001, farthest_point=True, num_groups=256, mean=False)})
 
     def warm_up(self, iteration):
         if self.warm_up_iters > 0:
             beta = min(1, iteration / self.warm_up_iters) * self.beta
             tc_beta = min(1, iteration / self.warm_up_iters) * self.tc_beta
-            self._training_hps = [beta, tc_beta]
+            # self._training_hps = [beta, tc_beta]
+            # self._training_hps = [1, 0]
 
     def reparameterize(self, mean, logvar):
         std = (torch.exp(logvar) + 1e-4).sqrt()
         eps = torch.randn_like(std)
         return mean + eps * std
 
-    def parse_batch(self, batch, inference):
+    def parse_batch(self, batch):
         if self.one_hot_dict:
             for key in self.one_hot_dict.keys():
                 batch[key] = torch.nn.functional.one_hot(batch[key].long(), num_classes = self.one_hot_dict[key]['num_classes']).float()
+
+        if self.target_key is not None:
+            for j, key in enumerate(self.target_key):                
+                if j == 0:
+                    batch['target'] = batch[f"{key}"]
+                else:
+                    batch['target'] = torch.cat([batch['target'], batch[f"{key}"]], dim=1)
+            self.target_label = 'target'
+        else:
+            self.target_label = self.hparams.x_label
         return batch
 
     def decoder_compose_function(self, z_parts, batch):
-        if (self.condition_keys is not None) & (len(self.condition_decoder.keys()) != 0):
+        if (self.condition_keys is not None) & (self.condition_decoder_keys is not None):
             for j, key in enumerate(self.condition_decoder_keys):
                 if j == 0:
                     cond_inputs = batch[key]
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-                cond_feats = torch.cat(
-                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-                )
+            cond_feats = torch.cat(
+                (cond_inputs, z_parts[self.hparams.x_label]), dim=1
+            )
             # shared decoder
             z_parts[self.hparams.x_label] = self.condition_decoder[
                 self.hparams.x_label
             ](cond_feats)
         return z_parts
+    
+    def calculate_rcl(self, batch, xhat):
 
+        log_px_z = -0.1 * self.reconstruction_loss[self.hparams.x_label](
+            batch[self.hparams.x_label], xhat[self.hparams.x_label]
+        )
+        # log_px_z = -5 * self.reconstruction_loss[self.hparams.x_label](
+        #     batch[self.hparams.x_label], xhat[self.hparams.x_label]
+        # )
+        if self.include_top_loss:
+            this_top_loss = -self.top_loss[self.hparams.x_label](batch[self.hparams.x_label], xhat[self.hparams.x_label])
+        # log_px_z = log_normal(batch[self.target_label], xhat[self.hparams.x_label], self.decoder_var)
+            return log_px_z + this_top_loss
+        else:
+            return log_px_z
+        
+    @torch.enable_grad()
     def calculate_elbo(
         self, batch, xhat, z, z_params, stage
     ):  # z_params is unsampled, z is sampled with reparametrization trick
         self.decoder_var = self.decoder_var.type_as(xhat[self.hparams.x_label])
-        # log_px_z = -10 * self.reconstruction_loss[self.hparams.x_label](
-        #     batch[self.hparams.x_label], xhat[self.hparams.x_label]
-        # )
+        # import ipdb
+        # ipdb.set_trace()
+        log_px_z = self.calculate_rcl(batch, xhat)
 
-        log_px_z = log_normal(batch[self.hparams.x_label], xhat[self.hparams.x_label], self.decoder_var)
-
-        if stage != "train":
-            return log_px_z, z_params
+        # if stage != "train":
+        #     return log_px_z, z_params
 
         x = batch[self.hparams.x_label]
         device = x.device
@@ -151,27 +189,34 @@ class PointCloudNFinVAE(PointCloudVAE):
                 inv_covar = z_params[key].view(batch_size, -1)
             else:
                 inv_covar = torch.cat((inv_covar, z_params[key]), dim=1)
+        inv_covar = inv_covar.long()
+        # import ipdb
+        # ipdb.set_trace()
 
         for j, key in enumerate(self.spur_keys):
             if j == 0:
                 spur_covar = z_params[key].view(batch_size, -1)
             else:
                 spur_covar = torch.cat((spur_covar, z_params[key]), dim=1)
+        spur_covar = spur_covar.long()
 
-        if self.tc_beta > 0 and dataset_size is None:
+        beta, tc_beta = self._training_hps
+
+        if tc_beta > 0 and dataset_size is None:
             raise ValueError(
                 "Dataset_size not given to elbo function, can not calculate Total Correlation loss part!"
             )
 
         # Warm-up for kl term and tc loss
-        beta, tc_beta = self._training_hps
+
         latent_mean = z_params["latent_mean"]
         latent_logvar = z_params["latent_logvar"]
 
         log_qz_xde = log_normal(z, latent_mean, (latent_logvar.exp() + 1e-4))
-        # log_qz_xde = log_qz_xde.clamp(-30)
+        # log_qz_xde = log_qz_xde.clamp(-1000)
 
-        if self.tc_beta > 0:
+
+        if tc_beta > 0:
             _logqz = log_normal(
                 z.view(batch_size, 1, self.latent_dim),
                 latent_mean.view(1, batch_size, self.latent_dim),
@@ -180,13 +225,18 @@ class PointCloudNFinVAE(PointCloudVAE):
             )
 
             # minibatch weighted sampling
-            logqz_prodmarginals = (
-                torch.logsumexp(_logqz, dim=1, keepdim=False)
-                - math.log(batch_size * dataset_size)
-            ).sum(1)
-            logqz = torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(
-                batch_size * dataset_size
-            )
+            # logqz_prodmarginals = (
+            #     torch.logsumexp(_logqz, dim=1, keepdim=False)
+            #     - math.log(batch_size * dataset_size)
+            # ).sum(1)
+            # logqz = torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(
+            #     batch_size * dataset_size
+            # )
+            logqz = (torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
+            logqz_inv = (torch.logsumexp(_logqz[:,:,:self.latent_dim_inv].sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
+            logqz_spur = (torch.logsumexp(_logqz[:,:,self.latent_dim_inv:].sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
+            # print(f'The tc loss is {(tc_beta * (logqz - logqz_inv - logqz_spur)).mean().item()}')
+
 
         # Clone z first then calculate parts of the prior with derivative wrt cloned z
         # prior
@@ -240,7 +290,7 @@ class PointCloudNFinVAE(PointCloudVAE):
         self.t_nn.requires_grad_(True)
         self.params_t_nn.requires_grad_(True)
         self.params_t_suff.requires_grad_(True)
-
+        
         # Calculate derivatives of prior automatically
         dprior_dz = grad(
             log_pz_d_inv,
@@ -288,13 +338,16 @@ class PointCloudNFinVAE(PointCloudVAE):
                 .sum(dim=1)
                 .mean()
             )
-
-        if self.tc_beta > 0:
+        # print(logqz - logqz_prodmarginals, log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde, log_qz_xde)
+        if tc_beta > 0:
             objective_function = (
-                log_px_z
-                + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
-                - tc_beta * (logqz - logqz_prodmarginals)
-            ).mean().div(self.normalize_constant) - beta * sm_part
+                (
+                    log_px_z + 
+                    beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde) -
+                    tc_beta * (logqz - logqz_inv - logqz_spur)
+                ).mean().div(self.normalize_constant) -
+                beta * sm_part
+            )
         else:
             objective_function = (
                 log_px_z + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
@@ -303,12 +356,16 @@ class PointCloudNFinVAE(PointCloudVAE):
         return objective_function, z
 
     def sample_z(self, z_parts_params, inference=False):
-        z_parts_params[self.hparams.x_label] = self.reparameterize(
-            z_parts_params["latent_mean"], z_parts_params["latent_logvar"]
-        )
+        if inference:
+            z_parts_params[self.hparams.x_label] = z_parts_params['latent_mean']
+        else:
+            z_parts_params[self.hparams.x_label] = self.reparameterize(
+                z_parts_params["latent_mean"], z_parts_params["latent_logvar"]
+            )
         return z_parts_params
 
     def model_step(self, stage, batch, batch_idx):
+
         (
             xhat,
             z,
