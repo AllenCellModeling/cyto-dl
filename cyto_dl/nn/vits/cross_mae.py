@@ -11,11 +11,13 @@ from cyto_dl.nn.vits.blocks import CrossAttentionBlock
 
 
 def take_indexes(sequences, indexes):
-    return torch.gather(sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1]))
+    return torch.gather(
+        sequences, 0, repeat(indexes.to(sequences.device), "t b -> t b c", c=sequences.shape[-1])
+    )
 
 
 class CrossMAE_Decoder(torch.nn.Module):
-    """Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masekd tokens only attend
+    """Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masked tokens only attend
     to visible tokens."""
 
     def __init__(
@@ -91,7 +93,7 @@ class CrossMAE_Decoder(torch.nn.Module):
         trunc_normal_(self.mask_token, std=0.02)
         trunc_normal_(self.pos_embedding, std=0.02)
 
-    def forward(self, features, forward_indexes, backward_indexes, patch_size):
+    def forward(self, features, forward_indexes, backward_indexes):
         T, B, C = features.shape
         # we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now
         features = self.projection_norm(self.projection(features))
@@ -142,18 +144,7 @@ class CrossMAE_Decoder(torch.nn.Module):
             dim=0,
         )
         patches = take_indexes(patches, backward_indexes[1:] - 1)
-
-        mask = torch.zeros_like(patches)
-        mask[T - 1 :] = 1
-        mask = take_indexes(mask, backward_indexes[1:] - 1)
         # patches to image
         img = self.patch2img(patches)
-        img = torch.nn.functional.interpolate(
-            img, tuple(torch.as_tensor(patch_size) * self.num_patches)
-        )
 
-        mask = self.patch2img(mask)
-        mask = torch.nn.functional.interpolate(
-            mask, tuple(torch.as_tensor(patch_size) * self.num_patches), mode="nearest"
-        )
-        return img, mask
+        return img
