@@ -417,11 +417,13 @@
 
 
 <div class="viewcode-block" id="take_indexes"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.take_indexes">[docs]</a><span class="k">def</span> <span class="nf">take_indexes</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="n">indexes</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">indexes</span><span class="p">,</span> <span class="s2">&quot;t b -&gt; t b c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">sequences</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">indexes</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">sequences</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="s2">&quot;t b -&gt; t b c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CrossMAE_Decoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder">[docs]</a><span class="k">class</span> <span class="nc">CrossMAE_Decoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masekd tokens only attend</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masked tokens only attend</span>
 <span class="sd">    to visible tokens.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -497,7 +499,7 @@
         <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
         <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossMAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">):</span>
+<div class="viewcode-block" id="CrossMAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">):</span>
         <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span>
         <span class="c1"># we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now</span>
         <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
@@ -548,21 +550,10 @@
             <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">patches</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="n">mask</span><span class="p">[</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># patches to image</span>
         <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
-            <span class="n">img</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span><span class="p">)</span>
-        <span class="p">)</span>
 
-        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
-            <span class="n">mask</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;nearest&quot;</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">mask</span></div></div>
+        <span class="k">return</span> <span class="n">img</span></div></div>
 </pre></div>
         </article>
       </div>
