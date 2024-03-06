@@ -28,7 +28,7 @@ task_heads:
         rescale_dtype: numpy.uint8
       prediction:
         _target_: cyto_dl.models.im2im.utils.postprocessing.AutoThreshold
-        method: "otsu"
+        method: "threshold_otsu"
     save_input: True
 
 optimizer:
