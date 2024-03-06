@@ -34,8 +34,8 @@ class PatchSize(Enum):
 # could speed it up by hardcoding this enum, but would have to update
 # if skimage adds/deletes threshold filters
 
-ThresholdFilters = Enum(
-    "ThresholdFilters",
+AutoThresholdMethod = Enum(
+    "AutoThresholdMethod",
     {
         func_name.split("threshold_")[-1].upper(): func_name
         for func_name in filter(
