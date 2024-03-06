@@ -10,8 +10,7 @@ from cyto_dl.eval import evaluate
 from cyto_dl.train import train as train_model
 from cyto_dl.utils.download_test_data import download_test_data
 from cyto_dl.utils.rich_utils import print_config_tree
-
-DEFAULT_EXPERIMENTS = ["gan", "instance_seg", "labelfree", "segmentation_plugin", "segmentation"]
+from cyto_dl.api.data import ExperimentType
 
 
 class CytoDLModel:
@@ -45,11 +44,13 @@ class CytoDLModel:
         """Load configuration from dictionary."""
         self.cfg = config
 
+    # TODO: replace experiment_type str with api.data.ExperimentType -> will
+    # require corresponding changes in ml-segmenter
     def load_default_experiment(
-        self, experiment_name: str, output_dir: str, train=True, overrides: List = []
+        self, experiment_type: str, output_dir: str, train=True, overrides: List = []
     ):
         """Load configuration from directory."""
-        assert experiment_name in DEFAULT_EXPERIMENTS
+        assert experiment_type in {exp_type.value for exp_type in ExperimentType}
         config_dir = self.root / "configs"
 
         GlobalHydra.instance().clear()
@@ -57,7 +58,7 @@ class CytoDLModel:
             cfg = compose(
                 config_name="train.yaml" if train else "eval.yaml",
                 return_hydra_config=True,
-                overrides=[f"experiment=im2im/{experiment_name}"] + overrides,
+                overrides=[f"experiment=im2im/{experiment_type}"] + overrides,
             )
 
         with open_dict(cfg):
