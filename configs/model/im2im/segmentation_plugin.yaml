@@ -27,10 +27,8 @@ task_heads:
         _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
         rescale_dtype: numpy.uint8
       prediction:
-        _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
-        activation:
-          _target_: torch.nn.Sigmoid
-        rescale_dtype: numpy.uint8
+        _target_: cyto_dl.models.im2im.utils.postprocessing.AutoThreshold
+        method: "otsu"
     save_input: True
 
 optimizer:
