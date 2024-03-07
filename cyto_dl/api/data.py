@@ -1,6 +1,7 @@
 # goal: allow the API client to interact with CytoDLModel without
 # worrying about the actual values being used in config files
 from enum import Enum
+
 import skimage
 
 
@@ -19,8 +20,8 @@ class HardwareType(Enum):
 
 
 class PatchSize(Enum):
-    """
-    Patch size for training, and their respective patch shapes.
+    """Patch size for training, and their respective patch shapes.
+
     TODO: get from benji
     """
 
@@ -37,8 +38,6 @@ AutoThresholdMethod = Enum(
     "AutoThresholdMethod",
     {
         func_name.split("threshold_")[-1].upper(): func_name
-        for func_name in filter(
-            lambda x: x.startswith("threshold_"), dir(skimage.filters)
-        )
+        for func_name in filter(lambda x: x.startswith("threshold_"), dir(skimage.filters))
     },
 )

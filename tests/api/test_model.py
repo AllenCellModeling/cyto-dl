@@ -1,8 +1,11 @@
-import cyto_dl.api.model
-from cyto_dl.api.model import CytoDLModel
-from cyto_dl.api.data import ExperimentType
 from unittest.mock import patch
+
 import pytest
+
+import cyto_dl.api.model
+from cyto_dl.api.data import ExperimentType
+from cyto_dl.api.model import CytoDLModel
+
 
 # mock these functions to avoid attempts to write to file system
 @patch("cyto_dl.api.model.OmegaConf.save")
@@ -13,6 +16,7 @@ def test_load_default_experiment_valid_exp_type(MockMkdir, MockSave):
     MockMkdir.assert_called()
     MockSave.assert_called()
 
+
 @patch("cyto_dl.api.model.OmegaConf.save")
 @patch("cyto_dl.api.model.Path.mkdir")
 def test_load_default_experiment_invalid_exp_type(MockMkdir, MockSave):
@@ -21,4 +25,3 @@ def test_load_default_experiment_invalid_exp_type(MockMkdir, MockSave):
         model.load_default_experiment("invalid_exp_type", "fake_dir")
     MockMkdir.assert_not_called()
     MockSave.assert_not_called()
-

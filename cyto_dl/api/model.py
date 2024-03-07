@@ -6,11 +6,11 @@ from hydra import compose, initialize_config_dir
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import OmegaConf, open_dict
 
+from cyto_dl.api.data import ExperimentType
 from cyto_dl.eval import evaluate
 from cyto_dl.train import train as train_model
 from cyto_dl.utils.download_test_data import download_test_data
 from cyto_dl.utils.rich_utils import print_config_tree
-from cyto_dl.api.data import ExperimentType
 
 
 class CytoDLModel:
