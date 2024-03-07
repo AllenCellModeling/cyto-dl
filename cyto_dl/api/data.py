@@ -20,9 +20,7 @@ class HardwareType(Enum):
 
 
 class PatchSize(Enum):
-    """
-    Patch size for training, and their respective patch shapes.
-    """
+    """Patch size for training, and their respective patch shapes."""
 
     SMALL = [16, 32, 32]
     MEDIUM = [16, 64, 64]
