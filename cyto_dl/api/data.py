@@ -20,14 +20,13 @@ class HardwareType(Enum):
 
 
 class PatchSize(Enum):
-    """Patch size for training, and their respective patch shapes.
-
-    TODO: get from benji
+    """
+    Patch size for training, and their respective patch shapes.
     """
 
-    SMALL = [1, 3, 3]
-    MEDIUM = [16, 32, 32]
-    LARGE = [20, 40, 40]
+    SMALL = [16, 32, 32]
+    MEDIUM = [16, 64, 64]
+    LARGE = [16, 128, 128]
 
 
 # importing skimage takes a while.
