@@ -504,12 +504,11 @@ class InstanceSegCluster:
         return out
 
     def __call__(self, image):
-        image = image.detach().cpu().half().numpy()
+        image = image.detach().half()
+        naive_labeling, _ = label((image[1] > self.semantic_threshold).cpu())
+        skel = image[0].cpu().numpy()
+        embedding = image[2 : 2 + self.dim].cpu().numpy()
 
-        skel = image[0]
-        naive_labeling, _ = label(image[1] > self.semantic_threshold)
-
-        embedding = image[2 : 2 + self.dim]
         regions = enumerate(find_objects(naive_labeling), start=1)
 
         highest_cell_idx = 0
