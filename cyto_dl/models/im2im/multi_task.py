@@ -1,4 +1,5 @@
 import sys
+from contextlib import suppress
 from pathlib import Path
 from typing import Dict, List, Union
 
@@ -220,3 +221,17 @@ class MultiTaskIm2Im(BaseModel):
             save_image = self.should_save_image(batch_idx, stage)
             self.run_forward(batch, stage, save_image, run_heads)
         return io_map
+
+    # utils for smartcache training
+    def on_train_start(self):
+        with suppress(AttributeError):
+            print("Smartcache starting...")
+            self.trainer.datamodule.train_dataloader().dataset.start()
+
+    def on_train_epoch_end(self):
+        with suppress(AttributeError):
+            self.trainer.datamodule.train_dataloader().dataset.update_cache()
+
+    def on_train_end(self, *args, **kwargs):
+        with suppress(AttributeError):
+            self.trainer.datamodule.train_dataloader().dataset.shutdown()
