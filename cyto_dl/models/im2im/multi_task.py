@@ -225,7 +225,6 @@ class MultiTaskIm2Im(BaseModel):
     # utils for smartcache training
     def on_train_start(self):
         with suppress(AttributeError):
-            print("Smartcache starting...")
             self.trainer.datamodule.train_dataloader().dataset.start()
 
     def on_train_epoch_end(self):
