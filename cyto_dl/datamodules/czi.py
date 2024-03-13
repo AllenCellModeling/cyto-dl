@@ -25,6 +25,7 @@ class CZIDataset(Dataset):
         time_stop_column: str = "stop",
         time_step_column: str = "step",
         transform: Optional[Callable] = None,
+        dask_load: bool = True,
     ):
         """
         Parameters
@@ -53,6 +54,8 @@ class CZIDataset(Dataset):
             If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.
         transform: Optional[Callable] = None
             Callable to that accepts numpy array. For example, image normalization functions could be passed here.
+        dask_load: bool = True
+            Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.
         """
         super().__init__(None, transform)
         df = pd.read_csv(csv_path)
@@ -66,6 +69,7 @@ class CZIDataset(Dataset):
         if spatial_dims not in (2, 3):
             raise ValueError(f"`spatial_dims` must be 2 or 3, got {spatial_dims}")
         self.spatial_dims = spatial_dims
+        self.dask_load = dask_load
 
         self.img_data = self.get_per_file_args(df)
 
@@ -126,7 +130,10 @@ class CZIDataset(Dataset):
         original_path = img_data.pop("original_path")
         scene = img_data.pop("scene")
         img.set_scene(scene)
-        data_i = img.get_image_dask_data(**img_data).compute()
+        if self.dask_load:
+            data_i = img.get_image_dask_data(**img_data).compute()
+        else:
+            data_i = img.get_image_data(**img_data)
         img_data["scene"] = scene
         data_i = self._ensure_channel_first(data_i)
         output_img = (
