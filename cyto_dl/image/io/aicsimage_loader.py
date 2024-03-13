@@ -1,5 +1,6 @@
 from typing import List
 
+import numpy as np
 from aicsimageio import AICSImage
 from monai.data import MetaTensor
 from monai.transforms import Transform
@@ -20,6 +21,7 @@ class AICSImageLoaderd(Transform):
         kwargs_keys: List = ["dimension_order_out", "C", "T"],
         out_key: str = "raw",
         allow_missing_keys=False,
+        dtype: np.dtype = np.float16,
     ):
         """
         Parameters
@@ -41,6 +43,7 @@ class AICSImageLoaderd(Transform):
         self.allow_missing_keys = allow_missing_keys
         self.out_key = out_key
         self.scene_key = scene_key
+        self.dtype = dtype
 
     def __call__(self, data):
         # copying prevents the dataset from being modified inplace - important when using partially cached datasets so that the memory use doesn't increase over time
@@ -52,7 +55,7 @@ class AICSImageLoaderd(Transform):
         if self.scene_key in data:
             img.set_scene(data[self.scene_key])
         kwargs = {k: data[k] for k in self.kwargs_keys}
-        img = img.get_image_dask_data(**kwargs).compute()
+        img = img.get_image_dask_data(**kwargs).compute().astype(self.dtype)
         data[self.out_key] = MetaTensor(img, meta={"filename_or_obj": path, "kwargs": kwargs})
 
         return data
