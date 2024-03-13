@@ -410,12 +410,11 @@
 <span class="kn">import</span> <span class="nn">dask</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">tqdm</span>
 <span class="kn">from</span> <span class="nn">aicsimageio</span> <span class="kn">import</span> <span class="n">AICSImage</span>
 <span class="kn">from</span> <span class="nn">dask.diagnostics</span> <span class="kn">import</span> <span class="n">ProgressBar</span>
 <span class="kn">from</span> <span class="nn">lightning</span> <span class="kn">import</span> <span class="n">LightningDataModule</span>
 <span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span> <span class="nn">monai.data.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">SmartCacheDataset</span>
+<span class="kn">from</span> <span class="nn">monai.data.dataset</span> <span class="kn">import</span> <span class="n">CacheDataset</span><span class="p">,</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">SmartCacheDataset</span>
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
 
@@ -425,7 +424,7 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">csv_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">csv_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">transforms</span><span class="p">:</span> <span class="n">Compose</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">img_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
@@ -433,9 +432,10 @@
         <span class="n">img_path_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span>
         <span class="n">channel_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ch&quot;</span><span class="p">,</span>
         <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="n">neighboring_timepoints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">num_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">cache_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">replace_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -457,33 +457,49 @@
 <span class="sd">            column in csv_path that contains the channel to use</span>
 <span class="sd">        spatial_dims: int</span>
 <span class="sd">            number of spatial dimensions in the image</span>
-<span class="sd">        neighboring_timepoints: bool</span>
-<span class="sd">            whether to return T and T+1 as a 2 channel image, useful for models incorporating time</span>
+<span class="sd">        num_neighbors: int</span>
+<span class="sd">            number of neighboring timepoints to use</span>
 <span class="sd">        num_workers: int</span>
 <span class="sd">            number of workers to use for loading data. Most be specified here to schedule replacement workers for cache data</span>
 <span class="sd">        cache_rate: float</span>
 <span class="sd">            percentage of data to cache</span>
+<span class="sd">        replace_rate: float</span>
+<span class="sd">            percentage of data to replace</span>
+<span class="sd">        kwargs:</span>
+<span class="sd">            additional arguments to pass to DataLoader</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;loaded_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img_data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="c1"># read img_data if it&#39;s a path, otherwise set to empty dict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">img_data</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;train_img_data.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span>
+            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">row</span><span class="o">.</span><span class="n">_asdict</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">img_data</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;val_img_data.csv&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="n">csv_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;loaded_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;csv_path or img_data must be specified&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="n">num_workers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
-        <span class="n">val_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">n_val</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span> <span class="o">*</span> <span class="n">pct_val</span><span class="p">)])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">val_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">val_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="c1"># read img_data if it&#39;s a path, otherwise set to empty dict</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">img_data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_val</span> <span class="o">=</span> <span class="n">n_val</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pct_val</span> <span class="o">=</span> <span class="n">pct_val</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span> <span class="o">=</span> <span class="n">img_path_column</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_column</span> <span class="o">=</span> <span class="n">channel_column</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">transforms</span> <span class="o">=</span> <span class="n">transforms</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">neighboring_timepoints</span> <span class="o">=</span> <span class="n">neighboring_timepoints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">=</span> <span class="n">num_neighbors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache_rate</span> <span class="o">=</span> <span class="n">cache_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replace_rate</span> <span class="o">=</span> <span class="n">replace_rate</span>
 
     <span class="k">def</span> <span class="nf">_get_scenes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of scenes in an image.&quot;&quot;&quot;</span>
@@ -492,8 +508,8 @@
     <span class="k">def</span> <span class="nf">_get_timepoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the number of timepoints in an image.&quot;&quot;&quot;</span>
         <span class="n">timepoints</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dims</span><span class="o">.</span><span class="n">T</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighboring_timepoints</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">timepoints</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">timepoints</span><span class="p">[:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">timepoints</span>
 
     <span class="nd">@dask</span><span class="o">.</span><span class="n">delayed</span>
@@ -503,18 +519,19 @@
         <span class="n">scenes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_scenes</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
         <span class="n">timepoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_timepoints</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
         <span class="n">img_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">use_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">scenes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">timepoint</span> <span class="ow">in</span> <span class="n">timepoints</span><span class="p">:</span>
                 <span class="n">img_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">{</span>
                         <span class="s2">&quot;dimension_order_out&quot;</span><span class="p">:</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:]</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighboring_timepoints</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
                         <span class="k">else</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:],</span>
                         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_column</span><span class="p">],</span>
                         <span class="s2">&quot;scene&quot;</span><span class="p">:</span> <span class="n">scene</span><span class="p">,</span>
                         <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">timepoint</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighboring_timepoints</span>
-                        <span class="k">else</span> <span class="p">[</span><span class="n">timepoint</span><span class="p">,</span> <span class="n">timepoint</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
+                        <span class="k">else</span> <span class="p">[</span><span class="n">timepoint</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span>
                         <span class="s2">&quot;original_path&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">],</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
@@ -533,11 +550,33 @@
 
 <div class="viewcode-block" id="SmartcacheDatamodule.setup"><a class="viewcode-back" href="../../../cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s2">&quot;fit&quot;</span><span class="p">:</span>
-            <span class="c1"># split df into train/test/val</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_val</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">val_size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;train&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="ow">and</span> <span class="s2">&quot;val&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartCacheDataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
+                    <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
+                    <span class="n">cache_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_rate</span><span class="p">,</span>
+                    <span class="n">num_replace_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">num_init_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                    <span class="n">replace_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replace_rate</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CacheDataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span>
+                    <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">],</span>
+                    <span class="n">cache_rate</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>  <span class="c1"># 1.0,</span>
+                    <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
             <span class="c1"># update img_data</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_train</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_val</span><span class="p">)</span>
+            <span class="n">image_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
+            <span class="n">val_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_val</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image_data</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">pct_val</span><span class="p">)])</span>
+            <span class="n">val_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">val_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+                <span class="n">image_data</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">val_size</span>
+            <span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Train images:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Val images:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]))</span>
+
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">csv_path</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">/loaded_data/train_img_data.csv&quot;</span><span class="p">,</span>
                 <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -550,13 +589,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
                 <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">],</span>
                 <span class="n">cache_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_rate</span><span class="p">,</span>
-                <span class="n">num_replace_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">num_replace_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                <span class="n">num_init_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                <span class="n">replace_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">replace_rate</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SmartCacheDataset</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">CacheDataset</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span>
-                <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">],</span>
-                <span class="n">cache_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_rate</span><span class="p">,</span>
-                <span class="n">num_replace_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;valid&quot;</span><span class="p">],</span>
+                <span class="n">cache_rate</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">stage</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
@@ -566,7 +607,8 @@
 <div class="viewcode-block" id="SmartcacheDatamodule.make_dataloader"><a class="viewcode-back" href="../../../cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.make_dataloader">[docs]</a>    <span class="k">def</span> <span class="nf">make_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">split</span><span class="p">):</span>
         <span class="c1"># smartcachedataset can&#39;t have persistent workers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;persistent_workers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">split</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;num_workers&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;num_workers&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;num_workers&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">datasets</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
             <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
