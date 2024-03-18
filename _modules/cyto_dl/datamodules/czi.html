@@ -431,6 +431,7 @@
         <span class="n">time_stop_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stop&quot;</span><span class="p">,</span>
         <span class="n">time_step_column</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;step&quot;</span><span class="p">,</span>
         <span class="n">transform</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dask_load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -459,6 +460,8 @@
 <span class="sd">            If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.</span>
 <span class="sd">        transform: Optional[Callable] = None</span>
 <span class="sd">            Callable to that accepts numpy array. For example, image normalization functions could be passed here.</span>
+<span class="sd">        dask_load: bool = True</span>
+<span class="sd">            Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">)</span>
@@ -472,6 +475,7 @@
         <span class="k">if</span> <span class="n">spatial_dims</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`spatial_dims` must be 2 or 3, got </span><span class="si">{</span><span class="n">spatial_dims</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dask_load</span> <span class="o">=</span> <span class="n">dask_load</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">img_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_per_file_args</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
@@ -532,7 +536,10 @@
         <span class="n">original_path</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;original_path&quot;</span><span class="p">)</span>
         <span class="n">scene</span> <span class="o">=</span> <span class="n">img_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;scene&quot;</span><span class="p">)</span>
         <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">scene</span><span class="p">)</span>
-        <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dask_load</span><span class="p">:</span>
+            <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_i</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_data</span><span class="p">(</span><span class="o">**</span><span class="n">img_data</span><span class="p">)</span>
         <span class="n">img_data</span><span class="p">[</span><span class="s2">&quot;scene&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scene</span>
         <span class="n">data_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_channel_first</span><span class="p">(</span><span class="n">data_i</span><span class="p">)</span>
         <span class="n">output_img</span> <span class="o">=</span> <span class="p">(</span>
