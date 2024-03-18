@@ -144,40 +144,25 @@ class SmartcacheDatamodule(LightningDataModule):
 
     def setup(self, stage=None):
         if stage == "fit":
-            if "train" in self.img_data and "val" in self.img_data:
-                self.datasets["train"] = SmartCacheDataset(
-                    self.img_data["train"],
-                    transform=self.transforms["train"],
-                    cache_rate=self.cache_rate,
-                    num_replace_workers=2,
-                    num_init_workers=self.num_workers,
-                    replace_rate=self.replace_rate,
+            if "train" not in self.img_data or "val" not in self.img_data:
+                # update img_data
+                image_data = self.get_per_file_args(self.df)
+                val_size = np.min([self.n_val, int(len(image_data) * self.pct_val)])
+                val_size = np.max([val_size, 1])
+                self.img_data["train"], self.img_data["val"] = train_test_split(
+                    image_data, test_size=val_size
                 )
-                self.datasets["val"] = CacheDataset(
-                    self.img_data["val"],
-                    transform=self.transforms["valid"],
-                    cache_rate=0.02,  # 1.0,
-                    num_workers=self.num_workers,
+
+                print("Train images:", len(self.img_data["train"]))
+                print("Val images:", len(self.img_data["val"]))
+
+                pd.DataFrame(self.img_data["train"]).to_csv(
+                    f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv",
+                    index=False,
                 )
-                return
-            # update img_data
-            image_data = self.get_per_file_args(self.df)
-            val_size = np.min([self.n_val, int(len(image_data) * self.pct_val)])
-            val_size = np.max([val_size, 1])
-            self.img_data["train"], self.img_data["val"] = train_test_split(
-                image_data, test_size=val_size
-            )
-
-            print("Train images:", len(self.img_data["train"]))
-            print("Val images:", len(self.img_data["val"]))
-
-            pd.DataFrame(self.img_data["train"]).to_csv(
-                f"{self.csv_path.parents[0]}/loaded_data/train_img_data.csv",
-                index=False,
-            )
-            pd.DataFrame(self.img_data["val"]).to_csv(
-                f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv", index=False
-            )
+                pd.DataFrame(self.img_data["val"]).to_csv(
+                    f"{self.csv_path.parents[0]}/loaded_data/val_img_data.csv", index=False
+                )
 
             self.datasets["train"] = SmartCacheDataset(
                 self.img_data["train"],
