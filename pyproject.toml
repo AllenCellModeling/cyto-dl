@@ -83,7 +83,7 @@ all = [
     "cyto-dl[equiv,spharm,s3,torchserve,pcloud]",
 ]
 test = [
-    "cyto-dl",
+    "cyto-dl[dependencies]",
     "pytest~=7.2",
     "pytest-cov[toml]~=4.0",
 ]
