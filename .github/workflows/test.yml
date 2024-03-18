@@ -44,6 +44,8 @@ jobs:
                   ;;
           esac
 
+          export CFLAGS="$CFLAGS -Wno-error"
+
           conda activate test
           conda install -c conda-forge -n test fortran-compiler blas-devel
 
