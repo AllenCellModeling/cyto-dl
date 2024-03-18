@@ -22,6 +22,7 @@ class AICSImageLoaderd(Transform):
         out_key: str = "raw",
         allow_missing_keys=False,
         dtype: np.dtype = np.float16,
+        dask_load: bool = True,
     ):
         """
         Parameters
@@ -36,6 +37,8 @@ class AICSImageLoaderd(Transform):
             Key for the output image
         allow_missing_keys : bool = False
             Whether to allow missing keys in the data dictionary
+        dask_load: bool = True
+            Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.
         """
         super().__init__()
         self.path_key = path_key
@@ -44,6 +47,7 @@ class AICSImageLoaderd(Transform):
         self.out_key = out_key
         self.scene_key = scene_key
         self.dtype = dtype
+        self.dask_load = dask_load
 
     def __call__(self, data):
         # copying prevents the dataset from being modified inplace - important when using partially cached datasets so that the memory use doesn't increase over time
@@ -55,7 +59,11 @@ class AICSImageLoaderd(Transform):
         if self.scene_key in data:
             img.set_scene(data[self.scene_key])
         kwargs = {k: data[k] for k in self.kwargs_keys}
-        img = img.get_image_dask_data(**kwargs).compute().astype(self.dtype)
+        if self.dask_load:
+            img = img.get_image_dask_data(**kwargs).compute()
+        else:
+            img = img.get_image_data(**kwargs)
+        img = img.astype(self.dtype)
         data[self.out_key] = MetaTensor(img, meta={"filename_or_obj": path, "kwargs": kwargs})
 
         return data
