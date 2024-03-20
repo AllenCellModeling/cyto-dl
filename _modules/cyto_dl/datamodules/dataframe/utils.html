@@ -419,7 +419,7 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PersistentDataset</span>
+<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">PersistentDataset</span><span class="p">,</span> <span class="n">SmartCacheDataset</span>
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Compose</span><span class="p">,</span> <span class="n">Transform</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span>
 <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">BatchSampler</span><span class="p">,</span> <span class="n">Sampler</span><span class="p">,</span> <span class="n">Subset</span><span class="p">,</span> <span class="n">SubsetRandomSampler</span>
@@ -557,12 +557,29 @@
     <span class="k">for</span> <span class="n">canon</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">split</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">canon</span><span class="p">)</span> <span class="ow">or</span> <span class="n">canon</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">split</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">canon</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span></div>
+    <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../../../../cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_dataset"><a class="viewcode-back" href="../../../../cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_dataset">[docs]</a><span class="k">def</span> <span class="nf">get_dataset</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">transform</span><span class="p">,</span> <span class="n">split</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smartcache_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">_DataframeWrapper</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">smartcache_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
+        <span class="n">cache_rate</span> <span class="o">=</span> <span class="n">smartcache_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_rate&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache_rate</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing SmartCacheDataset for </span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">SmartCacheDataset</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
+                <span class="n">cache_rate</span><span class="o">=</span><span class="n">cache_rate</span><span class="p">,</span>
+                <span class="n">replace_rate</span><span class="o">=</span><span class="n">smartcache_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;replace_rate&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span>
+                <span class="n">num_init_workers</span><span class="o">=</span><span class="n">smartcache_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_init_workers&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                <span class="n">num_replace_workers</span><span class="o">=</span><span class="n">smartcache_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_replace_workers&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cache rate </span><span class="si">{</span><span class="n">cache_rate</span><span class="si">}</span><span class="s2"> too low for </span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2"> dataset with size </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">, using Dataset.&quot;</span>
+            <span class="p">)</span>
     <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">split</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing PersistentDataset for </span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">cache_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">PersistentDataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span></div>
 
@@ -575,6 +592,7 @@
     <span class="n">just_inference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">split_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smartcache_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">dataframe</span> <span class="o">=</span> <span class="n">read_dataframe</span><span class="p">(</span><span class="n">dataframe_path</span><span class="p">,</span> <span class="n">columns</span><span class="p">)</span>
     <span class="n">dataframe</span><span class="p">[</span><span class="n">split_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">split_column</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">))</span>
@@ -607,16 +625,26 @@
                 <span class="n">transforms</span><span class="p">[</span><span class="n">split</span><span class="p">],</span>
                 <span class="n">split</span><span class="p">,</span>
                 <span class="n">_split_cache</span><span class="p">,</span>
+                <span class="n">smartcache_args</span><span class="o">=</span><span class="n">smartcache_args</span><span class="p">,</span>
             <span class="p">)</span>
 
     <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataset</span><span class="p">(</span>
-        <span class="n">dataframe</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">],</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span>
+        <span class="n">dataframe</span><span class="p">,</span>
+        <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">],</span>
+        <span class="n">split</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">smartcache_args</span><span class="o">=</span><span class="n">smartcache_args</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">datasets</span></div>
 
 
 <div class="viewcode-block" id="make_multiple_dataframe_splits"><a class="viewcode-back" href="../../../../cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits">[docs]</a><span class="k">def</span> <span class="nf">make_multiple_dataframe_splits</span><span class="p">(</span>
-    <span class="n">split_path</span><span class="p">,</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">just_inference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">split_path</span><span class="p">,</span>
+    <span class="n">transforms</span><span class="p">,</span>
+    <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">just_inference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">smartcache_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">split_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">split_path</span><span class="p">)</span>
     <span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
@@ -625,6 +653,9 @@
     <span class="k">for</span> <span class="n">fpath</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">(</span><span class="n">split_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.csv&quot;</span><span class="p">),</span> <span class="n">split_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.parquet&quot;</span><span class="p">)):</span>
         <span class="n">split</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(.*)\.(?:csv|parquet)&quot;</span><span class="p">,</span> <span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">split</span> <span class="o">=</span> <span class="n">get_canonical_split_name</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">split</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">fpath</span><span class="si">}</span><span class="s2"> as it does not match any known split name.&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
         <span class="n">dataframe</span> <span class="o">=</span> <span class="n">read_dataframe</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span> <span class="n">required_columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">dataframe</span><span class="p">[</span><span class="s2">&quot;split&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">split</span>
 
@@ -635,8 +666,13 @@
             <span class="n">_split_cache</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">just_inference</span><span class="p">:</span>
-            <span class="n">datasets</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataset</span><span class="p">(</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">transforms</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">split</span><span class="p">,</span> <span class="n">_split_cache</span><span class="p">)</span>
+            <span class="n">datasets</span><span class="p">[</span><span class="n">split</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataset</span><span class="p">(</span>
+                <span class="n">dataframe</span><span class="p">,</span> <span class="n">transforms</span><span class="p">[</span><span class="n">split</span><span class="p">],</span> <span class="n">split</span><span class="p">,</span> <span class="n">_split_cache</span><span class="p">,</span> <span class="n">smartcache_args</span><span class="o">=</span><span class="n">smartcache_args</span>
+            <span class="p">)</span>
         <span class="n">predict_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">predict_df</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No valid dataframe files found in </span><span class="si">{</span><span class="n">split_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">predict_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">predict_df</span><span class="p">)</span>
     <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_dataset</span><span class="p">(</span>
@@ -644,6 +680,7 @@
         <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="p">[</span><span class="s2">&quot;predict&quot;</span><span class="p">],</span>
         <span class="n">split</span><span class="o">=</span><span class="s2">&quot;predict&quot;</span><span class="p">,</span>
         <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">smartcache_args</span><span class="o">=</span><span class="n">smartcache_args</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">datasets</span></div>
