@@ -139,7 +139,10 @@ class BaseVAE(BaseModel):
         self.latent_dim = latent_dim
 
         if decoder_latent_parts is None:
-            self.decoder_latent_parts = {key: self.prior.keys() for key in self.decoder.keys()}
+            pass
+            # self.decoder_latent_parts = {
+            #     key: self.prior.keys() for key in self.decoder.keys()
+            # }
         else:
             self.decoder_latent_parts = decoder_latent_parts
             for key in self.decoder.keys():
@@ -157,9 +160,11 @@ class BaseVAE(BaseModel):
     def calculate_rcl(self, x, xhat, input_key, target_key=None):
         if not target_key:
             target_key = input_key
+
         rcl_per_input_dimension = self.reconstruction_loss[input_key](
             x[target_key], xhat[input_key]
         )
+
         return rcl_per_input_dimension
 
     def calculate_rcl_dict(self, x, xhat, z):
@@ -190,6 +195,10 @@ class BaseVAE(BaseModel):
 
         total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
+        if len(total_recon.shape) > 0:
+            total_recon = total_recon.mean()
+            for key in rcl_reduced.keys():
+                rcl_reduced[key] = rcl_reduced[key].mean()
 
         return (
             total_recon + self.beta * total_kld,
