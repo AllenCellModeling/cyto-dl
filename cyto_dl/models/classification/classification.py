@@ -68,7 +68,9 @@ class Classification(BaseModel):
     def should_save_image(self, batch_idx, stage):
         return (
             stage in ("test", "predict")
-            or (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == batch_idx == 0
+            or (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
+            == batch_idx
+            == 0
         )
 
     def save_images(self, batch, stage, logits, name=None):
@@ -84,7 +86,9 @@ class Classification(BaseModel):
         font = ImageFont.load_default()
         # Define text positions
         movie = []
-        for p, l, frame in zip(pred, label, batch[self.hparams.x_key].cpu().numpy().squeeze()):
+        for p, l, frame in zip(
+            pred, label, batch[self.hparams.x_key].cpu().numpy().squeeze()
+        ):
             # Convert the NumPy array to a PIL Image
             image = Image.fromarray(frame.astype(float))
 
@@ -122,6 +126,7 @@ class Classification(BaseModel):
         preds = torch.argmax(logits, dim=1).cpu().numpy()
         if self.hparams.write_batch_predictions:
             pd.DataFrame([preds]).to_csv(
-                Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv", index=False
+                Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv",
+                index=False,
             )
         return preds

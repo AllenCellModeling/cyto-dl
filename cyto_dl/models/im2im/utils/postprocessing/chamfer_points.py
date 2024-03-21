@@ -37,7 +37,6 @@ class ChamferPoints:
         return img
 
     def _sample_points(self, img: torch.Tensor) -> torch.Tensor:
-
         img = self._rescale(img)
 
         img = img - img.min()
@@ -48,17 +47,17 @@ class ChamferPoints:
         z, y, x = torch.where(torch.ones_like(img) > 0)
         probs = img.clone()
         probs_orig = img.clone()
-        
+
         probs_orig = probs_orig.flatten()
-        
+
         probs = probs.flatten()
-        
+
         probs = probs / probs.max()
         probs = torch.exp(self.prob_exp * probs) - 1
-        
+
         probs = probs / probs.sum()
         disp = 1
-        
+
         idxs = torch.multinomial(probs, self.num_points, replacement=True).type_as(x)
 
         x = x[idxs] + 2 * (torch.rand(len(idxs)).type_as(x) - 0.5) * disp
@@ -68,7 +67,6 @@ class ChamferPoints:
         probs_orig = probs_orig[idxs]
         new_cents = torch.stack([z, y, x, probs], dim=1)
         return new_cents
-
 
     def __call__(self, img: torch.Tensor) -> torch.Tensor:
         points = self._sample_points(img)

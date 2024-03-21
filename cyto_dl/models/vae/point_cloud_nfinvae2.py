@@ -113,30 +113,34 @@ class PointCloudNFinVAE2(PointCloudVAE):
     def parse_batch(self, batch):
         if self.one_hot_dict:
             for key in self.one_hot_dict.keys():
-                batch[key] = torch.nn.functional.one_hot(batch[key].long(), num_classes = self.one_hot_dict[key]['num_classes']).float()
+                batch[key] = torch.nn.functional.one_hot(
+                    batch[key].long(), num_classes=self.one_hot_dict[key]["num_classes"]
+                ).float()
 
         if self.target_key is not None:
-            for j, key in enumerate(self.target_key):                
+            for j, key in enumerate(self.target_key):
                 if j == 0:
-                    batch['target'] = batch[f"{key}"]
+                    batch["target"] = batch[f"{key}"]
                 else:
-                    batch['target'] = torch.cat([batch['target'], batch[f"{key}"]], dim=1)
-            self.target_label = 'target'
+                    batch["target"] = torch.cat(
+                        [batch["target"], batch[f"{key}"]], dim=1
+                    )
+            self.target_label = "target"
         else:
             self.target_label = self.hparams.x_label
         return batch
 
     def decoder_compose_function(self, z_parts, batch):
-        if (self.condition_keys is not None) & (self.condition_decoder_keys is not None):
+        if (self.condition_keys is not None) & (
+            self.condition_decoder_keys is not None
+        ):
             for j, key in enumerate(self.condition_decoder_keys):
                 if j == 0:
                     cond_inputs = batch[key]
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-            cond_feats = torch.cat(
-                (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-            )
+            cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
             z_parts[self.hparams.x_label] = self.condition_decoder[
                 self.hparams.x_label
@@ -207,18 +211,18 @@ class PointCloudNFinVAE2(PointCloudVAE):
         # Clone z first then calculate parts of the prior with derivative wrt cloned z
         # prior
         z_inv_copy = z[:, : self.latent_dim_inv].detach().requires_grad_(True)
-        z_spur_copy = z[:, self.latent_dim_inv:].detach().requires_grad_(True)
+        z_spur_copy = z[:, self.latent_dim_inv :].detach().requires_grad_(True)
 
         # Only use the latent invariant space
         t_nn, params_t_nn, t_suff, params_t_suff = self.prior[self.hparams.x_label](
             z_inv_copy, inv_covar
         )
         # Only use the latent invariant space
-        t_nn_spur, params_t_nn_spur, t_suff_spur, params_t_suff_spur = self.prior['spurious'](
-            z_spur_copy, spur_covar
-        )
+        t_nn_spur, params_t_nn_spur, t_suff_spur, params_t_suff_spur = self.prior[
+            "spurious"
+        ](z_spur_copy, spur_covar)
         output_dim_prior_nn = self.prior[self.hparams.x_label].output_dim_prior_nn
-        output_dim_prior_nn_spur = self.prior['spurious'].output_dim_prior_nn
+        output_dim_prior_nn_spur = self.prior["spurious"].output_dim_prior_nn
 
         self.t_nn = self.prior[self.hparams.x_label].t_nn
         self.params_t_nn = self.prior[self.hparams.x_label].params_t_nn
@@ -274,17 +278,19 @@ class PointCloudNFinVAE2(PointCloudVAE):
         self.params_t_suff.requires_grad_(True)
 
         # Implement constant log prior so prior params are not updated but grads are backpropagated for the encoder
-        self.prior['spurious'].t_nn.requires_grad_(False)
-        self.prior['spurious'].params_t_nn.requires_grad_(False)
-        self.prior['spurious'].params_t_suff.requires_grad_(False)
+        self.prior["spurious"].t_nn.requires_grad_(False)
+        self.prior["spurious"].params_t_nn.requires_grad_(False)
+        self.prior["spurious"].params_t_suff.requires_grad_(False)
 
-        t_nn_copy_spur = self.prior['spurious'].t_nn(z[:, self.latent_dim_inv:])
-        params_t_nn_copy_spur = self.prior['spurious'].params_t_nn(spur_covar.float())
+        t_nn_copy_spur = self.prior["spurious"].t_nn(z[:, self.latent_dim_inv :])
+        params_t_nn_copy_spur = self.prior["spurious"].params_t_nn(spur_covar.float())
 
         t_suff_copy_spur = torch.cat(
-            (z[:, self.latent_dim_inv:], (z[:, self.latent_dim_inv:]) ** 2), dim=1
+            (z[:, self.latent_dim_inv :], (z[:, self.latent_dim_inv :]) ** 2), dim=1
         )
-        params_t_suff_copy_spur = self.prior['spurious'].params_t_suff(spur_covar.float())
+        params_t_suff_copy_spur = self.prior["spurious"].params_t_suff(
+            spur_covar.float()
+        )
 
         log_pz_d_spur_copy = torch.bmm(
             t_nn_copy_spur.view((-1, 1, output_dim_prior_nn_spur)),
@@ -296,9 +302,9 @@ class PointCloudNFinVAE2(PointCloudVAE):
             -1
         )
         # log_pz_d_inv_copy = log_pz_d_inv_copy.clamp(-3)
-        self.prior['spurious'].t_nn.requires_grad_(True)
-        self.prior['spurious'].params_t_nn.requires_grad_(True)
-        self.prior['spurious'].params_t_suff.requires_grad_(True)
+        self.prior["spurious"].t_nn.requires_grad_(True)
+        self.prior["spurious"].params_t_nn.requires_grad_(True)
+        self.prior["spurious"].params_t_suff.requires_grad_(True)
 
         # Calculate derivatives of prior automatically
         dprior_dz = grad(
@@ -380,7 +386,6 @@ class PointCloudNFinVAE2(PointCloudVAE):
         return z_parts_params
 
     def model_step(self, stage, batch, batch_idx):
-
         (
             xhat,
             z,
@@ -401,7 +406,11 @@ class PointCloudNFinVAE2(PointCloudVAE):
         opt = self.optimizers()
         opt.zero_grad(set_to_none=True)
         self.warm_up_epochs = 2
-        self.warm_up_iters = self.warm_up_epochs * self.dataset_size/batch[self.hparams.x_label].shape[0]
+        self.warm_up_iters = (
+            self.warm_up_epochs
+            * self.dataset_size
+            / batch[self.hparams.x_label].shape[0]
+        )
         self.warm_up(self.global_step)
         loss, preds, targets = self.model_step("train", batch, batch_idx)
         self.manual_backward(loss["loss"])

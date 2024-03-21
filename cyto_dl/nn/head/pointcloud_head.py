@@ -16,7 +16,7 @@ class PointCloudHead(ABC, torch.nn.Module):
         postprocess={"input": detach, "prediction": detach},
         calculate_metric=False,
         save_raw=False,
-        scale_loss: float=0.0001,
+        scale_loss: float = 0.0001,
     ):
         """
         Parameters
@@ -82,7 +82,7 @@ class PointCloudHead(ABC, torch.nn.Module):
                 "y_hat must be provided, either by passing it in or setting `run_forward=True`"
             )
 
-        y_hat = self._postprocess(y_hat, img_type="prediction")   
+        y_hat = self._postprocess(y_hat, img_type="prediction")
 
         if isinstance(batch[self.head_name], list):
             batch[self.head_name] = torch.stack(batch[self.head_name], dim=0)

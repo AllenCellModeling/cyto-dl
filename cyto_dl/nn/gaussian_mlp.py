@@ -24,11 +24,13 @@ class Dist:
 
 
 class Normal(Dist):
-    def __init__(self, device='cuda:0'):
+    def __init__(self, device="cuda:0"):
         super().__init__()
         self.device = device
         self.c = 2 * np.pi * torch.ones(1).to(self.device)
-        self._dist = dist.normal.Normal(torch.zeros(1).to(self.device), torch.ones(1).to(self.device))
+        self._dist = dist.normal.Normal(
+            torch.zeros(1).to(self.device), torch.ones(1).to(self.device)
+        )
         self.name = "gauss"
 
     def sample(self, mu, v):
@@ -41,7 +43,9 @@ class Normal(Dist):
         if param_shape is not None:
             mu, v = mu.view(param_shape), v.view(param_shape)
 
-        lpdf = -0.5 * (torch.log(self.c) + torch.nan_to_num(v.log()) + (x - mu).pow(2).div(v))
+        lpdf = -0.5 * (
+            torch.log(self.c) + torch.nan_to_num(v.log()) + (x - mu).pow(2).div(v)
+        )
         if reduce:
             return lpdf.sum(dim=-1)
         else:

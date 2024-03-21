@@ -32,8 +32,8 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
-    if not cfg.ckpt_path:
-        raise ValueError("Checkpoint path must be included for testing")
+    # if not cfg.ckpt_path:
+    #     raise ValueError("Checkpoint path must be included for testing")
 
     # resolve config to avoid unresolvable interpolations in the stored config
     OmegaConf.resolve(cfg)
@@ -85,8 +85,17 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
         utils.log_hyperparameters(object_dict)
 
     log.info("Starting testing!")
-    method = trainer.test if cfg.get("test", False) else trainer.predict
-    output = method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
+    method = trainer.test
+
+    from cyto_dl.models.utils.mlflow import load_model_from_checkpoint
+
+    model = load_model_from_checkpoint(
+        "https://mlflow.a100.int.allencell.org",
+        cfg.ckpt_mlflow_id,
+        path="checkpoints/val/loss/best.ckpt",
+        strict=False,
+    )
+    output = method(model=model, dataloaders=data)
     metric_dict = trainer.callback_metrics
 
     return metric_dict, object_dict, output

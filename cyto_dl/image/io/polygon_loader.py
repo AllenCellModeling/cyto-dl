@@ -52,7 +52,9 @@ class PolygonLoaderd(Transform):
                 for p in poly:
                     mask = np.logical_or(mask, polygon2mask(mask_shape, p))
                 if self.propagate_3d:
-                    mask = np.stack([mask] * input_dict[self.shape_reference_key].shape[1])
+                    mask = np.stack(
+                        [mask] * input_dict[self.shape_reference_key].shape[1]
+                    )
                 input_dict[key] = np.expand_dims(mask > 0, 0)
             elif self.missing_key_mode == "raise":
                 raise KeyError(

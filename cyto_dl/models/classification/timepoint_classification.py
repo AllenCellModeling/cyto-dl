@@ -43,7 +43,8 @@ class TimepointClassification(Classification):
         preds = torch.argmax(logits, dim=1).cpu().numpy()
         if self.hparams.write_batch_predictions:
             pd.DataFrame([preds]).to_csv(
-                Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv", index=False
+                Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv",
+                index=False,
             )
         if self.hparams.save_movie:
             self.save_images(

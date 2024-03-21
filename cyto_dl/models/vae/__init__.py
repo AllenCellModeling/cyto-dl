@@ -11,6 +11,8 @@ from .point_cloud_vqvae import PointCloudVQVAE
 from .point_cloud_vqvae2 import PointCloudVQVAE2
 from .tabular_vae import TabularVAE
 from .point_cloud_nfinvae_multarget import PointCloudNFinVAEMultarget
+from .implicit_decoder import ImplicitDecoder
+from .utils import weight_init
 
 # from .conditional_canon_vae import ConditonalCanonVAE
 from .ivae import iVAE

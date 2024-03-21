@@ -74,7 +74,7 @@ class iVAE(ConditionalCanonVAE):
             condition_decoder=condition_decoder,
             condition_keys=condition_keys,
             disable_metrics=disable_metrics,
-            metric_keys=metric_keys
+            metric_keys=metric_keys,
         )
         self.cond_dim = cond_dim
         self.occupancy_label = None
@@ -84,7 +84,7 @@ class iVAE(ConditionalCanonVAE):
 
         self.encoder_dist = Normal()
         self.prior_dist = Normal()
-        self._training_hyperparams = [1., 1., 1., 1., 1]
+        self._training_hyperparams = [1.0, 1.0, 1.0, 1.0, 1]
         self.anneal_params = False
 
     def prior_c(self, y):
@@ -98,9 +98,9 @@ class iVAE(ConditionalCanonVAE):
         a = 0.5
         self._training_hyperparams[-1] = N
         self._training_hyperparams[0] = min(2 * a, a + a * it / thr)
-        self._training_hyperparams[1] = max(1, a * .3 * (1 - it / thr))
+        self._training_hyperparams[1] = max(1, a * 0.3 * (1 - it / thr))
         self._training_hyperparams[2] = min(1, it / thr)
-        self._training_hyperparams[3] = max(1, a * .5 * (1 - it / thr))
+        self._training_hyperparams[3] = max(1, a * 0.5 * (1 - it / thr))
         if it > thr:
             self.anneal_params = False
 
@@ -111,24 +111,37 @@ class iVAE(ConditionalCanonVAE):
         mean, logvar = torch.split(mean_logvar, mean_logvar.shape[1] // 2, dim=1)
 
         rcl_reduced = self.calculate_rcl_dict(x, xhat, z)
-        prior_params = z['mup'], z['log1p']
+        prior_params = z["mup"], z["log1p"]
         # log_pz_u =self.prior_dist.log_pdf(z[self.hparams.x_label], *prior_params)
-        log_qz_xu =self.encoder_dist.log_pdf(z[self.hparams.x_label], mean, logvar)
-        log_pz_u =self.prior_dist.log_pdf(z[self.hparams.x_label], *prior_params)
+        log_qz_xu = self.encoder_dist.log_pdf(z[self.hparams.x_label], mean, logvar)
+        log_pz_u = self.prior_dist.log_pdf(z[self.hparams.x_label], *prior_params)
         total_recon = -sum(rcl_reduced.values())
-
 
         if self.anneal_params:
             log_px_z = total_recon
             a, b, c, d, N = self._training_hyperparams
             M = z[self.hparams.x_label].size(0)
-            log_qz_tmp = self.encoder_dist.log_pdf(z[self.hparams.x_label].view(M, 1, self.latent_dim), mean.view(1, M, self.latent_dim),
-                                                   logvar.view(1, M, self.latent_dim), reduce=False)
-            log_qz = torch.logsumexp(log_qz_tmp.sum(dim=-1), dim=1, keepdim=False) - np.log(M * N)
-            log_qz_i = (torch.logsumexp(log_qz_tmp, dim=1, keepdim=False) - np.log(M * N)).sum(dim=-1)
+            log_qz_tmp = self.encoder_dist.log_pdf(
+                z[self.hparams.x_label].view(M, 1, self.latent_dim),
+                mean.view(1, M, self.latent_dim),
+                logvar.view(1, M, self.latent_dim),
+                reduce=False,
+            )
+            log_qz = torch.logsumexp(
+                log_qz_tmp.sum(dim=-1), dim=1, keepdim=False
+            ) - np.log(M * N)
+            log_qz_i = (
+                torch.logsumexp(log_qz_tmp, dim=1, keepdim=False) - np.log(M * N)
+            ).sum(dim=-1)
 
-            total_loss = a * log_px_z + ( - b * (log_qz_xu - log_qz) - c * (log_qz - log_qz_i) - d * (
-                    log_qz_i - log_pz_u)).mean()
+            total_loss = (
+                a * log_px_z
+                + (
+                    -b * (log_qz_xu - log_qz)
+                    - c * (log_qz - log_qz_i)
+                    - d * (log_qz_i - log_pz_u)
+                ).mean()
+            )
         else:
             total_loss = total_recon + (log_pz_u - log_qz_xu).mean()
 
@@ -150,8 +163,8 @@ class iVAE(ConditionalCanonVAE):
 
         for key in self.condition_keys:
             mup, log1p = self.prior_c(batch[key])
-            z['mup'] = mup
-            z['log1p'] = log1p
+            z["mup"] = mup
+            z["log1p"] = log1p
 
         if not decode:
             return z

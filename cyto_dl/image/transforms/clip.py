@@ -71,9 +71,13 @@ class Clipd(Transform):
         for key in self.keys:
             if key in img_dict.keys():
                 if self.per_channel:
-                    img_dict[key] = torch.stack([self.clipper(img) for img in img_dict[key]])
+                    img_dict[key] = torch.stack(
+                        [self.clipper(img) for img in img_dict[key]]
+                    )
                 else:
                     img_dict[key] = self.clipper(img_dict[key])
             elif not self.allow_missing_keys:
-                raise KeyError(f"key `{key}` not available. Available keys are {img_dict.keys()}")
+                raise KeyError(
+                    f"key `{key}` not available. Available keys are {img_dict.keys()}"
+                )
         return img_dict

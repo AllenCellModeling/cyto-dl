@@ -18,12 +18,14 @@ class SkimageReader(ImageReader):
         transforms: Optional[list] = None,
         project: Optional[int] = None,
         expand_dims: Optional[bool] = False,
+        remove_negative: Optional[bool] = False,
     ):
         super().__init__()
         self.channels = channels
         self.transforms = transforms
         self.project = project
         self.expand_dims = expand_dims
+        self.remove_negative = remove_negative
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
@@ -35,6 +37,10 @@ class SkimageReader(ImageReader):
                 this_im = np.expand_dims(this_im, axis=0)
             if self.channels:
                 this_im = this_im[self.channels]
+
+            if self.remove_negative:
+                this_im = rescale(this_im)
+
             if isinstance(self.project, int):
                 this_im = np.expand_dims(
                     np.expand_dims(this_im.max(self.project), axis=0), axis=0
@@ -57,3 +63,9 @@ class SkimageReader(ImageReader):
 
     def verify_suffix(self, filename: Union[Sequence[PathLike], PathLike]) -> bool:
         return True
+
+
+def rescale(img):
+    img = np.where(img < 60000, img, 0)
+    img = np.where(img > 0, img, 0)
+    return img

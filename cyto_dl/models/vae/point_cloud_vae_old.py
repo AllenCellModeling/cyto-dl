@@ -170,9 +170,13 @@ class PointCloudVAE(BaseVAE):
                     batch[self.point_label], z_parts["grid_feats"]
                 )
             else:
-                base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
+                base_xhat = self.decoder[self.hparams.x_label](
+                    z_parts[self.hparams.x_label]
+                )
         else:
-            base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
+            base_xhat = self.decoder[self.hparams.x_label](
+                z_parts[self.hparams.x_label]
+            )
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -191,7 +195,9 @@ class PointCloudVAE(BaseVAE):
         if self.basal_head:
             z_parts[self.hparams.x_label + "_basal"] = z_parts[self.hparams.x_label]
             for key in self.basal_head.keys():
-                z_parts[key] = self.basal_head[key](z_parts[self.hparams.x_label + "_basal"])
+                z_parts[key] = self.basal_head[key](
+                    z_parts[self.hparams.x_label + "_basal"]
+                )
 
         if self.condition_keys:
             for j, key in enumerate([self.hparams.x_label] + self.condition_keys):
@@ -205,9 +211,9 @@ class PointCloudVAE(BaseVAE):
                 else:
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
             # shared encoder
-            z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
-                cond_feats
-            )
+            z_parts[self.hparams.x_label] = self.condition_encoder[
+                self.hparams.x_label
+            ](cond_feats)
         if self.embedding_head:
             for key in self.embedding_head.keys():
                 z_parts[key] = self.embedding_head[key](z_parts[self.hparams.x_label])
@@ -224,18 +230,22 @@ class PointCloudVAE(BaseVAE):
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-                cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
+                cond_feats = torch.cat(
+                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
+                )
             # shared decoder
-            z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
-                cond_feats
-            )
+            z_parts[self.hparams.x_label] = self.condition_decoder[
+                self.hparams.x_label
+            ](cond_feats)
         return z_parts
 
     def calculate_rcl_dict(self, x, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.calculate_rcl(x, xhat, key, self.occupancy_label)
+            rcl_per_input_dimension[key] = self.calculate_rcl(
+                x, xhat, key, self.occupancy_label
+            )
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -251,20 +261,21 @@ class PointCloudVAE(BaseVAE):
 
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
-                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](
-                    z[key], x[key]
-                )
+                rcl_reduced[key] = self.embedding_head_weight[
+                    key
+                ] * self.embedding_head_loss[key](z[key], x[key])
 
         if self.basal_head_loss:
             for key in self.basal_head_loss.keys():
-                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[key](
-                    z[key], x[key]
-                )
+                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[
+                    key
+                ](z[key], x[key])
         return rcl_reduced
 
     def forward(self, batch, decode=False, inference=True, return_params=False):
         is_inference = inference or not self.training
         import ipdb
+
         ipdb.set_trace()
         z_params = self.encode(batch, get_rotation=self.get_rotation)
         z_params = self.encoder_compose_function(z_params)

@@ -117,10 +117,12 @@ class PointCloudNFinVAEMultarget(PointCloudNFinVAE):
     def parse_batch(self, batch):
         if self.one_hot_dict:
             for key in self.one_hot_dict.keys():
-                batch[key] = torch.nn.functional.one_hot(batch[key].long(), num_classes = self.one_hot_dict[key]['num_classes']).float()
+                batch[key] = torch.nn.functional.one_hot(
+                    batch[key].long(), num_classes=self.one_hot_dict[key]["num_classes"]
+                ).float()
 
         return batch
-    
+
     def encode(self, batch, **kwargs):
         ret_dict = {}
         for part, encoder in self.encoder.items():
@@ -132,13 +134,13 @@ class PointCloudNFinVAEMultarget(PointCloudNFinVAE):
             if isinstance(this_ret, dict):  # deal with multiple outputs for an encoder
                 for key in this_ret.keys():
                     new_key = key
-                    if key == 'rotation':
-                        new_key = part + '_rotation'
+                    if key == "rotation":
+                        new_key = part + "_rotation"
                     ret_dict[new_key] = this_ret[key]
             else:
                 ret_dict[part] = this_ret
         return ret_dict
-    
+
     def decode(self, z_parts, return_canonical=False, batch=None):
         base_embed = z_parts[self.hparams.x_label]
         batch_size = base_embed.shape[0]
@@ -147,14 +149,12 @@ class PointCloudNFinVAEMultarget(PointCloudNFinVAE):
             # this_ind = torch.ones([batch_size,1]).fill_(j).long().type_as(base_embed)
             # cond_feats = torch.cat(
             #     (this_ind, z_parts[self.hparams.x_label]), dim=1
-            # )  
+            # )
             # z_parts[key] = self.condition_decoder[
             #     self.hparams.x_label
             # ](cond_feats)
 
-            base_xhat = self.decoder[key](
-                base_embed
-            )
+            base_xhat = self.decoder[key](base_embed)
 
             if self.get_rotation:
                 rotation = z_parts[key + "_rotation"]
@@ -165,12 +165,11 @@ class PointCloudNFinVAEMultarget(PointCloudNFinVAE):
                 xhat = base_xhat
             xhat_dict[key] = xhat
             if return_canonical:
-                xhat_dict[key + '_canonical'] = base_xhat
-            
+                xhat_dict[key + "_canonical"] = base_xhat
+
         return xhat_dict
 
     def model_step(self, stage, batch, batch_idx):
-
         (
             xhat,
             z,
@@ -186,7 +185,7 @@ class PointCloudNFinVAEMultarget(PointCloudNFinVAE):
         preds = {}
 
         return loss, preds, None
-    
+
     def calculate_rcl(self, batch, xhat):
         for j, key in enumerate(self.target_key):
             this_log_px_z = -0.1 * self.reconstruction_loss[self.hparams.x_label](

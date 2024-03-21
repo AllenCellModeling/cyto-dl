@@ -19,6 +19,7 @@ class ReadNumpyFile(MapTransform):
         clip_max: Optional[int] = None,
         interpolate: Optional[int] = None,
         noise: Optional[bool] = None,
+        unsqueeze: Optional[bool] = False,
     ):
         """
         Parameters
@@ -37,6 +38,7 @@ class ReadNumpyFile(MapTransform):
         self.clip_max = clip_max
         self.interpolate = interpolate
         self.noise = noise
+        self.unsqueeze = unsqueeze
 
     def __call__(self, row):
         res = dict(**row)
@@ -80,4 +82,7 @@ class ReadNumpyFile(MapTransform):
 
                 if self.noise:
                     res[key] = res[key] + (0.001**0.5) * torch.randn(*res[key].shape)
+
+                if self.unsqueeze:
+                    res[key] = torch.unsqueeze(res[key], dim=0)
         return res

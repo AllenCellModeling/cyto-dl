@@ -9,6 +9,7 @@ from .weibull import WeibullLogLoss
 from .weighted_mse_loss import WeightedMSELoss
 from .topo_loss import TopoLoss
 from .chamfer_loss_self import ChamferLossSelf
+from .zerolevelset_loss import ZeroLevelSetLoss
 
 try:
     from .spharm_loss import SpharmLoss

@@ -42,7 +42,6 @@ class PointCloudVQVAE(PointCloudVAE):
         disable_metrics: Optional[bool] = False,
         **base_kwargs,
     ):
-
         metric_keys = [
             "train/loss",
             "val/loss",
@@ -96,7 +95,9 @@ class PointCloudVQVAE(PointCloudVAE):
         z_params = self.encode(batch, get_rotation=self.get_rotation)
         z_params = self.encoder_compose_function(z_params)
 
-        quantized, commitment_loss = self.vq_layer[self.hparams.x_label](z_params[self.hparams.x_label])
+        quantized, commitment_loss = self.vq_layer[self.hparams.x_label](
+            z_params[self.hparams.x_label]
+        )
         z = z_params.copy()
         z[self.hparams.x_label] = quantized
         z = self.decoder_compose_function(z, batch)
@@ -118,12 +119,9 @@ class PointCloudVQVAE(PointCloudVAE):
         return xhat, z, commitment_loss
 
     def model_step(self, stage, batch, batch_idx):
-        (
-            xhat,
-            z,
-            z_params,
-            commitment_loss
-        ) = self.forward(batch, decode=True, inference=False, return_params=True)
+        (xhat, z, z_params, commitment_loss) = self.forward(
+            batch, decode=True, inference=False, return_params=True
+        )
 
         (
             loss,

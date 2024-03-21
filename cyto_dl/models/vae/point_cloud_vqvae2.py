@@ -14,7 +14,6 @@ logger.propagate = False
 from vector_quantize_pytorch import ResidualVQ, FSQ, VectorQuantize
 
 
-
 class PointCloudVQVAE2(PointCloudVAE):
     def __init__(
         self,
@@ -44,7 +43,6 @@ class PointCloudVQVAE2(PointCloudVAE):
         disable_metrics: Optional[bool] = False,
         **base_kwargs,
     ):
-
         metric_keys = [
             "train/loss",
             "val/loss",
@@ -95,9 +93,9 @@ class PointCloudVQVAE2(PointCloudVAE):
         self.vq_layer = nn.ModuleDict(
             {
                 x_label: VectorQuantize(
-                    dim = 256,
-                    codebook_size = 256,
-                    codebook_dim = 16      # paper proposes setting this to 32 or as low as 8 to increase codebook usage
+                    dim=256,
+                    codebook_size=256,
+                    codebook_dim=16,  # paper proposes setting this to 32 or as low as 8 to increase codebook usage
                 )
             }
         )
@@ -135,12 +133,9 @@ class PointCloudVQVAE2(PointCloudVAE):
         return xhat, z, commitment_loss
 
     def model_step(self, stage, batch, batch_idx):
-        (
-            xhat,
-            z,
-            z_params,
-            commitment_loss
-        ) = self.forward(batch, decode=True, inference=False, return_params=True)
+        (xhat, z, z_params, commitment_loss) = self.forward(
+            batch, decode=True, inference=False, return_params=True
+        )
 
         (
             loss,

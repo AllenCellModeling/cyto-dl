@@ -41,8 +41,12 @@ class GenerateTrackLabels(Transform):
 
     def __call__(self, img_dict):
         n_timepoints = img_dict[self.img_key].shape[0]
-        formation_idx = int(img_dict[self.formation_key] - img_dict[self.track_start_key])
-        breakdown_idx = int(img_dict[self.breakdown_key] - img_dict[self.track_start_key])
+        formation_idx = int(
+            img_dict[self.formation_key] - img_dict[self.track_start_key]
+        )
+        breakdown_idx = int(
+            img_dict[self.breakdown_key] - img_dict[self.track_start_key]
+        )
 
         # 0: normal, 1: mitotic
         tp_labels = np.zeros(n_timepoints)
@@ -93,7 +97,10 @@ class PerChannel(Transform):
 
 class CropResize(RandomizableTransform):
     def __init__(
-        self, keys: Union[str, List, ListConfig], max_shift=8, allow_missing_keys: bool = False
+        self,
+        keys: Union[str, List, ListConfig],
+        max_shift=8,
+        allow_missing_keys: bool = False,
     ):
         """
         Parameters
@@ -122,7 +129,9 @@ class CropResize(RandomizableTransform):
             resized_movie = []
             for im in new_im_dict[key]:
                 shift = self.R.randint(0, self.max_shift, size=4)
-                im = im[shift[0] : im.shape[0] - shift[1], shift[2] : im.shape[1] - shift[3]]
+                im = im[
+                    shift[0] : im.shape[0] - shift[1], shift[2] : im.shape[1] - shift[3]
+                ]
                 im = resizer(im.unsqueeze(0)).squeeze(0)
                 resized_movie.append(im)
             new_im_dict[key] = torch.stack(resized_movie)

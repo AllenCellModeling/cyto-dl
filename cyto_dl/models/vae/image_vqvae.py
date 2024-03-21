@@ -61,7 +61,6 @@ class ImageVQVAE(ImageVAE):
         eps: float = 1e-8,
         **base_kwargs,
     ):
-
         metric_keys = [
             "train/loss",
             "val/loss",
@@ -108,15 +107,23 @@ class ImageVQVAE(ImageVAE):
         self.num_embeddings = num_embeddings
         self.commitment_cost = commitment_cost
         self.decay = decay
-        self.vq_layer = nn.ModuleDict({self.x_label: VectorQuantizerEMA(latent_dim, self.num_embeddings, self.commitment_cost, self.decay)})
+        self.vq_layer = nn.ModuleDict(
+            {
+                self.x_label: VectorQuantizerEMA(
+                    latent_dim, self.num_embeddings, self.commitment_cost, self.decay
+                )
+            }
+        )
 
-    def forward(self, batch, decode=False, inference=True, return_params=False, **kwargs):
+    def forward(
+        self, batch, decode=False, inference=True, return_params=False, **kwargs
+    ):
         is_inference = inference or not self.training
 
         z_params = self.encode(batch, **kwargs)
-        quantized, commitment_loss = self.vq_layer[self.x_label](z_params['embedding'])
+        quantized, commitment_loss = self.vq_layer[self.x_label](z_params["embedding"])
         z = z_params.copy()
-        z['embedding'] = quantized
+        z["embedding"] = quantized
 
         if not decode:
             return quantized
@@ -128,12 +135,9 @@ class ImageVQVAE(ImageVAE):
         return xhat, z
 
     def model_step(self, stage, batch, batch_idx):
-        (
-            xhat,
-            z,
-            z_params,
-            commitment_loss
-        ) = self.forward(batch, decode=True, inference=False, return_params=True)
+        (xhat, z, z_params, commitment_loss) = self.forward(
+            batch, decode=True, inference=False, return_params=True
+        )
 
         (
             loss,
@@ -162,4 +166,3 @@ class ImageVQVAE(ImageVAE):
                 preds[f"z_params/{part}"] = z_params[part].detach()
 
         return loss, preds, None
-

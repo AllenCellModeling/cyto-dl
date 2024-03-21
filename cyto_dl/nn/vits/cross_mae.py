@@ -11,7 +11,9 @@ from cyto_dl.nn.vits.blocks import CrossAttentionBlock
 
 
 def take_indexes(sequences, indexes):
-    return torch.gather(sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1]))
+    return torch.gather(
+        sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1])
+    )
 
 
 class CrossMAE_Decoder(torch.nn.Module):
@@ -61,9 +63,13 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
+        self.pos_embedding = torch.nn.Parameter(
+            torch.zeros(np.prod(num_patches) + 1, 1, emb_dim)
+        )
 
-        self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
+        self.head = torch.nn.Linear(
+            emb_dim, torch.prod(torch.as_tensor(base_patch_size))
+        )
         self.num_patches = torch.as_tensor(num_patches)
 
         if spatial_dims == 3:
@@ -98,11 +104,17 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         # add cls token
         backward_indexes = torch.cat(
-            [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
+            [
+                torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes),
+                backward_indexes + 1,
+            ],
             dim=0,
         )
         forward_indexes = torch.cat(
-            [torch.zeros(1, forward_indexes.shape[1]).to(forward_indexes), forward_indexes + 1],
+            [
+                torch.zeros(1, forward_indexes.shape[1]).to(forward_indexes),
+                forward_indexes + 1,
+            ],
             dim=0,
         )
         # fill in masked regions
@@ -138,7 +150,12 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         # add back in visible/encoded tokens that we don't calculate loss on
         patches = torch.cat(
-            [torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches), patches],
+            [
+                torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(
+                    patches
+                ),
+                patches,
+            ],
             dim=0,
         )
         patches = take_indexes(patches, backward_indexes[1:] - 1)

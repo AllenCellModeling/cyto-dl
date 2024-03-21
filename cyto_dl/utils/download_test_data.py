@@ -61,7 +61,9 @@ def download_test_data(limit=-1):
     labelfree_data = local_data[["raw", "raw"]]
     labelfree_data.columns = ["brightfield", "signal"]
 
-    for data, data_type in zip((local_data, labelfree_data), ("segmentation", "labelfree")):
+    for data, data_type in zip(
+        (local_data, labelfree_data), ("segmentation", "labelfree")
+    ):
         for csv_type in ("train", "test", "valid"):
             data.to_csv(EXAMPLE_DATA_DIR / data_type / f"{csv_type}.csv")
 

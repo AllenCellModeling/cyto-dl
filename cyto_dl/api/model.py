@@ -11,7 +11,13 @@ from cyto_dl.train import train as train_model
 from cyto_dl.utils.download_test_data import download_test_data
 from cyto_dl.utils.rich_utils import print_config_tree
 
-DEFAULT_EXPERIMENTS = ["gan", "instance_seg", "labelfree", "segmentation_plugin", "segmentation"]
+DEFAULT_EXPERIMENTS = [
+    "gan",
+    "instance_seg",
+    "labelfree",
+    "segmentation_plugin",
+    "segmentation",
+]
 
 
 class CytoDLModel:
@@ -36,7 +42,9 @@ class CytoDLModel:
         """Load configuration file."""
         config_path = Path(config_path)
         assert config_path.exists(), f"config file {config_path} does not exist"
-        assert config_path.suffix == ".yaml", f"config file {config_path} must be a yaml file"
+        assert (
+            config_path.suffix == ".yaml"
+        ), f"config file {config_path} must be a yaml file"
 
         # load config
         self.cfg = OmegaConf.load(config_path)
@@ -71,7 +79,9 @@ class CytoDLModel:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         self.cfg = cfg
-        OmegaConf.save(self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml')
+        OmegaConf.save(
+            self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml'
+        )
 
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)

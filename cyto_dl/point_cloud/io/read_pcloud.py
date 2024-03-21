@@ -139,8 +139,10 @@ class ReadPointCloud(MapTransform):
 
         for key in self.keys:
             path = str(row[key])
-
             points = PyntCloud.from_file(path).points
+
+            if points["s"].isna().any():
+                points["s"] = points["s"].replace(np.NaN, 1)
 
             if "s" in points.columns:
                 points = points[["z", "y", "x", "s"]]
@@ -161,9 +163,10 @@ class ReadPointCloud(MapTransform):
                 # )
                 points = points.iloc[idxs2].reset_index(drop=True)
             # except:
-            #     this = np.where(probs2 > 0)[0]
+            #     # this = np.where(probs2 > 0)[0]
 
             #     import ipdb
+
             #     ipdb.set_trace()
 
             points = points.values[:, : self.num_cols]
@@ -184,9 +187,15 @@ class ReadPointCloud(MapTransform):
 
             if self.jitter:
                 disp = 0.001
-                points[:,0] = points[:,0] + (np.random.rand(len(points[:,0])) - 0.5) * disp
-                points[:,1] = points[:,1] + (np.random.rand(len(points[:,1])) - 0.5) * disp
-                points[:,2] = points[:,2] + (np.random.rand(len(points[:,2])) - 0.5) * disp
+                points[:, 0] = (
+                    points[:, 0] + (np.random.rand(len(points[:, 0])) - 0.5) * disp
+                )
+                points[:, 1] = (
+                    points[:, 1] + (np.random.rand(len(points[:, 1])) - 0.5) * disp
+                )
+                points[:, 2] = (
+                    points[:, 2] + (np.random.rand(len(points[:, 2])) - 0.5) * disp
+                )
 
             res[key] = torch.tensor(
                 points,

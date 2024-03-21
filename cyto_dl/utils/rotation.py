@@ -124,6 +124,6 @@ def get_rotation_matrix_so3(z, eps=1e-6):
 
     # produce a third orthogonal vector, as the cross product of the first two
     u3 = torch.cross(u1, u2)
-    rot = torch.stack([u1, u2, u3], dim=1)
+    rot = torch.stack([u1, u2, u3], dim=1).transpose(1, 2)
 
     return rot

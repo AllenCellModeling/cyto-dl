@@ -9,8 +9,9 @@ class ContrastAdjust(Transform):
     """Transform for contrast adjusting intensity values to be within a range and everything
     outside the range be set to a background value."""
 
-    def __init__(self, low: int, high: int, 
-    background: int = 0, project: Optional[int]= None):
+    def __init__(
+        self, low: int, high: int, background: int = 0, project: Optional[int] = None
+    ):
         """
         Parameters
         ----------
@@ -36,9 +37,8 @@ class ContrastAdjust(Transform):
         if isinstance(self.project, int):
             img = img.max(self.project)[0]
 
-        if (len(img.shape) < 4):
+        if len(img.shape) < 4:
             img = img.unsqueeze(dim=0)
-        
 
         return img
 

@@ -35,18 +35,19 @@ class TopoLoss(nn.Module):
         self.mean = mean
 
     def forward(self, gts, preds):
-
         if self.farthest_point:
             gts = fps(gts, self.num_groups)  # B G 3
-            preds = fps(preds, self.num_groups) 
+            preds = fps(preds, self.num_groups)
 
         pers_info_pred = self.complex(gts)
         pers_info_true = self.complex(preds)
 
-        tl = torch.stack([
-            self.loss(pred_batch, true_batch)
-            for pred_batch, true_batch in zip(pers_info_pred, pers_info_true)
-        ])
+        tl = torch.stack(
+            [
+                self.loss(pred_batch, true_batch)
+                for pred_batch, true_batch in zip(pers_info_pred, pers_info_true)
+            ]
+        )
         if self.mean:
             tl = tl.mean()
         # tl

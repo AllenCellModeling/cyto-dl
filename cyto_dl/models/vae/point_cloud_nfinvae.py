@@ -104,7 +104,16 @@ class PointCloudNFinVAE(PointCloudVAE):
 
         if self.include_top_loss:
             # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.001, farthest_point=True, num_groups=50, mean=False)})
-            self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.001, farthest_point=True, num_groups=256, mean=False)})
+            self.top_loss = nn.ModuleDict(
+                {
+                    x_label: TopoLoss(
+                        topo_lambda=0.001,
+                        farthest_point=True,
+                        num_groups=256,
+                        mean=False,
+                    )
+                }
+            )
 
     def warm_up(self, iteration):
         if self.warm_up_iters > 0:
@@ -121,38 +130,41 @@ class PointCloudNFinVAE(PointCloudVAE):
     def parse_batch(self, batch):
         if self.one_hot_dict:
             for key in self.one_hot_dict.keys():
-                batch[key] = torch.nn.functional.one_hot(batch[key].long(), num_classes = self.one_hot_dict[key]['num_classes']).float()
+                batch[key] = torch.nn.functional.one_hot(
+                    batch[key].long(), num_classes=self.one_hot_dict[key]["num_classes"]
+                ).float()
 
         if self.target_key is not None:
-            for j, key in enumerate(self.target_key):                
+            for j, key in enumerate(self.target_key):
                 if j == 0:
-                    batch['target'] = batch[f"{key}"]
+                    batch["target"] = batch[f"{key}"]
                 else:
-                    batch['target'] = torch.cat([batch['target'], batch[f"{key}"]], dim=1)
-            self.target_label = 'target'
+                    batch["target"] = torch.cat(
+                        [batch["target"], batch[f"{key}"]], dim=1
+                    )
+            self.target_label = "target"
         else:
             self.target_label = self.hparams.x_label
         return batch
 
     def decoder_compose_function(self, z_parts, batch):
-        if (self.condition_keys is not None) & (self.condition_decoder_keys is not None):
+        if (self.condition_keys is not None) & (
+            self.condition_decoder_keys is not None
+        ):
             for j, key in enumerate(self.condition_decoder_keys):
                 if j == 0:
                     cond_inputs = batch[key]
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-            cond_feats = torch.cat(
-                (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-            )
+            cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
             z_parts[self.hparams.x_label] = self.condition_decoder[
                 self.hparams.x_label
             ](cond_feats)
         return z_parts
-    
-    def calculate_rcl(self, batch, xhat):
 
+    def calculate_rcl(self, batch, xhat):
         log_px_z = -0.1 * self.reconstruction_loss[self.hparams.x_label](
             batch[self.hparams.x_label], xhat[self.hparams.x_label]
         )
@@ -160,12 +172,14 @@ class PointCloudNFinVAE(PointCloudVAE):
         #     batch[self.hparams.x_label], xhat[self.hparams.x_label]
         # )
         if self.include_top_loss:
-            this_top_loss = -self.top_loss[self.hparams.x_label](batch[self.hparams.x_label], xhat[self.hparams.x_label])
-        # log_px_z = log_normal(batch[self.target_label], xhat[self.hparams.x_label], self.decoder_var)
+            this_top_loss = -self.top_loss[self.hparams.x_label](
+                batch[self.hparams.x_label], xhat[self.hparams.x_label]
+            )
+            # log_px_z = log_normal(batch[self.target_label], xhat[self.hparams.x_label], self.decoder_var)
             return log_px_z + this_top_loss
         else:
             return log_px_z
-        
+
     @torch.enable_grad()
     def calculate_elbo(
         self, batch, xhat, z, z_params, stage
@@ -215,7 +229,6 @@ class PointCloudNFinVAE(PointCloudVAE):
         log_qz_xde = log_normal(z, latent_mean, (latent_logvar.exp() + 1e-4))
         # log_qz_xde = log_qz_xde.clamp(-1000)
 
-
         if tc_beta > 0:
             _logqz = log_normal(
                 z.view(batch_size, 1, self.latent_dim),
@@ -232,11 +245,16 @@ class PointCloudNFinVAE(PointCloudVAE):
             # logqz = torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(
             #     batch_size * dataset_size
             # )
-            logqz = (torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
-            logqz_inv = (torch.logsumexp(_logqz[:,:,:self.latent_dim_inv].sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
-            logqz_spur = (torch.logsumexp(_logqz[:,:,self.latent_dim_inv:].sum(2), dim=1, keepdim=False) - math.log(batch_size * dataset_size))
+            logqz = torch.logsumexp(_logqz.sum(2), dim=1, keepdim=False) - math.log(
+                batch_size * dataset_size
+            )
+            logqz_inv = torch.logsumexp(
+                _logqz[:, :, : self.latent_dim_inv].sum(2), dim=1, keepdim=False
+            ) - math.log(batch_size * dataset_size)
+            logqz_spur = torch.logsumexp(
+                _logqz[:, :, self.latent_dim_inv :].sum(2), dim=1, keepdim=False
+            ) - math.log(batch_size * dataset_size)
             # print(f'The tc loss is {(tc_beta * (logqz - logqz_inv - logqz_spur)).mean().item()}')
-
 
         # Clone z first then calculate parts of the prior with derivative wrt cloned z
         # prior
@@ -290,7 +308,7 @@ class PointCloudNFinVAE(PointCloudVAE):
         self.t_nn.requires_grad_(True)
         self.params_t_nn.requires_grad_(True)
         self.params_t_suff.requires_grad_(True)
-        
+
         # Calculate derivatives of prior automatically
         dprior_dz = grad(
             log_pz_d_inv,
@@ -341,13 +359,10 @@ class PointCloudNFinVAE(PointCloudVAE):
         # print(logqz - logqz_prodmarginals, log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde, log_qz_xde)
         if tc_beta > 0:
             objective_function = (
-                (
-                    log_px_z + 
-                    beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde) -
-                    tc_beta * (logqz - logqz_inv - logqz_spur)
-                ).mean().div(self.normalize_constant) -
-                beta * sm_part
-            )
+                log_px_z
+                + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
+                - tc_beta * (logqz - logqz_inv - logqz_spur)
+            ).mean().div(self.normalize_constant) - beta * sm_part
         else:
             objective_function = (
                 log_px_z + beta * (log_pz_d_inv_copy + log_pz_e_spur - log_qz_xde)
@@ -357,7 +372,7 @@ class PointCloudNFinVAE(PointCloudVAE):
 
     def sample_z(self, z_parts_params, inference=False):
         if inference:
-            z_parts_params[self.hparams.x_label] = z_parts_params['latent_mean']
+            z_parts_params[self.hparams.x_label] = z_parts_params["latent_mean"]
         else:
             z_parts_params[self.hparams.x_label] = self.reparameterize(
                 z_parts_params["latent_mean"], z_parts_params["latent_logvar"]
@@ -365,7 +380,6 @@ class PointCloudNFinVAE(PointCloudVAE):
         return z_parts_params
 
     def model_step(self, stage, batch, batch_idx):
-
         (
             xhat,
             z,
@@ -386,7 +400,11 @@ class PointCloudNFinVAE(PointCloudVAE):
         opt = self.optimizers()
         opt.zero_grad(set_to_none=True)
         self.warm_up_epochs = 2
-        self.warm_up_iters = self.warm_up_epochs * self.dataset_size/batch[self.hparams.x_label].shape[0]
+        self.warm_up_iters = (
+            self.warm_up_epochs
+            * self.dataset_size
+            / batch[self.hparams.x_label].shape[0]
+        )
         self.warm_up(self.global_step)
         loss, preds, targets = self.model_step("train", batch, batch_idx)
         self.manual_backward(loss["loss"])

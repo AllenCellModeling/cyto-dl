@@ -8,7 +8,12 @@ from timm.models.vision_transformer import Block
 
 class Mlp(nn.Module):
     def __init__(
-        self, in_features, hidden_features=None, out_features=None, act_layer=nn.GELU, drop=0.0
+        self,
+        in_features,
+        hidden_features=None,
+        out_features=None,
+        act_layer=nn.GELU,
+        drop=0.0,
     ):
         super().__init__()
         out_features = out_features or in_features
@@ -52,7 +57,11 @@ class CrossAttention(nn.Module):
         """query from decoder (x), key and value from encoder (y)"""
         B, N, C = x.shape
         Ny = y.shape[1]
-        q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
+        q = (
+            self.q(x)
+            .reshape(B, N, self.num_heads, C // self.num_heads)
+            .permute(0, 2, 1, 3)
+        )
         kv = (
             self.kv(y)
             .reshape(B, Ny, 2, self.num_heads, C // self.num_heads)
@@ -104,7 +113,10 @@ class CrossAttentionBlock(nn.Module):
         self.norm2 = norm_layer(decoder_dim)
         mlp_hidden_dim = int(decoder_dim * mlp_ratio)
         self.mlp = Mlp(
-            in_features=decoder_dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop
+            in_features=decoder_dim,
+            hidden_features=mlp_hidden_dim,
+            act_layer=act_layer,
+            drop=drop,
         )
 
     def forward(self, x, y):

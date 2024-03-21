@@ -95,6 +95,7 @@ class ImageEncoder(torch.nn.Module):
                 padding=0,
                 batch_norm=False,
                 activation=False,
+                last_conv=True,
                 out_vector_channels=n_out_vectors,
             )
         )
