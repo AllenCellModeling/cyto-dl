@@ -14,6 +14,9 @@ from cyto_dl.utils.rich_utils import print_config_tree
 
 
 class CytoDLModel:
+    # TODO: add optional CytoDLConfig param to init--if client passes a
+    # CytoDLConfig subtype, config will be initialized in constructor and
+    # calls to train/predict can be run immediately
     def __init__(self):
         self.cfg = None
         self._training = False
