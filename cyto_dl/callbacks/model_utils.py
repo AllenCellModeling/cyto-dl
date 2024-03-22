@@ -3,7 +3,7 @@ import os
 import tempfile
 from pathlib import Path
 from typing import Optional
-
+import time
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
@@ -11,7 +11,7 @@ import pandas as pd
 from tqdm import tqdm
 import torch
 from lightning import Callback, LightningModule, Trainer
-
+from codecarbon import EmissionsTracker
 log = logging.getLogger(__name__)
 
 
@@ -45,6 +45,7 @@ class GetEmbeddings(Callback):
         sample_points: Optional[bool] = False,
         skew_scale: Optional[int] = 300,
         save_path: Optional[str] = None,
+        track_emissions: Optional[bool] = None,
     ):
         """
         Args:
@@ -59,7 +60,12 @@ class GetEmbeddings(Callback):
         self.skew_scale = skew_scale
         self.loss = loss
         self.save_path = save_path
+        Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.latent_dim = latent_dim
+        self.track_emissions = track_emissions
+        self.name = 'embeddings'
+        if self.track_emissions:
+            self.name = 'emissions'
 
     def on_test_epoch_start(self, trainer: Trainer, pl_module: LightningModule):
         with torch.no_grad():
@@ -74,8 +80,10 @@ class GetEmbeddings(Callback):
                 self.sample_points,
                 self.skew_scale,
                 self.latent_dim,
+                self.track_emissions,
+                Path(self.save_path)
             )
-            embeddings.to_csv(Path(self.save_path) / "embeddings.csv")
+            embeddings.to_csv(Path(self.save_path) / f"{self.name}.csv")
 
 
 def gen_forward(pl_module, batch, x_label):
@@ -107,6 +115,8 @@ def get_all_embeddings(
     sample_points: bool,
     skew_scale: int,
     latent_dim: int,
+    track_emissions: bool,
+    save_path: Path
 ):
     all_embeddings = []
     cell_ids = []
@@ -116,6 +126,15 @@ def get_all_embeddings(
     zip_iter = zip(
         ["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader]
     )
+    if track_emissions:
+        zip_iter = zip(['test'], [test_dataloader])
+        tracker = EmissionsTracker(
+            measure_power_secs=1, output_dir=save_path, gpu_ids=[0]
+        )
+        emissions_csv = save_path / "emissions.csv"
+        tracker.start()
+        start = time.time()
+
     with torch.no_grad():
         for split_name, dataloader in zip_iter:
             log.info(f"Getting embeddings for split: {split_name}")
@@ -144,9 +163,6 @@ def get_all_embeddings(
                 for key in batch.keys():
                     if not isinstance(batch[key], list):
                         batch[key] = batch[key].to(pl_module.device)
-                import ipdb
-
-                ipdb.set_trace()
                 xhat, z_parts_params = gen_forward(pl_module, batch, x_label)
                 # xhat, z_parts, z_parts_params = pl_module(
                 #     batch, decode=True, inference=True, return_params=True
@@ -167,7 +183,7 @@ def get_all_embeddings(
 
                 mus = mu_vars
                 if len(mu_vars.shape) > 2:
-                    mus = mu_vars[:, 1:, :].mean(axis=1)
+                    mus = mu_vars.squeeze()[1:, :].mean(axis=0).unsqueeze(dim=0)
 
                 rcl_per_input_dimension = this_loss(
                     xhat[x_label].contiguous(), batch[x_label].contiguous()
@@ -193,7 +209,11 @@ def get_all_embeddings(
                 _loss[start:end] = loss.cpu().numpy()
                 if _ids is not None:
                     _ids[start:end] = batch[id_label]
-                _split[start:end] = [split_name] * len(mus)
+                try:
+                    _split[start:end] = [split_name] * len(mus)
+                except:
+                    import ipdb
+                    ipdb.set_trace()
 
             diff = _bs - len(batch)
             if diff > 0:
@@ -207,6 +227,13 @@ def get_all_embeddings(
             cell_ids.append(_ids)
             split.append(_split)
 
+    if track_emissions:
+        emissions: float = tracker.stop()
+        emissions_df = pd.read_csv(emissions_csv)
+        inf_time = time.time() - start
+        emissions_df["inference_time"] = inf_time
+        return emissions_df
+    
     all_embeddings = np.vstack(all_embeddings)
     all_loss = np.vstack(all_loss)
     cell_ids = np.hstack(cell_ids) if cell_ids[0] is not None else None
