@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.models.vae.image_canon_vae module" href="cyto_dl.models.vae.image_canon_vae.html" /><link rel="prev" title="cyto_dl.models.vae.priors.joint_prior module" href="cyto_dl.models.vae.priors.joint_prior.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.api.model module" href="cyto_dl.api.model.html" /><link rel="prev" title="cyto_dl.api package" href="cyto_dl.api.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.models.vae.base_vae module - cyto-dl 0.1.4 documentation</title>
+        <title>cyto_dl.api.data module - cyto-dl 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -162,8 +162,8 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">Using the API</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">Package modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="cyto_dl.html">cyto_dl package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.api.html">cyto_dl.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="cyto_dl.api.data.html">cyto_dl.api.data module</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.api.html">cyto_dl.api package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.api.data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.api.model.html">cyto_dl.api.model module</a></li>
 </ul>
 </li>
@@ -230,7 +230,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.classification.html">cyto_dl.models.classification package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.classification.classification.html">cyto_dl.models.classification.classification module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.classification.timepoint_classification.html">cyto_dl.models.classification.timepoint_classification module</a></li>
@@ -263,7 +263,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.utils.utils.html">cyto_dl.models.utils.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module</a></li>
@@ -276,7 +276,7 @@
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.priors.joint_prior.html">cyto_dl.models.vae.priors.joint_prior module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.base_vae.html">cyto_dl.models.vae.base_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_canon_vae.html">cyto_dl.models.vae.image_canon_vae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
@@ -406,67 +406,137 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.models.vae.base_vae">
-<span id="cyto-dl-models-vae-base-vae-module"></span><h1>cyto_dl.models.vae.base_vae module<a class="headerlink" href="#module-cyto_dl.models.vae.base_vae" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.api.data">
+<span id="cyto-dl-api-data-module"></span><h1>cyto_dl.api.data module<a class="headerlink" href="#module-cyto_dl.api.data" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.base_vae.</span></span><span class="sig-name descname"><span class="pre">BaseVAE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel" title="cyto_dl.models.base_model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
-<p>Instantiate a basic VAE model.
-:Parameters: * <strong>encoder</strong> (<em>nn.Module</em>) – Encoder network</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><strong>decoder</strong> (<em>nn.Module</em>) – Decoder network</p></li>
-<li><p><strong>x_label</strong> (<em>Optional[str] = None</em>)</p></li>
-<li><p><strong>id_label</strong> (<em>Optional[str] = None</em>)</p></li>
-<li><p><strong>beta</strong> (<em>float = 1.0</em>) – Beta parameter - the weight of the KLD term in the loss function</p></li>
-<li><p><strong>reconstruction_loss</strong> (<em>Loss</em>) – Loss to be used for reconstruction. Can be a PyTorch loss or a class
-that respects the same interface,
-i.e. subclasses torch.nn.modules._Loss</p></li>
-<li><p><strong>prior</strong> (<em>Optional[Sequence[AbstractPrior]]</em>) – List of prior specifications to use for latent space</p></li>
-<li><p><strong>decoder_latent_parts</strong> (<em>Optional[Dict[str, Sequence[str]]] = None</em>) – Dictionary that specifies for each output part’s decoer, what latent
-keys it depends on</p></li>
-<li><p><strong>**base_kwargs</strong> – Additional arguments passed to BaseModel</p></li>
-</ul>
-</div></blockquote>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo">
-<span class="sig-name descname"><span class="pre">calculate_elbo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xhat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.calculate_elbo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.api.data.</span></span><span class="sig-name descname"><span class="pre">AutoThresholdMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.ISODATA">
+<span class="sig-name descname"><span class="pre">ISODATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_isodata'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.ISODATA" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl">
-<span class="sig-name descname"><span class="pre">calculate_rcl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xhat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.calculate_rcl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.LI">
+<span class="sig-name descname"><span class="pre">LI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_li'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.LI" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl_dict">
-<span class="sig-name descname"><span class="pre">calculate_rcl_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xhat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.calculate_rcl_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl_dict" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.LOCAL">
+<span class="sig-name descname"><span class="pre">LOCAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_local'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.LOCAL" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.decode">
-<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.decode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.decode" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.MEAN">
+<span class="sig-name descname"><span class="pre">MEAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_mean'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.MEAN" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.encode">
-<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.encode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.encode" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.MINIMUM">
+<span class="sig-name descname"><span class="pre">MINIMUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_minimum'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.MINIMUM" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.forward" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.MULTIOTSU">
+<span class="sig-name descname"><span class="pre">MULTIOTSU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_multiotsu'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.MULTIOTSU" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.model_step">
-<span class="sig-name descname"><span class="pre">model_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.model_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.model_step" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.NIBLACK">
+<span class="sig-name descname"><span class="pre">NIBLACK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_niblack'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.NIBLACK" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.sample_z">
-<span class="sig-name descname"><span class="pre">sample_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_parts_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.sample_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.sample_z" title="Permalink to this definition">#</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.OTSU">
+<span class="sig-name descname"><span class="pre">OTSU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_otsu'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.OTSU" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.SAUVOLA">
+<span class="sig-name descname"><span class="pre">SAUVOLA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_sauvola'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.SAUVOLA" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.TRIANGLE">
+<span class="sig-name descname"><span class="pre">TRIANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_triangle'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.TRIANGLE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.AutoThresholdMethod.YEN">
+<span class="sig-name descname"><span class="pre">YEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'threshold_yen'</span></em><a class="headerlink" href="#cyto_dl.api.data.AutoThresholdMethod.YEN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.api.data.</span></span><span class="sig-name descname"><span class="pre">ExperimentType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/api/data.html#ExperimentType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.api.data.ExperimentType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType.GAN">
+<span class="sig-name descname"><span class="pre">GAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gan'</span></em><a class="headerlink" href="#cyto_dl.api.data.ExperimentType.GAN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType.INSTANCE_SEG">
+<span class="sig-name descname"><span class="pre">INSTANCE_SEG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'instance_seg'</span></em><a class="headerlink" href="#cyto_dl.api.data.ExperimentType.INSTANCE_SEG" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType.LABEL_FREE">
+<span class="sig-name descname"><span class="pre">LABEL_FREE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'labelfree'</span></em><a class="headerlink" href="#cyto_dl.api.data.ExperimentType.LABEL_FREE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType.SEGMENTATION">
+<span class="sig-name descname"><span class="pre">SEGMENTATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'segmentation'</span></em><a class="headerlink" href="#cyto_dl.api.data.ExperimentType.SEGMENTATION" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.ExperimentType.SEGMENTATION_PLUGIN">
+<span class="sig-name descname"><span class="pre">SEGMENTATION_PLUGIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'segmentation_plugin'</span></em><a class="headerlink" href="#cyto_dl.api.data.ExperimentType.SEGMENTATION_PLUGIN" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.api.data.HardwareType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.api.data.</span></span><span class="sig-name descname"><span class="pre">HardwareType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/api/data.html#HardwareType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.api.data.HardwareType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.HardwareType.CPU">
+<span class="sig-name descname"><span class="pre">CPU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cpu'</span></em><a class="headerlink" href="#cyto_dl.api.data.HardwareType.CPU" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.HardwareType.GPU">
+<span class="sig-name descname"><span class="pre">GPU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gpu'</span></em><a class="headerlink" href="#cyto_dl.api.data.HardwareType.GPU" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.api.data.PatchSize">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.api.data.</span></span><span class="sig-name descname"><span class="pre">PatchSize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/api/data.html#PatchSize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.api.data.PatchSize" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Patch size for training, and their respective patch shapes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.PatchSize.LARGE">
+<span class="sig-name descname"><span class="pre">LARGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[16,</span> <span class="pre">128,</span> <span class="pre">128]</span></em><a class="headerlink" href="#cyto_dl.api.data.PatchSize.LARGE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.PatchSize.MEDIUM">
+<span class="sig-name descname"><span class="pre">MEDIUM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[16,</span> <span class="pre">64,</span> <span class="pre">64]</span></em><a class="headerlink" href="#cyto_dl.api.data.PatchSize.MEDIUM" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.api.data.PatchSize.SMALL">
+<span class="sig-name descname"><span class="pre">SMALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[16,</span> <span class="pre">32,</span> <span class="pre">32]</span></em><a class="headerlink" href="#cyto_dl.api.data.PatchSize.SMALL" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -478,23 +548,23 @@ keys it depends on</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.models.vae.image_canon_vae.html">
+          <a class="next-page" href="cyto_dl.api.model.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.models.vae.image_canon_vae module</div>
+                <div class="title">cyto_dl.api.model module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.models.vae.priors.joint_prior.html">
+          <a class="prev-page" href="cyto_dl.api.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.models.vae.priors.joint_prior module</div>
+                <div class="title">cyto_dl.api package</div>
                 
               </div>
             </a>
@@ -528,16 +598,38 @@ keys it depends on</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">cyto_dl.models.vae.base_vae module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE"><code class="docutils literal notranslate"><span class="pre">BaseVAE</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo"><code class="docutils literal notranslate"><span class="pre">BaseVAE.calculate_elbo()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl"><code class="docutils literal notranslate"><span class="pre">BaseVAE.calculate_rcl()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl_dict"><code class="docutils literal notranslate"><span class="pre">BaseVAE.calculate_rcl_dict()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.decode"><code class="docutils literal notranslate"><span class="pre">BaseVAE.decode()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.encode"><code class="docutils literal notranslate"><span class="pre">BaseVAE.encode()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.forward"><code class="docutils literal notranslate"><span class="pre">BaseVAE.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.model_step"><code class="docutils literal notranslate"><span class="pre">BaseVAE.model_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.vae.base_vae.BaseVAE.sample_z"><code class="docutils literal notranslate"><span class="pre">BaseVAE.sample_z()</span></code></a></li>
+<li><a class="reference internal" href="#">cyto_dl.api.data module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.ISODATA"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.ISODATA</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.LI"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.LI</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.LOCAL"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.LOCAL</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.MEAN"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.MEAN</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.MINIMUM"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.MINIMUM</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.MULTIOTSU"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.MULTIOTSU</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.NIBLACK"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.NIBLACK</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.OTSU"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.OTSU</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.SAUVOLA"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.SAUVOLA</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.TRIANGLE"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.TRIANGLE</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.AutoThresholdMethod.YEN"><code class="docutils literal notranslate"><span class="pre">AutoThresholdMethod.YEN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType"><code class="docutils literal notranslate"><span class="pre">ExperimentType</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType.GAN"><code class="docutils literal notranslate"><span class="pre">ExperimentType.GAN</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType.INSTANCE_SEG"><code class="docutils literal notranslate"><span class="pre">ExperimentType.INSTANCE_SEG</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType.LABEL_FREE"><code class="docutils literal notranslate"><span class="pre">ExperimentType.LABEL_FREE</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType.SEGMENTATION"><code class="docutils literal notranslate"><span class="pre">ExperimentType.SEGMENTATION</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.ExperimentType.SEGMENTATION_PLUGIN"><code class="docutils literal notranslate"><span class="pre">ExperimentType.SEGMENTATION_PLUGIN</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.api.data.HardwareType"><code class="docutils literal notranslate"><span class="pre">HardwareType</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.api.data.HardwareType.CPU"><code class="docutils literal notranslate"><span class="pre">HardwareType.CPU</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.HardwareType.GPU"><code class="docutils literal notranslate"><span class="pre">HardwareType.GPU</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.api.data.PatchSize"><code class="docutils literal notranslate"><span class="pre">PatchSize</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.api.data.PatchSize.LARGE"><code class="docutils literal notranslate"><span class="pre">PatchSize.LARGE</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.PatchSize.MEDIUM"><code class="docutils literal notranslate"><span class="pre">PatchSize.MEDIUM</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.api.data.PatchSize.SMALL"><code class="docutils literal notranslate"><span class="pre">PatchSize.SMALL</span></code></a></li>
 </ul>
 </li>
 </ul>

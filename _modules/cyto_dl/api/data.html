@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.loggers.mlflow - cyto-dl 0.1.4 documentation</title>
+        <title>cyto_dl.api.data - cyto-dl 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -404,172 +404,47 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.loggers.mlflow</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tempfile</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">Namespace</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+          <h1>Source code for cyto_dl.api.data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># goal: allow the API client to interact with CytoDLModel without</span>
+<span class="c1"># worrying about the actual values being used in config files</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">import</span> <span class="nn">mlflow</span>
-<span class="kn">from</span> <span class="nn">lightning.pytorch.callbacks</span> <span class="kn">import</span> <span class="n">ModelCheckpoint</span>
-<span class="kn">from</span> <span class="nn">lightning.pytorch.loggers</span> <span class="kn">import</span> <span class="n">MLFlowLogger</span> <span class="k">as</span> <span class="n">_MLFlowLogger</span>
-<span class="kn">from</span> <span class="nn">lightning.pytorch.utilities.rank_zero</span> <span class="kn">import</span> <span class="n">rank_zero_only</span>
-<span class="kn">from</span> <span class="nn">mlflow.store.artifact.artifact_repository_registry</span> <span class="kn">import</span> <span class="n">get_artifact_repository</span>
-<span class="kn">from</span> <span class="nn">mlflow.store.artifact.local_artifact_repo</span> <span class="kn">import</span> <span class="n">LocalArtifactRepository</span>
-<span class="kn">from</span> <span class="nn">mlflow.utils.file_utils</span> <span class="kn">import</span> <span class="n">local_file_uri_to_path</span>
-<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">OmegaConf</span>
-
-<span class="kn">from</span> <span class="nn">cyto_dl</span> <span class="kn">import</span> <span class="n">utils</span>
-
-<span class="n">log</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_pylogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">skimage</span>
 
 
-<div class="viewcode-block" id="MLFlowLogger"><a class="viewcode-back" href="../../../cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger">[docs]</a><span class="k">class</span> <span class="nc">MLFlowLogger</span><span class="p">(</span><span class="n">_MLFlowLogger</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">experiment_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;lightning_logs&quot;</span><span class="p">,</span>
-        <span class="n">run_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracking_uri</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;MLFLOW_TRACKING_URI&quot;</span><span class="p">),</span>
-        <span class="n">tags</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;./mlruns&quot;</span><span class="p">,</span>
-        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-        <span class="n">artifact_location</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">fault_tolerant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="n">_MLFlowLogger</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">experiment_name</span><span class="o">=</span><span class="n">experiment_name</span><span class="p">,</span>
-            <span class="n">run_name</span><span class="o">=</span><span class="n">run_name</span><span class="p">,</span>
-            <span class="n">tracking_uri</span><span class="o">=</span><span class="n">tracking_uri</span><span class="p">,</span>
-            <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">,</span>
-            <span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">,</span>
-            <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
-            <span class="n">artifact_location</span><span class="o">=</span><span class="n">artifact_location</span><span class="p">,</span>
-            <span class="n">run_id</span><span class="o">=</span><span class="n">run_id</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">fault_tolerant</span> <span class="o">=</span> <span class="n">fault_tolerant</span>
-
-        <span class="k">if</span> <span class="n">tracking_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">mlflow</span><span class="o">.</span><span class="n">set_tracking_uri</span><span class="p">(</span><span class="n">tracking_uri</span><span class="p">)</span>
-
-<div class="viewcode-block" id="MLFlowLogger.log_hyperparams"><a class="viewcode-back" href="../../../cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger.log_hyperparams">[docs]</a>    <span class="nd">@rank_zero_only</span>
-    <span class="k">def</span> <span class="nf">log_hyperparams</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Namespace</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">requirements</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;requirements&quot;</span><span class="p">,</span> <span class="p">[])</span>
-
-        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmp_dir</span><span class="p">:</span>
-            <span class="n">conf_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">.yaml&quot;</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">conf_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">config</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                <span class="n">OmegaConf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-
-            <span class="n">reqs_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">-requirements.txt&quot;</span>
-            <span class="n">reqs_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requirements</span><span class="p">))</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="n">conf_path</span><span class="p">,</span> <span class="n">artifact_path</span><span class="o">=</span><span class="s2">&quot;config&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="n">reqs_path</span><span class="p">,</span> <span class="n">artifact_path</span><span class="o">=</span><span class="s2">&quot;requirements&quot;</span>
-            <span class="p">)</span></div>
-
-<div class="viewcode-block" id="MLFlowLogger.log_metrics"><a class="viewcode-back" href="../../../cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger.log_metrics">[docs]</a>    <span class="nd">@rank_zero_only</span>
-    <span class="k">def</span> <span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span><span class="n">metrics</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_tolerant</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`MLFlowLogger.log_metrics` failed with exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">Continuing...&quot;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span></div>
-
-<div class="viewcode-block" id="MLFlowLogger.after_save_checkpoint"><a class="viewcode-back" href="../../../cyto_dl.loggers.mlflow.html#cyto_dl.loggers.mlflow.MLFlowLogger.after_save_checkpoint">[docs]</a>    <span class="k">def</span> <span class="nf">after_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_callback</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_after_save_checkpoint</span><span class="p">(</span><span class="n">ckpt_callback</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_tolerant</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;`MLFlowLogger.after_save_checkpoint` failed with exception </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">Continuing...&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span></div>
-
-    <span class="k">def</span> <span class="nf">_after_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ckpt_callback</span><span class="p">:</span> <span class="n">ModelCheckpoint</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Called after model checkpoint callback saves a new checkpoint.&quot;&quot;&quot;</span>
-        <span class="n">monitor</span> <span class="o">=</span> <span class="n">ckpt_callback</span><span class="o">.</span><span class="n">monitor</span>
-        <span class="k">if</span> <span class="n">monitor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">artifact_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;checkpoints/</span><span class="si">{</span><span class="n">monitor</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">existing_ckpts</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">_</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">list_artifacts</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">artifact_path</span><span class="p">)</span>
-            <span class="p">}</span>
-
-            <span class="n">top_k_ckpts</span> <span class="o">=</span> <span class="p">{</span><span class="n">_</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">ckpt_callback</span><span class="o">.</span><span class="n">best_k_models</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-
-            <span class="n">to_delete</span> <span class="o">=</span> <span class="n">existing_ckpts</span> <span class="o">-</span> <span class="n">top_k_ckpts</span>
-            <span class="n">to_upload</span> <span class="o">=</span> <span class="n">top_k_ckpts</span> <span class="o">-</span> <span class="n">existing_ckpts</span>
-
-            <span class="n">run</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">get_run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">)</span>
-            <span class="n">repository</span> <span class="o">=</span> <span class="n">get_artifact_repository</span><span class="p">(</span><span class="n">run</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">artifact_uri</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">ckpt</span> <span class="ow">in</span> <span class="n">to_delete</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repository</span><span class="p">,</span> <span class="n">LocalArtifactRepository</span><span class="p">):</span>
-                    <span class="n">_delete_local_artifact</span><span class="p">(</span><span class="n">repository</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;checkpoints/</span><span class="si">{</span><span class="n">monitor</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ckpt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">repository</span><span class="p">,</span> <span class="s2">&quot;delete_artifacts&quot;</span><span class="p">):</span>
-                    <span class="n">repository</span><span class="o">.</span><span class="n">delete_artifacts</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;checkpoints/</span><span class="si">{</span><span class="n">monitor</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">ckpt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                        <span class="s2">&quot;The artifact repository configured for this &quot;</span>
-                        <span class="s2">&quot;MLFlow server doesn&#39;t support deleting artifacts, &quot;</span>
-                        <span class="s2">&quot;so we&#39;re keeping all checkpoints.&quot;</span>
-                    <span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">ckpt</span> <span class="ow">in</span> <span class="n">to_upload</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span>
-                    <span class="n">local_path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ckpt_callback</span><span class="o">.</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">ckpt</span><span class="p">),</span>
-                    <span class="n">artifact_path</span><span class="o">=</span><span class="n">artifact_path</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="c1"># also save the current best model as &quot;best.ckpt&quot;</span>
-            <span class="n">filepath</span> <span class="o">=</span> <span class="n">ckpt_callback</span><span class="o">.</span><span class="n">best_model_path</span>
-            <span class="n">best_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="s2">&quot;best.ckpt&quot;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">best_path</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="n">best_path</span><span class="p">,</span> <span class="n">artifact_path</span><span class="o">=</span><span class="n">artifact_path</span>
-            <span class="p">)</span>
-
-            <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">best_path</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">filepath</span> <span class="o">=</span> <span class="n">ckpt_callback</span><span class="o">.</span><span class="n">best_model_path</span>
-            <span class="n">artifact_path</span> <span class="o">=</span> <span class="s2">&quot;checkpoints&quot;</span>
-
-            <span class="c1"># mimic ModelCheckpoint&#39;s behavior: if `self.save_top_k == 1` only</span>
-            <span class="c1"># keep the latest checkpoint, otherwise keep all of them.</span>
-            <span class="k">if</span> <span class="n">ckpt_callback</span><span class="o">.</span><span class="n">save_top_k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">last_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="s2">&quot;last.ckpt&quot;</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">link</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">last_path</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="n">last_path</span><span class="p">,</span> <span class="n">artifact_path</span><span class="o">=</span><span class="n">artifact_path</span>
-                <span class="p">)</span>
-
-                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">last_path</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">log_artifact</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span> <span class="n">artifact_path</span><span class="o">=</span><span class="n">artifact_path</span>
-                <span class="p">)</span></div>
+<div class="viewcode-block" id="ExperimentType"><a class="viewcode-back" href="../../../cyto_dl.api.data.html#cyto_dl.api.data.ExperimentType">[docs]</a><span class="k">class</span> <span class="nc">ExperimentType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">GAN</span> <span class="o">=</span> <span class="s2">&quot;gan&quot;</span>
+    <span class="n">INSTANCE_SEG</span> <span class="o">=</span> <span class="s2">&quot;instance_seg&quot;</span>
+    <span class="n">LABEL_FREE</span> <span class="o">=</span> <span class="s2">&quot;labelfree&quot;</span>
+    <span class="n">SEGMENTATION_PLUGIN</span> <span class="o">=</span> <span class="s2">&quot;segmentation_plugin&quot;</span>
+    <span class="n">SEGMENTATION</span> <span class="o">=</span> <span class="s2">&quot;segmentation&quot;</span></div>
 
 
-<span class="k">def</span> <span class="nf">_delete_local_artifact</span><span class="p">(</span><span class="n">repo</span><span class="p">,</span> <span class="n">artifact_path</span><span class="p">):</span>
-    <span class="n">artifact_path</span> <span class="o">=</span> <span class="n">local_file_uri_to_path</span><span class="p">(</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">_artifact_dir</span><span class="p">,</span> <span class="n">artifact_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">artifact_path</span> <span class="k">else</span> <span class="n">repo</span><span class="o">.</span><span class="n">_artifact_dir</span>
-    <span class="p">)</span>
+<div class="viewcode-block" id="HardwareType"><a class="viewcode-back" href="../../../cyto_dl.api.data.html#cyto_dl.api.data.HardwareType">[docs]</a><span class="k">class</span> <span class="nc">HardwareType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">CPU</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span>
+    <span class="n">GPU</span> <span class="o">=</span> <span class="s2">&quot;gpu&quot;</span></div>
+    <span class="c1"># other hardware types available, but require more complicated config</span>
 
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">artifact_path</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">artifact_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PatchSize"><a class="viewcode-back" href="../../../cyto_dl.api.data.html#cyto_dl.api.data.PatchSize">[docs]</a><span class="k">class</span> <span class="nc">PatchSize</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Patch size for training, and their respective patch shapes.&quot;&quot;&quot;</span>
+
+    <span class="n">SMALL</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">]</span>
+    <span class="n">MEDIUM</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">]</span>
+    <span class="n">LARGE</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">]</span></div>
+
+
+<span class="c1"># importing skimage takes a while.</span>
+<span class="c1"># could speed it up by hardcoding this enum, but would have to update</span>
+<span class="c1"># if skimage adds/deletes threshold filters</span>
+
+<span class="n">AutoThresholdMethod</span> <span class="o">=</span> <span class="n">Enum</span><span class="p">(</span>
+    <span class="s2">&quot;AutoThresholdMethod&quot;</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="n">func_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;threshold_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span> <span class="n">func_name</span>
+        <span class="k">for</span> <span class="n">func_name</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;threshold_&quot;</span><span class="p">),</span> <span class="nb">dir</span><span class="p">(</span><span class="n">skimage</span><span class="o">.</span><span class="n">filters</span><span class="p">))</span>
+    <span class="p">},</span>
+<span class="p">)</span>
 </pre></div>
         </article>
       </div>
