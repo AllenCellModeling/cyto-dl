@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -399,50 +399,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.point_cloud.io.read_pcloud">
-<span id="cyto-dl-point-cloud-io-read-pcloud-module"></span><h1>cyto_dl.point_cloud.io.read_pcloud module<a class="headerlink" href="#module-cyto_dl.point_cloud.io.read_pcloud" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.point_cloud.io.read_pcloud.</span></span><span class="sig-name descname"><span class="pre">ReadPointCloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/point_cloud/io/read_pcloud.html#ReadPointCloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MapTransform</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>Union[str, Sequence[str]]</em>) – Key (or list thereof) of the input dictionary to interpret as paths
-to point cloud files which should be loaded</p></li>
-<li><p><strong>remote</strong> (<em>bool = False</em>) – Whether files can be in a fsspec-interpretable remote location</p></li>
-<li><p><strong>sample</strong> (<em>Optional[int]</em>) – How many points to sample from the point cloud</p></li>
-<li><p><strong>scale</strong> (<em>float</em>) – scale factor for X,Y,Z coordinates - e.g. X’ = scale * X</p></li>
-<li><p><strong>num_cols</strong> (<em>int</em>) – Number of columns to sample from the saved point cloud
-This is relevant for ply files saved with additional scalar features
-here we assume first 3 columns are X, Y, Z coordinates</p></li>
-<li><p><strong>norm</strong> (<em>bool</em>) – Whether to normalize point cloud coordinates.</p></li>
-<li><p><strong>flip_dims</strong> (<em>bool</em>) – Whether to flip dims from XYZ to ZYX</p></li>
-<li><p><strong>rotate</strong> (<em>bool</em>) – Whether to add random rotation to the point cloud in the XY plane
-assuming ordering is XYZ</p></li>
-<li><p><strong>scalar_scale</strong> (<em>float</em>) – Scale factor for scalar features</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud.pc_norm">
-<span class="sig-name descname"><span class="pre">pc_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/point_cloud/io/read_pcloud.html#ReadPointCloud.pc_norm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud.pc_norm" title="Permalink to this definition">#</a></dt>
-<dd><p>pc: NxC, return NxC</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.point_cloud.io.read_pcloud.rotate_pointcloud">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.point_cloud.io.read_pcloud.</span></span><span class="sig-name descname"><span class="pre">rotate_pointcloud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointcloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_rot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/point_cloud/io/read_pcloud.html#rotate_pointcloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.point_cloud.io.read_pcloud.rotate_pointcloud" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
+          <section id="cyto-dl-point-cloud-io-read-pcloud-module">
+<h1>cyto_dl.point_cloud.io.read_pcloud module<a class="headerlink" href="#cyto-dl-point-cloud-io-read-pcloud-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -488,31 +452,8 @@ assuming ordering is XYZ</p></li>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.point_cloud.io.read_pcloud module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud"><code class="docutils literal notranslate"><span class="pre">ReadPointCloud</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.point_cloud.io.read_pcloud.ReadPointCloud.pc_norm"><code class="docutils literal notranslate"><span class="pre">ReadPointCloud.pc_norm()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.point_cloud.io.read_pcloud.rotate_pointcloud"><code class="docutils literal notranslate"><span class="pre">rotate_pointcloud()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

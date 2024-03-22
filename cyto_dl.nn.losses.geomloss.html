@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -399,32 +399,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.losses.geomloss">
-<span id="cyto-dl-nn-losses-geomloss-module"></span><h1>cyto_dl.nn.losses.geomloss module<a class="headerlink" href="#module-cyto_dl.nn.losses.geomloss" title="Permalink to this heading">#</a></h1>
-<p>Adapted from: <a class="reference external" href="https://github.com/jeanfeydy/geomloss">https://github.com/jeanfeydy/geomloss</a>
-LICENSE: <a class="reference external" href="https://github.com/jeanfeydy/geomloss/blob/main/LICENSE.txt">https://github.com/jeanfeydy/geomloss/blob/main/LICENSE.txt</a></p>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.geomloss.GeomLoss">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.losses.geomloss.</span></span><span class="sig-name descname"><span class="pre">GeomLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sinkhorn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blur</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reach</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/geomloss.html#GeomLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.geomloss.GeomLoss" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.geomloss.GeomLoss.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/losses/geomloss.html#GeomLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.losses.geomloss.GeomLoss.forward" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="cyto_dl.nn.losses.geomloss.GeomLoss.training">
-<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#cyto_dl.nn.losses.geomloss.GeomLoss.training" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+          <section id="cyto-dl-nn-losses-geomloss-module">
+<h1>cyto_dl.nn.losses.geomloss module<a class="headerlink" href="#cyto-dl-nn-losses-geomloss-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -470,31 +452,8 @@ LICENSE: <a class="reference external" href="https://github.com/jeanfeydy/geomlo
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.losses.geomloss module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.geomloss.GeomLoss"><code class="docutils literal notranslate"><span class="pre">GeomLoss</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.geomloss.GeomLoss.forward"><code class="docutils literal notranslate"><span class="pre">GeomLoss.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.losses.geomloss.GeomLoss.training"><code class="docutils literal notranslate"><span class="pre">GeomLoss.training</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
