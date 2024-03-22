@@ -83,12 +83,12 @@ all = [
     "cyto-dl[equiv,spharm,s3,torchserve,pcloud]",
 ]
 test = [
-    "cyto-dl[all]",
+    "cyto-dl",
     "pytest~=7.2",
     "pytest-cov[toml]~=4.0",
 ]
 docs = [
-    "cyto-dl[all]",
+    "cyto-dl",
     "furo<=2023.3.23",
     "m2r2<=0.3.3.post2",
     "sphinx<=6.1.3",
