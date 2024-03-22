@@ -61,7 +61,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys: ${data.columns}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image:
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
 
   test:

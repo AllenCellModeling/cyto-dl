@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from lightning import LightningDataModule
 from lightning.pytorch.utilities.exceptions import MisconfigurationException
-from monai.data import DataLoader
+from monai.data import DataLoader, ThreadDataLoader
 from upath import UPath as Path
 
 from .utils import (
@@ -162,7 +162,7 @@ class DataframeDatamodule(LightningDataModule):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         subset = self.get_dataset(split)
-        return DataLoader(dataset=subset, **kwargs)
+        return ThreadDataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)

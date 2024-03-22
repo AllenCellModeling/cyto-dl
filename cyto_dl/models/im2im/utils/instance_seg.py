@@ -362,7 +362,7 @@ class InstanceSegLoss:
         self.skeleton_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.vector_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.boundary_loss = CMAP_loss(torch.nn.BCEWithLogitsLoss(reduction="none"))
-        self.semantic_loss = TverskyLoss(sigmoid=True)
+        self.semantic_loss = TverskyLoss(sigmoid=True, alpha=0.8)
         self.weights = weights
 
     def __call__(self, y_hat, y):

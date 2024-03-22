@@ -47,7 +47,7 @@ class BaseHead(ABC, torch.nn.Module):
         """generates map between input files and output files for a head."""
         # filename is determined by step in training during train/val and by its source filename for prediction/testing
         filename_map = {"input": meta.get("filename_or_obj", [batch_idx])}
-        if stage in ("train", "val", "test"):
+        if stage in ("train", "val"):
             out_paths = [Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"]
         else:
             out_paths = [

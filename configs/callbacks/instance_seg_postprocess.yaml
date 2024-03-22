@@ -1,0 +1,2 @@
+instance_seg_postprocess:
+  _target_: cyto_dl.callbacks.instance_seg_postprocess.InstanceSegPostprocess

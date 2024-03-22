@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 import random
 from typing import Sequence
 
-from monai.data import Dataset, PersistentDataset, SmartCacheDataset
+from monai.data import CacheDataset, Dataset, PersistentDataset, SmartCacheDataset
 from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
 from torch.utils.data import BatchSampler, Sampler, Subset, SubsetRandomSampler
@@ -159,6 +159,13 @@ def get_dataset(dataframe, transform, split, cache_dir=None, smartcache_args=Non
     if smartcache_args is not None and split in ("train", "val"):
         cache_rate = smartcache_args.get("cache_rate", 0.1)
         if cache_rate * len(data) >= 1:
+            replace_rate = smartcache_args.get("replace_rate", 0.1)
+            if replace_rate == 0:
+                print(
+                    "WARNING: replace_rate is 0, CacheDataset used instead of SmartCacheDataset for {split}"
+                )
+                return CacheDataset(data, transform=transform, cache_rate=cache_rate)
+
             print(f"Initializing SmartCacheDataset for {split}")
             return SmartCacheDataset(
                 data,

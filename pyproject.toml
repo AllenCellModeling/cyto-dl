@@ -83,7 +83,7 @@ all = [
     "cyto-dl[equiv,spharm,s3,torchserve,pcloud]",
 ]
 test = [
-    "cyto-dl[all]",
+    "cyto-dl",
     "pytest~=7.2",
     "pytest-cov[toml]~=4.0",
 ]
@@ -99,8 +99,8 @@ docs = [
 Homepage = "https://github.com/AllenCellModeling/cyto-dl"
 
 [tool.pdm.build]
-includes = ["cyto_dl", "README.md", "LICENSE", "**/*.yaml" ]
-excludes = ["**/*.pyc", "**/__pycache__"]
+includes = ["cyto_dl", "README.md"]
+excludes = ["**/*.pyc", "**/__pycache__", "**/*.yaml", "licenses/LICENSE", "logs/*", "data/*"]
 
 [tool.flake8]
 ignore = [
