@@ -128,12 +128,7 @@ def get_all_embeddings(
     )
     if track_emissions:
         zip_iter = zip(['test'], [test_dataloader])
-        tracker = EmissionsTracker(
-            measure_power_secs=1, output_dir=save_path, gpu_ids=[0]
-        )
-        emissions_csv = save_path / "emissions.csv"
-        tracker.start()
-        start = time.time()
+        all_emissions_df = []
 
     with torch.no_grad():
         for split_name, dataloader in zip_iter:
@@ -163,10 +158,22 @@ def get_all_embeddings(
                 for key in batch.keys():
                     if not isinstance(batch[key], list):
                         batch[key] = batch[key].to(pl_module.device)
+
+                if track_emissions:
+                    tracker = EmissionsTracker(
+                        measure_power_secs=1, output_dir=save_path, gpu_ids=[0]
+                    )
+                    emissions_csv = save_path / "emissions.csv"
+                    tracker.start()
+                    start = time.time()
                 xhat, z_parts_params = gen_forward(pl_module, batch, x_label)
-                # xhat, z_parts, z_parts_params = pl_module(
-                #     batch, decode=True, inference=True, return_params=True
-                # )
+
+                if track_emissions:
+                    emissions: float = tracker.stop()
+                    emissions_df = pd.read_csv(emissions_csv)
+                    inf_time = time.time() - start
+                    emissions_df["inference_time"] = inf_time
+                    all_emissions_df.append(emissions_df)
 
                 if sample_points:
                     batch[x_label] = torch.tensor(
@@ -209,12 +216,7 @@ def get_all_embeddings(
                 _loss[start:end] = loss.cpu().numpy()
                 if _ids is not None:
                     _ids[start:end] = batch[id_label]
-                try:
-                    _split[start:end] = [split_name] * len(mus)
-                except:
-                    import ipdb
-                    ipdb.set_trace()
-
+                _split[start:end] = [split_name] * len(mus)
             diff = _bs - len(batch)
             if diff > 0:
                 # if last batch is smaller discard the difference
@@ -228,11 +230,8 @@ def get_all_embeddings(
             split.append(_split)
 
     if track_emissions:
-        emissions: float = tracker.stop()
-        emissions_df = pd.read_csv(emissions_csv)
-        inf_time = time.time() - start
-        emissions_df["inference_time"] = inf_time
-        return emissions_df
+        all_emissions_df = pd.concat(all_emissions_df, axis=0).reset_index(drop=True)
+        return all_emissions_df
     
     all_embeddings = np.vstack(all_embeddings)
     all_loss = np.vstack(all_loss)
