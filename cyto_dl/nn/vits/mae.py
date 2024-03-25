@@ -10,9 +10,9 @@ from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
-from cyto_dl.nn.utils import take_indexes
 from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
+from cyto_dl.nn.vits.utils import take_indexes
 
 
 class MAE_Encoder(torch.nn.Module):
