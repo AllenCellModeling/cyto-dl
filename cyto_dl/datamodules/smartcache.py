@@ -7,7 +7,7 @@ import pandas as pd
 from aicsimageio import AICSImage
 from dask.diagnostics import ProgressBar
 from lightning import LightningDataModule
-from monai.data import DataLoader
+from monai.data import ThreadDataLoader
 from monai.data.dataset import CacheDataset, Dataset, SmartCacheDataset
 from monai.transforms import Compose
 from sklearn.model_selection import train_test_split
@@ -188,7 +188,7 @@ class SmartcacheDatamodule(LightningDataModule):
         self.kwargs["persistent_workers"] = split not in ("train", "val")
         if "num_workers" in self.kwargs:
             del self.kwargs["num_workers"]
-        return DataLoader(
+        return ThreadDataLoader(
             self.datasets[split],
             num_workers=self.num_workers,
             **self.kwargs,

@@ -36,6 +36,36 @@ class EncodedSkip(torch.nn.Module):
         return self.patch2img(features)
 
 
+class EncodedSkipConv(torch.nn.Module):
+    def __init__(self, spatial_dims, num_patches, emb_dim, n_decoder_filters, layer):
+        super().__init__()
+        """
+        layer = 0 is the smallest resolution, n is the highest
+        as the layer increases, the image size increases and the number of filters decreases
+        """
+        upsample = 2**layer
+        self.n_out_channels = n_decoder_filters // (upsample**spatial_dims)
+        self.patch2img = torch.nn.Sequential(
+            Rearrange(
+                " (n_patch_z n_patch_y n_patch_x) b c ->  b c n_patch_z n_patch_y n_patch_x",
+                n_patch_z=num_patches[0],
+                n_patch_y=num_patches[1],
+                n_patch_x=num_patches[2],
+                c=emb_dim,
+            ),
+            UpSample(
+                spatial_dims=spatial_dims,
+                in_channels=emb_dim,
+                out_channels=n_decoder_filters,
+                scale_factor=[upsample, upsample, upsample],
+                mode="nontrainable",
+            ),
+        )
+
+    def forward(self, features):
+        return self.patch2img(features)
+
+
 class SuperresDecoder_efficient_multilayer(torch.nn.Module):
     """create unet-like decoder where each decoder layer is a fed a skip connection consisting of a
     different weighted sum of intermediate layer features."""

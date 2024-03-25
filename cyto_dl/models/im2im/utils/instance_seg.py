@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List, Optional, Sequence, Union
 
 import edt
@@ -253,6 +254,8 @@ class InstanceSegPreprocessd(Transform):
         return new_im
 
     def __call__(self, image_dict):
+        print("loading ", image_dict["nucseg"].meta["filename_or_obj"])
+        t0 = time.time()
         for key in self.label_keys:
             if key not in image_dict:
                 if not self.allow_missing_keys:
@@ -274,6 +277,7 @@ class InstanceSegPreprocessd(Transform):
             bound = torch.from_numpy(find_boundaries(im, mode="inner")).unsqueeze(0)
             semantic_seg = torch.from_numpy(im > 0).unsqueeze(0)
             image_dict[key] = torch.cat([skel_edt, semantic_seg, embed, bound, cmap]).float()
+        print(time.time() - t0)
         return image_dict
 
 
@@ -362,7 +366,7 @@ class InstanceSegLoss:
         self.skeleton_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.vector_loss = CMAP_loss(torch.nn.MSELoss(reduction="none"))
         self.boundary_loss = CMAP_loss(torch.nn.BCEWithLogitsLoss(reduction="none"))
-        self.semantic_loss = TverskyLoss(sigmoid=True, alpha=0.8)
+        self.semantic_loss = TverskyLoss(sigmoid=True)
         self.weights = weights
 
     def __call__(self, y_hat, y):
