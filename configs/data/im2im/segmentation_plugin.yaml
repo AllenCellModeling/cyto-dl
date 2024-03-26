@@ -191,8 +191,6 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
-          - target
-          - ${exclude_mask_col}
 
   valid:
     _target_: monai.transforms.Compose

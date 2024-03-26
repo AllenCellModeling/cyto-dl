@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Union
 
 from monai.transforms import Transform
@@ -38,12 +39,6 @@ class Merged(Transform):
         input_dict: Dict[str, torch.Tensor]
             dict of CZYX tensors/metadata/paths
         """
-        # no merging mask, return original dict
-        if self.mask_key not in input_dict or input_dict[self.mask_key] is None:
-            return input_dict
-
-        mask = input_dict[self.mask_key]
-
         if self.base_image_key not in input_dict:
             raise KeyError(
                 f"key `{self.base_image_key}` not available. Available keys are {input_dict.keys()}"
@@ -55,6 +50,13 @@ class Merged(Transform):
                 f"Base image name `{base_image_name}` must match provided image keys `{self.image_keys}`"
             )
 
+        if self.mask_key not in input_dict or input_dict[self.mask_key] is None:
+            # no merging mask, return original dict
+            input_dict[self.output_name] = deepcopy(input_dict[base_image_name])
+            del input_dict[self.mask_key]
+            return input_dict
+        mask = input_dict[self.mask_key].astype(bool)
+
         for key in self.image_keys:
             if key not in input_dict.keys():
                 raise KeyError(
@@ -62,8 +64,9 @@ class Merged(Transform):
                 )
 
         base_image = input_dict[base_image_name]
-        self.image_keys.remove(base_image_name)
-        merge_image = input_dict[self.image_keys[0]]
+        merge_image = input_dict[
+            self.image_keys[0] if self.image_keys[1] == base_image_name else self.image_keys[1]
+        ]
 
         input_dict[self.output_name] = (base_image * ~mask) + (merge_image * mask)
 
