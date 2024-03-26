@@ -14,6 +14,7 @@ from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
 from cyto_dl.nn.vits.utils import take_indexes
 
+
 class MAE_Encoder(torch.nn.Module):
     def __init__(
         self,

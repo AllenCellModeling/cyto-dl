@@ -91,7 +91,7 @@ class SuperresDecoder_efficient_multilayer(torch.nn.Module):
 
         self.upsampling = torch.nn.ModuleDict()
         for i in range(self.num_layer):
-            skip = EncodedSkipConv(spatial_dims, num_patches, emb_dim, input_n_decoder_filters, i)
+            skip = EncodedSkip(spatial_dims, num_patches, emb_dim, input_n_decoder_filters, i)
             n_input_channels = (
                 n_decoder_filters + skip.n_out_channels if i > 0 else n_decoder_filters
             )
@@ -123,7 +123,7 @@ class SuperresDecoder_efficient_multilayer(torch.nn.Module):
             )
             n_decoder_filters = n_decoder_filters // 2
 
-        skip = EncodedSkipConv(
+        skip = EncodedSkip(
             spatial_dims, num_patches, emb_dim, input_n_decoder_filters, self.num_layer
         )
         n_input_channels = n_decoder_filters + skip.n_out_channels

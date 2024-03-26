@@ -3,17 +3,12 @@ from typing import List, Optional
 import numpy as np
 import torch
 import torch.nn as nn
-from einops import rearrange, repeat
+from einops import rearrange
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-
-
-def take_indexes(sequences, indexes):
-    return torch.gather(
-        sequences, 0, repeat(indexes.to(sequences.device), "t b -> t b c", c=sequences.shape[-1])
-    )
+from cyto_dl.nn.vits.utils import take_indexes
 
 
 class CrossMAE_Decoder(torch.nn.Module):
@@ -124,8 +119,9 @@ class CrossMAE_Decoder(torch.nn.Module):
         features = take_indexes(features, backward_indexes)
         features = features + self.pos_embedding
 
-        reshuffled = take_indexes(features, forward_indexes)
-        features, masked = reshuffled[:T], reshuffled[T:]
+        # reshuffle to shuffled positions for cross attention
+        features = take_indexes(features, forward_indexes)
+        features, masked = features[:T], features[T:]
 
         masked = rearrange(masked, "t b c -> b t c")
         features = rearrange(features, "t b c -> b t c")
