@@ -145,6 +145,25 @@ class Patchify(torch.nn.Module):
         return tokens, mask, forward_indexes, backward_indexes
 
 
+class IntermediateWeigher(torch.nn.Module):
+    def __init__(self, num_layers, embed_dim, n_outputs, norm_layer=torch.nn.LayerNorm):
+        super().__init__()
+        self.weights = torch.nn.Linear(num_layers, n_outputs)
+        # initialize with equal weighting of all layers
+        self.weights.weight.data.fill_(1.0 / num_layers)
+        self.weights.bias.data.zero_()
+
+        self.norms = torch.nn.ModuleList([norm_layer(embed_dim) for _ in range(num_layers)])
+
+    def forward(self, x):
+        """Apply layer norm to each intermediate feature and return n_outputs weighted sums, last
+        dimension is n_outputs."""
+        x = torch.stack([norm(x[i]) for i, norm in enumerate(self.norms)], dim=-1)
+        x = self.weights(x)
+        x = rearrange(x, " b t c n -> n b t c")
+        return x
+
+
 class MAE_Encoder(torch.nn.Module):
     def __init__(
         self,
@@ -156,6 +175,7 @@ class MAE_Encoder(torch.nn.Module):
         num_head: Optional[int] = 3,
         context_pixels: Optional[List[int]] = [0, 0, 0],
         input_channels: Optional[int] = 1,
+        n_intermediate_weights: Optional[int] = -1,
     ) -> None:
         """
         Parameters
@@ -176,18 +196,31 @@ class MAE_Encoder(torch.nn.Module):
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         input_channels: int
             Number of input channels
+        weight_intermediates: bool
+            Whether to output linear combination of intermediate layers as final output like CrossMAE
         """
         super().__init__()
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.patchify = Patchify(
             base_patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
         )
-
-        self.transformer = torch.nn.Sequential(
-            *[Block(emb_dim, num_head) for _ in range(num_layer)]
-        )
+        weight_intermediates = n_intermediate_weights > 0
+        if weight_intermediates:
+            self.transformer = torch.nn.ModuleList(
+                [Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
+        else:
+            self.transformer = torch.nn.Sequential(
+                *[Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
 
         self.layer_norm = torch.nn.LayerNorm(emb_dim)
+
+        self.intermediate_weighter = (
+            IntermediateWeigher(num_layer, emb_dim, n_intermediate_weights)
+            if weight_intermediates
+            else None
+        )
         self.init_weight()
 
     def init_weight(self):
@@ -197,8 +230,17 @@ class MAE_Encoder(torch.nn.Module):
         patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
         patches = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0)
         patches = rearrange(patches, "t b c -> b t c")
-        features = self.layer_norm(self.transformer(patches))
-        features = rearrange(features, "b t c -> t b c")
+
+        if self.intermediate_weighter is not None:
+            intermediates = []
+            for block in self.transformer:
+                patches = block(patches)
+                intermediates.append(patches)
+            features = self.layer_norm(self.intermediate_weighter(intermediates))
+            features = rearrange(features, "n b t c -> n t b c")
+        else:
+            features = self.layer_norm(self.transformer(patches))
+            features = rearrange(features, "b t c -> t b c")
         if mask_ratio > 0:
             return features, mask, forward_indexes, backward_indexes
         return features
