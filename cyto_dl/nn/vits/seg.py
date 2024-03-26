@@ -36,7 +36,7 @@ class EncodedSkip(torch.nn.Module):
         return self.patch2img(features)
 
 
-class SuperresDecoder_efficient_multilayer(torch.nn.Module):
+class SuperresDecoder(torch.nn.Module):
     """create unet-like decoder where each decoder layer is a fed a skip connection consisting of a
     different weighted sum of intermediate layer features."""
 
@@ -223,7 +223,7 @@ class Seg_ViT(torch.nn.Module):
                 # allow different weighting of internal activations for finetuning
                 param.requires_grad = "intermediate_weighter" in name
 
-        self.decoder = SuperresDecoder_efficient_multilayer(
+        self.decoder = SuperresDecoder(
             spatial_dims=spatial_dims,
             num_patches=num_patches,
             base_patch_size=base_patch_size,
