@@ -244,7 +244,7 @@ def make_multiple_dataframe_splits(
     datasets = {}
     predict_df = []
 
-    for fpath in chain(split_path.glob("*.csv"), split_path.glob("*.parquet")):
+    for fpath in chain(split_path.glob("[!.]*.csv"), split_path.glob("[!.]*.parquet")):
         split = re.findall(r"(.*)\.(?:csv|parquet)", fpath.name)[0]
         split = get_canonical_split_name(split)
         if split is None:
