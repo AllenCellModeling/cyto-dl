@@ -14,7 +14,6 @@ class CytoDLConfig(ABC):
     A CytoDLConfig represents the configuration for a CytoDLModel. Can be
     passed to CytoDLModel on initialization to create a fully-functional model.
     """
-    @abstractmethod
     def __init__(self, config_filepath: Optional[Path]=None, train: bool=True):
         """
         :param config_filepath: path to a .yaml config file that will be used as the basis
@@ -24,10 +23,10 @@ class CytoDLConfig(ABC):
         self._config_filepath: str = config_filepath
         self._train: bool = train
         self._cfg: DictConfig = OmegaConf.load(config_filepath) if config_filepath else self._generate_default_config()
-        OmegaConf.update(self._cfg, "train", train)
-        OmegaConf.update(self._cfg, "test", train)
+        self._set_cfg("train", train)
+        self._set_cfg("test", train)
         # afaik, task_name isn't used outside of template_utils.py - do we need to support this?
-        OmegaConf.update(self._cfg, "task_name", "train" if train else "predict")
+        self._set_cfg("task_name", "train" if train else "predict")
 
         # we currently have an override for ['mode'] in ml-seg, but I can't find top-level 'mode' in the configs, 
         # do we need to support this?
@@ -37,7 +36,7 @@ class CytoDLConfig(ABC):
         GlobalHydra.instance().clear()
         with initialize_config_dir(version_base="1.2", config_dir=str(cfg_dir)):
             cfg: DictConfig = compose(
-                config_name="train.yaml" if self._train else "eval.yaml",
+                config_name="train.yaml", # only using train.yaml after conversation w/ Benji
                 return_hydra_config=True,
                 overrides=[f"experiment=im2im/{self._get_experiment_type().name}"],
             )
@@ -85,31 +84,6 @@ class CytoDLConfig(ABC):
     
     def get_ckpt_path(self) -> Path:
         return Path(self._get_cfg("ckpt_path"))
-
-    def set_hardware_type(self, hardware_type: HardwareType) -> None:
-        self._set_cfg("trainer.accelerator", hardware_type.value)
-    
-    def get_hardware_type(self) -> HardwareType:
-        return HardwareType(self._get_cfg("trainer.accelerator"))
-
-    def set_max_epochs(self, max_epochs: int) -> None:
-        self._set_cfg("trainer.max_epochs", max_epochs)
-    
-    def get_max_epochs(self) -> int:
-        return self._get_cfg("trainer.max_epochs")
-    
-    def set_output_dir(self, output_dir: Path) -> None:
-        self._set_cfg("paths.output_dir", str(output_dir))
-    
-    def get_output_dir(self) -> Path:
-        return Path(self._get_cfg("paths.output_dir"))
-    
-    # I can't find where this is actually used in cyto_dl, do we need to support this?
-    def set_work_dir(self, work_dir: Path) -> None:
-        self._set_cfg("paths.work_dir", str(work_dir))
-    
-    def get_work_dir(self) -> Path:
-        return Path(self._get_cfg("paths.work_dir"))
     
     def get_config(self) -> DictConfig:
         return deepcopy(self._cfg)

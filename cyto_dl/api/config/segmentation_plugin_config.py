@@ -1,11 +1,9 @@
-from typing import Optional, Tuple, List
+from typing import Tuple, List, Union
 from pathlib import Path
 from cyto_dl.api.config import CytoDLConfig
 from cyto_dl.api.data import *
-# TODO: get rid of using Path or any non-primitive data type since there are format strings in config sometimes...
+
 class SegmentationPluginConfig(CytoDLConfig):
-    def __init__(self, config_filepath: Optional[Path] = None, train: bool = True):
-        super().__init__(config_filepath, train)
     
     def _get_experiment_type(self) -> ExperimentType:
         return ExperimentType.SEGMENTATION_PLUGIN
@@ -31,11 +29,11 @@ class SegmentationPluginConfig(CytoDLConfig):
     def get_raw_image_channels(self) -> int:
         return self._get_cfg("raw_im_channels")
     
-    def set_data_path(self, data_path: Path) -> None:
+    def set_data_path(self, data_path: Union[str, Path]) -> None:
         self._set_cfg("data.path", str(data_path))
     
-    def get_data_path(self) -> Path:
-        return Path(self._get_cfg("data.path"))
+    def get_data_path(self) -> str:
+        return self._get_cfg("data.path")
     
     # TODO: is there a better way to deal with column names + split columns?
     def set_manifest_column_names(self, source: str, target1: str, target2: str, merge_mask: str, exclude_mask: str, base_image: str) -> None:
@@ -60,3 +58,28 @@ class SegmentationPluginConfig(CytoDLConfig):
     
     def get_split_column(self) -> str:
         self._get_cfg("data.split_column")
+    
+    def set_hardware_type(self, hardware_type: HardwareType) -> None:
+        self._set_cfg("trainer.accelerator", hardware_type.value)
+    
+    def get_hardware_type(self) -> HardwareType:
+        return HardwareType(self._get_cfg("trainer.accelerator"))
+
+    def set_max_epochs(self, max_epochs: int) -> None:
+        self._set_cfg("trainer.max_epochs", max_epochs)
+    
+    def get_max_epochs(self) -> int:
+        return self._get_cfg("trainer.max_epochs")
+    
+    def set_output_dir(self, output_dir: Union[str, Path]) -> None:
+        self._set_cfg("paths.output_dir", str(output_dir))
+    
+    def get_output_dir(self) -> str:
+        return self._get_cfg("paths.output_dir")
+    
+    # I can't find where this is actually used in cyto_dl, do we need to support this?
+    def set_work_dir(self, work_dir: Union[str, Path]) -> None:
+        self._set_cfg("paths.work_dir", str(work_dir))
+    
+    def get_work_dir(self) -> str:
+        return self._get_cfg("paths.work_dir")
