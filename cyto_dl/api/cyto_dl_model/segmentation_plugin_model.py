@@ -1,6 +1,7 @@
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Optional
 from pathlib import Path
 from cyto_dl.api.cyto_dl_model import CytoDLBaseModel
+from omegaconf import ListConfig
 from cyto_dl.api.data import *
 
 class SegmentationPluginModel(CytoDLBaseModel):
@@ -64,6 +65,16 @@ class SegmentationPluginModel(CytoDLBaseModel):
     
     def get_split_column(self) -> str:
         self._get_cfg("data.split_column")
+    
+    # is patch_shape required in order to run training/prediction?
+    # if so, it should be an argument to train/predict/__init__, or a default
+    # should be set in the config
+    def set_patch_size(self, patch_size: PatchSize) -> None:
+        self._set_cfg("data._aux.patch_shape", patch_size.value)
+    
+    def get_patch_size(self) -> Optional[PatchSize]:
+        p_shape: ListConfig = self._get_cfg("data._aux.patch_shape")
+        return PatchSize(list(p_shape)) if p_shape else None
     
     def set_hardware_type(self, hardware_type: HardwareType) -> None:
         self._set_cfg("trainer.accelerator", hardware_type.value)
