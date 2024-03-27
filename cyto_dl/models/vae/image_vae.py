@@ -69,6 +69,8 @@ class ImageVAE(BaseVAE):
         metric_keys: Optional[list] = None,
         use_implicit_decoder: Optional[bool] = False,
         decoder_res_units: Optional[int] = None,
+        override_final_size: Optional[tuple] = None,
+        average_spatial: Optional[bool] = True,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
@@ -118,6 +120,9 @@ class ImageVAE(BaseVAE):
         for k, s, p in zip(kernel_sizes, strides, encoder_padding):
             padding = same_padding(k) if p is None else p
             self.final_size = calculate_out_shape(self.final_size, k, s, padding)
+
+            if override_final_size:
+                self.final_size = override_final_size
 
         if decoder_channels is None:
             _channels = channels[::-1]
@@ -173,11 +178,13 @@ class ImageVAE(BaseVAE):
         init_shape = (
             self.final_size if decoder_initial_shape is None else decoder_initial_shape
         )
-
-        first_upsample = nn.Sequential(
-            nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
-            Reshape(_channels[0], *init_shape),
-        )
+        if average_spatial:
+            first_upsample = nn.Sequential(
+                nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
+                Reshape(_channels[0], *init_shape),
+            )
+        else:
+            first_upsample = nn.Sequential(torch.nn.Identity())
         if use_implicit_decoder:
             # decoder_hidden_channels = [64, 64, 64, 64, 1]
             # final_non_linearity = nn.Sequential(
@@ -223,6 +230,7 @@ class ImageVAE(BaseVAE):
             group=group,
             first_conv_padding_mode=first_conv_padding_mode,
             num_res_units=num_res_units,
+            average_spatial=average_spatial,
         )
 
         if group is not None:

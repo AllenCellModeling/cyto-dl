@@ -24,6 +24,7 @@ class ImageEncoder(torch.nn.Module):
         group: str = "so2",
         first_conv_padding_mode: str = "replicate",
         num_res_units: int = 2,
+        average_spatial: bool = True,
     ):
         super().__init__()
 
@@ -39,6 +40,7 @@ class ImageEncoder(torch.nn.Module):
             assert len(padding) == len(channels)
 
         self.spatial_dims = spatial_dims
+        self.average_spatial = average_spatial
         self.bias = bias
         self.out_dim = out_dim
         self.group = group
@@ -151,12 +153,15 @@ class ImageEncoder(torch.nn.Module):
 
         pool_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
         y = y.tensor
-        y = y.mean(dim=pool_dims)
+        if self.average_spatial:
+            y = y.mean(dim=pool_dims)
 
         y_embedding = y[:, : self.out_dim]
 
         if self.group is not None:
             y_pose = y[:, self.out_dim :]
+            if not self.average_spatial:
+                y_pose = y_pose.mean(dim=pool_dims)
 
             if self.group == "so3":
                 # separate two vectors into two channels
@@ -315,7 +320,6 @@ class Convolution(nn.EquivariantModule):
             pool = pool_class(conv.out_type, sigma=0.33, stride=stride)
         else:
             pool = nn.IdentityModule(conv.out_type)
-
         if spatial_dims == 3 and batch_norm:
             batch_norm = get_batch_norm(scalar_fields, vector_fields, nn.IIDBatchNorm3d)
         elif spatial_dims == 2 and batch_norm:
