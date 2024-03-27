@@ -1,13 +1,25 @@
 from typing import Tuple, List, Union
 from pathlib import Path
-from cyto_dl.api.config import CytoDLConfig
+from cyto_dl.api.cyto_dl_model import CytoDLBaseModel
 from cyto_dl.api.data import *
 
-class SegmentationPluginConfig(CytoDLConfig):
-    
+class SegmentationPluginModel(CytoDLBaseModel):
+    # we currently have an override for ['mode'] in ml-seg, but I can't find top-level 'mode' in the configs, 
+    # do we need to support this?
     def _get_experiment_type(self) -> ExperimentType:
         return ExperimentType.SEGMENTATION_PLUGIN
     
+    def _set_max_epochs(self, max_epochs: int) -> None:
+        self._set_cfg("trainer.max_epochs", max_epochs)
+
+    def _set_manifest_path(self, manifest_path: Union[str, Path]) -> None:
+        self._set_cfg("data.path", str(manifest_path))
+    
+    def _set_output_dir(self, output_dir: Union[str, Path]) -> None:
+        self._set_cfg("paths.output_dir", str(output_dir))
+        # I can't find where work_dir is actually used in cyto_dl, do we need to support this?
+        self._set_cfg("paths.work_dir", str(output_dir))
+
     # a lot of these keys are duplicated across the im2im experiment types (but not present in top-level
     # train.yaml or eval.yaml) - should we move these into the top-level configs and move these setters and
     # getters accordingly? 
@@ -28,12 +40,6 @@ class SegmentationPluginConfig(CytoDLConfig):
     
     def get_raw_image_channels(self) -> int:
         return self._get_cfg("raw_im_channels")
-    
-    def set_data_path(self, data_path: Union[str, Path]) -> None:
-        self._set_cfg("data.path", str(data_path))
-    
-    def get_data_path(self) -> str:
-        return self._get_cfg("data.path")
     
     # TODO: is there a better way to deal with column names + split columns?
     def set_manifest_column_names(self, source: str, target1: str, target2: str, merge_mask: str, exclude_mask: str, base_image: str) -> None:
@@ -64,22 +70,3 @@ class SegmentationPluginConfig(CytoDLConfig):
     
     def get_hardware_type(self) -> HardwareType:
         return HardwareType(self._get_cfg("trainer.accelerator"))
-
-    def set_max_epochs(self, max_epochs: int) -> None:
-        self._set_cfg("trainer.max_epochs", max_epochs)
-    
-    def get_max_epochs(self) -> int:
-        return self._get_cfg("trainer.max_epochs")
-    
-    def set_output_dir(self, output_dir: Union[str, Path]) -> None:
-        self._set_cfg("paths.output_dir", str(output_dir))
-    
-    def get_output_dir(self) -> str:
-        return self._get_cfg("paths.output_dir")
-    
-    # I can't find where this is actually used in cyto_dl, do we need to support this?
-    def set_work_dir(self, work_dir: Union[str, Path]) -> None:
-        self._set_cfg("paths.work_dir", str(work_dir))
-    
-    def get_work_dir(self) -> str:
-        return self._get_cfg("paths.work_dir")
