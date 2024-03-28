@@ -12,6 +12,7 @@ from tqdm import tqdm
 import torch
 from lightning import Callback, LightningModule, Trainer
 from codecarbon import EmissionsTracker
+
 log = logging.getLogger(__name__)
 
 
@@ -63,9 +64,9 @@ class GetEmbeddings(Callback):
         Path(self.save_path).mkdir(parents=True, exist_ok=True)
         self.latent_dim = latent_dim
         self.track_emissions = track_emissions
-        self.name = 'embeddings'
+        self.name = "embeddings"
         if self.track_emissions:
-            self.name = 'emissions'
+            self.name = "emissions"
 
     def on_test_epoch_start(self, trainer: Trainer, pl_module: LightningModule):
         with torch.no_grad():
@@ -81,7 +82,7 @@ class GetEmbeddings(Callback):
                 self.skew_scale,
                 self.latent_dim,
                 self.track_emissions,
-                Path(self.save_path)
+                Path(self.save_path),
             )
             embeddings.to_csv(Path(self.save_path) / f"{self.name}.csv")
 
@@ -116,7 +117,7 @@ def get_all_embeddings(
     skew_scale: int,
     latent_dim: int,
     track_emissions: bool,
-    save_path: Path
+    save_path: Path,
 ):
     all_embeddings = []
     cell_ids = []
@@ -127,7 +128,7 @@ def get_all_embeddings(
         ["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader]
     )
     if track_emissions:
-        zip_iter = zip(['test'], [test_dataloader])
+        zip_iter = zip(["test"], [test_dataloader])
         all_emissions_df = []
 
     with torch.no_grad():
@@ -232,7 +233,7 @@ def get_all_embeddings(
     if track_emissions:
         all_emissions_df = pd.concat(all_emissions_df, axis=0).reset_index(drop=True)
         return all_emissions_df
-    
+
     all_embeddings = np.vstack(all_embeddings)
     all_loss = np.vstack(all_loss)
     cell_ids = np.hstack(cell_ids) if cell_ids[0] is not None else None

@@ -18,6 +18,7 @@ from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder, MultiplyConstan
 from .utils import weight_init
 
 from .image_encoder import ImageEncoder
+from monai.networks.nets import AutoEncoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -71,6 +72,7 @@ class ImageVAE(BaseVAE):
         decoder_res_units: Optional[int] = None,
         override_final_size: Optional[tuple] = None,
         average_spatial: Optional[bool] = True,
+        use_monai_decoder: Optional[bool] = False,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
@@ -209,6 +211,24 @@ class ImageVAE(BaseVAE):
                 last_act if last_act is not None else nn.Identity(),
                 _Scale(last_scale),
             )
+
+        if use_monai_decoder:
+            monai_autoencoder_ = AutoEncoder(
+                spatial_dims=spatial_dims,
+                in_channels=in_channels,
+                out_channels=in_channels,
+                channels=channels,
+                strides=strides,
+                kernel_size=3,
+                up_kernel_size=3,
+                num_res_units=num_res_units,
+                act="relu",
+                norm="batch",
+                # dropout: tuple | str | float | None = None,
+                # bias: bool = True,
+                # padding: Sequence[int] | int | None = None,
+            )
+            decoder = monai_autoencoder_.decode
 
         if isinstance(prior, (str, type(None))):
             if prior == "gaussian":
