@@ -8,6 +8,13 @@ from cyto_dl.api.data import *
 
 
 class SegmentationPluginModel(CytoDLBaseModel):
+    """A SegmentationPluginModel handles configuration, training, and prediction using the default
+    segmentation_plugin experiment from CytoDL."""
+
+    def __init__(self, config_filepath: Optional[Path] = None):
+        super().__init__(config_filepath)
+        self._has_split_column = False
+
     # we currently have an override for ['mode'] in ml-seg, but I can't find top-level 'mode' in the configs,
     # do we need to support this?
     def _get_experiment_type(self) -> ExperimentType:
@@ -74,15 +81,22 @@ class SegmentationPluginModel(CytoDLBaseModel):
 
     def set_split_column(self, split_column: str) -> None:
         self._set_cfg("data.split_column", split_column)
-        # need to also add it to the list of columns
-        existing_cols: List[str] = self._get_cfg("data.columns")
-        if len(existing_cols) > len(self.get_manifest_column_names()):
+        existing_cols: ListConfig = self._get_cfg("data.columns")
+        if self._has_split_column:
             existing_cols[-1] = split_column
         else:
             existing_cols.append(split_column)
+        self._has_split_column = True
 
-    def get_split_column(self) -> str:
-        self._get_cfg("data.split_column")
+    def get_split_column(self) -> Optional[str]:
+        return self._get_cfg("data.split_column")
+
+    def remove_split_column(self) -> None:
+        if self._has_split_column:
+            self._set_cfg("data.split_column", None)
+            existing_cols: ListConfig = self._get_cfg("data.columns")
+            del existing_cols[-1]
+        self._has_split_column = False
 
     # is patch_shape required in order to run training/prediction?
     # if so, it should be an argument to train/predict/__init__, or a default

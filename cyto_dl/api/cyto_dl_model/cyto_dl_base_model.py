@@ -33,10 +33,16 @@ class CytoDLBaseModel(ABC):
         )
         GlobalHydra.instance().clear()
         with initialize_config_dir(version_base="1.2", config_dir=str(cfg_dir)):
+            # the overrides for 'paths.' are necessary to make later overrides work (for some reason I don't fully understand)
+            # I'd prefer to do this in experiment configs instead of the overrides here
             cfg: DictConfig = compose(
                 config_name="train.yaml",  # only using train.yaml after conversation w/ Benji
                 return_hydra_config=True,
-                overrides=[f"experiment=im2im/{self._get_experiment_type().name}"],
+                overrides=[
+                    f"experiment=im2im/{self._get_experiment_type().name}",
+                    "paths.output_dir=PLACEHOLDER",
+                    "paths.work_dir=PLACEHOLDER",
+                ],
             )
         with open_dict(cfg):
             del cfg["hydra"]
@@ -89,17 +95,15 @@ class CytoDLBaseModel(ABC):
     def _set_output_dir(self, output_dir: Union[str, Path]) -> None:
         pass
 
+    def _set_ckpt(self, ckpt: Optional[Path]) -> None:
+        self._set_cfg("ckpt_path", str(ckpt.resolve()) if ckpt else ckpt)
+
+    # does experiment name have any effect?
     def set_experiment_name(self, name: str) -> None:
         self._set_cfg("experiment_name", name)
 
     def get_experiment_name(self) -> str:
         return self._get_cfg("experiment_name")
-
-    def set_ckpt_path(self, ckpt_path: Union[str, Path]) -> None:
-        self._set_cfg("ckpt_path", str(ckpt_path.resolve()))
-
-    def get_ckpt_path(self) -> str:
-        return self._get_cfg("ckpt_path")
 
     def get_config(self) -> DictConfig:
         return deepcopy(self._cfg)
@@ -108,19 +112,24 @@ class CytoDLBaseModel(ABC):
         OmegaConf.save(self._cfg, path)
 
     def train(
-        self, max_epochs: int, manifest_path: Union[str, Path], output_dir: Union[str, Path]
+        self,
+        max_epochs: int,
+        manifest_path: Union[str, Path],
+        output_dir: Union[str, Path],
+        checkpoint: Optional[Path] = None,
     ) -> None:
         self._set_training_config(True)
         self._set_max_epochs(max_epochs)
         self._set_manifest_path(manifest_path)
         self._set_output_dir(output_dir)
+        self._set_ckpt(checkpoint)
         train_model(self._cfg)
 
-    def predict(self, manifest_path: Union[str, Path], output_dir: Union[str, Path]) -> None:
-        if self.get_ckpt_path() is None:
-            raise RuntimeError("Cannot make predictions when checkpoint unspecified")
-
+    def predict(
+        self, manifest_path: Union[str, Path], output_dir: Union[str, Path], checkpoint: Path
+    ) -> None:
         self._set_training_config(False)
         self._set_manifest_path(manifest_path)
         self._set_output_dir(output_dir)
+        self._set_ckpt(checkpoint)
         evaluate_model(self._cfg)
