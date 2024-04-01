@@ -5,144 +5,14 @@ from typing import List, Optional
 import numpy as np
 import torch
 import torch.nn as nn
-from einops import rearrange, repeat
+from einops import rearrange
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
+from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
-
-
-def random_indexes(size: int):
-    forward_indexes = np.arange(size)
-    np.random.shuffle(forward_indexes)
-    backward_indexes = np.argsort(forward_indexes)
-    return forward_indexes, backward_indexes
-
-
-def take_indexes(sequences, indexes):
-    return torch.gather(
-        sequences, 0, repeat(indexes.to(sequences.device), "t b -> t b c", c=sequences.shape[-1])
-    )
-
-
-class Patchify(torch.nn.Module):
-    """Class for converting images to a masked sequence of patches with positional embeddings."""
-
-    def __init__(
-        self,
-        patch_size: List[int],
-        emb_dim: int,
-        n_patches: List[int],
-        spatial_dims: int = 3,
-        context_pixels: List[int] = [0, 0, 0],
-        input_channels: int = 1,
-    ):
-        """
-        Parameters
-        ----------
-        patch_size: List[int]
-            Size of each patch
-        emb_dim: int
-            Dimension of encoder
-        n_patches: List[int]
-            Number of patches in each spatial dimension
-        spatial_dims: int
-            Number of spatial dimensions
-        context_pixels: List[int]
-            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
-        input_channels: int
-            Number of input channels
-        """
-        super().__init__()
-        self.n_patches = np.asarray(n_patches)
-        self.spatial_dims = spatial_dims
-
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(n_patches), 1, emb_dim))
-
-        context_pixels = context_pixels[:spatial_dims]
-        weight_size = np.asarray(patch_size) + np.round(np.array(context_pixels) * 2).astype(int)
-
-        if spatial_dims == 3:
-            self.conv = nn.Conv3d(
-                in_channels=input_channels,
-                out_channels=emb_dim,
-                kernel_size=weight_size,
-                stride=patch_size,
-                padding=context_pixels,
-            )
-            self.img2token = Rearrange("b c z y x -> (z y x) b c")
-            self.patch2img = Rearrange(
-                "(n_patch_z n_patch_y n_patch_x) b c ->  b c n_patch_z n_patch_y n_patch_x",
-                n_patch_z=n_patches[0],
-                n_patch_y=n_patches[1],
-                n_patch_x=n_patches[2],
-            )
-        elif spatial_dims == 2:
-            self.conv = nn.Conv2d(
-                in_channels=input_channels,
-                out_channels=emb_dim,
-                kernel_size=weight_size,
-                stride=patch_size,
-                padding=context_pixels,
-            )
-            self.img2token = Rearrange("b c y x -> (y x) b c")
-            self.patch2img = Rearrange(
-                "(n_patch_y n_patch_x) b c ->  b c n_patch_y n_patch_x",
-                n_patch_y=n_patches[0],
-                n_patch_x=n_patches[1],
-            )
-
-        self._init_weight()
-
-    def _init_weight(self):
-        trunc_normal_(self.pos_embedding, std=0.02)
-
-    def get_mask(self, img, n_visible_patches, num_patches):
-        B = img.shape[0]
-
-        indexes = [random_indexes(num_patches) for _ in range(B)]
-        # forward indexes : index in image -> shuffledpatch
-        forward_indexes = torch.as_tensor(
-            np.stack([i[0] for i in indexes], axis=-1), dtype=torch.long
-        )
-        # backward indexes : shuffled patch -> index in image
-        backward_indexes = torch.as_tensor(
-            np.stack([i[1] for i in indexes], axis=-1), dtype=torch.long
-        )
-
-        mask = torch.zeros(num_patches, B, 1)
-        # visible patches are first
-        mask[:n_visible_patches] = 1
-        mask = take_indexes(mask, backward_indexes)
-        mask = self.patch2img(mask)
-        # one pixel per masked patch, interpolate to size of input image
-        mask = torch.nn.functional.interpolate(
-            mask, img.shape[-self.spatial_dims :], mode="nearest"
-        )
-
-        return mask.to(img), forward_indexes, backward_indexes
-
-    def forward(self, img, mask_ratio):
-        # generate mask
-        num_patches = np.prod(self.n_patches)
-        n_visible_patches = int(num_patches * (1 - mask_ratio))
-        mask, forward_indexes, backward_indexes = self.get_mask(
-            img, n_visible_patches, num_patches
-        )
-        # generate patches
-        tokens = self.conv(img * mask)
-        tokens = self.img2token(tokens)
-        # add position embedding
-        tokens = tokens + self.pos_embedding
-        if mask_ratio > 0:
-            # extract visible patches
-            tokens = take_indexes(tokens, forward_indexes)[:n_visible_patches]
-
-        # mask is used above to mask out patches, we need to invert it for loss calculation
-        mask = (1 - mask).bool()
-
-        return tokens, mask, forward_indexes, backward_indexes
+from cyto_dl.nn.vits.utils import take_indexes
 
 
 class MAE_Encoder(torch.nn.Module):
@@ -156,6 +26,7 @@ class MAE_Encoder(torch.nn.Module):
         num_head: Optional[int] = 3,
         context_pixels: Optional[List[int]] = [0, 0, 0],
         input_channels: Optional[int] = 1,
+        n_intermediate_weights: Optional[int] = -1,
     ) -> None:
         """
         Parameters
@@ -176,18 +47,31 @@ class MAE_Encoder(torch.nn.Module):
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         input_channels: int
             Number of input channels
+        weight_intermediates: bool
+            Whether to output linear combination of intermediate layers as final output like CrossMAE
         """
         super().__init__()
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.patchify = Patchify(
             base_patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
         )
-
-        self.transformer = torch.nn.Sequential(
-            *[Block(emb_dim, num_head) for _ in range(num_layer)]
-        )
+        weight_intermediates = n_intermediate_weights > 0
+        if weight_intermediates:
+            self.transformer = torch.nn.ModuleList(
+                [Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
+        else:
+            self.transformer = torch.nn.Sequential(
+                *[Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
 
         self.layer_norm = torch.nn.LayerNorm(emb_dim)
+
+        self.intermediate_weighter = (
+            IntermediateWeigher(num_layer, emb_dim, n_intermediate_weights)
+            if weight_intermediates
+            else None
+        )
         self.init_weight()
 
     def init_weight(self):
@@ -197,8 +81,17 @@ class MAE_Encoder(torch.nn.Module):
         patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
         patches = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0)
         patches = rearrange(patches, "t b c -> b t c")
-        features = self.layer_norm(self.transformer(patches))
-        features = rearrange(features, "b t c -> t b c")
+
+        if self.intermediate_weighter is not None:
+            intermediates = [patches]
+            for block in self.transformer:
+                patches = block(patches)
+                intermediates.append(patches)
+            features = self.layer_norm(self.intermediate_weighter(intermediates))
+            features = rearrange(features, "n b t c -> n t b c")
+        else:
+            features = self.layer_norm(self.transformer(patches))
+            features = rearrange(features, "b t c -> t b c")
         if mask_ratio > 0:
             return features, mask, forward_indexes, backward_indexes
         return features
@@ -374,6 +267,7 @@ class MAE_ViT(torch.nn.Module):
             encoder_head,
             context_pixels,
             input_channels,
+            n_intermediate_weights=-1 if not use_crossmae else decoder_layer,
         )
 
         decoder_class = MAE_Decoder
