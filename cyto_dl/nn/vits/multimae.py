@@ -1,16 +1,14 @@
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 import numpy as np
 import torch
 from einops import rearrange
+from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
-
-from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from torch.distributions import Dirichlet
 
-from einops.layers.torch import Rearrange
-from cyto_dl.nn.vits.blocks import CrossAttentionBlock
+from cyto_dl.nn.vits.blocks import CrossAttentionBlock, IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.utils import take_indexes
 
 
@@ -56,20 +54,30 @@ class MultiMAE_Encoder(torch.nn.Module):
             Alpha parameter for the Dirichlet distribution
         """
         super().__init__()
-        self.alpha= alpha
-        self.task2category = {task: category for category, tasks in input_types.items() for task in tasks}
+        self.alpha = alpha
+        self.task2category = {
+            task: category for category, tasks in input_types.items() for task in tasks
+        }
         self.num_patches = np.asarray(num_patches)
-        
+
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
 
         # create different patch embedding layer per-modality
-        self.patchify = torch.nn.ModuleDict({
-            modality: Patchify(
-                base_patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels, tasks=tasks
-            )
-            for modality, tasks in input_types.items()
-        })
- 
+        self.patchify = torch.nn.ModuleDict(
+            {
+                modality: Patchify(
+                    base_patch_size,
+                    emb_dim,
+                    num_patches,
+                    spatial_dims,
+                    context_pixels,
+                    input_channels,
+                    tasks=tasks,
+                )
+                for modality, tasks in input_types.items()
+            }
+        )
+
         weight_intermediates = n_intermediate_weights > 0
         if weight_intermediates:
             self.transformer = torch.nn.ModuleList(
@@ -94,19 +102,26 @@ class MultiMAE_Encoder(torch.nn.Module):
 
     def generate_task_mask_ratios(self, tasks, mask_ratio):
         # we might want to make the mask ratio vary across elements of the batch? as long as total # tokens is fixed wecan concat across batches!
-        tasks_present= [k for k in tasks.keys() if k in self.task2category]
+        tasks_present = [k for k in tasks.keys() if k in self.task2category]
         B = tasks[tasks_present[0]].shape[0]
 
         patches_per_img = np.prod(self.num_patches)
         total_visible_tokens = int(mask_ratio * patches_per_img * len(tasks_present) * B)
-        task_sampling_ratios = Dirichlet(torch.Tensor([self.alpha]*len(tasks_present))).sample((1,)).squeeze().tolist()
-        task_mask_ratios = {task: int(total_visible_tokens*mask_ratio) for task, mask_ratio in zip(tasks_present, task_sampling_ratios)}
+        task_sampling_ratios = (
+            Dirichlet(torch.Tensor([self.alpha] * len(tasks_present)))
+            .sample((1,))
+            .squeeze()
+            .tolist()
+        )
+        task_mask_ratios = {
+            task: int(total_visible_tokens * mask_ratio)
+            for task, mask_ratio in zip(tasks_present, task_sampling_ratios)
+        }
         return task_mask_ratios
-
 
     def forward(self, tasks, mask_ratio):
         # tasks are {task1: tensor, task2: tensor, ...}
-        task_mask_ratios= self.generate_task_mask_ratios(tasks, mask_ratio)
+        task_mask_ratios = self.generate_task_mask_ratios(tasks, mask_ratio)
 
         meta = {}
         task_tokens = []
@@ -115,15 +130,17 @@ class MultiMAE_Encoder(torch.nn.Module):
                 continue
             category = self.task2category[task_name]
             # mask and add posembed and task embed tokens
-            patches, mask, forward_indexes, backward_indexes = self.patchify[category](img, mask_ratio = task_mask_ratios[task_name], task = task_name)
+            patches, mask, forward_indexes, backward_indexes = self.patchify[category](
+                img, mask_ratio=task_mask_ratios[task_name], task=task_name
+            )
 
             # patches are tbc order
             task_tokens.append(patches)
             meta[task_name] = {
-                'mask': mask,
-                'forward_indexes': forward_indexes,
-                'backward_indexes': backward_indexes,
-                'n_tokens': len(patches)
+                "mask": mask,
+                "forward_indexes": forward_indexes,
+                "backward_indexes": backward_indexes,
+                "n_tokens": len(patches),
             }
 
         task_tokens = torch.cat(task_tokens, dim=0)
@@ -154,7 +171,7 @@ class OutputAdapter(torch.nn.Module):
         num_head: int,
     ) -> None:
         super().__init__()
-        self.transformer =  torch.nn.ParameterList(
+        self.transformer = torch.nn.ParameterList(
             [
                 CrossAttentionBlock(
                     encoder_dim=emb_dim,
@@ -168,20 +185,19 @@ class OutputAdapter(torch.nn.Module):
         self.decoder_norm = torch.nn.LayerNorm(emb_dim)
         self.projection_norm = torch.nn.LayerNorm(emb_dim)
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
-        self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size))) 
-    
+        self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
+
     def project(self, features):
         return self.projection_norm(self.projection(features))
-    
+
     def forward(self, masked, visible):
         for transformer in self.transformer:
             masked = transformer(masked, visible)
         return masked
-    
+
     def output(self, masked):
         return self.head(self.decoder_norm(masked))
-    
-    
+
 
 class MultiMAE_Decoder(torch.nn.Module):
     """Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masked tokens only attend
@@ -215,23 +231,27 @@ class MultiMAE_Decoder(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-        self.task2category = {task: category for category, tasks in input_types.items() for task in tasks}
+        self.task2category = {
+            task: category for category, tasks in input_types.items() for task in tasks
+        }
 
         all_tasks = []
         for tasks in input_types.values():
             tasks.extend(tasks)
 
         # decoder transformer for each task
-        self.output_adapters = torch.nn.ModuleDict({
-            modality: OutputAdapter(
-                base_patch_size, enc_dim, emb_dim, num_layer, num_head
-            )
-            for modality in input_types
-        })
+        self.output_adapters = torch.nn.ModuleDict(
+            {
+                modality: OutputAdapter(base_patch_size, enc_dim, emb_dim, num_layer, num_head)
+                for modality in input_types
+            }
+        )
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
-        self.task_embedding = torch.nn.ParameterDict({task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in all_tasks})
-        
+        self.task_embedding = torch.nn.ParameterDict(
+            {task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in all_tasks}
+        )
+
         if spatial_dims == 3:
             self.patch2img = Rearrange(
                 "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
@@ -273,15 +293,9 @@ class MultiMAE_Decoder(torch.nn.Module):
         features = take_indexes(features, backward_indices)
         features = features + self.pos_embedding + self.task_embedding[task]
 
-        #reshuffle
+        # reshuffle
         features = take_indexes(features, forward_indices)
-        return {
-            task:{
-                'visible':features[:T],
-                'masked':features[T:]
-            }
-        }
-
+        return {task: {"visible": features[:T], "masked": features[T:]}}
 
     def forward(self, features, meta):
         # paper uses task + mask tokens as cross attention queries to everything else, can we do cross mae by just doing mask tokens to everything? then we don't have to separate everything out
@@ -289,23 +303,30 @@ class MultiMAE_Decoder(torch.nn.Module):
 
         # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
         features = features.squeeze(0)
-        T, B, C= features.shape
+        T, B, C = features.shape
 
         # get visible and masked tokens for all tasks
         features_with_embed = {}
         start = 1
         for task, task_meta in meta.items():
-            end = start + meta[task]['n_tokens']
+            end = start + meta[task]["n_tokens"]
             # include the cls token - TODO - determine if cls_token + task_embed is meaningful? if not, need to project cls token separately
-            task_features= torch.cat([features[:1], features[start:end]], dim=0)
+            task_features = torch.cat([features[:1], features[start:end]], dim=0)
             task_features = self.output_adapters[task].project(task_features)
-            features_with_embed.update(self.add_task_pos_emb(task_features, task_meta['forward_indexes'], task_meta['backward_indexes'], task))
+            features_with_embed.update(
+                self.add_task_pos_emb(
+                    task_features,
+                    task_meta["forward_indexes"],
+                    task_meta["backward_indexes"],
+                    task,
+                )
+            )
             start = end
 
         # cross attention between masked tokens of each task and visible tokens of all tasks
         for task in meta:
-            mask_tokens= features_with_embed[task]['masked']
-            visible_tokens= torch.cat([features_with_embed[t]['visible'] for t in meta], dim =0)
+            mask_tokens = features_with_embed[task]["masked"]
+            visible_tokens = torch.cat([features_with_embed[t]["visible"] for t in meta], dim=0)
 
             mask_tokens = rearrange(mask_tokens, "t b c -> b t c")
             visible_tokens = rearrange(visible_tokens, "t b c -> b t c")
@@ -320,14 +341,17 @@ class MultiMAE_Decoder(torch.nn.Module):
 
             # add back in visible/encoded tokens that we don't calculate loss on
             patches = torch.cat(
-                [torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches), patches],
+                [
+                    torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches),
+                    patches,
+                ],
                 dim=0,
             )
-            patches = take_indexes(patches, meta[task]['backward_indices'][1:] - 1)
+            patches = take_indexes(patches, meta[task]["backward_indices"][1:] - 1)
 
-            meta['reconstruction'] = self.patch2img(patches)
+            meta["reconstruction"] = self.patch2img(patches)
         return meta
-    
+
 
 class MultiMAE(torch.nn.Module):
     def __init__(
@@ -400,5 +424,3 @@ class MultiMAE(torch.nn.Module):
     def forward(self, batch):
         features, meta = self.encoder(batch, self.mask_ratio)
         return self.decoder(features, meta)
-
-
