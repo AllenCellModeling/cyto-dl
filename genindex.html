@@ -327,11 +327,14 @@
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.vits.html">cyto_dl.nn.vits package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.nn.vits.blocks.html">cyto_dl.nn.vits.blocks package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html">cyto_dl.nn.vits.cross_mae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
@@ -873,8 +876,6 @@
           <li><a href="cyto_dl.models.classification.html#module-cyto_dl.models.classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.classification
 
@@ -882,6 +883,8 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1233,6 +1236,20 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.nn.vits.blocks.intermediate_weigher
+
+        <ul>
+          <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#module-cyto_dl.nn.vits.blocks.intermediate_weigher">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn.vits.blocks.patchify
+
+        <ul>
+          <li><a href="cyto_dl.nn.vits.blocks.patchify.html#module-cyto_dl.nn.vits.blocks.patchify">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.nn.vits.cross_mae
 
         <ul>
@@ -1251,6 +1268,13 @@
 
         <ul>
           <li><a href="cyto_dl.nn.vits.seg.html#module-cyto_dl.nn.vits.seg">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.nn.vits.utils
+
+        <ul>
+          <li><a href="cyto_dl.nn.vits.utils.html#module-cyto_dl.nn.vits.utils">module</a>
 </li>
         </ul></li>
         <li>
@@ -1375,6 +1399,8 @@
 </li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.encode">encode() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
 </li>
+        <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip">EncodedSkip (class in cyto_dl.nn.vits.seg)</a>
+</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.enforce_tags">enforce_tags() (in module cyto_dl.utils.rich_utils)</a>
@@ -1486,6 +1512,10 @@
 </li>
           <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.Mlp.forward">(cyto_dl.nn.vits.blocks.cross_attention.Mlp method)</a>
 </li>
+          <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher.forward">(cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher method)</a>
+</li>
+          <li><a href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify.forward">(cyto_dl.nn.vits.blocks.patchify.Patchify method)</a>
+</li>
           <li><a href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">(cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder method)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.forward">(cyto_dl.nn.vits.mae.MAE_Decoder method)</a>
@@ -1494,7 +1524,7 @@
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.forward">(cyto_dl.nn.vits.mae.MAE_ViT method)</a>
 </li>
-          <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.forward">(cyto_dl.nn.vits.mae.Patchify method)</a>
+          <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip.forward">(cyto_dl.nn.vits.seg.EncodedSkip method)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.forward">(cyto_dl.nn.vits.seg.Seg_ViT method)</a>
 </li>
@@ -1561,7 +1591,7 @@
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss">get_gan_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
 </li>
-        <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.get_mask">get_mask() (cyto_dl.nn.vits.mae.Patchify method)</a>
+        <li><a href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify.get_mask">get_mask() (cyto_dl.nn.vits.blocks.patchify.Patchify method)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.get_metric_value">get_metric_value() (in module cyto_dl.utils.template_utils)</a>
 </li>
@@ -1629,10 +1659,10 @@
         </ul></li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.ExperimentType.INSTANCE_SEG">INSTANCE_SEG (cyto_dl.api.data.ExperimentType attribute)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegCluster">InstanceSegCluster (class in cyto_dl.models.im2im.utils.instance_seg)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegLoss">InstanceSegLoss (class in cyto_dl.models.im2im.utils.instance_seg)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd">InstanceSegPreprocessd (class in cyto_dl.models.im2im.utils.instance_seg)</a>
@@ -1642,6 +1672,8 @@
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_callbacks">instantiate_callbacks() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_loggers">instantiate_loggers() (in module cyto_dl.utils.template_utils)</a>
+</li>
+        <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher">IntermediateWeigher (class in cyto_dl.nn.vits.blocks.intermediate_weigher)</a>
 </li>
         <li><a href="cyto_dl.utils.config.html#cyto_dl.utils.config.is_config">is_config() (in module cyto_dl.utils.config)</a>
 </li>
@@ -2013,11 +2045,17 @@
 </li>
           <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#module-cyto_dl.nn.vits.blocks.cross_attention">cyto_dl.nn.vits.blocks.cross_attention</a>
 </li>
+          <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#module-cyto_dl.nn.vits.blocks.intermediate_weigher">cyto_dl.nn.vits.blocks.intermediate_weigher</a>
+</li>
+          <li><a href="cyto_dl.nn.vits.blocks.patchify.html#module-cyto_dl.nn.vits.blocks.patchify">cyto_dl.nn.vits.blocks.patchify</a>
+</li>
           <li><a href="cyto_dl.nn.vits.cross_mae.html#module-cyto_dl.nn.vits.cross_mae">cyto_dl.nn.vits.cross_mae</a>
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#module-cyto_dl.nn.vits.mae">cyto_dl.nn.vits.mae</a>
 </li>
           <li><a href="cyto_dl.nn.vits.seg.html#module-cyto_dl.nn.vits.seg">cyto_dl.nn.vits.seg</a>
+</li>
+          <li><a href="cyto_dl.nn.vits.utils.html#module-cyto_dl.nn.vits.utils">cyto_dl.nn.vits.utils</a>
 </li>
           <li><a href="cyto_dl.point_cloud.html#module-cyto_dl.point_cloud">cyto_dl.point_cloud</a>
 </li>
@@ -2128,7 +2166,7 @@
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.parse_transforms">parse_transforms() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
-        <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify">Patchify (class in cyto_dl.nn.vits.mae)</a>
+        <li><a href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify">Patchify (class in cyto_dl.nn.vits.blocks.patchify)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.PatchSize">PatchSize (class in cyto_dl.api.data)</a>
 </li>
@@ -2196,7 +2234,7 @@
   <h2>R</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.random_indexes">random_indexes() (in module cyto_dl.nn.vits.mae)</a>
+        <li><a href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.random_indexes">random_indexes() (in module cyto_dl.nn.vits.blocks.patchify)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.multiscale_cropper.html#cyto_dl.image.transforms.multiscale_cropper.RandomMultiScaleCropd">RandomMultiScaleCropd (class in cyto_dl.image.transforms.multiscale_cropper)</a>
 </li>
@@ -2356,12 +2394,8 @@
   <h2>T</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.take_indexes">take_indexes() (in module cyto_dl.nn.vits.cross_mae)</a>
-
-        <ul>
-          <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.take_indexes">(in module cyto_dl.nn.vits.mae)</a>
+        <li><a href="cyto_dl.nn.vits.utils.html#cyto_dl.nn.vits.utils.take_indexes">take_indexes() (in module cyto_dl.nn.vits.utils)</a>
 </li>
-        </ul></li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.task_wrapper">task_wrapper() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.test_dataloader">test_dataloader() (cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
@@ -2453,6 +2487,10 @@
 </li>
           <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.Mlp.training">(cyto_dl.nn.vits.blocks.cross_attention.Mlp attribute)</a>
 </li>
+          <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher.training">(cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher attribute)</a>
+</li>
+          <li><a href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify.training">(cyto_dl.nn.vits.blocks.patchify.Patchify attribute)</a>
+</li>
           <li><a href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.training">(cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.training">(cyto_dl.nn.vits.mae.MAE_Decoder attribute)</a>
@@ -2461,7 +2499,7 @@
 </li>
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.training">(cyto_dl.nn.vits.mae.MAE_ViT attribute)</a>
 </li>
-          <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.training">(cyto_dl.nn.vits.mae.Patchify attribute)</a>
+          <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip.training">(cyto_dl.nn.vits.seg.EncodedSkip attribute)</a>
 </li>
           <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.training">(cyto_dl.nn.vits.seg.Seg_ViT attribute)</a>
 </li>

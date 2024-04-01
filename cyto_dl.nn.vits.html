@@ -329,11 +329,14 @@
 <li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">cyto_dl.nn.vits package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.nn.vits.blocks.html">cyto_dl.nn.vits.blocks package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html">cyto_dl.nn.vits.cross_mae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
@@ -421,6 +424,15 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.Mlp"><code class="docutils literal notranslate"><span class="pre">Mlp</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher"><code class="docutils literal notranslate"><span class="pre">IntermediateWeigher</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify"><code class="docutils literal notranslate"><span class="pre">Patchify</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.random_indexes"><code class="docutils literal notranslate"><span class="pre">random_indexes()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -439,7 +451,6 @@
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.training"><code class="docutils literal notranslate"><span class="pre">CrossMAE_Decoder.training</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.take_indexes"><code class="docutils literal notranslate"><span class="pre">take_indexes()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a><ul>
@@ -460,17 +471,14 @@
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.training"><code class="docutils literal notranslate"><span class="pre">MAE_ViT.training</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify"><code class="docutils literal notranslate"><span class="pre">Patchify</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.forward"><code class="docutils literal notranslate"><span class="pre">Patchify.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.get_mask"><code class="docutils literal notranslate"><span class="pre">Patchify.get_mask()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.Patchify.training"><code class="docutils literal notranslate"><span class="pre">Patchify.training</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.random_indexes"><code class="docutils literal notranslate"><span class="pre">random_indexes()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.take_indexes"><code class="docutils literal notranslate"><span class="pre">take_indexes()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip"><code class="docutils literal notranslate"><span class="pre">EncodedSkip</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip.forward"><code class="docutils literal notranslate"><span class="pre">EncodedSkip.forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip.training"><code class="docutils literal notranslate"><span class="pre">EncodedSkip.training</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT"><code class="docutils literal notranslate"><span class="pre">Seg_ViT</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.forward"><code class="docutils literal notranslate"><span class="pre">Seg_ViT.forward()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT.training"><code class="docutils literal notranslate"><span class="pre">Seg_ViT.training</span></code></a></li>
@@ -481,6 +489,10 @@
 <li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.SuperresDecoder.training"><code class="docutils literal notranslate"><span class="pre">SuperresDecoder.training</span></code></a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.utils.html#cyto_dl.nn.vits.utils.take_indexes"><code class="docutils literal notranslate"><span class="pre">take_indexes()</span></code></a></li>
 </ul>
 </li>
 </ul>

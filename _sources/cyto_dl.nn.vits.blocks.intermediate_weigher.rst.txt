@@ -1,0 +1,7 @@
+cyto\_dl.nn.vits.blocks.intermediate\_weigher module
+====================================================
+
+.. automodule:: cyto_dl.nn.vits.blocks.intermediate_weigher
+   :members:
+   :undoc-members:
+   :show-inheritance:

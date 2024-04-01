@@ -13,3 +13,5 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.nn.vits.blocks.cross_attention
+   cyto_dl.nn.vits.blocks.intermediate_weigher
+   cyto_dl.nn.vits.blocks.patchify
