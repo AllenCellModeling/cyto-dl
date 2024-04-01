@@ -15,12 +15,11 @@ class EncodedSkip(torch.nn.Module):
         layer = 0 is the smallest resolution, n is the highest
         as the layer increases, the image size increases and the number of filters decreases
         """
+
         upsample = 2**layer
         self.n_out_channels = n_decoder_filters // (upsample**spatial_dims)
-        self.patch2img = torch.nn.Sequential(
-            torch.nn.Linear(emb_dim, n_decoder_filters),
-            torch.nn.LayerNorm(n_decoder_filters),
-            Rearrange(
+        if spatial_dims == 3:
+            rearrange = Rearrange(
                 " (n_patch_z n_patch_y n_patch_x) b (c uz uy ux) ->  b c (n_patch_z uz) (n_patch_y uy) (n_patch_x ux)",
                 n_patch_z=num_patches[0],
                 n_patch_y=num_patches[1],
@@ -29,7 +28,21 @@ class EncodedSkip(torch.nn.Module):
                 uz=upsample,
                 uy=upsample,
                 ux=upsample,
-            ),
+            )
+        elif spatial_dims == 2:
+            rearrange = Rearrange(
+                " (n_patch_y n_patch_x) b (c uy ux) ->  b c  (n_patch_y uy) (n_patch_x ux)",
+                n_patch_y=num_patches[0],
+                n_patch_x=num_patches[1],
+                c=self.n_out_channels,
+                uy=upsample,
+                ux=upsample,
+            )
+
+        self.patch2img = torch.nn.Sequential(
+            torch.nn.Linear(emb_dim, n_decoder_filters),
+            torch.nn.LayerNorm(n_decoder_filters),
+            rearrange,
         )
 
     def forward(self, features):
@@ -52,10 +65,10 @@ class SuperresDecoder(torch.nn.Module):
         num_layer: Optional[int] = 3,
     ) -> None:
         super().__init__()
-
         total_upsample_factor = np.array(upsample_factor) * np.array(base_patch_size)
         self.num_layer = np.min(np.log2(total_upsample_factor)).astype(int)
-        residual_resize_factor = list(total_upsample_factor / 2**num_layer)
+        print(self.num_layer)
+        residual_resize_factor = list(total_upsample_factor / 2**self.num_layer)
 
         input_n_decoder_filters = n_decoder_filters
 
@@ -71,7 +84,7 @@ class SuperresDecoder(torch.nn.Module):
                     "upsample": torch.nn.Sequential(
                         *[
                             UnetResBlock(
-                                spatial_dims=3,
+                                spatial_dims=spatial_dims,
                                 in_channels=n_input_channels,
                                 out_channels=n_decoder_filters // 2,
                                 stride=1,
@@ -81,10 +94,10 @@ class SuperresDecoder(torch.nn.Module):
                             ),
                             # no convolution in upsample, do convolution at low resolution
                             UpSample(
-                                spatial_dims=3,
+                                spatial_dims=spatial_dims,
                                 in_channels=n_decoder_filters // 2,
                                 out_channels=n_decoder_filters // 2,
-                                scale_factor=[2, 2, 2],
+                                scale_factor=[2] * spatial_dims,
                                 mode="nontrainable",
                             ),
                         ]
@@ -210,11 +223,11 @@ class Seg_ViT(torch.nn.Module):
             **encoder_kwargs,
         )
         if encoder_ckpt is not None:
-            model = torch.load(encoder_ckpt)
+            model = torch.load(encoder_ckpt, map_location="cuda:0")
             enc_state_dict = {
                 k.replace("backbone.encoder.", ""): v
                 for k, v in model["state_dict"].items()
-                if "encoder" in k
+                if "encoder" in k and "intermediate" not in k
             }
             self.encoder.load_state_dict(enc_state_dict, strict=False)
 
