@@ -31,7 +31,7 @@ click==8.1.7
 cliff==4.6.0
 cloudpickle==3.0.0
 cmaes==0.10.0
-cmake==3.28.4
+cmake==3.29.0.1
 cmd2==2.4.3
 colorlog==6.8.2
 contourpy==1.1.1
@@ -50,14 +50,14 @@ entrypoints==0.4
 exceptiongroup==1.2.0
 fastapi==0.110.0
 fasteners==0.19
-filelock==3.13.1
+filelock==3.13.3
 fire==0.6.0
 Flask==3.0.2
 fonttools==4.50.0
 frozenlist==1.4.1
 fsspec==2023.3.0
 gitdb==4.0.11
-gitpython==3.1.42
+gitpython==3.1.43
 graphene==3.3
 graphql-core==3.2.3
 graphql-relay==3.2.0
@@ -83,7 +83,7 @@ kiwisolver==1.4.5
 lazy-loader==0.3
 lightning==2.0.9.post0
 lightning-cloud==0.5.65
-lightning-utilities==0.11.0
+lightning-utilities==0.11.2
 lit==18.1.2
 locket==1.0.0
 lxml==4.9.4
@@ -94,7 +94,7 @@ MarkupSafe==2.1.5
 matplotlib==3.7.5
 mdurl==0.1.2
 mlflow==2.11.3
-monai-weekly==1.4.dev2411
+monai-weekly==1.4.dev2413
 mpmath==1.3.0
 msgpack==1.0.8
 multidict==6.0.5
@@ -113,7 +113,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
-ome-types==0.5.1
+ome-types==0.5.1.post1
 ome-zarr==0.8.3
 omegaconf==2.3.0
 optuna==2.10.1
@@ -123,7 +123,7 @@ packaging==23.2
 pandas==1.5.3
 partd==1.4.1
 pbr==6.0.0
-pillow==10.2.0
+pillow==10.3.0
 pluggy==1.4.0
 PrettyTable==3.10.0
 protobuf==3.20.1
@@ -165,7 +165,7 @@ smmap==5.0.1
 sniffio==1.3.1
 sortedcontainers==2.4.0
 soupsieve==2.5
-sqlalchemy==2.0.28
+sqlalchemy==2.0.29
 sqlparse==0.4.4
 starlette==0.36.3
 starsessions==1.3.0
@@ -193,11 +193,11 @@ uvicorn==0.29.0
 wcwidth==0.2.13
 websocket-client==1.7.0
 websockets==12.0
-Werkzeug==3.0.1
+Werkzeug==3.0.2
 wheel==0.43.0
 wrapt==1.16.0
 xarray==2023.1.0
-xmlschema==3.1.0
+xmlschema==3.2.0
 xsdata==24.3.1
 yarl==1.9.4
 zarr==2.16.1

@@ -466,12 +466,13 @@ files = [
 
 [[package]]
 name = "cmake"
-version = "3.28.4"
+version = "3.29.0.1"
+requires_python = ">=3.7"
 summary = "CMake is an open-source, cross-platform family of tools designed to build, test and package software"
 files = [
-    {file = "cmake-3.28.4-py2.py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:f1b1bde70f6467aa7f20c110ca35a80256509311c57e487c2d195c4ea0aed08b"},
-    {file = "cmake-3.28.4-py2.py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:bc06b483cb2bcaf78184e66ac7fd0f3bbe4ed9a690369b1e4897b19568d566dd"},
-    {file = "cmake-3.28.4.tar.gz", hash = "sha256:b9dd1010ebe951e1acce054c295d5f891a8ae12b295d158b66020c955ae861b4"},
+    {file = "cmake-3.29.0.1-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:f7c7dabf3dd40cb830d2eded43d51c5a3737625bbc5ab6916041c04e352b74f8"},
+    {file = "cmake-3.29.0.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:22493049b6383ea2baa7237a326c2914ab4a7b3e1642f4233245e3a34aae39f6"},
+    {file = "cmake-3.29.0.1.tar.gz", hash = "sha256:ec49a7a4480959c229d9d2aa77f7885859c17a45fc66981aaf4551ceffb4d030"},
 ]
 
 [[package]]
@@ -487,16 +488,6 @@ dependencies = [
 files = [
     {file = "cmd2-2.4.3-py3-none-any.whl", hash = "sha256:f1988ff2fff0ed812a2d25218a081b0fa0108d45b48ba2a9272bb98091b654e6"},
     {file = "cmd2-2.4.3.tar.gz", hash = "sha256:71873c11f72bd19e2b1db578214716f0d4f7c8fa250093c601265a9a717dee52"},
-]
-
-[[package]]
-name = "colorama"
-version = "0.4.6"
-requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
-summary = "Cross-platform colored terminal text."
-files = [
-    {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
-    {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
 
 [[package]]
@@ -812,12 +803,12 @@ files = [
 
 [[package]]
 name = "filelock"
-version = "3.13.1"
+version = "3.13.3"
 requires_python = ">=3.8"
 summary = "A platform independent file lock."
 files = [
-    {file = "filelock-3.13.1-py3-none-any.whl", hash = "sha256:57dbda9b35157b05fb3e58ee91448612eb674172fab98ee235ccb0b5bee19a1c"},
-    {file = "filelock-3.13.1.tar.gz", hash = "sha256:521f5f56c50f8426f5e03ad3b281b490a87ef15bc6c526f168290f0c7148d44e"},
+    {file = "filelock-3.13.3-py3-none-any.whl", hash = "sha256:5ffa845303983e7a0b7ae17636509bc97997d58afeafa72fb141a17b152284cb"},
+    {file = "filelock-3.13.3.tar.gz", hash = "sha256:a79895a25bbefdf55d1a2a0a80968f7dbb28edcd6d4234a0afb3f37ecde4b546"},
 ]
 
 [[package]]
@@ -966,15 +957,15 @@ files = [
 
 [[package]]
 name = "gitpython"
-version = "3.1.42"
+version = "3.1.43"
 requires_python = ">=3.7"
 summary = "GitPython is a Python library used to interact with Git repositories"
 dependencies = [
     "gitdb<5,>=4.0.1",
 ]
 files = [
-    {file = "GitPython-3.1.42-py3-none-any.whl", hash = "sha256:1bf9cd7c9e7255f77778ea54359e54ac22a72a5b51288c457c881057b7bb9ecd"},
-    {file = "GitPython-3.1.42.tar.gz", hash = "sha256:2d99869e0fef71a73cbd242528105af1d6c1b108c60dfabd994bf292f76c3ceb"},
+    {file = "GitPython-3.1.43-py3-none-any.whl", hash = "sha256:eec7ec56b92aad751f9912a73404bc02ba212a23adb2c7098ee668417051a1ff"},
+    {file = "GitPython-3.1.43.tar.gz", hash = "sha256:35f314a9f878467f5453cc1fee295c3e18e52f1b99f10f6cf5b1682e968a9e7c"},
 ]
 
 [[package]]
@@ -1374,7 +1365,7 @@ files = [
 
 [[package]]
 name = "lightning-utilities"
-version = "0.11.0"
+version = "0.11.2"
 requires_python = ">=3.8"
 summary = "Lightning toolbox for across the our ecosystem."
 dependencies = [
@@ -1383,8 +1374,8 @@ dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "lightning-utilities-0.11.0.tar.gz", hash = "sha256:dd704795785ceba1e0cd60ba3a9b0553c7902ec9efc1578a74e893a291416e62"},
-    {file = "lightning_utilities-0.11.0-py3-none-any.whl", hash = "sha256:bf576a421027fdbaf48e80cbc2fdf900a3316a469748a953c33a8ca2b2718a20"},
+    {file = "lightning-utilities-0.11.2.tar.gz", hash = "sha256:adf4cf9c5d912fe505db4729e51d1369c6927f3a8ac55a9dff895ce5c0da08d9"},
+    {file = "lightning_utilities-0.11.2-py3-none-any.whl", hash = "sha256:541f471ed94e18a28d72879338c8c52e873bb46f4c47644d89228faeb6751159"},
 ]
 
 [[package]]
@@ -1556,7 +1547,7 @@ files = [
 
 [[package]]
 name = "monai-weekly"
-version = "1.4.dev2411"
+version = "1.4.dev2413"
 requires_python = ">=3.8"
 summary = "AI Toolkit for Healthcare Imaging"
 dependencies = [
@@ -1564,8 +1555,8 @@ dependencies = [
     "torch>=1.9",
 ]
 files = [
-    {file = "monai-weekly-1.4.dev2411.tar.gz", hash = "sha256:d854e650ad4a5ac674401cc57d06d6034d2edbfcf8426f7f7307b9f0be77fbc7"},
-    {file = "monai_weekly-1.4.dev2411-py3-none-any.whl", hash = "sha256:19159a7a3aefe07e8c243e44d1e235036078f6fec24949998eec284ba36d0390"},
+    {file = "monai-weekly-1.4.dev2413.tar.gz", hash = "sha256:265b006e7fc0f9f198d73df1445478ff94ba53e277225614e8a746b6dda1690f"},
+    {file = "monai_weekly-1.4.dev2413-py3-none-any.whl", hash = "sha256:37de58aec413e2626bffbb597f5b595f7e78c50482dd203ff26e67c00c6bb430"},
 ]
 
 [[package]]
@@ -1798,17 +1789,17 @@ files = [
 
 [[package]]
 name = "ome-types"
-version = "0.5.1"
+version = "0.5.1.post1"
 requires_python = ">=3.8"
 summary = "Python dataclasses for the OME data model"
 dependencies = [
     "pydantic-compat>=0.1.0",
     "pydantic>=1.9.0",
-    "xsdata>=23.6",
+    "xsdata<24.4,>=23.6",
 ]
 files = [
-    {file = "ome_types-0.5.1-py3-none-any.whl", hash = "sha256:4bbf38e39d6e72e67aea9e478878174b5ded931023f40ebc653c598f989fb06d"},
-    {file = "ome_types-0.5.1.tar.gz", hash = "sha256:948395545035e610fc43ba97ce6080201d1c029ee85afd8974d7e540a7d1491d"},
+    {file = "ome_types-0.5.1.post1-py3-none-any.whl", hash = "sha256:49fc57a81cf179b354e2a62e0d15936522e9f35afbe536fdad92139d8285b8ef"},
+    {file = "ome_types-0.5.1.post1.tar.gz", hash = "sha256:cadda5e36ad4d33dad2034fd43f32113a736fe47c67fd9e06bbb8d3858d1dc58"},
 ]
 
 [[package]]
@@ -1965,13 +1956,13 @@ files = [
 
 [[package]]
 name = "pillow"
-version = "10.2.0"
+version = "10.3.0"
 requires_python = ">=3.8"
 summary = "Python Imaging Library (Fork)"
 files = [
-    {file = "pillow-10.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:da2b52b37dad6d9ec64e653637a096905b258d2fc2b984c41ae7d08b938a67e4"},
-    {file = "pillow-10.2.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:322bdf3c9b556e9ffb18f93462e5f749d3444ce081290352c6070d014c93feb2"},
-    {file = "pillow-10.2.0.tar.gz", hash = "sha256:e87f0b2c78157e12d7686b27d63c070fd65d994e8ddae6f328e0dcf4a0cd007e"},
+    {file = "pillow-10.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:261ddb7ca91fcf71757979534fb4c128448b5b4c55cb6152d280312062f69599"},
+    {file = "pillow-10.3.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:b14f16f94cbc61215115b9b1236f9c18403c15dd3c52cf629072afa9d54c1cbf"},
+    {file = "pillow-10.3.0.tar.gz", hash = "sha256:9d2455fbf44c914840c793e89aa82d0e1763a14253a000743719ae5946814b2d"},
 ]
 
 [[package]]
@@ -2716,7 +2707,7 @@ files = [
 
 [[package]]
 name = "sqlalchemy"
-version = "2.0.28"
+version = "2.0.29"
 requires_python = ">=3.7"
 summary = "Database Abstraction Library"
 dependencies = [
@@ -2724,9 +2715,9 @@ dependencies = [
     "typing-extensions>=4.6.0",
 ]
 files = [
-    {file = "SQLAlchemy-2.0.28-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5da98815f82dce0cb31fd1e873a0cb30934971d15b74e0d78cf21f9e1b05953f"},
-    {file = "SQLAlchemy-2.0.28-py3-none-any.whl", hash = "sha256:78bb7e8da0183a8301352d569900d9d3594c48ac21dc1c2ec6b3121ed8b6c986"},
-    {file = "SQLAlchemy-2.0.28.tar.gz", hash = "sha256:dd53b6c4e6d960600fd6532b79ee28e2da489322fcf6648738134587faf767b6"},
+    {file = "SQLAlchemy-2.0.29-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9d6753305936eddc8ed190e006b7bb33a8f50b9854823485eed3a886857ab8d1"},
+    {file = "SQLAlchemy-2.0.29-py3-none-any.whl", hash = "sha256:dc4ee2d4ee43251905f88637d5281a8d52e916a021384ec10758826f5cbae305"},
+    {file = "SQLAlchemy-2.0.29.tar.gz", hash = "sha256:bd9566b8e58cabd700bc367b60e90d9349cd16f0984973f98a9a09f9c64e86f0"},
 ]
 
 [[package]]
@@ -3035,33 +3026,73 @@ files = [
 
 [[package]]
 name = "typer"
-version = "0.9.0"
-requires_python = ">=3.6"
+version = "0.12.0"
+requires_python = ">=3.7"
 summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 dependencies = [
-    "click<9.0.0,>=7.1.1",
+    "typer-cli==0.12.0",
+    "typer-slim[standard]==0.12.0",
+]
+files = [
+    {file = "typer-0.12.0-py3-none-any.whl", hash = "sha256:0441a0bb8962fb4383b8537ada9f7eb2d0deda0caa2cfe7387cc221290f617e4"},
+    {file = "typer-0.12.0.tar.gz", hash = "sha256:900fe786ce2d0ea44653d3c8ee4594a22a496a3104370ded770c992c5e3c542d"},
+]
+
+[[package]]
+name = "typer-cli"
+version = "0.12.0"
+requires_python = ">=3.7"
+summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+dependencies = [
+    "typer-slim[standard]==0.12.0",
+]
+files = [
+    {file = "typer_cli-0.12.0-py3-none-any.whl", hash = "sha256:7b7e2dd49f59974bb5a869747045d5444b17bffb851e006cd424f602d3578104"},
+    {file = "typer_cli-0.12.0.tar.gz", hash = "sha256:603ed3d5a278827bd497e4dc73a39bb714b230371c8724090b0de2abdcdd9f6e"},
+]
+
+[[package]]
+name = "typer-slim"
+version = "0.12.0"
+requires_python = ">=3.7"
+summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+dependencies = [
+    "click>=8.0.0",
     "typing-extensions>=3.7.4.3",
 ]
 files = [
-    {file = "typer-0.9.0-py3-none-any.whl", hash = "sha256:5d96d986a21493606a358cae4461bd8cdf83cbf33a5aa950ae629ca3b51467ee"},
-    {file = "typer-0.9.0.tar.gz", hash = "sha256:50922fd79aea2f4751a8e0408ff10d2662bd0c8bbfa84755a699f3bada2978b2"},
+    {file = "typer_slim-0.12.0-py3-none-any.whl", hash = "sha256:ddd7042b29a32140528caa415750bcae54113ba0c32270ca11a6f64069ddadf9"},
+    {file = "typer_slim-0.12.0.tar.gz", hash = "sha256:3e8a3f17286b173d76dca0fd4e02651c9a2ce1467b3754876b1ac4bd72572beb"},
+]
+
+[[package]]
+name = "typer-slim"
+version = "0.12.0"
+extras = ["standard"]
+requires_python = ">=3.7"
+summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
+dependencies = [
+    "rich>=10.11.0",
+    "shellingham>=1.3.0",
+    "typer-slim==0.12.0",
+]
+files = [
+    {file = "typer_slim-0.12.0-py3-none-any.whl", hash = "sha256:ddd7042b29a32140528caa415750bcae54113ba0c32270ca11a6f64069ddadf9"},
+    {file = "typer_slim-0.12.0.tar.gz", hash = "sha256:3e8a3f17286b173d76dca0fd4e02651c9a2ce1467b3754876b1ac4bd72572beb"},
 ]
 
 [[package]]
 name = "typer"
-version = "0.9.0"
+version = "0.12.0"
 extras = ["all"]
-requires_python = ">=3.6"
+requires_python = ">=3.7"
 summary = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 dependencies = [
-    "colorama<0.5.0,>=0.4.3",
-    "rich<14.0.0,>=10.11.0",
-    "shellingham<2.0.0,>=1.3.0",
-    "typer==0.9.0",
+    "typer==0.12.0",
 ]
 files = [
-    {file = "typer-0.9.0-py3-none-any.whl", hash = "sha256:5d96d986a21493606a358cae4461bd8cdf83cbf33a5aa950ae629ca3b51467ee"},
-    {file = "typer-0.9.0.tar.gz", hash = "sha256:50922fd79aea2f4751a8e0408ff10d2662bd0c8bbfa84755a699f3bada2978b2"},
+    {file = "typer-0.12.0-py3-none-any.whl", hash = "sha256:0441a0bb8962fb4383b8537ada9f7eb2d0deda0caa2cfe7387cc221290f617e4"},
+    {file = "typer-0.12.0.tar.gz", hash = "sha256:900fe786ce2d0ea44653d3c8ee4594a22a496a3104370ded770c992c5e3c542d"},
 ]
 
 [[package]]
@@ -3165,15 +3196,15 @@ files = [
 
 [[package]]
 name = "werkzeug"
-version = "3.0.1"
+version = "3.0.2"
 requires_python = ">=3.8"
 summary = "The comprehensive WSGI web application library."
 dependencies = [
     "MarkupSafe>=2.1.1",
 ]
 files = [
-    {file = "werkzeug-3.0.1-py3-none-any.whl", hash = "sha256:90a285dc0e42ad56b34e696398b8122ee4c681833fb35b8334a095d82c56da10"},
-    {file = "werkzeug-3.0.1.tar.gz", hash = "sha256:507e811ecea72b18a404947aded4b3390e1db8f826b494d76550ef45bb3b1dcc"},
+    {file = "werkzeug-3.0.2-py3-none-any.whl", hash = "sha256:3aac3f5da756f93030740bc235d3e09449efcf65f2f55e3602e1d851b8f48795"},
+    {file = "werkzeug-3.0.2.tar.gz", hash = "sha256:e39b645a6ac92822588e7b39a692e7828724ceae0b0d702ef96701f90e70128d"},
 ]
 
 [[package]]
@@ -3214,15 +3245,15 @@ files = [
 
 [[package]]
 name = "xmlschema"
-version = "3.1.0"
+version = "3.2.0"
 requires_python = ">=3.8"
 summary = "An XML Schema validator and decoder"
 dependencies = [
     "elementpath<5.0.0,>=4.4.0",
 ]
 files = [
-    {file = "xmlschema-3.1.0-py3-none-any.whl", hash = "sha256:a971881d69b84fdf27447b5a150899b0dfc5a8df762d743aeb82333f833c7552"},
-    {file = "xmlschema-3.1.0.tar.gz", hash = "sha256:a0d64f3e9f24c8af9b2e56a4b66e8edfbdc60bc09b5f9f61b3076b3233be49cb"},
+    {file = "xmlschema-3.2.0-py3-none-any.whl", hash = "sha256:7ad8b4838fee0cfbfc3a5c7d38e33964cf5ebd2c20e2aa23ea813b6793438f9c"},
+    {file = "xmlschema-3.2.0.tar.gz", hash = "sha256:541d96893691aae3cb93ea36a85dde18327012e26e0c51d610f4f79e7fc86f7b"},
 ]
 
 [[package]]
