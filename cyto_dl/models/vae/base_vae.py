@@ -139,7 +139,10 @@ class BaseVAE(BaseModel):
         self.latent_dim = latent_dim
 
         if decoder_latent_parts is None:
-            self.decoder_latent_parts = {key: self.prior.keys() for key in self.decoder.keys()}
+            pass
+            # self.decoder_latent_parts = {
+            #     key: self.prior.keys() for key in self.decoder.keys()
+            # }
         else:
             self.decoder_latent_parts = decoder_latent_parts
             for key in self.decoder.keys():
@@ -157,16 +160,20 @@ class BaseVAE(BaseModel):
     def calculate_rcl(self, x, xhat, input_key, target_key=None):
         if not target_key:
             target_key = input_key
+
         rcl_per_input_dimension = self.reconstruction_loss[input_key](
             x[target_key], xhat[input_key]
         )
+
         return rcl_per_input_dimension
 
     def calculate_rcl_dict(self, x, xhat, z):
         rcl_per_input_dimension = {}
         rcl_reduced = {}
         for key in xhat.keys():
-            rcl_per_input_dimension[key] = self.reconstruction_loss[key](xhat[key], x[key])
+            rcl_per_input_dimension[key] = self.reconstruction_loss[key](
+                xhat[key], x[key]
+            )
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
                     rcl_per_input_dimension[key]
@@ -184,12 +191,19 @@ class BaseVAE(BaseModel):
     def calculate_elbo(self, x, xhat, z):
         rcl_reduced = self.calculate_rcl_dict(x, xhat, z)
         kld_per_part = {
-            part: prior(z[part], mode="kl", reduction="none") for part, prior in self.prior.items()
+            part: prior(z[part], mode="kl", reduction="none")
+            for part, prior in self.prior.items()
         }
-        kld_per_part_summed = {part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()}
+        kld_per_part_summed = {
+            part: kl.sum(dim=-1).mean() for part, kl in kld_per_part.items()
+        }
 
         total_kld = sum(kld_per_part_summed.values())
         total_recon = sum(rcl_reduced.values())
+        if len(total_recon.shape) > 0:
+            total_recon = total_recon.mean()
+            for key in rcl_reduced.keys():
+                rcl_reduced[key] = rcl_reduced[key].mean()
 
         return (
             total_recon + self.beta * total_kld,
@@ -203,7 +217,9 @@ class BaseVAE(BaseModel):
         z = {}
         for part, part_params in z_parts_params.items():
             if part in self.prior:
-                z[part] = self.prior[part](part_params, mode="sample", inference=inference)
+                z[part] = self.prior[part](
+                    part_params, mode="sample", inference=inference
+                )
             else:
                 # if prior for this part isn't in the dict, assume dirac prior
                 # i.e. just return the params, and it won't contribute to kl
@@ -233,7 +249,9 @@ class BaseVAE(BaseModel):
             for part, decoder in self.decoder.items()
         }
 
-    def forward(self, batch, decode=False, inference=True, return_params=False, **kwargs):
+    def forward(
+        self, batch, decode=False, inference=True, return_params=False, **kwargs
+    ):
         is_inference = inference or not self.training
 
         z_params = self.encode(batch, **kwargs)

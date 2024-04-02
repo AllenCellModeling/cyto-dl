@@ -45,7 +45,9 @@ class ImageEncoder(torch.nn.Module):
         self.num_res_units = num_res_units
 
         if group not in ("so2", "so3", None):
-            raise ValueError(f"`gspace` should be one of ('so2', 'so3', None). Got {group!r}")
+            raise ValueError(
+                f"`gspace` should be one of ('so2', 'so3', None). Got {group!r}"
+            )
 
         if group == "so2":
             self.gspace = (
@@ -58,7 +60,9 @@ class ImageEncoder(torch.nn.Module):
                 raise ValueError("The SO3 group only works for spatial_dims=3")
             self.gspace = gspaces.rot3dOnR3(maximum_frequency=maximum_frequency)
         else:
-            self.gspace = gspaces.trivialOnR2() if spatial_dims == 2 else gspaces.trivialOnR3()
+            self.gspace = (
+                gspaces.trivialOnR2() if spatial_dims == 2 else gspaces.trivialOnR3()
+            )
 
         self.in_type = nn.FieldType(self.gspace, [self.gspace.trivial_repr])
 
@@ -284,7 +288,9 @@ class Convolution(nn.EquivariantModule):
 
         scalar_fields = nn.FieldType(gspace, out_channels * [gspace.trivial_repr])
         if type(group).__name__ in ("SO2", "SO3"):
-            vector_fields = nn.FieldType(gspace, out_vector_channels * [gspace.irrep(1)])
+            vector_fields = nn.FieldType(
+                gspace, out_vector_channels * [gspace.irrep(1)]
+            )
             out_type = scalar_fields + vector_fields
         else:
             vector_fields = []
