@@ -13,6 +13,9 @@ from .tabular_vae import TabularVAE
 from .point_cloud_nfinvae_multarget import PointCloudNFinVAEMultarget
 from .implicit_decoder import ImplicitDecoder
 from .utils import weight_init
+from .image_vae_monai import ImageVAEMonai
+from .image_vae_monai2 import ImageVAEMonai2
+from .image_vae_monai3 import ImageVAEMonai3
 
 # from .conditional_canon_vae import ConditonalCanonVAE
 from .ivae import iVAE

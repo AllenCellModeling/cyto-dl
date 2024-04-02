@@ -16,6 +16,7 @@ from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
 from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder, MultiplyConstant
 from .utils import weight_init
+from monai.networks.nets import AutoEncoder
 
 from .image_encoder import ImageEncoder
 
@@ -33,7 +34,7 @@ class _Scale(nn.Module):
         return x * self.scale.type_as(x)
 
 
-class ImageVAE(BaseVAE):
+class ImageVAEMonai(BaseVAE):
     def __init__(
         self,
         x_label: str,
@@ -69,18 +70,16 @@ class ImageVAE(BaseVAE):
         metric_keys: Optional[list] = None,
         use_implicit_decoder: Optional[bool] = False,
         decoder_res_units: Optional[int] = None,
+        override_final_size: Optional[tuple] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
-        if decoder_res_units is None:
-            decoder_res_units = num_res_units
         self.out_channels = out_channels if out_channels is not None else in_channels
         self.x_label = x_label
         self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
         self.up_kernel_size = up_kernel_size
         self.num_res_units = num_res_units
-        self.use_implicit_decoder = use_implicit_decoder
         self.act = act
         self.norm = norm
         self.bias = bias
@@ -119,89 +118,8 @@ class ImageVAE(BaseVAE):
             padding = same_padding(k) if p is None else p
             self.final_size = calculate_out_shape(self.final_size, k, s, padding)
 
-        if decoder_channels is None:
-            _channels = channels[::-1]
-        else:
-            _channels = decoder_channels
-        _channels += [self.out_channels]
-
-        if decoder_strides is None:
-            _strides = strides[::-1]
-        else:
-            _strides = decoder_strides
-
-        assert len(_strides) + 1 == len(_channels)
-
-        decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(
-            zip(_strides, _channels[:-1], _channels[1:])
-        ):
-            last_block = i + 1 == len(_strides)
-
-            size = None if not last_block else in_shape
-
-            upsample = UpSample(
-                spatial_dims=spatial_dims,
-                in_channels=c_in,
-                out_channels=c_in,
-                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
-                size=size,
-                kernel_size=3,
-                pre_conv=None,
-                # choices inspired by this article:
-                # https://distill.pub/2016/deconv-checkerboard/
-                mode="nontrainable",
-                interp_mode="nearest",
-                align_corners=None,
-            )
-
-            res = ResidualUnit(
-                spatial_dims=spatial_dims,
-                in_channels=c_in,
-                out_channels=c_out,
-                strides=1,
-                kernel_size=3,
-                act=act,
-                norm=norm,
-                dropout=dropout,
-                subunits=decoder_res_units,
-                padding=1,
-            )
-
-            decode_blocks.append(nn.Sequential(upsample, res))
-
-        init_shape = (
-            self.final_size if decoder_initial_shape is None else decoder_initial_shape
-        )
-
-        first_upsample = nn.Sequential(
-            nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
-            Reshape(_channels[0], *init_shape),
-        )
-        if use_implicit_decoder:
-            # decoder_hidden_channels = [64, 64, 64, 64, 1]
-            # final_non_linearity = nn.Sequential(
-            #     torch.nn.Tanh(),
-            #     MultiplyConstant(constant=2),
-            # )
-            decoder_hidden_channels = [32, 32, 32, 32, 1]
-            final_non_linearity = nn.Sequential()
-            decoder = ImplicitDecoder(
-                latent_dims=latent_dim,
-                hidden_channels=decoder_hidden_channels,
-                non_linearity=torch.nn.ReLU(),
-                final_non_linearity=final_non_linearity,
-                mode="3d",
-            )
-            decoder.apply(weight_init)
-        else:
-            decoder = nn.Sequential(
-                first_upsample,
-                *decode_blocks,
-                # decoder,
-                last_act if last_act is not None else nn.Identity(),
-                _Scale(last_scale),
-            )
+            if override_final_size:
+                self.final_size = override_final_size
 
         if isinstance(prior, (str, type(None))):
             if prior == "gaussian":
@@ -231,6 +149,23 @@ class ImageVAE(BaseVAE):
             )
         else:
             self.rotation_module = None
+
+        monai_autoencoder_ = AutoEncoder(
+            spatial_dims=spatial_dims,
+            in_channels=in_channels,
+            out_channels=in_channels,
+            channels=channels,
+            strides=strides,
+            kernel_size=3,
+            up_kernel_size=3,
+            num_res_units=num_res_units,
+            act="relu",
+            norm="batch",
+            # dropout: tuple | str | float | None = None,
+            # bias: bool = True,
+            # padding: Sequence[int] | int | None = None,
+        )
+        decoder = monai_autoencoder_.decode
 
         super().__init__(
             encoder=encoder,
@@ -262,6 +197,11 @@ class ImageVAE(BaseVAE):
         return parts
 
     def decode(self, z_parts, return_canonical=False):
+        z_parts["embedding"] = (
+            z_parts["embedding"].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
+        )  # [bz, emb_dim, 1, 1, 1]
+        z_parts["embedding"] = z_parts["embedding"].expand(-1, -1, 4, 4, 4)
+
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
         clip_min = self.hparams.get("clip_min")
         clip_max = self.hparams.get("clip_min")
@@ -279,5 +219,4 @@ class ImageVAE(BaseVAE):
 
         if return_canonical:
             return {self.hparams.x_label: xhat, "canonical": base_xhat}
-
         return {self.hparams.x_label: xhat}

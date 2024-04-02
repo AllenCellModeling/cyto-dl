@@ -4,13 +4,13 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from monai.networks.blocks import Convolution, ResidualUnit, UpSample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
 from monai.networks.layers.simplelayers import Flatten, Reshape
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
+from monai.networks.nets import AutoEncoder
 
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
@@ -19,7 +19,6 @@ from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder, MultiplyConstan
 from .utils import weight_init
 
 from .image_encoder import ImageEncoder
-from monai.networks.nets import AutoEncoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -35,20 +34,7 @@ class _Scale(nn.Module):
         return x * self.scale.type_as(x)
 
 
-class _Interpolate(nn.Module):
-    def __init__(self, size, mode="trilinear", align_corners=False):
-        super(_Interpolate, self).__init__()
-        self.size = size
-        self.mode = mode
-        self.align_corners = align_corners
-
-    def forward(self, x):
-        return F.interpolate(
-            x, size=self.size, mode=self.mode, align_corners=self.align_corners
-        )
-
-
-class ImageVAE(BaseVAE):
+class ImageVAEMonai2(BaseVAE):
     def __init__(
         self,
         x_label: str,
@@ -85,10 +71,6 @@ class ImageVAE(BaseVAE):
         use_implicit_decoder: Optional[bool] = False,
         decoder_res_units: Optional[int] = None,
         override_final_size: Optional[tuple] = None,
-        average_spatial: Optional[bool] = True,
-        use_monai_decoder: Optional[bool] = False,
-        decoder_use_upsample: Optional[bool] = True,
-        decoder_padding: Optional[list] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
@@ -156,102 +138,51 @@ class ImageVAE(BaseVAE):
         assert len(_strides) + 1 == len(_channels)
 
         decode_blocks = []
-        if decoder_use_upsample:
-            for i, (s, c_in, c_out) in enumerate(
-                zip(_strides, _channels[:-1], _channels[1:])
-            ):
-                last_block = i + 1 == len(_strides)
+        for i, (s, c_in, c_out) in enumerate(
+            zip(_strides, _channels[:-1], _channels[1:])
+        ):
+            last_block = i + 1 == len(_strides)
 
-                size = None if not last_block else in_shape
-                upsample = UpSample(
-                    spatial_dims=spatial_dims,
-                    in_channels=c_in,
-                    out_channels=c_in,
-                    scale_factor=s,  # ignored if size isn't None, i.e. in the last block
-                    size=size,
-                    kernel_size=3,
-                    pre_conv=None,
-                    # choices inspired by this article:
-                    # https://distill.pub/2016/deconv-checkerboard/
-                    mode="nontrainable",
-                    interp_mode="nearest",
-                    align_corners=None,
-                )
-                res = ResidualUnit(
-                    spatial_dims=spatial_dims,
-                    in_channels=c_in,
-                    out_channels=c_out,
-                    strides=1,
-                    kernel_size=3,
-                    act=act,
-                    norm=norm,
-                    dropout=dropout,
-                    subunits=decoder_res_units,
-                    padding=1,
-                )
-                decode_blocks.append(nn.Sequential(upsample, res))
-        else:
-            for i, (s, c_in, c_out) in enumerate(
-                zip(_strides, _channels[:-1], _channels[1:])
-            ):
-                last_block = i == len(_strides) - 1
+            size = None if not last_block else in_shape
 
-                conv = Convolution(
-                    spatial_dims=spatial_dims,
-                    in_channels=c_in,
-                    out_channels=c_out,
-                    strides=s,
-                    kernel_size=3,
-                    act=act,
-                    norm=norm,
-                    dropout=dropout,
-                    bias=bias,
-                    padding=None if decoder_padding is None else decoder_padding[i],
-                    conv_only=last_block and decoder_res_units == 0,
-                    is_transposed=True,
-                )
+            upsample = UpSample(
+                spatial_dims=spatial_dims,
+                in_channels=c_in,
+                out_channels=c_in,
+                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
+                size=size,
+                kernel_size=3,
+                pre_conv=None,
+                # choices inspired by this article:
+                # https://distill.pub/2016/deconv-checkerboard/
+                mode="nontrainable",
+                interp_mode="nearest",
+                align_corners=None,
+            )
 
-                if decoder_res_units > 0:
-                    res = ResidualUnit(
-                        spatial_dims=spatial_dims,
-                        in_channels=c_out,
-                        out_channels=c_out,
-                        strides=1,
-                        kernel_size=3,
-                        act=act,
-                        norm=norm,
-                        dropout=dropout,
-                        subunits=1,
-                        padding=0,
-                        last_conv_only=last_block,
-                    )
-                    if last_block:
-                        decode_blocks.append(
-                            nn.Sequential(
-                                conv,
-                                res,
-                                _Interpolate(
-                                    size=in_shape, mode="trilinear", align_corners=False
-                                ),
-                            )
-                        )
-                    else:
-                        decode_blocks.append(nn.Sequential(conv, res))
-                else:
-                    decode_blocks.append(conv)
+            res = ResidualUnit(
+                spatial_dims=spatial_dims,
+                in_channels=c_in,
+                out_channels=c_out,
+                strides=1,
+                kernel_size=3,
+                act=act,
+                norm=norm,
+                dropout=dropout,
+                subunits=decoder_res_units,
+                padding=1,
+            )
+
+            decode_blocks.append(nn.Sequential(upsample, res))
 
         init_shape = (
             self.final_size if decoder_initial_shape is None else decoder_initial_shape
         )
 
-        if average_spatial:
-            first_upsample = nn.Sequential(
-                nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
-                Reshape(_channels[0], *init_shape),
-            )
-        else:
-            first_upsample = nn.Sequential(torch.nn.Identity())
-
+        first_upsample = nn.Sequential(
+            nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
+            Reshape(_channels[0], *init_shape),
+        )
         if use_implicit_decoder:
             # decoder_hidden_channels = [64, 64, 64, 64, 1]
             # final_non_linearity = nn.Sequential(
@@ -268,12 +199,6 @@ class ImageVAE(BaseVAE):
                 mode="3d",
             )
             decoder.apply(weight_init)
-        elif not decoder_use_upsample:
-            decoder = nn.Sequential(
-                first_upsample,
-                *decode_blocks,
-            )
-
         else:
             decoder = nn.Sequential(
                 first_upsample,
@@ -283,24 +208,6 @@ class ImageVAE(BaseVAE):
                 _Scale(last_scale),
             )
 
-        if use_monai_decoder:
-            monai_autoencoder_ = AutoEncoder(
-                spatial_dims=spatial_dims,
-                in_channels=in_channels,
-                out_channels=in_channels,
-                channels=channels,
-                strides=strides,
-                kernel_size=3,
-                up_kernel_size=3,
-                num_res_units=num_res_units,
-                act=self.act,
-                norm="batch",
-                # dropout: tuple | str | float | None = None,
-                # bias: bool = True,
-                # padding: Sequence[int] | int | None = None,
-            )
-            decoder = monai_autoencoder_.decode
-
         if isinstance(prior, (str, type(None))):
             if prior == "gaussian":
                 encoder_out_size = 2 * latent_dim
@@ -309,20 +216,22 @@ class ImageVAE(BaseVAE):
         else:
             encoder_out_size = prior.param_size
 
-        encoder = ImageEncoder(
+        monai_autoencoder_ = AutoEncoder(
             spatial_dims=spatial_dims,
-            out_dim=encoder_out_size,
+            in_channels=in_channels,
+            out_channels=in_channels,
             channels=channels,
             strides=strides,
-            maximum_frequency=maximum_frequency,
-            kernel_sizes=kernel_sizes,
-            bias=bias,
-            padding=encoder_padding,
-            group=group,
-            first_conv_padding_mode=first_conv_padding_mode,
+            kernel_size=3,
+            up_kernel_size=3,
             num_res_units=num_res_units,
-            average_spatial=average_spatial,
+            act="relu",
+            norm="batch",
+            # dropout: tuple | str | float | None = None,
+            # bias: bool = True,
+            # padding: Sequence[int] | int | None = None,
         )
+        encoder = monai_autoencoder_.encode
 
         if group is not None:
             self.rotation_module = RotationModule(
@@ -343,7 +252,6 @@ class ImageVAE(BaseVAE):
 
     def encode(self, batch):
         x = batch[self.hparams.x_label]
-
         if self.mask_input:
             x = self.mask(x)
 
@@ -362,6 +270,9 @@ class ImageVAE(BaseVAE):
         return parts
 
     def decode(self, z_parts, return_canonical=False):
+        pool_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
+        z_parts["embedding"] = z_parts["embedding"].mean(dim=pool_dims)
+
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
         clip_min = self.hparams.get("clip_min")
         clip_max = self.hparams.get("clip_min")

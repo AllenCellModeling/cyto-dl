@@ -10,13 +10,14 @@ from monai.networks.layers.factories import Act, Norm
 from monai.networks.layers.simplelayers import Flatten, Reshape
 from omegaconf import DictConfig
 from torch.nn.modules.loss import _Loss as Loss
+from monai.networks.nets import AutoEncoder
 
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
+from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder, MultiplyConstant
+from .utils import weight_init
 
-from cyto_dl.nn.point_cloud import DGCNN
-from cyto_dl.nn.mlp import MLP
 from .image_encoder import ImageEncoder
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
@@ -33,7 +34,7 @@ class _Scale(nn.Module):
         return x * self.scale.type_as(x)
 
 
-class ImageVAE(BaseVAE):
+class ImageVAEMonai3(BaseVAE):
     def __init__(
         self,
         x_label: str,
@@ -67,16 +68,21 @@ class ImageVAE(BaseVAE):
         eps: float = 1e-8,
         encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         metric_keys: Optional[list] = None,
+        use_implicit_decoder: Optional[bool] = False,
+        decoder_res_units: Optional[int] = None,
+        override_final_size: Optional[tuple] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
-
+        if decoder_res_units is None:
+            decoder_res_units = num_res_units
         self.out_channels = out_channels if out_channels is not None else in_channels
         self.x_label = x_label
         self.spatial_dims = spatial_dims
         self.final_size = np.asarray(in_shape, dtype=int)
         self.up_kernel_size = up_kernel_size
         self.num_res_units = num_res_units
+        self.use_implicit_decoder = use_implicit_decoder
         self.act = act
         self.norm = norm
         self.bias = bias
@@ -85,125 +91,23 @@ class ImageVAE(BaseVAE):
         self.mask_input = mask_input
         self.mask_output = mask_output
 
-        if last_act is not None:
-            if last_act == "sigmoid":
-                last_act = nn.Sigmoid()
-            elif last_act == "tanh":
-                last_act = nn.Tanh()
-            else:
-                raise ValueError("`last_act` must be either 'sigmoid' or 'tanh'")
-
-        if mask_input or mask_output:
-            if group is not None:
-                self.mask = RotationMask(
-                    group,
-                    spatial_dims,
-                    max(in_shape[-2:]),
-                    background=background_value,
-                )
-            else:
-                self.mask = None
-                self.mask_input = None
-                self.mask_output = None
-        else:
-            self.mask = None
-
-        if encoder_padding is None:
-            encoder_padding = [None] * len(kernel_sizes)
-
-        for k, s, p in zip(kernel_sizes, strides, encoder_padding):
-            padding = same_padding(k) if p is None else p
-            self.final_size = calculate_out_shape(self.final_size, k, s, padding)
-
-        if decoder_channels is None:
-            _channels = channels[::-1]
-        else:
-            _channels = decoder_channels
-        _channels += [self.out_channels]
-
-        if decoder_strides is None:
-            _strides = strides[::-1]
-        else:
-            _strides = decoder_strides
-
-        assert len(_strides) + 1 == len(_channels)
-
-        decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(
-            zip(_strides, _channels[:-1], _channels[1:])
-        ):
-            last_block = i + 1 == len(_strides)
-
-            size = None if not last_block else in_shape
-
-            upsample = UpSample(
-                spatial_dims=spatial_dims,
-                in_channels=c_in,
-                out_channels=c_in,
-                scale_factor=s,  # ignored if size isn't None, i.e. in the last block
-                size=size,
-                kernel_size=3,
-                pre_conv=None,
-                # choices inspired by this article:
-                # https://distill.pub/2016/deconv-checkerboard/
-                mode="nontrainable",
-                interp_mode="nearest",
-                align_corners=None,
-            )
-
-            res = ResidualUnit(
-                spatial_dims=spatial_dims,
-                in_channels=c_in,
-                out_channels=c_out,
-                strides=1,
-                kernel_size=3,
-                act=act,
-                norm=norm,
-                dropout=dropout,
-                subunits=num_res_units,
-                padding=1,
-            )
-
-            decode_blocks.append(nn.Sequential(upsample, res))
-
-        init_shape = (
-            self.final_size if decoder_initial_shape is None else decoder_initial_shape
-        )
-
-        first_upsample = nn.Sequential(
-            nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
-            Reshape(_channels[0], *init_shape),
-        )
-
-        decoder = nn.Sequential(
-            first_upsample,
-            *decode_blocks,
-            # decoder,
-            last_act if last_act is not None else nn.Identity(),
-            _Scale(last_scale),
-        )
-
-        if isinstance(prior, (str, type(None))):
-            if prior == "gaussian":
-                encoder_out_size = 2 * latent_dim
-            else:
-                encoder_out_size = latent_dim
-        else:
-            encoder_out_size = prior.param_size
-
-        encoder = ImageEncoder(
+        monai_autoencoder_ = AutoEncoder(
             spatial_dims=spatial_dims,
-            out_dim=encoder_out_size,
+            in_channels=in_channels,
+            out_channels=in_channels,
             channels=channels,
             strides=strides,
-            maximum_frequency=maximum_frequency,
-            kernel_sizes=kernel_sizes,
-            bias=bias,
-            padding=encoder_padding,
-            group=group,
-            first_conv_padding_mode=first_conv_padding_mode,
+            kernel_size=3,
+            up_kernel_size=3,
             num_res_units=num_res_units,
+            act="relu",
+            norm="batch",
+            # dropout: tuple | str | float | None = None,
+            # bias: bool = True,
+            # padding: Sequence[int] | int | None = None,
         )
+        encoder = monai_autoencoder_.encode
+        decoder = monai_autoencoder_.decode
 
         if group is not None:
             self.rotation_module = RotationModule(
@@ -221,21 +125,6 @@ class ImageVAE(BaseVAE):
             metric_keys=metric_keys,
             **base_kwargs,
         )
-
-        self.pc_encoder = DGCNN(
-            num_features=latent_dim,
-            hidden_dim=64,
-            hidden_conv2d_channels=[64, 64, 64, 64],
-            hidden_conv1d_channels=[512, latent_dim],
-            k=20,
-            mode="vector",
-            scalar_inds=None,
-            include_cross=True,
-            include_coords=True,
-            symmetry_breaking_axis=None,
-            generate_grid_feats=False,
-        )
-        self.condition_enc = MLP((512, 256), scale_output=1, hidden_layers=[20, 20])
 
     def encode(self, batch):
         x = batch[self.hparams.x_label]
@@ -257,6 +146,13 @@ class ImageVAE(BaseVAE):
         return parts
 
     def decode(self, z_parts, return_canonical=False):
+        pool_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
+        z_parts["embedding"] = z_parts["embedding"].mean(dim=pool_dims)
+        z_parts["embedding"] = (
+            z_parts["embedding"].unsqueeze(-1).unsqueeze(-1).unsqueeze(-1)
+        )  # [bz, emb_dim, 1, 1, 1]
+        z_parts["embedding"] = z_parts["embedding"].expand(-1, -1, 4, 4, 4)
+
         base_xhat = self.decoder[self.hparams.x_label](z_parts["embedding"])
         clip_min = self.hparams.get("clip_min")
         clip_max = self.hparams.get("clip_min")

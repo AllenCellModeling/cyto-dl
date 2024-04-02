@@ -166,10 +166,10 @@ class ImageEncoder(torch.nn.Module):
             if self.group == "so3":
                 # separate two vectors into two channels
                 y_pose = y_pose.reshape(y_pose.shape[0], 2, -1)  # TODO: check this
-
                 # move from y z x (spharm) convention to x y z
                 y_pose = y_pose[:, :, [2, 0, 1]]
-
+                # y_pose = y_pose[:, :, [2, 1, 0]]
+                # y_pose = y_pose[:, :, [0, 1, 2]]
             elif self.group == "so2":
                 # move from y x (spharm) convention to x y
                 y_pose = y_pose[:, [1, 0]]
