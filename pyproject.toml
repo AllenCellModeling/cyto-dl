@@ -31,11 +31,9 @@ dependencies = [
     "pyrootutils>=1.0",
     "PyYAML>=6.0",
     "scikit-learn>=1.2",
-    "aicsimageio>=4.11.0",
     "universal-pathlib>=0.0",
     "ome-zarr>=0.6",
     "anndata>=0.8",
-    "bfio>=2.3.2",
     "monai-weekly>=1.2.dev2308",
     "timm>=0.9.7",
     "tqdm>=4.64",
@@ -44,7 +42,13 @@ dependencies = [
     "edt>=2.3.1",
     "astropy>=5.2",
     "rich",
-    "boto3"
+    "boto3",
+    "bioio",
+    "bioio-czi",
+    "bioio-ome-tiff",
+    "bioio-ome-tiled-tiff",
+    "bioio-tifffile",
+    "bioio-tiff-glob"
 ]
 requires-python = ">=3.8,<3.11"
 
