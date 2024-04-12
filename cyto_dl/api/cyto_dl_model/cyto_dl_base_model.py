@@ -30,7 +30,7 @@ class CytoDLBaseModel(ABC):
     def _get_experiment_type(self) -> ExperimentType:
         """Return experiment type for this config (e.g. segmentation_plugin, gan, etc)"""
         pass
-    
+
     @abstractmethod
     def _set_max_epochs(self, max_epochs: int) -> None:
         pass
@@ -56,7 +56,7 @@ class CytoDLBaseModel(ABC):
                 config_name="train.yaml",  # only using train.yaml after conversation w/ Benji
                 return_hydra_config=True,
                 overrides=[
-                    f"experiment=im2im/{self._get_experiment_type().name}",
+                    f"experiment=im2im/{self._get_experiment_type().name.lower()}",
                     "paths.output_dir=PLACEHOLDER",
                     "paths.work_dir=PLACEHOLDER",
                 ],
