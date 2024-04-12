@@ -8,7 +8,7 @@ from hydra import compose, initialize_config_dir
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, OmegaConf, open_dict
 
-from cyto_dl.api.data import *
+from cyto_dl.api.data import ExperimentType
 from cyto_dl.eval import evaluate as evaluate_model
 from cyto_dl.train import train as train_model
 
@@ -72,7 +72,7 @@ class CytoDLBaseModel(ABC):
         curr_dict: DictConfig = self._cfg
         while keys:
             key: str = keys.pop(0)
-            if not key in curr_dict:
+            if key not in curr_dict:
                 return False
             curr_dict = curr_dict[key]
         return True

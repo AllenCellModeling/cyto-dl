@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple, Union
 from omegaconf import ListConfig
 
 from cyto_dl.api.cyto_dl_model import CytoDLBaseModel
-from cyto_dl.api.data import *
+from cyto_dl.api.data import ExperimentType, HardwareType, PatchSize
 
 
 class SegmentationPluginModel(CytoDLBaseModel):
