@@ -26,6 +26,23 @@ class CytoDLBaseModel(ABC):
             OmegaConf.load(config_filepath) if config_filepath else self._generate_default_config()
         )
 
+    @abstractmethod
+    def _get_experiment_type(self) -> ExperimentType:
+        """Return experiment type for this config (e.g. segmentation_plugin, gan, etc)"""
+        pass
+    
+    @abstractmethod
+    def _set_max_epochs(self, max_epochs: int) -> None:
+        pass
+
+    @abstractmethod
+    def _set_manifest_path(self, manifest_path: Union[str, Path]) -> None:
+        pass
+
+    @abstractmethod
+    def _set_output_dir(self, output_dir: Union[str, Path]) -> None:
+        pass
+
     def _generate_default_config(self) -> DictConfig:
         cfg_dir: Path = (
             pyrootutils.find_root(search_from=__file__, indicator=("pyproject.toml", "README.md"))
@@ -49,11 +66,6 @@ class CytoDLBaseModel(ABC):
             cfg.extras.enforce_tags = False
             cfg.extras.print_config = False
         return cfg
-
-    @abstractmethod
-    def _get_experiment_type(self) -> ExperimentType:
-        """Return experiment type for this config (e.g. segmentation_plugin, gan, etc)"""
-        pass
 
     def _key_exists(self, k: str) -> bool:
         keys: List[str] = k.split(".")
@@ -80,20 +92,6 @@ class CytoDLBaseModel(ABC):
         self._set_cfg("test", train)
         # afaik, task_name isn't used outside of template_utils.py - do we need to support this?
         self._set_cfg("task_name", "train" if train else "predict")
-
-    @abstractmethod
-    def _set_max_epochs(self, max_epochs: int) -> None:
-        pass
-
-    # is 'manifest' a good word for the path to the directory (or CSV?) with list of images
-    # to use for training, evaluation, etc?
-    @abstractmethod
-    def _set_manifest_path(self, manifest_path: Union[str, Path]) -> None:
-        pass
-
-    @abstractmethod
-    def _set_output_dir(self, output_dir: Union[str, Path]) -> None:
-        pass
 
     def _set_ckpt(self, ckpt: Optional[Path]) -> None:
         self._set_cfg("ckpt_path", str(ckpt.resolve()) if ckpt else ckpt)
