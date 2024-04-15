@@ -90,10 +90,10 @@ class MultiTaskIm2Im(BaseModel):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        filter(
-                            lambda p: p.requires_grad,
+                        # filter(
+                            # lambda p: p.requires_grad,
                             list(self.backbone.parameters()) + list(self.task_heads.parameters()),
-                        )
+                        # )
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
@@ -101,11 +101,18 @@ class MultiTaskIm2Im(BaseModel):
                 opts.append(opt)
                 scheds.append(scheduler)
         return (opts, scheds)
+    
+    def _get_input(self, batch):
+        if isinstance(self.hparams.x_key, str):
+            return batch[self.hparams.x_key]
+        elif isinstance(self.hparams.x_key, list):
+            return {k: batch[k] for k in self.hparams.x_key}
+        raise ValueError("x_key must be a string or list of strings.")
 
     def _train_forward(self, batch, stage, save_image, run_heads):
         """during training we are only dealing with patches,so we can calculate per-patch loss,
         metrics, postprocessing etc."""
-        z = self.backbone(batch[self.hparams.x_key])
+        z = self.backbone(self._get_input(batch))
         return {
             task: self.task_heads[task].run_head(z, batch, stage, save_image) for task in run_heads
         }
@@ -123,7 +130,7 @@ class MultiTaskIm2Im(BaseModel):
         """
         with torch.no_grad():
             raw_pred_images = sliding_window_inference(
-                inputs=batch[self.hparams.x_key],
+                inputs=self._get_input(batch),
                 predictor=self.forward,
                 run_heads=run_heads,
                 **self.hparams.inference_args,
@@ -147,13 +154,9 @@ class MultiTaskIm2Im(BaseModel):
 
     def should_save_image(self, batch_idx, stage):
         return stage in ("test", "predict") or (
-            batch_idx < len(self.task_heads)  # noqa: FURB124
+            batch_idx ==0  # noqa: FURB124
             and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
         )
-
-    def _sum_losses(self, losses):
-        losses["loss"] = torch.sum(torch.stack(list(losses.values())))
-        return losses
 
     def _get_unrun_heads(self, io_map):
         """returns heads that don't have outputs yet."""
@@ -186,7 +189,7 @@ class MultiTaskIm2Im(BaseModel):
 
         io_map = {
             h: self.task_heads[h].generate_io_map(
-                batch[self.hparams.x_key].meta, stage, batch_idx, self.global_step
+                self._get_input(batch), stage, batch_idx, self.global_step
             )
             for h in run_heads
         }
@@ -211,7 +214,8 @@ class MultiTaskIm2Im(BaseModel):
         save_image = self.should_save_image(batch_idx, stage)
         outs = self.run_forward(batch, stage, save_image, run_heads)
         losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
-        return self._sum_losses(losses), None, None
+        losses['loss'] = sum(losses.values())
+        return losses, None, None
 
     def predict_step(self, batch, batch_idx):
         stage = "predict"

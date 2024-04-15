@@ -3,6 +3,7 @@ from pathlib import Path
 
 import torch
 from aicsimageio.writers import OmeTiffWriter
+from monai.data import MetaTensor
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
 
@@ -43,10 +44,14 @@ class BaseHead(ABC, torch.nn.Module):
     def _postprocess(self, img, img_type):
         return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
 
-    def generate_io_map(self, meta, stage, batch_idx, step):
+    def generate_io_map(self, batch, stage, batch_idx, step):
         """generates map between input files and output files for a head."""
+        meta = {}
+        if isinstance(batch, MetaTensor):
+            meta = batch.meta
         # filename is determined by step in training during train/val and by its source filename for prediction/testing
         filename_map = {"input": meta.get("filename_or_obj", [batch_idx])}
+        
         if stage in ("train", "val", "test"):
             out_paths = [Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"]
         else:
