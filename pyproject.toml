@@ -4,7 +4,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "cyto-dl"
-version = "0.1.4"
+version = "0.1.5"
 description = """\
   Collection of representation learning models, techniques, callbacks, utils, \
   used to create latent variable models of cell shape, morphology and \

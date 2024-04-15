@@ -27,7 +27,7 @@ class Patchify(torch.nn.Module):
         spatial_dims: int = 3,
         context_pixels: List[int] = [0, 0, 0],
         input_channels: int = 1,
-        tasks: Optional[List[str]] = []
+        tasks: Optional[List[str]] = [],
     ):
         """
         Parameters
@@ -86,7 +86,9 @@ class Patchify(torch.nn.Module):
                 n_patch_x=n_patches[1],
             )
 
-        self.task_embedding = torch.nn.ParameterDict({task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in tasks})
+        self.task_embedding = torch.nn.ParameterDict(
+            {task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in tasks}
+        )
         self._init_weight()
 
     def _init_weight(self):
@@ -131,7 +133,7 @@ class Patchify(torch.nn.Module):
         tokens = self.img2token(tokens)
         # add position embedding
         tokens = tokens + self.pos_embedding
-        if mask_ratio >0:
+        if mask_ratio > 0:
             # extract visible patches
             tokens = take_indexes(tokens, forward_indexes)[:n_visible_patches]
 
