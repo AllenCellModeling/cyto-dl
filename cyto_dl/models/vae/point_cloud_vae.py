@@ -248,13 +248,24 @@ class PointCloudVAE(BaseVAE):
                     batch[self.point_label], z_parts["grid_feats"]
                 )
             else:
+                if isinstance(self.decoder[self.hparams.x_label], FoldingNet):
+                    base_xhat = self.decoder[self.hparams.x_label](
+                        z_parts[self.hparams.x_label]
+                    )
+                else:
+                    base_xhat = self.decoder[self.hparams.x_label](
+                        batch[self.hparams.point_label], z_parts[self.hparams.x_label]
+                    )
+        else:
+            if isinstance(self.decoder[self.hparams.x_label], FoldingNet):
                 base_xhat = self.decoder[self.hparams.x_label](
                     z_parts[self.hparams.x_label]
                 )
-        else:
-            base_xhat = self.decoder[self.hparams.x_label](
-                z_parts[self.hparams.x_label]
-            )
+            else:
+                base_xhat = self.decoder[self.hparams.x_label](
+                    batch[self.hparams.point_label], z_parts[self.hparams.x_label]
+                )
+
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -347,8 +358,6 @@ class PointCloudVAE(BaseVAE):
     def calculate_rcl(self, batch, xhat, input_key, target_key=None):
         if not target_key:
             target_key = input_key
-        # import ipdb
-        # ipdb.set_trace()
         rcl_per_input_dimension = self.reconstruction_loss[input_key](
             batch[target_key], xhat[input_key]
         )
@@ -364,7 +373,7 @@ class PointCloudVAE(BaseVAE):
         rcl_reduced = {}
         for key in xhat.keys():
             rcl_per_input_dimension[key] = self.calculate_rcl(
-                batch, xhat, key, self.target_label  # used to be self.occupancy label
+                batch, xhat, key, self.target_key  # used to be self.occupancy label
             )
             if len(rcl_per_input_dimension[key].shape) > 0:
                 rcl = (
@@ -470,7 +479,7 @@ class PointCloudVAE(BaseVAE):
             if self.encoder[self.hparams.x_label].generate_grid_feats:
                 xhat = self.decode(z, return_canonical=return_canonical, batch=batch)
             else:
-                xhat = self.decode(z, return_canonical=return_canonical)
+                xhat = self.decode(z, return_canonical=return_canonical, batch=batch)
         else:
             xhat = self.decode(z, return_canonical=return_canonical)
 

@@ -14,6 +14,7 @@ from omegaconf import DictConfig, OmegaConf
 from cyto_dl.models.utils.mlflow import load_model_from_checkpoint
 
 from cyto_dl import utils
+import cyto_dl
 
 log = utils.get_pylogger(__name__)
 
@@ -98,7 +99,25 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     if cfg.get("train"):
         log.info("Starting training!")
         if isinstance(data, LightningDataModule):
-            trainer.fit(model=model, datamodule=data, ckpt_path=cfg.get("ckpt_path"))
+            if cfg.get("ckpt_mlflow_id"):
+                model = load_model_from_checkpoint(
+                    "https://mlflow.a100.int.allencell.org",
+                    cfg.ckpt_mlflow_id,
+                    path="checkpoints/val/loss/best.ckpt",
+                    strict=False,
+                )
+                model.reconstruction_loss["image"] = cyto_dl.nn.losses.FineTuneLoss(
+                    reduction="mean"
+                )
+
+                for n, p in model.encoder["embedding"].named_parameters():
+                    p.requires_grad = False
+
+                trainer.fit(model=model, datamodule=data)
+            else:
+                trainer.fit(
+                    model=model, datamodule=data, ckpt_path=cfg.get("ckpt_path")
+                )
         else:
             trainer.fit(
                 model=model,
