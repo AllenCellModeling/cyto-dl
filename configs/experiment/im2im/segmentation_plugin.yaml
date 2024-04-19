@@ -17,7 +17,6 @@ seed: 12345
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 
-
 # GOOD FOR DEBUGGING
 persist_cache: False
 
@@ -46,7 +45,7 @@ data:
 
 model:
   _aux:
-    strides: [1,2,2]
-    kernel_size: [3,3,3]
-    upsample_kernel_size: [2,2]
-    filters: [1,2, 4]
+    strides: [1, 2, 2]
+    kernel_size: [3, 3, 3]
+    upsample_kernel_size: [2, 2]
+    filters: [1, 2, 4]

@@ -43,7 +43,7 @@ transforms:
             C: 1
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
-        keys: 
+        keys:
           - ${target_col1}
           - ${target_col2}
         threshold: 0.1
@@ -190,7 +190,7 @@ transforms:
 
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
-        keys: 
+        keys:
           - ${target_col1}
           - ${target_col2}
         threshold: 0.1
