@@ -3,7 +3,7 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 import pandas as pd
-from aicsimageio.aics_image import AICSImage
+from bioio import BioImage
 from monai.data import DataLoader, Dataset, MetaTensor
 from monai.transforms import Compose, apply_transform
 from omegaconf import ListConfig
@@ -99,7 +99,7 @@ class CZIDataset(Dataset):
         img_data = []
         for row in df.itertuples():
             row = row._asdict()
-            img = AICSImage(row[self.img_path_column])
+            img = BioImage(row[self.img_path_column])
             scenes = self._get_scenes(row, img)
             timepoints = self._get_timepoints(row, img)
             for scene in scenes:
