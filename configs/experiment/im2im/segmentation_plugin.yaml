@@ -17,6 +17,10 @@ seed: 12345
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 
+
+# GOOD FOR DEBUGGING
+persist_cache: False
+
 # manifest columns
 source_col: raw
 target_col1: seg1
@@ -27,23 +31,22 @@ base_image_col: base_image
 
 # data params
 spatial_dims: 3
-input_channel: 0
+input_channel: 1
 raw_im_channels: 1
 
 trainer:
   max_epochs: 100
 
 data:
-  path: ${paths.data_dir}/example_experiment_data/s3_data
-  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  path: ${paths.data_dir}/example_experiment_data/segmentation_plugin
+  # cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1
   _aux:
-    patch_shape:
-# small, medium, large
-# 32 pix, 64 pix, 128 pix
+    patch_shape: [16, 128, 128]
 
-# OVERRIDE:
-# data._aux.patch_shape
-# model._aux.strides
-# model._aux.kernel_size
-# model._aux.upsample_kernel_size
+model:
+  _aux:
+    strides: [1,2,2]
+    kernel_size: [3,3,3]
+    upsample_kernel_size: [2,2]
+    filters: [1,2, 4]

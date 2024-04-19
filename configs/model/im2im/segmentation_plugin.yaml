@@ -18,7 +18,8 @@ backbone:
 
 task_heads:
   target:
-    _target_: cyto_dl.nn.BaseHead
+    _target_: cyto_dl.nn.head.MaskHead
+    mask_key: ${exclude_mask_col}
     loss:
       _target_: monai.losses.MaskedDiceLoss
       sigmoid: True
