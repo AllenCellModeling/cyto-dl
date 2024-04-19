@@ -53,9 +53,14 @@ class Merged(Transform):
         if self.mask_key not in input_dict or input_dict[self.mask_key] is None:
             # no merging mask, return original dict
             input_dict[self.output_name] = deepcopy(input_dict[base_image_name])
-            del input_dict[self.mask_key]
+            # remove mask key if it exists
+            input_dict.pop(self.mask_key, None)
             return input_dict
+
         mask = input_dict[self.mask_key].astype(bool)
+        # From polygoan loader, 1 is everything outside of the polygon, 0 inside the polygon.
+        # For merging we want to inver this
+        mask = ~mask
 
         for key in self.image_keys:
             if key not in input_dict.keys():
