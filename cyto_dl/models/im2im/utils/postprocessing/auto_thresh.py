@@ -7,7 +7,6 @@ import numpy as np
 class AutoThreshold:
     def __init__(self, method: Optional[Union[float, str]] = None):
         if isinstance(method, float):
-
             def thresh_func(image):
                 return method
 
@@ -23,7 +22,7 @@ class AutoThreshold:
         self.thresh_func = thresh_func
 
     def __call__(self, image):
-        image = image.detach().cpu().numpy()
+        image = image.detach().cpu().numpy().astype(float)
         if self.thresh_func is None:
             return image
         return (image > self.thresh_func(image)).astype(np.uint8)
