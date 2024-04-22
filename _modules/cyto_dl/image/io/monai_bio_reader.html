@@ -413,7 +413,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">aicsimageio</span> <span class="kn">import</span> <span class="n">AICSImage</span>
+<span class="kn">from</span> <span class="nn">bioio</span> <span class="kn">import</span> <span class="n">BioImage</span>
 <span class="kn">from</span> <span class="nn">monai.config</span> <span class="kn">import</span> <span class="n">PathLike</span>
 <span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">ImageReader</span>
 <span class="kn">from</span> <span class="nn">monai.data.image_reader</span> <span class="kn">import</span> <span class="n">_stack_images</span>
@@ -421,14 +421,14 @@
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">Container</span><span class="p">,</span> <span class="n">OmegaConf</span>
 
 
-<div class="viewcode-block" id="MonaiBioReader"><a class="viewcode-back" href="../../../../cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader">[docs]</a><span class="nd">@require_pkg</span><span class="p">(</span><span class="n">pkg_name</span><span class="o">=</span><span class="s2">&quot;aicsimageio&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="MonaiBioReader"><a class="viewcode-back" href="../../../../cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader">[docs]</a><span class="nd">@require_pkg</span><span class="p">(</span><span class="n">pkg_name</span><span class="o">=</span><span class="s2">&quot;bioio&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MonaiBioReader</span><span class="p">(</span><span class="n">ImageReader</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dask_load</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">reader_kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        dask_load: bool = True</span>
 <span class="sd">            Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.</span>
 <span class="sd">        reader_kwargs: Dict</span>
-<span class="sd">            Additional keyword arguments to pass to AICSImage.get_image_data or AICSImage.get_image_dask_data</span>
+<span class="sd">            Additional keyword arguments to pass to BioImage.get_image_data or BioImage.get_image_dask_data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reader_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -442,7 +442,7 @@
         <span class="n">filenames</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">PathLike</span><span class="p">]</span> <span class="o">=</span> <span class="n">ensure_tuple</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">img_</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
-            <span class="n">img_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">AICSImage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+            <span class="n">img_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BioImage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">img_</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">img_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
