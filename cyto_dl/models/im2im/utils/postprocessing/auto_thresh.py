@@ -22,7 +22,7 @@ class AutoThreshold:
         self.thresh_func = thresh_func
 
     def __call__(self, image):
-        image = image.detach().cpu().numpy().astype(float)
+        image = image.detach().cpu().float().numpy()
         if self.thresh_func is None:
             return image
         return (image > self.thresh_func(image)).astype(np.uint8)
