@@ -3,7 +3,7 @@
 from typing import Dict, List, Sequence, Tuple, Union
 
 import numpy as np
-from aicsimageio import AICSImage
+from bioio import BioImage
 from monai.config import PathLike
 from monai.data import ImageReader
 from monai.data.image_reader import _stack_images
@@ -11,14 +11,14 @@ from monai.utils import ensure_tuple, require_pkg
 from omegaconf import Container, OmegaConf
 
 
-@require_pkg(pkg_name="aicsimageio")
+@require_pkg(pkg_name="bioio")
 class MonaiBioReader(ImageReader):
     def __init__(self, dask_load: bool = True, **reader_kwargs):
         """
         dask_load: bool = True
             Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.
         reader_kwargs: Dict
-            Additional keyword arguments to pass to AICSImage.get_image_data or AICSImage.get_image_dask_data
+            Additional keyword arguments to pass to BioImage.get_image_data or BioImage.get_image_dask_data
         """
         super().__init__()
         self.reader_kwargs = {
@@ -32,7 +32,7 @@ class MonaiBioReader(ImageReader):
         filenames: Sequence[PathLike] = ensure_tuple(data)
         img_ = []
         for name in filenames:
-            img_.append(AICSImage(f"{name}"))
+            img_.append(BioImage(f"{name}"))
 
         return img_ if len(filenames) > 1 else img_[0]
 
