@@ -94,6 +94,8 @@ transforms:
   test:
     _target_: monai.transforms.Compose
     transforms:
+      # remove nan keys
+      - _target_: cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd
       # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
@@ -109,6 +111,7 @@ transforms:
             C: 0
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
+        allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
@@ -128,7 +131,6 @@ transforms:
       # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-
         channel_wise: True
       # merge masks
       - _target_: cyto_dl.image.transforms.merge.Merged
@@ -138,11 +140,13 @@ transforms:
           - ${target_col2}
         base_image_key: ${base_image_col}
         output_name: target
+        
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
+        dtype: float16
 
   predict:
     _target_: monai.transforms.Compose
