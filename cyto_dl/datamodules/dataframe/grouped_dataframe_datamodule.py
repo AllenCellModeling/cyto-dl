@@ -28,6 +28,7 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
         subsample: Optional[Dict] = None,
         refresh_subsample: bool = False,
         seed: int = 42,
+        smartcache_args: Optional[Dict] = None,
         target_columns: str = None,
         grouping_column: str = None,
         **dataloader_kwargs,
@@ -72,6 +73,9 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
         seed: int = 42
             random seed
 
+        smartcache_args: Optional[Dict] = None
+            Arguments to pass to SmartcacheDataset
+
         target_columns: str = None
             column names in csv corresponding to ground truth types to alternate between
             during training
@@ -105,6 +109,7 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
             subsample=subsample,
             refresh_subsample=refresh_subsample,
             seed=seed,
+            smartcache_args=smartcache_args,
             **dataloader_kwargs,
         )
         self.group_column = grouping_column

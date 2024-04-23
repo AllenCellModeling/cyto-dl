@@ -109,6 +109,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
             max_start_indices = np.minimum(max_start_indices_img, max_start_indices)
             if np.any(max_start_indices < 0):
                 raise ValueError(f"Crop size {roi_size} is too large for image size {shape}")
+            max_start_indices += max_start_indices == 0
         return max_start_indices
 
     def generate_slices(self, image_dict: Dict) -> Dict:
