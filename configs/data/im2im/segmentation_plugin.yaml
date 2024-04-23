@@ -140,7 +140,7 @@ transforms:
           - ${target_col2}
         base_image_key: ${base_image_col}
         output_name: target
-        
+
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
