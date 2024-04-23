@@ -8,7 +8,6 @@ from monai.data import DataLoader
 from upath import UPath as Path
 
 from .utils import (
-    AlternatingBatchSampler,
     get_canonical_split_name,
     make_multiple_dataframe_splits,
     make_single_dataframe_splits,
@@ -41,6 +40,7 @@ class DataframeDatamodule(LightningDataModule):
         subsample: Optional[Dict] = None,
         refresh_subsample: bool = False,
         seed: int = 42,
+        smartcache_args: Optional[Dict] = None,
         **dataloader_kwargs,
     ):
         """
@@ -77,6 +77,15 @@ class DataframeDatamodule(LightningDataModule):
             number of samples of each split to use per epoch. If `None` (default),
             use all the samples in each split per epoch.
 
+        refresh_subsample: bool = False
+            Whether to refresh subsample each time dataloader is called
+
+        seed: int = 42
+            random seed
+
+        smartcache_args: Optional[Dict] = None
+            Arguments to pass to SmartcacheDataset
+
         dataloader_kwargs:
             Additional keyword arguments are passed to the
             torch.utils.data.DataLoader class when instantiating it (aside from
@@ -102,7 +111,12 @@ class DataframeDatamodule(LightningDataModule):
         # dataframe file, which is expected to have a
         if path.is_dir():
             self.datasets = make_multiple_dataframe_splits(
-                path, transforms, columns, just_inference, cache_dir
+                path,
+                transforms,
+                columns,
+                just_inference,
+                cache_dir,
+                smartcache_args=smartcache_args,
             )
         elif path.is_file():
             if split_column is None and not just_inference:
@@ -119,6 +133,7 @@ class DataframeDatamodule(LightningDataModule):
                 just_inference,
                 split_map,
                 cache_dir,
+                smartcache_args=smartcache_args,
             )
         else:
             raise FileNotFoundError(f"Could not find specified dataframe path {path}")
