@@ -16,12 +16,12 @@ from cyto_dl.api.cyto_dl_model import SegmentationPluginModel
 # are actually used how we expect by Cyto-DL, just that they exist in the default config.
 @pytest.fixture
 def model_with_default_config() -> SegmentationPluginModel:
-    return SegmentationPluginModel()
+    return SegmentationPluginModel.from_default_config(3)
 
 
 @pytest.fixture
 def model_with_bad_config() -> SegmentationPluginModel:
-    return SegmentationPluginModel(config_filepath=Path(__file__).parent / "bad_config.yaml")
+    return SegmentationPluginModel.from_existing_config(Path(__file__).parent / "bad_config.yaml")
 
 
 class TestDefaultConfig:
@@ -45,11 +45,6 @@ class TestDefaultConfig:
     ):
         model_with_default_config.predict("manifest", "output_dir", Path("ckpt"))
         evaluate_model_mock.assert_called_once()
-
-    def test_spatial_dims(self, model_with_default_config: SegmentationPluginModel):
-        assert model_with_default_config.get_spatial_dims() is not None
-        model_with_default_config.set_spatial_dims(24)
-        assert model_with_default_config.get_spatial_dims() == 24
 
     def test_input_channel(self, model_with_default_config: SegmentationPluginModel):
         assert model_with_default_config.get_input_channel() is not None
@@ -102,12 +97,6 @@ class TestBadConfig:
     ):
         with pytest.raises(KeyError):
             model_with_bad_config.predict("manifest", "output_dir", Path("ckpt"))
-
-    def test_spatial_dims(self, model_with_bad_config: SegmentationPluginModel):
-        with pytest.raises(KeyError):
-            model_with_bad_config.get_spatial_dims()
-        with pytest.raises(KeyError):
-            model_with_bad_config.set_spatial_dims(24)
 
     def test_input_channel(self, model_with_bad_config: SegmentationPluginModel):
         with pytest.raises(KeyError):

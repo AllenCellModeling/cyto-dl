@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from omegaconf import ListConfig
+from omegaconf import DictConfig, ListConfig
 
 from cyto_dl.api.cyto_dl_model import CytoDLBaseModel
 from cyto_dl.api.data import ExperimentType, HardwareType, PatchSize
@@ -11,13 +11,12 @@ class SegmentationPluginModel(CytoDLBaseModel):
     """A SegmentationPluginModel handles configuration, training, and prediction using the default
     segmentation_plugin experiment from CytoDL."""
 
-    def __init__(self, config_filepath: Optional[Path] = None):
-        super().__init__(config_filepath)
+    def __init__(self, cfg: DictConfig):
+        super().__init__(cfg)
         self._has_split_column = False
 
-    # we currently have an override for ['mode'] in ml-seg, but I can't find top-level 'mode' in the configs,
-    # do we need to support this?
-    def _get_experiment_type(self) -> ExperimentType:
+    @classmethod
+    def _get_experiment_type(cls) -> ExperimentType:
         return ExperimentType.SEGMENTATION_PLUGIN
 
     def _set_max_epochs(self, max_epochs: int) -> None:
@@ -28,17 +27,7 @@ class SegmentationPluginModel(CytoDLBaseModel):
 
     def _set_output_dir(self, output_dir: Union[str, Path]) -> None:
         self._set_cfg("paths.output_dir", str(output_dir))
-        # I can't find where work_dir is actually used in cyto_dl, do we need to support this?
         self._set_cfg("paths.work_dir", str(output_dir))
-
-    # a lot of these keys are duplicated across the im2im experiment types (but not present in top-level
-    # train.yaml or eval.yaml) - should we move these into the top-level configs and move these setters and
-    # getters accordingly?
-    def set_spatial_dims(self, spatial_dims: int) -> None:
-        self._set_cfg("spatial_dims", spatial_dims)
-
-    def get_spatial_dims(self) -> int:
-        return self._get_cfg("spatial_dims")
 
     def set_input_channel(self, input_channel: int) -> None:
         self._set_cfg("input_channel", input_channel)
@@ -98,9 +87,6 @@ class SegmentationPluginModel(CytoDLBaseModel):
             del existing_cols[-1]
         self._has_split_column = False
 
-    # is patch_shape required in order to run training/prediction?
-    # if so, it should be an argument to train/predict/__init__, or a default
-    # should be set in the config
     def set_patch_size(self, patch_size: PatchSize) -> None:
         self._set_cfg("data._aux.patch_shape", patch_size.value)
 
