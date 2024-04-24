@@ -6,16 +6,21 @@ defaults:
   - override /model: im2im/segmentation_plugin.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow.yaml
+  - override /logger: csv.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+# parameters with value MUST_OVERRIDE must be overridden before using this config, all other
+# parameters have a reasonable default value
+
 tags: ["dev"]
 seed: 12345
 
-experiment_name: YOUR_EXP_NAME
-run_name: YOUR_RUN_NAME
+ckpt_path: null # must override for prediction
+
+experiment_name: experiment_name
+run_name: run_name
 
 # manifest columns
 source_col: raw
@@ -26,24 +31,21 @@ exclude_mask_col: exclude_mask
 base_image_col: base_image
 
 # data params
-spatial_dims: 3
+spatial_dims: MUST_OVERRIDE # int value, req for first training, should not change after
 input_channel: 0
 raw_im_channels: 1
 
 trainer:
-  max_epochs: 100
+  max_epochs: 1 # must override for training
+  accelerator: gpu
 
 data:
-  path: ${paths.data_dir}/example_experiment_data/s3_data
-  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  path: MUST_OVERRIDE # string path to manifest
+  split_column: null
   batch_size: 1
   _aux:
-    patch_shape:
-# small, medium, large
-# 32 pix, 64 pix, 128 pix
+    patch_shape: [16, 32, 32]
 
-# OVERRIDE:
-# data._aux.patch_shape
-# model._aux.strides
-# model._aux.kernel_size
-# model._aux.upsample_kernel_size
+paths:
+  output_dir: MUST_OVERRIDE
+  work_dir: ${paths.output_dir} # it's unclear to me if this is necessary or used
