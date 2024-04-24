@@ -1,0 +1,16 @@
+cyto\_dl.api.cyto\_dl\_model package
+====================================
+
+.. automodule:: cyto_dl.api.cyto_dl_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.api.cyto_dl_model.cyto_dl_base_model
+   cyto_dl.api.cyto_dl_model.segmentation_plugin_model

@@ -1,0 +1,7 @@
+cyto\_dl.api.cyto\_dl\_model.segmentation\_plugin\_model module
+===============================================================
+
+.. automodule:: cyto_dl.api.cyto_dl_model.segmentation_plugin_model
+   :members:
+   :undoc-members:
+   :show-inheritance:

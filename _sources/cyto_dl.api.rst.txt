@@ -6,6 +6,14 @@ cyto\_dl.api package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.api.cyto_dl_model
+
 Submodules
 ----------
 
