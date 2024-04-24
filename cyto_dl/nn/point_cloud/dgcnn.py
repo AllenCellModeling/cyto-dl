@@ -103,6 +103,8 @@ class DGCNN(nn.Module):
         scatter_type="max",
         x_label="pcloud",
         add_vn_transformer=False,
+        neural_implicit=False,
+        collate_intermediates=True,
     ):
         super().__init__()
         self.k = k
@@ -125,6 +127,8 @@ class DGCNN(nn.Module):
         self.unet = None
         self.symmetry_breaking_axis = symmetry_breaking_axis
         self.add_vn_transformer = add_vn_transformer
+        self.neural_implicit = neural_implicit
+        self.collate_intermediates = collate_intermediates
 
         include_symmetry = 0
         if self.symmetry_breaking_axis is not None:
@@ -372,7 +376,9 @@ class DGCNN(nn.Module):
 
             intermediate_outs.append(x)
 
-        x = torch.cat(intermediate_outs, dim=1)
+        if self.collate_intermediates:
+            x = torch.cat(intermediate_outs, dim=1)
+
         if self.mode == "scalar":
             _pool_ind = 2
         else:
@@ -411,6 +417,8 @@ class DGCNN(nn.Module):
             return {self.x_label: pre_repeat, "rotation": rot, "grid_feats": fea}
 
         if self.mode == "vector":
+            if self.neural_implicit:
+                return {self.x_label: x}
             x, rot = self.rotation(x)
             x = self.embedding_head(x)
             x = torch.norm(x, dim=-1)

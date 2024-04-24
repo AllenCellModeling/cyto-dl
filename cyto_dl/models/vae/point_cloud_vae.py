@@ -253,19 +253,34 @@ class PointCloudVAE(BaseVAE):
                         z_parts[self.hparams.x_label]
                     )
                 else:
-                    base_xhat = self.decoder[self.hparams.x_label](
-                        batch[self.hparams.point_label], z_parts[self.hparams.x_label]
-                    )
+                    if self.get_rotation:
+                        rotation = z_parts["rotation"]
+                        points_r = torch.einsum("bij,bjk->bik", batch[self.hparams.point_label][:, :, :3], rotation)
+                        xhat = self.decoder[self.hparams.x_label](
+                            points_r, z_parts[self.hparams.x_label],
+                        )
+                    else:
+                        xhat = self.decoder[self.hparams.x_label](
+                            batch[self.hparams.point_label], z_parts[self.hparams.x_label]
+                        )
+                    return {self.hparams.x_label: xhat}
         else:
             if isinstance(self.decoder[self.hparams.x_label], FoldingNet):
                 base_xhat = self.decoder[self.hparams.x_label](
                     z_parts[self.hparams.x_label]
                 )
             else:
-                base_xhat = self.decoder[self.hparams.x_label](
-                    batch[self.hparams.point_label], z_parts[self.hparams.x_label]
-                )
-
+                if self.get_rotation:
+                    rotation = z_parts["rotation"]
+                    points_r = torch.einsum("bij,bjk->bik", batch[self.hparams.point_label][:, :, :3], rotation)
+                    xhat = self.decoder[self.hparams.x_label](
+                        points_r, z_parts[self.hparams.x_label],
+                    )
+                else:
+                    xhat = self.decoder[self.hparams.x_label](
+                        batch[self.hparams.point_label], z_parts[self.hparams.x_label]
+                    )
+                return {self.hparams.x_label: xhat}
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
