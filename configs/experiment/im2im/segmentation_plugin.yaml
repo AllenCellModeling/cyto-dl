@@ -43,7 +43,7 @@ trainer:
 
 data:
   path: MUST_OVERRIDE # string path to manifest
-  cache_dir: MUST_OVERRIDE # string path to cache_dir (this speeds up data loading)
+  cache_dir: ${paths.output_dir}/cache # string path to cache_dir (this speeds up data loading)
   split_column: null
   batch_size: 1
   _aux:
