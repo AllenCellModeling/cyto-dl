@@ -53,7 +53,6 @@ paths:
   output_dir: MUST_OVERRIDE
   work_dir: ${paths.output_dir} # it's unclear to me if this is necessary or used
 
-
 model:
   _aux:
     filters: MUST_OVERRIDE
