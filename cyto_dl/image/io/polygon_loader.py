@@ -61,5 +61,5 @@ class PolygonLoaderd(Transform):
                     f"key `{key}` not available. Available keys are {input_dict.keys()}"
                 )
             elif self.missing_key_mode == "create":
-                input_dict[key] = np.zeros_like(input_dict[self.shape_reference_key])
+                input_dict[key] = np.ones_like(input_dict[self.shape_reference_key])
         return input_dict
