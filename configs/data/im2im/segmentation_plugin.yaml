@@ -3,7 +3,7 @@ _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 path:
 cache_dir:
 
-num_workers: 0
+num_workers: 4
 batch_size: 1
 pin_memory: True
 split_column:
@@ -40,7 +40,7 @@ transforms:
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 1
+            C: 0
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
         keys:
@@ -88,7 +88,7 @@ transforms:
           - target
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image: ${data._aux.patch_per_image}
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
 
   test:
@@ -190,7 +190,7 @@ transforms:
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 1
+            C: 0
 
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
@@ -241,10 +241,11 @@ transforms:
           - target
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image: ${data._aux.patch_per_image}
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
 
 _aux:
+  patch_per_image: 1
   _scales_dict:
     - - target
       - [1]
