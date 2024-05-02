@@ -3,7 +3,7 @@ _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 path:
 cache_dir:
 
-num_workers: 0
+num_workers: 4
 batch_size: 1
 pin_memory: True
 split_column:
@@ -19,6 +19,8 @@ transforms:
   train:
     _target_: monai.transforms.Compose
     transforms:
+      # remove nan keys
+      - _target_: cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd
       # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
@@ -34,10 +36,19 @@ transforms:
             C: 0
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
+        allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 0
+      - _target_: monai.transforms.ThresholdIntensityd
+        allow_missing_keys: True
+        keys:
+          - ${target_col1}
+          - ${target_col2}
+        threshold: 0.1
+        above: False
+        cval: 1
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
         keys:
@@ -62,6 +73,14 @@ transforms:
           - ${target_col2}
         base_image_key: ${base_image_col}
         output_name: target
+
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        dtype: float16
+
       #crop
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys:
@@ -69,61 +88,14 @@ transforms:
           - target
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image: ${data._aux.patch_per_image}
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-
-      # augmentation
-      - _target_: monai.transforms.RandRotate90d
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        prob: 0.5
-        spatial_axes: [0, 1]
-      - _target_: monai.transforms.RandFlipd
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        prob: 0.5
-        spatial_axis: 0
-      - _target_: monai.transforms.RandFlipd
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        prob: 0.5
-        spatial_axis: 1
-      - _target_: monai.transforms.RandHistogramShiftd
-        prob: 0.1
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        num_control_points: [90, 500]
-      - _target_: monai.transforms.RandStdShiftIntensityd
-        prob: 0.1
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        factors: 0.1
-      - _target_: monai.transforms.RandAdjustContrastd
-        prob: 0.1
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
-        gamma: [0.9, 1.5]
-      - _target_: monai.transforms.ToTensord
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
 
   test:
     _target_: monai.transforms.Compose
     transforms:
+      # remove nan keys
+      - _target_: cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd
       # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
@@ -139,6 +111,7 @@ transforms:
             C: 0
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
+        allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
@@ -158,7 +131,6 @@ transforms:
       # normalize
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
-
         channel_wise: True
       # merge masks
       - _target_: cyto_dl.image.transforms.merge.Merged
@@ -168,11 +140,13 @@ transforms:
           - ${target_col2}
         base_image_key: ${base_image_col}
         output_name: target
+
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
           - target
           - ${exclude_mask_col}
+        dtype: float16
 
   predict:
     _target_: monai.transforms.Compose
@@ -191,12 +165,12 @@ transforms:
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
-          - target
-          - ${exclude_mask_col}
 
   valid:
     _target_: monai.transforms.Compose
     transforms:
+      # remove nan keys
+      - _target_: cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd
       # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
@@ -212,11 +186,20 @@ transforms:
             C: 0
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
+        allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             C: 0
 
+      - _target_: monai.transforms.ThresholdIntensityd
+        allow_missing_keys: True
+        keys:
+          - ${target_col1}
+          - ${target_col2}
+        threshold: 0.1
+        above: False
+        cval: 1
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
         keys:
@@ -244,6 +227,13 @@ transforms:
         base_image_key: ${base_image_col}
         output_name: target
 
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+          - target
+          - ${exclude_mask_col}
+        dtype: float16
+
       # #crop
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys:
@@ -251,14 +241,11 @@ transforms:
           - target
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
+        patch_per_image: ${data._aux.patch_per_image}
         scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
-      - _target_: monai.transforms.ToTensord
-        keys:
-          - ${source_col}
-          - target
-          - ${exclude_mask_col}
+
 _aux:
+  patch_per_image: 1
   _scales_dict:
     - - target
       - [1]

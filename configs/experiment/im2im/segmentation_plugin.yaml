@@ -22,6 +22,9 @@ ckpt_path: null # must override for prediction
 experiment_name: experiment_name
 run_name: run_name
 
+persist_cache: False
+test: False
+
 # manifest columns
 source_col: raw
 target_col1: seg1
@@ -41,6 +44,8 @@ trainer:
 
 data:
   path: MUST_OVERRIDE # string path to manifest
+  cache_dir: ${paths.output_dir}/cache # string path to cache_dir (this speeds up data loading)
+  num_workers: MUST_OVERRIDE # this should be set based on the number of available CPU cores
   split_column: null
   batch_size: 1
   _aux:
@@ -49,3 +54,8 @@ data:
 paths:
   output_dir: MUST_OVERRIDE
   work_dir: ${paths.output_dir} # it's unclear to me if this is necessary or used
+
+model:
+  _aux:
+    filters: MUST_OVERRIDE
+    overlap: 0
