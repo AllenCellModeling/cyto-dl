@@ -441,13 +441,10 @@
 <span class="sd">        save_input=False</span>
 <span class="sd">            Whether to save out example input images during training</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="n">postprocess</span><span class="p">,</span> <span class="n">save_input</span><span class="o">=</span><span class="n">save_input</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span> <span class="o">=</span> <span class="n">mask_key</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_input</span> <span class="o">=</span> <span class="n">save_input</span>
 
     <span class="k">def</span> <span class="nf">_calculate_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_hat</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>

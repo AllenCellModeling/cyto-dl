@@ -413,7 +413,8 @@
         </div>
         <article role="main">
           <h1>Source code for cyto_dl.image.transforms.merge</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
 
@@ -453,12 +454,6 @@
 <span class="sd">        input_dict: Dict[str, torch.Tensor]</span>
 <span class="sd">            dict of CZYX tensors/metadata/paths</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># no merging mask, return original dict</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_dict</span> <span class="ow">or</span> <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">input_dict</span>
-
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span><span class="p">]</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_image_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;key `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_image_key</span><span class="si">}</span><span class="s2">` not available. Available keys are </span><span class="si">{</span><span class="n">input_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -470,6 +465,18 @@
                 <span class="sa">f</span><span class="s2">&quot;Base image name `</span><span class="si">{</span><span class="n">base_image_name</span><span class="si">}</span><span class="s2">` must match provided image keys `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="si">}</span><span class="s2">`&quot;</span>
             <span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_dict</span> <span class="ow">or</span> <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># no merging mask, return original dict</span>
+            <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">output_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="n">base_image_name</span><span class="p">])</span>
+            <span class="c1"># remove mask key if it exists</span>
+            <span class="n">input_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">input_dict</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_key</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="c1"># From polygoan loader, 1 is everything outside of the polygon, 0 inside the polygon.</span>
+        <span class="c1"># For merging we want to inver this</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
@@ -477,8 +484,9 @@
                 <span class="p">)</span>
 
         <span class="n">base_image</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="n">base_image_name</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">base_image_name</span><span class="p">)</span>
-        <span class="n">merge_image</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">merge_image</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">base_image_name</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_keys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">]</span>
 
         <span class="n">input_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">output_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base_image</span> <span class="o">*</span> <span class="o">~</span><span class="n">mask</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">merge_image</span> <span class="o">*</span> <span class="n">mask</span><span class="p">)</span>
 
