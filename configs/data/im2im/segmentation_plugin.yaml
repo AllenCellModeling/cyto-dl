@@ -151,6 +151,7 @@ transforms:
   predict:
     _target_: monai.transforms.Compose
     transforms:
+      - _target_: cyto_dl.datamodules.dataframe.utils.RemoveNaNKeysd
       # load
       - _target_: monai.transforms.LoadImaged
         keys: ${source_col}
