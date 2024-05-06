@@ -14,7 +14,7 @@ def test_load_default_experiment_valid_exp_type(MockMkdir, MockSave):
     model: CytoDLModel = CytoDLModel()
     model.load_default_experiment(ExperimentType.SEGMENTATION.value, "fake_dir")
     MockMkdir.assert_called()
-    MockSave.assert_called()
+    MockSave.assert_not_called()
 
 
 @patch("cyto_dl.api.model.OmegaConf.save")
