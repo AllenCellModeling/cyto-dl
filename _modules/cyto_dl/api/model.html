@@ -489,8 +489,7 @@
         <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
-        <span class="n">OmegaConf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;train&quot;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;eval&quot;</span><span class="si">}</span><span class="s1">_config.yaml&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span></div>
 
 <div class="viewcode-block" id="CytoDLModel.print_config"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.print_config">[docs]</a>    <span class="k">def</span> <span class="nf">print_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">print_config_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">resolve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
@@ -502,6 +501,13 @@
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">overrides</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">OmegaConf</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CytoDLModel.save_config"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save current config to provided path.</span>
+
+<span class="sd">        :param path: path at which to save config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">OmegaConf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_train_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">train_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
