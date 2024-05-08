@@ -75,7 +75,6 @@ class CytoDLModel:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         self.cfg = cfg
-        OmegaConf.save(self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml')
 
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
@@ -87,6 +86,13 @@ class CytoDLModel:
 
         for k, v in overrides.items():
             OmegaConf.update(self.cfg, k, v)
+
+    def save_config(self, path: Path) -> None:
+        """Save current config to provided path.
+
+        :param path: path at which to save config
+        """
+        OmegaConf.save(self.cfg, path)
 
     async def _train_async(self):
         return train_model(self.cfg)
