@@ -24,6 +24,7 @@ class CrossMAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        has_cls_token: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -42,7 +43,7 @@ class CrossMAE_Decoder(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-
+        self.has_cls_token = has_cls_token
         self.transformer = torch.nn.ParameterList(
             [
                 CrossAttentionBlock(
@@ -58,7 +59,7 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + has_cls_token, 1, emb_dim))
 
         self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
         self.num_patches = torch.as_tensor(num_patches)
@@ -89,27 +90,27 @@ class CrossMAE_Decoder(torch.nn.Module):
         trunc_normal_(self.pos_embedding, std=0.02)
 
     def forward(self, features, forward_indexes, backward_indexes):
-        # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
+        # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 1 layer
         features = features.squeeze(0)
         T, B, C = features.shape
         # we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now
         features = self.projection_norm(self.projection(features))
-
-        # add cls token
-        backward_indexes = torch.cat(
-            [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
-            dim=0,
-        )
-        forward_indexes = torch.cat(
-            [torch.zeros(1, forward_indexes.shape[1]).to(forward_indexes), forward_indexes + 1],
-            dim=0,
-        )
+        if self.has_cls_token:
+            # add cls token
+            backward_indexes = torch.cat(
+                [torch.zeros(1, backward_indexes.shape[1], device=features.device, dtype=torch.long), backward_indexes + 1],
+                dim=0,
+            )
+            forward_indexes = torch.cat(
+                [torch.zeros(1, forward_indexes.shape[1], device=features.device, dtype=torch.long), forward_indexes + 1],
+                dim=0,
+            )
         # fill in masked regions
         features = torch.cat(
             [
                 features,
                 self.mask_token.expand(
-                    backward_indexes.shape[0] - features.shape[0], features.shape[1], -1
+                    backward_indexes.shape[0] - T, B, -1
                 ),
             ],
             dim=0,
@@ -135,13 +136,15 @@ class CrossMAE_Decoder(torch.nn.Module):
         # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (z y x)
         masked = self.decoder_norm(masked)
         patches = self.head(masked)
-
         # add back in visible/encoded tokens that we don't calculate loss on
         patches = torch.cat(
-            [torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches), patches],
+            [torch.zeros((T, B, patches.shape[-1]), requires_grad=False, device=patches.device, dtype=patches.dtype), patches],
             dim=0,
         )
-        patches = take_indexes(patches, backward_indexes[1:] - 1)
+        if self.has_cls_token:
+            patches = take_indexes(patches, backward_indexes[1:] - 1)
+        else:
+            patches = take_indexes(patches, backward_indexes)
         # patches to image
         img = self.patch2img(patches)
 
