@@ -107,6 +107,7 @@ class MAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        has_cls_token: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -125,10 +126,11 @@ class MAE_Decoder(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
+        self.has_cls_token = has_cls_token
         self.projection_norm = nn.LayerNorm(emb_dim)
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + has_cls_token, 1, emb_dim))
 
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
@@ -166,11 +168,11 @@ class MAE_Decoder(torch.nn.Module):
     def forward(self, features, forward_indexes, backward_indexes):
         # project from encoder dimension to decoder dimension
         features = self.projection_norm(self.projection(features))
-
-        backward_indexes = torch.cat(
-            [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
-            dim=0,
-        )
+        if self.has_cls_token:
+            backward_indexes = torch.cat(
+                [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
+                dim=0,
+            )
         # fill in masked regions
         features = torch.cat(
             [
@@ -189,7 +191,8 @@ class MAE_Decoder(torch.nn.Module):
         features = rearrange(features, "t b c -> b t c")
         features = self.transformer(features)
         features = rearrange(features, "b t c -> t b c")
-        features = features[1:]  # remove global feature
+        if self.has_cls_token:
+            features = features[1:]  # remove global feature
 
         # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (z y x)
         patches = self.head_norm(self.head(features))
