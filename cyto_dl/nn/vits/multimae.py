@@ -92,6 +92,9 @@ class MultiMAE_Encoder(torch.nn.Module):
 
     def generate_task_mask_ratios(self, tasks, mask_ratio):
         # we might want to make the mask ratio vary across elements of the batch? as long as total # tokens is fixed wecan concat across batches!
+        if mask_ratio == 0:
+            return {k: np.prod(self.num_patches) for k in tasks.keys() if k in self.task2category}
+
         tasks_present= [k for k in tasks.keys() if k in self.task2category]
         assert 1-1/len(tasks_present) <= mask_ratio < 1, f"mask ratio must be between {1/len(tasks_present)} and 1"
         B = tasks[tasks_present[0]].shape[0]
@@ -110,11 +113,9 @@ class MultiMAE_Encoder(torch.nn.Module):
         # task_mask_ratios = {task: int(t*tmr) for task, tmr in zip(tasks_present, task_sampling_ratios)}
         # return task_mask_ratios
 
-
     def forward(self, tasks, mask_ratio):
         # tasks are {task1: tensor, task2: tensor, ...}
         task_mask_ratios= self.generate_task_mask_ratios(tasks, mask_ratio)
-
         meta = {}
         task_tokens = []
         for task_name, img in tasks.items():
@@ -132,11 +133,9 @@ class MultiMAE_Encoder(torch.nn.Module):
                 'backward_indices': backward_indexes,
                 'n_tokens': len(patches)
             }
-
         task_tokens = torch.cat(task_tokens, dim=0)
         task_tokens = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), task_tokens], dim=0)
         task_tokens = rearrange(task_tokens, "t b c -> b t c")
-
         if self.intermediate_weighter is not None:
             intermediates = [task_tokens]
             for block in self.transformer:
@@ -146,7 +145,6 @@ class MultiMAE_Encoder(torch.nn.Module):
         else:
             features = self.layer_norm(self.transformer(patches))
             features = rearrange(features, "b t c -> t b c")
-
         return features, meta
 
 class ProjectNorm(torch.nn.Module):
@@ -194,7 +192,6 @@ class MultiMAE_Decoder(torch.nn.Module):
         self.task_embedding = torch.nn.ParameterDict({task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in all_tasks})
         self.project = torch.nn.ParameterDict({task: ProjectNorm(enc_dim, emb_dim) for task in all_tasks})
 
-
         self.init_weight()
 
     def init_weight(self):
@@ -203,11 +200,13 @@ class MultiMAE_Decoder(torch.nn.Module):
 
     def _add_cls_token_to_indices(self, indices):
         return torch.cat(
-            [torch.zeros(1, indices.shape[1]).to(indices), indices + 1],
+            [torch.zeros(1, indices.shape[1], device=indices.device, dtype=torch.long), indices + 1],
             dim=0,
         )
 
     def add_task_pos_emb(self, features, forward_indices, backward_indices, task):
+        # TODO here we could have 0s as features that we don't want to reconstruct and match wheher this is in the middle or last to the patchify function
+
         # num weighted intermediate layers, num tokens, batch, embedding dimension
         N, T, B, C = features.shape
 
@@ -243,6 +242,7 @@ class MultiMAE_Decoder(torch.nn.Module):
             end = start + meta[task]['n_tokens']
             # include the cls token - TODO - determine if cls_token + task_embed is meaningful? if not, need to project cls token separately
             task_features= torch.cat([features[:, :1], features[:, start:end]], dim=1)
+            # TODO should projection happen in the head? wecould do cross attention from projected masked tokens to visible tokens
             task_features = self.project[task](task_features)
             task_features = self.add_task_pos_emb(task_features, task_meta['forward_indices'], task_meta['backward_indices'], task)
             meta[task].update(task_features)
@@ -266,6 +266,8 @@ class MultiMAE(torch.nn.Module):
         input_channels: Optional[int] = 1,
         alpha: Optional[float] = 1.0,
         mask_ratio: Optional[float] = 0.75,
+        encoder_ckpt: Optional[str] = None,
+        freeze_encoder: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -306,6 +308,21 @@ class MultiMAE(torch.nn.Module):
             decoder_layer,
             alpha,
         )
+
+        if encoder_ckpt is not None:
+            model = torch.load(encoder_ckpt, map_location="cuda:0")
+            enc_state_dict = {
+                k.replace("backbone.encoder.", ""): v
+                for k, v in model["state_dict"].items()
+                if "encoder" in k and "intermediate" not in k
+            }
+            self.encoder.load_state_dict(enc_state_dict, strict=False)
+
+            if freeze_encoder:
+                for name, param in self.encoder.named_parameters():
+                    # allow different weighting of internal activations for finetuning
+                    param.requires_grad = "intermediate_weighter" in name
+
         self.decoder = MultiMAE_Decoder(
             input_types=input_types,
             num_patches=num_patches,
