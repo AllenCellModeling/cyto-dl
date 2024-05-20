@@ -1,5 +1,5 @@
 from typing import Union
-
+from omegaconf import ListConfig
 import torch
 from monai.transforms import Transform
 
@@ -24,7 +24,7 @@ class MaxProjectd(Transform):
             Whether to raise error if specified key is missing
         """
         super().__init__()
-        self.keys = keys
+        self.keys = keys if isinstance(keys, (list, ListConfig)) else [keys]
         self.allow_missing_keys = allow_missing_keys
         self.projection_dim = projection_dim
 
