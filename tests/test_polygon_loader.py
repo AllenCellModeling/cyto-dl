@@ -24,10 +24,9 @@ def test_load_polygon(tmp_path):
     transform = PolygonLoaderd(keys=["poly"], shape_reference_key="image")
     reconstructed = transform(data)["poly"][0]
 
-
     # Check that the reconstructed mask is the close to as the original
-    iou = np.sum(np.logical_and(reconstructed[0]>0, image > 0)) / np.sum(
-        np.logical_or(reconstructed[0]>0, image > 0)
+    iou = np.sum(np.logical_and(reconstructed[0] > 0, image > 0)) / np.sum(
+        np.logical_or(reconstructed[0] > 0, image > 0)
     )
 
     assert iou > 0.8
