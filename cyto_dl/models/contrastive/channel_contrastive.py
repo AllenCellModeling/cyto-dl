@@ -11,6 +11,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import pandas as pd
 from itertools import combinations
+from bioio.writers import OmeTiffWriter
 
 class ChannelContrastive(BaseModel):
     def __init__(
@@ -93,14 +94,16 @@ class ChannelContrastive(BaseModel):
 
         preds = []
         for ch in range(c):
-            preds.append(self.backbone(x[:, ch].unsqueeze(1)).detach().cpu().numpy())
+            preds.append(self.backbone(x[:, ch].unsqueeze(1)).detach().cpu().float().numpy())
         preds = np.concatenate(preds, axis=0)
 
         preds = pd.DataFrame(preds, columns=[str(i) for i in range(preds.shape[1])])
         preds['channel'] = [ch for ch in range(c) for _ in range(b)]
         preds['batch_idx'] = batch_idx
-        preds['structure'] = batch['structure_name'][0]
+        preds['structure'] = [batch['structure_name'][i] for _ in range(c) for i in range(b)]
+        preds['crop_number'] = [i   for _ in range(c) for i in range(b)]
         preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
+        OmeTiffWriter.save(uri = Path(self.hparams.save_dir) / f"{batch_idx}_predictions.tiff", data = x.detach().cpu().float().numpy())
         return None, None, None
 
 
