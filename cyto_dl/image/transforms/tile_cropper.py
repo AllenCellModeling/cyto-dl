@@ -52,7 +52,7 @@ class RandTileCropd(RandomizableTransform):
         """Generate tiled slices starting at random point."""
         max_start_indices, max_patches_per_dim = self._get_max_start_indices(image)
 
-        start_indices = self.R.randint(max_start_indices)
+        start_indices = self.R.randint(max_start_indices+1)
 
         available_crops = []
         for z in range(max_patches_per_dim[0]):

@@ -6,6 +6,7 @@ from .multiscale_cropper import RandomMultiScaleCropd
 from .pad import PadZd
 from .project import MaxProjectd
 from .save import Save, Saved
+from .tile_cropper import RandTileCropd
 
 try:
     from .rotation_mask_transform import RotationMask, RotationMaskd
