@@ -29,9 +29,6 @@ class VICRegHead(BaseHead):
         super().__init__(loss)
         self.model = Projector(dimensions)
 
-    def forward(self, x):
-        return self.model(x)
-
     def run_head(
         self,
         backbone_features,
