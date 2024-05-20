@@ -1,7 +1,8 @@
 from typing import Union
-from omegaconf import ListConfig
+
 import torch
 from monai.transforms import Transform
+from omegaconf import ListConfig
 
 
 class MaxProjectd(Transform):
