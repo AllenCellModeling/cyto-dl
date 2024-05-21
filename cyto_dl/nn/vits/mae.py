@@ -168,7 +168,12 @@ class MAE_Decoder(torch.nn.Module):
         features = self.projection_norm(self.projection(features))
 
         backward_indexes = torch.cat(
-            [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
+            [
+                torch.zeros(
+                    1, backward_indexes.shape[1], device=backward_indexes.device, dtype=torch.long
+                ),
+                backward_indexes + 1,
+            ],
             dim=0,
         )
         # fill in masked regions
