@@ -84,7 +84,6 @@ class HieraEncoder(torch.nn.Module):
         """
         super().__init__()
         self.save_layers=  save_layers
-        # TODO decide how to deal with class token. Do we add it as an extra patch token per mask unit? Leaving out for now...
         self.patchify = PatchifyHiera(
             patch_size, num_patches, mask_ratio, num_mask_units, emb_dim, spatial_dims, context_pixels
         )
@@ -93,6 +92,7 @@ class HieraEncoder(torch.nn.Module):
         self.final_dim = emb_dim * (2**len(architecture))
 
         self.save_block_idxs = []
+        self.save_block_dims = []
         self.spatial_mergers = torch.nn.ParameterDict({})
         transformer = []
         num_blocks = 0
@@ -123,6 +123,7 @@ class HieraEncoder(torch.nn.Module):
                     # save the block before the spatial pooling unless it's the final stage
                     save_block = num_blocks -1 if stage_num < len(architecture) - 1 else num_blocks
                     self.save_block_idxs.append(save_block)
+                    self.save_block_dims.append(dim_out)
                     
                     # create a spatial merger for combining tokens pre-downsampling, last stage doesn't need merging since it has expected num channels, spatial shape
                     self.spatial_mergers[f'block_{save_block}'] = SpatialMerger(patches_per_mask_unit, dim_in, self.final_dim) if stage_num < len(architecture) - 1 else torch.nn.Identity()
@@ -411,6 +412,7 @@ class Mask2FormerBlock(nn.Module):
         encoder_dim,
         decoder_dim,
         num_heads,
+        num_patches,
         mlp_ratio=4.0,
         qkv_bias=False,
         qk_scale=None,
@@ -422,6 +424,9 @@ class Mask2FormerBlock(nn.Module):
     ):
         super().__init__()
         self.norm1 = norm_layer(decoder_dim)
+
+        # TODO add positional embedding and scale embedding to image features
+        self.scale_positional_embedding = nn.Parameter(torch.zeros(1, num_patches, encoder_dim))
 
         self.self_attn_block = Attention(
             dim=decoder_dim,
@@ -441,7 +446,6 @@ class Mask2FormerBlock(nn.Module):
             attn_drop=attn_drop,
             proj_drop=drop,
         )
-        # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
         self.norm2 = norm_layer(decoder_dim)
         mlp_hidden_dim = int(decoder_dim * mlp_ratio)
         self.mlp = Mlp(
@@ -523,7 +527,7 @@ class HieraMask2Former(torch.nn.Module):
         self.patches_per_mask_unit = patches_per_mask_unit
 
         # TODO each block should have a different embedding dimension
-        # self.transformer = torch.nn.ModuleList([Mask2FormerBlock() for _ in range(len(patches_per_mask_unit))])
+        self.transformer = torch.nn.ModuleList([Mask2FormerBlock(encoder_dim = self.encoder.save_block_dims[i], decoder_dim = 128, num_neads = 4, num_patches = patches_per_mask_unit[i] * num_mask_units) for i in range(len(patches_per_mask_unit))])
 
 
 
@@ -534,14 +538,21 @@ class HieraMask2Former(torch.nn.Module):
         save_layers.append(features.unsqueeze(2))
         save_layers.reverse()
         # start with lowest resolution
+        # first mask should be prediction from query features alone
         mask = None
         for layer, ppmu in zip(save_layers, self.patches_per_mask_unit):
-            # TODO add positional embedding and scale embedding to image features
-            # do we even need to rearrange to an image here if we're just doing cross attention against it?
+            layer = rearrange(layer, 'b n_mu mu_dims c -> b (n_mu mu_dims) c')
+
+            layer = self.transformer(layer, mask, self.instance_queries, self.instance_queries_pos_emb)
+
+            # cross attention provides one mask per query
+            # self attention refines mask
+            # repeat for each block
+
+            # rearrange to mask TODO make this account for havingn_queries masks
             img_features = rearrange(layer, 'b (n_mu_z n_mu_y n_mu_x) (patches_per_mu_z patches_per_mu_y patches_per_mu_x) c -> b c (n_mu_z patches_per_mu_z) (n_mu_y patches_per_mu_y) (n_mu_x patches_per_mu_x)', n_mu_z=self.num_mask_units[0], n_mu_y=self.num_mask_units[1], n_mu_x=self.num_mask_units[2], patches_per_mu_z=ppmu[0], patches_per_mu_y=ppmu[1], patches_per_mu_x=ppmu[2])
 
-
-            # mask = self.transformer(img_features, mask, self.instance_queries, self.instance_queries_pos_emb)
-
+            # upsample to next resolution
+            mask = F.interpolate(mask, scale_factor=ppmu, mode='nearest')
 
         return predicted_img
