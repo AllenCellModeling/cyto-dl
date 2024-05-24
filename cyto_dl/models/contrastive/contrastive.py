@@ -16,7 +16,8 @@ class Contrastive(BaseModel):
         self,
         backbone: nn.Module,
         task_head: nn.Module,
-        x_key: str,
+        anchor_key: str = 'image',
+        positive_key: str = 'image_aug',
         target_key: str = 'target',
         save_dir: str = "./",
         viz_freq: int = 10,
@@ -29,8 +30,6 @@ class Contrastive(BaseModel):
         ----------
         model: nn.Module
             model network, parameters are shared between task heads
-        x_key: str
-            key of input image in batch
         save_dir="./"
             directory to save images during training and validation
         save_images_every_n_epochs=1
@@ -58,8 +57,15 @@ class Contrastive(BaseModel):
         pca = PCA(n_components=2)
         pca.fit(embedding1)
         
+        embedding1 = pca.transform(embedding1)
+        fig, ax = plt.subplots()
+        counts, xedges, yedges = np.histogram2d(embedding1[:, 0], embedding1[:, 1], bins=30)
+        ax.imshow(counts, extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]], origin='lower')
+        fig.savefig(Path(self.hparams.save_dir) / f"{self.current_epoch}_heatmap.png")
+        plt.close(fig)
+        
         random_examples = np.random.choice(embedding1.shape[0], 10)
-        embedding1 = pca.transform(embedding1[random_examples])
+        embedding1 = embedding1[random_examples]
         embedding2 = pca.transform(embedding2[random_examples])
 
         fig, ax = plt.subplots()
@@ -93,8 +99,8 @@ class Contrastive(BaseModel):
         plt.close(fig)
   
     def model_step(self, stage, batch, batch_idx):
-        x1= batch['image'].as_tensor()
-        x2 = batch['image_aug'].as_tensor()
+        x1= batch[self.hparams.anchor_key].as_tensor()
+        x2 = batch[self.hparams.positive_key].as_tensor()
 
         backbone_features = self.forward(x1, x2)
         out = self.task_head.run_head(backbone_features, batch, stage)
