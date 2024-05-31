@@ -378,7 +378,7 @@ class CrossAttention(nn.Module):
         self.num_heads = num_heads
         head_dim = decoder_dim // num_heads
         self.scale = qk_scale or head_dim**-0.5
-        self.q = nn.Linear(encoder_dim, decoder_dim, bias=qkv_bias)
+        self.q = nn.Linear(decoder_dim, decoder_dim, bias=qkv_bias)
         self.kv = nn.Linear(encoder_dim, decoder_dim * 2, bias=qkv_bias)
         self.attn_drop = attn_drop
         self.proj = nn.Linear(decoder_dim, decoder_dim)
@@ -479,6 +479,7 @@ class HieraMask2Former(torch.nn.Module):
         patch_size: Optional[List[int]] = [16, 16, 16],
         emb_dim: Optional[int] = 64,
         context_pixels: Optional[List[int]] = [0, 0, 0],
+        mask2former_dim: Optional[int] = 128,
     ) -> None:
         """
         Parameters
@@ -521,14 +522,14 @@ class HieraMask2Former(torch.nn.Module):
         # "patches" to the decoder are actually mask units, so num_patches is num_mask_units, patch_size is mask unit size
         mask_unit_size = ((np.array(num_patches) * np.array(patch_size))/np.array(num_mask_units)).astype(int)
 
-        self.instance_queries = torch.nn.Parameter(torch.zeros(1, num_queries, emb_dim))
+        self.instance_queries = torch.nn.Parameter(torch.zeros(1, num_queries, mask2former_dim))
         #unclear if we need a separate positional embedding for instance queries?
         #s. Object query features are only used as the initial
         # input to the Transformer decoder and are updated through
         # decoder layers; whereas query positional embeddings are
         # added to query features in every Transformer decoder layer
         # when computing the attention weights.
-        self.instance_queries_pos_emb = torch.nn.Parameter(torch.zeros(1, num_queries, self.encoder.final_dim))
+        self.instance_queries_pos_emb = torch.nn.Parameter(torch.zeros(1, num_queries, mask2former_dim))
 
         q_strides = [np.array(stage['q_stride']) for stage in architecture if stage.get('q_stride', False)]
         patches_per_mask_unit = [np.array(num_patches) // np.array(num_mask_units)]
@@ -539,7 +540,7 @@ class HieraMask2Former(torch.nn.Module):
         self.patches_per_mask_unit = patches_per_mask_unit
 
         # TODO each block should have a different embedding dimension
-        self.transformer = torch.nn.ModuleList([Mask2FormerBlock(encoder_dim = self.encoder.save_block_dims[i], decoder_dim = emb_dim, num_heads = 4, num_patches = np.prod(patches_per_mask_unit[i] * num_mask_units)) for i in range(len(patches_per_mask_unit))])
+        self.transformer = torch.nn.ModuleList([Mask2FormerBlock(encoder_dim = self.encoder.save_block_dims[i], decoder_dim = mask2former_dim, num_heads = 4, num_patches = np.prod(patches_per_mask_unit[i] * num_mask_units)) for i in range(len(patches_per_mask_unit))])
 
 
 
@@ -568,6 +569,8 @@ class HieraMask2Former(torch.nn.Module):
 
             # upsample to next resolution
             mask = F.interpolate(mask, scale_factor=ppmu, mode='nearest')
+
+        # output is instance_queries * output_features
 
             # loss is calculated on each intermediate mask as well
 
