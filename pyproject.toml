@@ -74,6 +74,7 @@ pcloud = [
     "pyntcloud>=0.3.1",
     "aicsshparam>=0.1.7",
     "torch-geometric>=2.3.1",
+    "torch-scatter>=2.1.1",
     "point-cloud-utils>=0.29.6",
     "geomloss>=0.2.6",
     "Ninja>=1.11.1",
