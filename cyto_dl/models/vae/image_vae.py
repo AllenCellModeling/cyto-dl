@@ -8,14 +8,12 @@ import torch.nn.functional as F
 from monai.networks.blocks import Convolution, ResidualUnit, UpSample
 from monai.networks.layers.convutils import calculate_out_shape, same_padding
 from monai.networks.layers.factories import Act, Norm
-from monai.networks.layers.simplelayers import Flatten, Reshape
-from omegaconf import DictConfig
-from torch.nn.modules.loss import _Loss as Loss
+from monai.networks.layers.simplelayers import Reshape
 
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
-from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder, MultiplyConstant
+from cyto_dl.models.vae.implicit_decoder import ImplicitDecoder
 from .utils import weight_init
 
 from .image_encoder import ImageEncoder

@@ -2,8 +2,6 @@ from typing import Optional, Sequence
 
 import torch
 import torch.nn as nn
-from typing import Optional
-from torch import nn
 
 
 def make_parallelepipeds(input_dims, batch_size=0):

@@ -3,16 +3,12 @@ from typing import Optional, Sequence, Union
 
 import numpy as np
 import torch
-from omegaconf import DictConfig
 from torch import nn
 
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.models.vae.priors import IdentityPrior, IsotropicGaussianPrior
 from cyto_dl.nn.losses import ChamferLoss
 from cyto_dl.nn.point_cloud import DGCNN, FoldingNet
-
-# from topologylayer.nn import AlphaLayer, BarcodePolyFeature
-from cyto_dl.nn.losses import TopoLoss
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -72,9 +68,6 @@ class PointCloudVAE(BaseVAE):
         masking_ratio: Optional[float] = None,
         disable_metrics: Optional[bool] = False,
         metric_keys: Optional[list] = None,
-        include_top_loss: Optional[bool] = False,
-        topo_lambda: Optional[float] = None,
-        topo_num_groups: Optional[int] = None,
         farthest_point: Optional[bool] = True,
         inference_mask_dict: Optional[dict] = None,
         target_key: Optional[list] = None,
@@ -102,9 +95,6 @@ class PointCloudVAE(BaseVAE):
         self.basal_head_loss = basal_head_loss
         self.basal_head_weight = basal_head_weight
         self.disable_metrics = disable_metrics
-        self.include_top_loss = include_top_loss
-        self.topo_lambda = topo_lambda
-        self.topo_num_groups = topo_num_groups
         self.farthest_point = farthest_point
         self.parse = parse
         self.mask_keys = mask_keys
@@ -193,33 +183,6 @@ class PointCloudVAE(BaseVAE):
         self.inference_mask_dict = inference_mask_dict
         self.target_label = None
         self.mean = mean
-        if self.include_top_loss:
-            # self.top_layer = nn.ModuleDict({x_label: AlphaLayer(maxdim=1)})
-            # self.top_loss = nn.ModuleDict({x_label: BarcodePolyFeature(1,2,0)})
-            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1)}) # 0.1 works well for earthmovers
-            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=0.1, farthest_point=True, num_groups=256)})
-            # self.top_loss = nn.ModuleDict({x_label: TopoLoss(topo_lambda=10, farthest_point=True, num_groups=256)})
-            self.top_loss = nn.ModuleDict(
-                {
-                    x_label: TopoLoss(
-                        topo_lambda=self.topo_lambda,
-                        farthest_point=self.farthest_point,
-                        num_groups=self.topo_num_groups,
-                        mean=self.mean,
-                    )
-                }
-            )
-            # self.top_loss = nn.ModuleDict(
-            #     {
-            #         x_label: TopoLoss(
-            #             topo_lambda=0.001,
-            #             farthest_point=True,
-            #             num_groups=256,
-            #             mean=self.mean,
-            #         )
-            #     }
-            # )
-
         if freeze_encoder:
             for part, encoder in self.encoder.items():
                 for param in self.encoder[part].parameters():
@@ -255,13 +218,19 @@ class PointCloudVAE(BaseVAE):
                 else:
                     if self.get_rotation:
                         rotation = z_parts["rotation"]
-                        points_r = torch.einsum("bij,bjk->bik", batch[self.hparams.point_label][:, :, :3], rotation)
+                        points_r = torch.einsum(
+                            "bij,bjk->bik",
+                            batch[self.hparams.point_label][:, :, :3],
+                            rotation,
+                        )
                         xhat = self.decoder[self.hparams.x_label](
-                            points_r, z_parts[self.hparams.x_label],
+                            points_r,
+                            z_parts[self.hparams.x_label],
                         )
                     else:
                         xhat = self.decoder[self.hparams.x_label](
-                            batch[self.hparams.point_label], z_parts[self.hparams.x_label]
+                            batch[self.hparams.point_label],
+                            z_parts[self.hparams.x_label],
                         )
                     return {self.hparams.x_label: xhat}
         else:
@@ -272,9 +241,14 @@ class PointCloudVAE(BaseVAE):
             else:
                 if self.get_rotation:
                     rotation = z_parts["rotation"]
-                    points_r = torch.einsum("bij,bjk->bik", batch[self.hparams.point_label][:, :, :3], rotation)
+                    points_r = torch.einsum(
+                        "bij,bjk->bik",
+                        batch[self.hparams.point_label][:, :, :3],
+                        rotation,
+                    )
                     xhat = self.decoder[self.hparams.x_label](
-                        points_r, z_parts[self.hparams.x_label],
+                        points_r,
+                        z_parts[self.hparams.x_label],
                     )
                 else:
                     xhat = self.decoder[self.hparams.x_label](
@@ -416,17 +390,6 @@ class PointCloudVAE(BaseVAE):
                 rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[
                     key
                 ](z[key], x[key])
-
-        # if (self.include_top_loss) & (self.current_epoch > 10):
-        if self.include_top_loss:
-            for key in self.top_loss.keys():
-                # top_losses = []
-                # for i in range(xhat[key].shape[0]):
-                #     top_losses.append(self.top_loss[key](self.top_layer[
-                #         key
-                #     ](xhat[key][i])))
-                # rcl_reduced['top'] = torch.stack(top_losses).mean()
-                rcl_reduced["top"] = self.top_loss[key](batch[key], xhat[key])
 
         return rcl_reduced
 
