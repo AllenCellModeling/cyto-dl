@@ -78,6 +78,7 @@ pcloud = [
     "geomloss>=0.2.6",
     "Ninja>=1.11.1",
     "torchio>=0.19.1",
+    "VN_transformer>=0.1.0"
 ]
 all = [
     "cyto-dl[equiv,spharm,s3,torchserve,pcloud]",
