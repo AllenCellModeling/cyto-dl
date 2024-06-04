@@ -60,7 +60,7 @@ equiv = [
 spharm = [
     "vtk~=9.2",
     "aicscytoparam~=0.1",
-    "pyshtools==4.10.3",
+    "pyshtools==4.10.4",
 ]
 s3 = [
     "boto3>=1.23.5,<1.24.5",
