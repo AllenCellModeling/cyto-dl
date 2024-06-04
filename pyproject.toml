@@ -72,7 +72,7 @@ torchserve = [
 ]
 pcloud = [
     "pyntcloud>=0.3.1",
-    "aicsshparam>=0.1.7",
+    "aicsshparam>=0.1.10",
     "torch-geometric>=2.3.1",
     "point-cloud-utils>=0.29.6",
     "geomloss>=0.2.6",
