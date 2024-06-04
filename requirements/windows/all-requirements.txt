@@ -47,7 +47,6 @@ Deprecated==1.2.14
 distributed==2023.5.0
 docker==7.0.0
 e3nn==0.5.1
-edt==2.4.0
 einops==0.7.0
 elementpath==4.3.0
 entrypoints==0.4
