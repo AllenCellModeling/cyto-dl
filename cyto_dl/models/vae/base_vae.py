@@ -22,11 +22,14 @@ class BaseVAE(BaseModel):
         x_label: str,
         beta: float = 1.0,
         id_label: Optional[str] = None,
+        y_label: Optional[str] = None,
         reconstruction_loss: Loss = nn.MSELoss(reduction="none"),
         prior: Optional[Sequence[Prior]] = None,
         decoder_latent_parts: Optional[Dict[str, Sequence[str]]] = None,
         disable_metrics: Optional[bool] = False,
         metric_keys: Optional[list] = None,
+        act: Optional[str] = None,
+        embedding_prior: Optional[Prior] = None,
         **base_kwargs,
     ):
         """Instantiate a basic VAE model.
@@ -53,8 +56,11 @@ class BaseVAE(BaseModel):
             Additional arguments passed to BaseModel
         """
         if not isinstance(reconstruction_loss, (dict, DictConfig)):
-            assert x_label is not None
-            recon_parts = [x_label]
+            if y_label is not None:
+                recon_parts = [y_label]
+            else:
+                assert x_label is not None
+                recon_parts = [x_label]
         else:
             recon_parts = reconstruction_loss.keys()
 
@@ -122,6 +128,9 @@ class BaseVAE(BaseModel):
         self.reconstruction_loss = reconstruction_loss
 
         if not isinstance(encoder, (dict, DictConfig)):
+            # if x_label is not None:
+            #     encoder = {x_label: encoder}
+            # else:
             encoder = {"embedding": encoder}
         self.encoder = nn.ModuleDict(encoder)
 
@@ -131,8 +140,11 @@ class BaseVAE(BaseModel):
         self.decoder = nn.ModuleDict(decoder)
 
         if not isinstance(reconstruction_loss, (dict, DictConfig)):
-            assert x_label is not None
-            reconstruction_loss = {x_label: reconstruction_loss}
+            if y_label is not None:
+                reconstruction_loss = {y_label: reconstruction_loss}
+            else:
+                assert x_label is not None
+                reconstruction_loss = {x_label: reconstruction_loss}
         self.reconstruction_loss = nn.ModuleDict(reconstruction_loss)
 
         self.beta = beta
