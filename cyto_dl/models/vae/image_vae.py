@@ -14,6 +14,7 @@ from torch.nn.modules.loss import _Loss as Loss
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
+from .priors import Prior
 
 from .image_encoder import ImageEncoder
 
@@ -65,6 +66,7 @@ class ImageVAE(BaseVAE):
         encoder_padding: Optional[Union[int, Sequence[int]]] = None,
         metric_keys: Optional[list] = None,
         num_dec_res_units: Optional[int] = None,
+        embedding_prior: Optional[Prior] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape

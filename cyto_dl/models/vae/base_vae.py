@@ -29,7 +29,6 @@ class BaseVAE(BaseModel):
         disable_metrics: Optional[bool] = False,
         metric_keys: Optional[list] = None,
         act: Optional[str] = None,
-        embedding_prior: Optional[Prior] = None,
         **base_kwargs,
     ):
         """Instantiate a basic VAE model.
