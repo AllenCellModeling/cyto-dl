@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import torch
 import torch.nn as nn
 from torchmetrics import MeanMetric
@@ -50,7 +51,6 @@ class Contrastive(BaseModel):
 
     def forward(self, x1, x2):
         return self.backbone(x1), self.backbone(x2)
-    
 
     def plot_neighbors(self, embedding1, embedding2):
         # calculate pca on predictions and label by labels
@@ -89,6 +89,9 @@ class Contrastive(BaseModel):
         pca = PCA(n_components=2)
         pca.fit(predictions)
         pca_predictions = pca.transform(predictions)
+        # convert labels to integers
+        categories = list(np.unique(labels))
+        labels = [categories.index(label) for label in labels]
 
         # plot pca
         fig, ax = plt.subplots()
@@ -108,10 +111,20 @@ class Contrastive(BaseModel):
         if stage == 'val' and batch_idx == 0:
             with torch.no_grad():
                 embedding1 = out['y_hat_out'].detach().cpu().numpy()
-                embedding2 = out['y_out'].detach().cpu().numpy()
                 if self.hparams.target_key in batch:
-                    self.plot_classes(embedding1, batch[self.hparams.target_key].detach().cpu().numpy())
+                    self.plot_classes(embedding1, batch[self.hparams.target_key])
                 else:
+                    embedding2 = out['y_out'].detach().cpu().numpy()
                     self.plot_neighbors(embedding1, embedding2)
 
         return out['loss'], None, None
+
+    def predict_step(self, batch, batch_idx):
+        x = batch[self.hparams.anchor_key].as_tensor()
+        embeddings = self.backbone(x)
+        preds = pd.DataFrame(embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])])
+        preds['filename'] = batch['filename']
+        preds['Gene'] = batch['Gene'] #.detach().cpu().numpy()
+        preds['drug_label'] = batch['drug_label'] #.detach().cpu().numpy()
+        preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
+        return None, None, None
