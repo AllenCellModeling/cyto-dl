@@ -67,6 +67,7 @@ class ImageVAE(BaseVAE):
         metric_keys: Optional[list] = None,
         num_dec_res_units: Optional[int] = None,
         embedding_prior: Optional[Prior] = None,
+        kernel_size: Optional[int] = None,
         **base_kwargs,
     ):
         in_channels, *in_shape = in_shape
