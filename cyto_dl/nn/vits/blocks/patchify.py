@@ -135,14 +135,19 @@ class Patchify(torch.nn.Module):
         return mask, forward_indexes, backward_indexes
 
     def forward(self, img, mask_ratio, task=None):
-        # generate mask
-        num_patches = np.prod(self.n_patches)
-        n_visible_patches = int(num_patches * (1 - mask_ratio))
-        mask, forward_indexes, backward_indexes = self.get_mask(
-            img, n_visible_patches, num_patches
-        )
-        # generate patches
-        tokens = self.conv(img * mask)
+        if mask_ratio > 0:
+            # generate mask
+            num_patches = np.prod(self.n_patches)
+            n_visible_patches = int(num_patches * (1 - mask_ratio))
+            mask, forward_indexes, backward_indexes = self.get_mask(
+                img, n_visible_patches, num_patches
+            )
+            # generate patches
+            tokens = self.conv(img * mask)
+            mask = ~mask
+        else:
+            tokens = self.conv(img)
+            mask, forward_indexes, backward_indexes = None, None, None
         tokens = self.img2token(tokens)
         # add position embedding
         tokens = tokens + self.pos_embedding
@@ -154,4 +159,4 @@ class Patchify(torch.nn.Module):
             tokens = tokens + self.task_embedding[task]
 
         # mask is used above to mask out patches, we need to invert it for loss calculation
-        return tokens, ~mask, forward_indexes, backward_indexes
+        return tokens, mask, forward_indexes, backward_indexes
