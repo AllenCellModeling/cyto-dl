@@ -33,14 +33,16 @@ transforms:
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [TRAIN] Exposing C as a configurable param for multi-channel segs
+            C: ${target_col1_channel}
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
         allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [TRAIN] Exposing C as a configurable param for multi-channel segs
+            C:  ${target_col2_channel}
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
         keys:
@@ -108,14 +110,16 @@ transforms:
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [TEST] Exposing C as a configurable param for multi-channel segs
+            C: ${target_col1_channel}
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
         allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [TEST] Exposing C as a configurable param for multi-channel segs
+            C: ${target_col2_channel}
       # load merging mask - assumed not to exist by default
       - _target_: cyto_dl.image.io.PolygonLoaderd
         keys:
@@ -184,14 +188,16 @@ transforms:
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [VAL] Exposing C as a configurable param for multi-channel segs
+            C: ${target_col1_channel}
       - _target_: monai.transforms.LoadImaged
         keys: ${target_col2}
         allow_missing_keys: True
         reader:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
-            C: 0
+            # [VAL] Exposing C as a configurable param for multi-channel segs
+            C: ${target_col2_channel}
 
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
