@@ -104,6 +104,7 @@ class IJEPA(BaseModel):
         return rearrange(batch[key], "b t -> t b")
 
     def model_step(self, stage, batch, batch_idx):
+        breakpoint()
         self.update_teacher()
         input=batch[self.hparams.x_key]
 
