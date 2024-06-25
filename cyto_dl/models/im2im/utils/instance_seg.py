@@ -121,12 +121,13 @@ class InstanceSegPreprocessd(Transform):
             return eroded
 
         skel = self.skeleton_tall(bw, max_label)
+
         if max_label == 0:
             return skel
         # if erosion separates object into multiple pieces, use skeleton to bridge those pieces into single object
         # 1. isolate pieces of skeleton that are outside of eroded objects (i.e. could bridge between objects)
         skel[eroded != 0] = 0
-        skel = self.label_slice(skel) if self.dim == 3 else label(skel)
+        skel = self.label_2d(skel)
 
         for i in np.unique(skel)[1:]:
             # 3. find number of non-background objects overlapped by piece of skeleton, add back in pieces that overlap multiple obj
@@ -222,9 +223,7 @@ class InstanceSegPreprocessd(Transform):
         """Create costmap to increase loss in boundary areas."""
         points_with_vecs = im.copy()
         points_with_vecs[skel_edt > 0] = 0
-        # emphasize very thin areas
         add_in_thin = np.logical_and(skel_edt > 0, skel_edt < 3)
-        # emphasize areas where vector field is nonzero
         points_with_vecs = np.logical_or(points_with_vecs, add_in_thin)
         sigma = np.asarray([2] * self.dim) / self.anisotropy
         sigma = np.maximum(sigma, np.ones(self.dim))
@@ -274,9 +273,7 @@ class InstanceSegPreprocessd(Transform):
             cmap = self._get_cmap(skel_edt.squeeze(), im)
             bound = torch.from_numpy(find_boundaries(im, mode="inner")).unsqueeze(0)
             semantic_seg = torch.from_numpy(im > 0).unsqueeze(0)
-            image_dict[key] = torch.cat(
-                [skel_edt, semantic_seg, embed, bound, cmap]
-            ).float()
+            image_dict[key] = torch.cat([skel_edt, semantic_seg, embed, bound, cmap]).float()
         return image_dict
 
 
@@ -341,9 +338,7 @@ class InstanceSegRandFlipd(RandomizableTransform):
         if do_flip:
             for key in self.label_keys + self.image_keys:
                 if key in image_dict:
-                    image_dict[key] = self._flip(
-                        image_dict[key], key in self.label_keys
-                    )
+                    image_dict[key] = self._flip(image_dict[key], key in self.label_keys)
                 elif not self.allow_missing_keys:
                     raise KeyError(
                         f"Key {key} not found in data. Available keys are {image_dict.keys()}"
@@ -438,9 +433,7 @@ class InstanceSegCluster:
 
     def kd_clustering(self, embeddings, skel):
         """assign embedded points to closest skeleton."""
-        skel = (
-            find_boundaries(skel, mode="inner") * skel
-        )  # propagate labels to boundaries
+        skel = find_boundaries(skel, mode="inner") * skel  # propagate labels to boundaries
         skel_points = np.stack(skel.nonzero()).T
         embed_points = np.stack(embeddings).T
         (
@@ -461,10 +454,7 @@ class InstanceSegCluster:
             if coords is None:
                 continue
             is_edge = np.any(
-                [
-                    np.logical_or(s.start == 0, s.stop >= c)
-                    for s, c in zip(coords, skel.shape)
-                ]
+                [np.logical_or(s.start == 0, s.stop >= c) for s, c in zip(coords, skel.shape)]
             )
             if not is_edge and np.sum(skel[coords]) < self.min_size:
                 skel_removed[coords][skel[coords] == lab] = 0
@@ -514,12 +504,11 @@ class InstanceSegCluster:
         return out
 
     def __call__(self, image):
-        image = image.detach().cpu().half().numpy()
+        image = image.detach().half()
+        naive_labeling, _ = label((image[1] > self.semantic_threshold).cpu())
+        skel = image[0].cpu().numpy()
+        embedding = image[2 : 2 + self.dim].cpu().numpy()
 
-        skel = image[0]
-        naive_labeling, _ = label(image[1] > self.semantic_threshold)
-
-        embedding = image[2 : 2 + self.dim]
         regions = enumerate(find_objects(naive_labeling), start=1)
 
         highest_cell_idx = 0

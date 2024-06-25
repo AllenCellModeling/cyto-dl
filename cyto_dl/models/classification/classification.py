@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from aicsimageio.writers import OmeTiffWriter
+from bioio.writers import OmeTiffWriter
 from PIL import Image, ImageDraw, ImageFont
 from skimage.exposure import rescale_intensity
 from torchmetrics import MeanMetric

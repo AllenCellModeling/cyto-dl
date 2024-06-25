@@ -112,6 +112,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
                 raise ValueError(
                     f"Crop size {roi_size} is too large for image size {shape}"
                 )
+            max_start_indices += max_start_indices == 0
         return max_start_indices
 
     def generate_slices(self, image_dict: Dict) -> Dict:

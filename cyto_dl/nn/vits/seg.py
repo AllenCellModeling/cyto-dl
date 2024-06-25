@@ -8,120 +8,156 @@ from monai.networks.blocks import UnetOutBlock, UnetResBlock, UpSample
 from cyto_dl.nn.vits.mae import MAE_Encoder
 
 
+class EncodedSkip(torch.nn.Module):
+    def __init__(self, spatial_dims, num_patches, emb_dim, n_decoder_filters, layer):
+        super().__init__()
+        """
+        layer = 0 is the smallest resolution, n is the highest
+        as the layer increases, the image size increases and the number of filters decreases
+        """
+
+        upsample = 2**layer
+        self.n_out_channels = n_decoder_filters // (upsample**spatial_dims)
+        if spatial_dims == 3:
+            rearrange = Rearrange(
+                " (n_patch_z n_patch_y n_patch_x) b (c uz uy ux) ->  b c (n_patch_z uz) (n_patch_y uy) (n_patch_x ux)",
+                n_patch_z=num_patches[0],
+                n_patch_y=num_patches[1],
+                n_patch_x=num_patches[2],
+                c=self.n_out_channels,
+                uz=upsample,
+                uy=upsample,
+                ux=upsample,
+            )
+        elif spatial_dims == 2:
+            rearrange = Rearrange(
+                " (n_patch_y n_patch_x) b (c uy ux) ->  b c  (n_patch_y uy) (n_patch_x ux)",
+                n_patch_y=num_patches[0],
+                n_patch_x=num_patches[1],
+                c=self.n_out_channels,
+                uy=upsample,
+                ux=upsample,
+            )
+
+        self.patch2img = torch.nn.Sequential(
+            torch.nn.Linear(emb_dim, n_decoder_filters),
+            torch.nn.LayerNorm(n_decoder_filters),
+            rearrange,
+        )
+
+    def forward(self, features):
+        return self.patch2img(features)
+
+
 class SuperresDecoder(torch.nn.Module):
+    """create unet-like decoder where each decoder layer is a fed a skip connection consisting of a
+    different weighted sum of intermediate layer features."""
+
     def __init__(
         self,
         spatial_dims: int = 3,
         num_patches: Optional[List[int]] = [2, 32, 32],
         base_patch_size: Optional[List[int]] = [4, 8, 8],
         emb_dim: Optional[int] = 192,
-        num_layer: Optional[int] = 3,
         n_decoder_filters: Optional[int] = 16,
         out_channels: Optional[int] = 6,
         upsample_factor: Optional[Union[int, List[int]]] = [2.6134, 2.5005, 2.5005],
+        num_layer: Optional[int] = 3,
     ) -> None:
-        """
-        Parameters
-        ----------
-        spatial_dims: Optional[int]=3
-            Number of spatial dimensions
-        num_patches: Optional[List[int]]=[2, 32, 32]
-            Number of patches in each dimension (ZYX) order
-        base_patch_size: Optional[List[int]]=[16, 16, 16]
-            Base patch size in each dimension (ZYX) order
-        emb_dim: Optional[int] =768
-            Embedding dimension of ViT backbone
-        num_layer: Optional[int] =3
-            Number of layers in convolutional decoder
-        n_decoder_filters: Optional[int] =16
-            Number of filters in convolutional decoder
-        out_channels: Optional[int] =6
-            Number of output channels in convolutional decoder. Should be 6 for instance segmentation.
-        upsample_factor:Optional[List[int]] = [2.6134, 2.5005, 2.5005]
-            Upsampling factor for each dimension (ZYX) order. Default is AICS 20x to 100x objective upsampling
-        """
         super().__init__()
+        total_upsample_factor = np.array(upsample_factor) * np.array(base_patch_size)
+        self.num_layer = np.min(np.log2(total_upsample_factor)).astype(int)
+        print(self.num_layer)
+        residual_resize_factor = list(total_upsample_factor / 2**self.num_layer)
 
-        self.lr_conv = []
-        for _ in range(num_layer):
-            self.lr_conv.append(
-                UnetResBlock(
-                    spatial_dims=spatial_dims,
-                    in_channels=n_decoder_filters,
-                    out_channels=n_decoder_filters,
-                    stride=1,
-                    kernel_size=3,
-                    norm_name="INSTANCE",
-                    dropout=0,
+        input_n_decoder_filters = n_decoder_filters
+
+        self.upsampling = torch.nn.ModuleDict()
+        for i in range(self.num_layer):
+            skip = EncodedSkip(
+                spatial_dims, num_patches, emb_dim, input_n_decoder_filters, i
+            )
+            n_input_channels = (
+                n_decoder_filters + skip.n_out_channels if i > 0 else n_decoder_filters
+            )
+            self.upsampling[f"layer_{i}"] = torch.nn.ModuleDict(
+                {
+                    "skip": skip,
+                    "upsample": torch.nn.Sequential(
+                        *[
+                            UnetResBlock(
+                                spatial_dims=spatial_dims,
+                                in_channels=n_input_channels,
+                                out_channels=n_decoder_filters // 2,
+                                stride=1,
+                                kernel_size=3,
+                                norm_name="INSTANCE",
+                                dropout=0,
+                            ),
+                            # no convolution in upsample, do convolution at low resolution
+                            UpSample(
+                                spatial_dims=spatial_dims,
+                                in_channels=n_decoder_filters // 2,
+                                out_channels=n_decoder_filters // 2,
+                                scale_factor=[2] * spatial_dims,
+                                mode="nontrainable",
+                            ),
+                        ]
+                    ),
+                }
+            )
+            n_decoder_filters = n_decoder_filters // 2
+
+        skip = EncodedSkip(
+            spatial_dims, num_patches, emb_dim, input_n_decoder_filters, self.num_layer
+        )
+        n_input_channels = n_decoder_filters + skip.n_out_channels
+        self.upsampling[f"layer_{i+1}"] = torch.nn.ModuleDict(
+            {
+                "skip": skip,
+                "upsample": torch.nn.Sequential(
+                    *[
+                        UpSample(
+                            spatial_dims=spatial_dims,
+                            in_channels=n_input_channels,
+                            out_channels=n_decoder_filters // 2,
+                            scale_factor=residual_resize_factor,
+                            mode="nontrainable",
+                            interp_mode="trilinear",
+                        ),
+                        UnetResBlock(
+                            spatial_dims=spatial_dims,
+                            in_channels=n_decoder_filters // 2,
+                            out_channels=n_decoder_filters // 2,
+                            stride=1,
+                            kernel_size=3,
+                            norm_name="INSTANCE",
+                            dropout=0,
+                        ),
+                        UnetOutBlock(
+                            spatial_dims=spatial_dims,
+                            in_channels=n_decoder_filters // 2,
+                            out_channels=out_channels,
+                            dropout=0,
+                        ),
+                    ]
                 ),
-            )
-
-        self.lr_conv = torch.nn.Sequential(*self.lr_conv)
-
-        self.upsampler = torch.nn.Sequential(
-            UpSample(
-                spatial_dims=spatial_dims,
-                in_channels=n_decoder_filters,
-                out_channels=n_decoder_filters,
-                scale_factor=np.array(upsample_factor),
-                mode="nontrainable",
-                interp_mode="trilinear",
-            ),
-            UnetResBlock(
-                spatial_dims=spatial_dims,
-                in_channels=n_decoder_filters,
-                out_channels=n_decoder_filters,
-                stride=1,
-                kernel_size=3,
-                norm_name="INSTANCE",
-                dropout=0,
-            ),
-            UnetOutBlock(
-                spatial_dims=spatial_dims,
-                in_channels=n_decoder_filters,
-                out_channels=out_channels,
-                dropout=0,
-            ),
+            }
         )
 
-        self.head = torch.nn.Linear(
-            emb_dim, torch.prod(torch.as_tensor(base_patch_size)) * n_decoder_filters
-        )
-        self.num_patches = torch.as_tensor(num_patches)
-        if spatial_dims == 3:
-            self.patch2img = Rearrange(
-                "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-                n_patch_z=num_patches[0],
-                n_patch_y=num_patches[1],
-                n_patch_x=num_patches[2],
-                patch_size_z=base_patch_size[0],
-                patch_size_y=base_patch_size[1],
-                patch_size_x=base_patch_size[2],
-                c=n_decoder_filters,
-            )
-        elif spatial_dims == 2:
-            self.patch2img = Rearrange(
-                "(n_patch_y n_patch_x) b (c patch_size_y patch_size_x) ->  b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-                n_patch_y=num_patches[0],
-                n_patch_x=num_patches[1],
-                patch_size_y=base_patch_size[0],
-                patch_size_x=base_patch_size[1],
-                c=n_decoder_filters,
-            )
-
-    def forward(self, features):
-        # remove global feature
-        features = features[1:]
-
-        # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (c z y x)
-        patches = self.head(features)
-
-        # patches to image
-        img = self.patch2img(patches)
-
-        img = self.lr_conv(img)
-        img = self.upsampler(img)
-        return img
+    def forward(
+        self,
+        features: torch.Tensor,
+    ):
+        # remove global token
+        features = features[:, 1:]
+        prev = None
+        for i in range(self.num_layer + 1):
+            skip = self.upsampling[f"layer_{i}"]["skip"](features[i])
+            if prev is not None:
+                skip = torch.cat([skip, prev], dim=1)
+            prev = self.upsampling[f"layer_{i}"]["upsample"](skip)
+        return prev
 
 
 class Seg_ViT(torch.nn.Module):
@@ -133,14 +169,13 @@ class Seg_ViT(torch.nn.Module):
         num_patches: Optional[List[int]] = [2, 32, 32],
         base_patch_size: Optional[List[int]] = [16, 16, 16],
         emb_dim: Optional[int] = 768,
-        encoder_layer: Optional[int] = 12,
-        encoder_head: Optional[int] = 8,
         decoder_layer: Optional[int] = 3,
         n_decoder_filters: Optional[int] = 16,
         out_channels: Optional[int] = 6,
         upsample_factor: Optional[List[int]] = [2.6134, 2.5005, 2.5005],
         encoder_ckpt: Optional[str] = None,
         freeze_encoder: Optional[bool] = True,
+        **encoder_kwargs,
     ) -> None:
         """
         Parameters
@@ -187,31 +222,31 @@ class Seg_ViT(torch.nn.Module):
             num_patches=num_patches,
             base_patch_size=base_patch_size,
             emb_dim=emb_dim,
-            num_layer=encoder_layer,
-            num_head=encoder_head,
+            **encoder_kwargs,
         )
         if encoder_ckpt is not None:
-            model = torch.load(encoder_ckpt)
+            model = torch.load(encoder_ckpt, map_location="cuda:0")
             enc_state_dict = {
                 k.replace("backbone.encoder.", ""): v
-                # k.replace("model.encoder.", ""): v
                 for k, v in model["state_dict"].items()
-                if "encoder" in k
+                if "encoder" in k and "intermediate" not in k
             }
-            self.encoder.load_state_dict(enc_state_dict)
+            self.encoder.load_state_dict(enc_state_dict, strict=False)
+
         if freeze_encoder:
-            for param in self.encoder.parameters():
-                param.requires_grad = False
+            for name, param in self.encoder.named_parameters():
+                # allow different weighting of internal activations for finetuning
+                param.requires_grad = "intermediate_weighter" in name
 
         self.decoder = SuperresDecoder(
-            spatial_dims,
-            num_patches,
-            base_patch_size,
-            emb_dim,
-            decoder_layer,
-            n_decoder_filters,
-            out_channels,
-            upsample_factor,
+            spatial_dims=spatial_dims,
+            num_patches=num_patches,
+            base_patch_size=base_patch_size,
+            emb_dim=emb_dim,
+            num_layer=decoder_layer,
+            n_decoder_filters=n_decoder_filters,
+            out_channels=out_channels,
+            upsample_factor=upsample_factor,
         )
 
     def forward(self, img):

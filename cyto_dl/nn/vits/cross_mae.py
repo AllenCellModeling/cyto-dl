@@ -3,21 +3,16 @@ from typing import List, Optional
 import numpy as np
 import torch
 import torch.nn as nn
-from einops import rearrange, repeat
+from einops import rearrange
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-
-
-def take_indexes(sequences, indexes):
-    return torch.gather(
-        sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1])
-    )
+from cyto_dl.nn.vits.utils import take_indexes
 
 
 class CrossMAE_Decoder(torch.nn.Module):
-    """Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masekd tokens only attend
+    """Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masked tokens only attend
     to visible tokens."""
 
     def __init__(
@@ -97,7 +92,9 @@ class CrossMAE_Decoder(torch.nn.Module):
         trunc_normal_(self.mask_token, std=0.02)
         trunc_normal_(self.pos_embedding, std=0.02)
 
-    def forward(self, features, forward_indexes, backward_indexes, patch_size):
+    def forward(self, features, forward_indexes, backward_indexes):
+        # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
+        features = features.squeeze(0)
         T, B, C = features.shape
         # we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now
         features = self.projection_norm(self.projection(features))
@@ -132,8 +129,9 @@ class CrossMAE_Decoder(torch.nn.Module):
         features = take_indexes(features, backward_indexes)
         features = features + self.pos_embedding
 
-        reshuffled = take_indexes(features, forward_indexes)
-        features, masked = reshuffled[:T], reshuffled[T:]
+        # reshuffle to shuffled positions for cross attention
+        features = take_indexes(features, forward_indexes)
+        features, masked = features[:T], features[T:]
 
         masked = rearrange(masked, "t b c -> b t c")
         features = rearrange(features, "t b c -> b t c")
@@ -159,18 +157,7 @@ class CrossMAE_Decoder(torch.nn.Module):
             dim=0,
         )
         patches = take_indexes(patches, backward_indexes[1:] - 1)
-
-        mask = torch.zeros_like(patches)
-        mask[T - 1 :] = 1
-        mask = take_indexes(mask, backward_indexes[1:] - 1)
         # patches to image
         img = self.patch2img(patches)
-        img = torch.nn.functional.interpolate(
-            img, tuple(torch.as_tensor(patch_size) * self.num_patches)
-        )
 
-        mask = self.patch2img(mask)
-        mask = torch.nn.functional.interpolate(
-            mask, tuple(torch.as_tensor(patch_size) * self.num_patches), mode="nearest"
-        )
-        return img, mask
+        return img

@@ -55,6 +55,8 @@ class PolygonLoaderd(Transform):
                     mask = np.stack(
                         [mask] * input_dict[self.shape_reference_key].shape[1]
                     )
+                # all ones except for regions in polygon
+                mask = ~mask
                 input_dict[key] = np.expand_dims(mask > 0, 0)
             elif self.missing_key_mode == "raise":
                 raise KeyError(

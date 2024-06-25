@@ -26,13 +26,10 @@ class MaskHead(BaseHead):
         save_input=False
             Whether to save out example input images during training
         """
-        super().__init__()
-        self.loss = loss
-        self.postprocess = postprocess
+        super().__init__(loss, postprocess=postprocess, save_input=save_input)
         self.mask_key = mask_key
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
-        self.save_input = save_input
 
     def _calculate_loss(self, y_hat, y, mask):
         return self.loss(y_hat, y, mask)

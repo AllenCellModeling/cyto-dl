@@ -3,7 +3,7 @@ from typing import Sequence, Union
 
 import numpy as np
 import torch
-from aicsimageio.writers import OmeTiffWriter
+from bioio.writers import OmeTiffWriter
 from monai.data.meta_tensor import MetaTensor
 from monai.transforms import Transform
 from omegaconf import ListConfig

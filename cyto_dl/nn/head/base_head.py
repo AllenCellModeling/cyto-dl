@@ -2,7 +2,7 @@ from abc import ABC
 from pathlib import Path
 
 import torch
-from aicsimageio.writers import OmeTiffWriter
+from bioio.writers import OmeTiffWriter
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
 

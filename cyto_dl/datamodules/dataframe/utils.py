@@ -13,7 +13,7 @@ except ModuleNotFoundError:
 import random
 from typing import Sequence
 
-from monai.data import Dataset, PersistentDataset
+from monai.data import Dataset, PersistentDataset, SmartCacheDataset
 from monai.transforms import Compose, Transform
 from omegaconf import DictConfig, ListConfig
 from torch.utils.data import BatchSampler, Sampler, Subset, SubsetRandomSampler
@@ -163,12 +163,29 @@ def get_canonical_split_name(split):
     for canon in ("train", "val", "test", "predict"):
         if split.startswith(canon) or canon.startswith(split):
             return canon
-    raise ValueError
+    return None
 
 
-def get_dataset(dataframe, transform, split, cache_dir=None):
+def get_dataset(dataframe, transform, split, cache_dir=None, smartcache_args=None):
     data = _DataframeWrapper(dataframe)
+    if smartcache_args is not None and split in ("train", "val"):
+        cache_rate = smartcache_args.get("cache_rate", 0.1)
+        if cache_rate * len(data) >= 1:
+            print(f"Initializing SmartCacheDataset for {split}")
+            return SmartCacheDataset(
+                data,
+                transform=transform,
+                cache_rate=cache_rate,
+                replace_rate=smartcache_args.get("replace_rate", 0.1),
+                num_init_workers=smartcache_args.get("num_init_workers", 4),
+                num_replace_workers=smartcache_args.get("num_replace_workers", 4),
+            )
+        else:
+            print(
+                f"Cache rate {cache_rate} too low for {split} dataset with size {len(data)}, using Dataset."
+            )
     if cache_dir is not None and split in ("train", "val"):
+        print(f"Initializing PersistentDataset for {split} at {cache_dir}")
         return PersistentDataset(data, transform=transform, cache_dir=cache_dir)
     return Dataset(data, transform=transform)
 
@@ -181,6 +198,7 @@ def make_single_dataframe_splits(
     just_inference=False,
     split_map=None,
     cache_dir=None,
+    smartcache_args=None,
 ):
     dataframe = read_dataframe(dataframe_path, columns)
     dataframe[split_column] = dataframe[split_column].astype(np.dtype("O"))
@@ -213,16 +231,26 @@ def make_single_dataframe_splits(
                 transforms[split],
                 split,
                 _split_cache,
+                smartcache_args=smartcache_args,
             )
 
     datasets["predict"] = get_dataset(
-        dataframe, transform=transforms["predict"], split="predict", cache_dir=cache_dir
+        dataframe,
+        transform=transforms["predict"],
+        split="predict",
+        cache_dir=cache_dir,
+        smartcache_args=smartcache_args,
     )
     return datasets
 
 
 def make_multiple_dataframe_splits(
-    split_path, transforms, columns=None, just_inference=False, cache_dir=None
+    split_path,
+    transforms,
+    columns=None,
+    just_inference=False,
+    cache_dir=None,
+    smartcache_args=None,
 ):
     split_path = Path(split_path)
     datasets = {}
@@ -231,6 +259,9 @@ def make_multiple_dataframe_splits(
     for fpath in chain(split_path.glob("*.csv"), split_path.glob("*.parquet")):
         split = re.findall(r"(.*)\.(?:csv|parquet)", fpath.name)[0]
         split = get_canonical_split_name(split)
+        if split is None:
+            print(f"Skipping {fpath} as it does not match any known split name.")
+            continue
         dataframe = read_dataframe(fpath, required_columns=columns)
         dataframe["split"] = split
 
@@ -242,9 +273,16 @@ def make_multiple_dataframe_splits(
 
         if not just_inference:
             datasets[split] = get_dataset(
-                dataframe, transforms[split], split, _split_cache
+                dataframe,
+                transforms[split],
+                split,
+                _split_cache,
+                smartcache_args=smartcache_args,
             )
         predict_df.append(dataframe.copy())
+
+    if len(predict_df) == 0:
+        raise ValueError(f"No valid dataframe files found in {split_path}")
 
     predict_df = pd.concat(predict_df)
     datasets["predict"] = get_dataset(
@@ -252,6 +290,7 @@ def make_multiple_dataframe_splits(
         transform=transforms["predict"],
         split="predict",
         cache_dir=cache_dir,
+        smartcache_args=smartcache_args,
     )
 
     return datasets

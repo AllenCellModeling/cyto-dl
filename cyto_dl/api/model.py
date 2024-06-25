@@ -6,21 +6,17 @@ from hydra import compose, initialize_config_dir
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import OmegaConf, open_dict
 
+from cyto_dl.api.data import ExperimentType
 from cyto_dl.eval import evaluate
 from cyto_dl.train import train as train_model
 from cyto_dl.utils.download_test_data import download_test_data
 from cyto_dl.utils.rich_utils import print_config_tree
 
-DEFAULT_EXPERIMENTS = [
-    "gan",
-    "instance_seg",
-    "labelfree",
-    "segmentation_plugin",
-    "segmentation",
-]
-
 
 class CytoDLModel:
+    # TODO: add optional CytoDLConfig param to init--if client passes a
+    # CytoDLConfig subtype, config will be initialized in constructor and
+    # calls to train/predict can be run immediately
     def __init__(self):
         self.cfg = None
         self._training = False
@@ -53,11 +49,13 @@ class CytoDLModel:
         """Load configuration from dictionary."""
         self.cfg = config
 
+    # TODO: replace experiment_type str with api.data.ExperimentType -> will
+    # require corresponding changes in ml-segmenter
     def load_default_experiment(
-        self, experiment_name: str, output_dir: str, train=True, overrides: List = []
+        self, experiment_type: str, output_dir: str, train=True, overrides: List = []
     ):
         """Load configuration from directory."""
-        assert experiment_name in DEFAULT_EXPERIMENTS
+        assert experiment_type in {exp_type.value for exp_type in ExperimentType}
         config_dir = self.root / "configs"
 
         GlobalHydra.instance().clear()
@@ -65,7 +63,7 @@ class CytoDLModel:
             cfg = compose(
                 config_name="train.yaml" if train else "eval.yaml",
                 return_hydra_config=True,
-                overrides=[f"experiment=im2im/{experiment_name}"] + overrides,
+                overrides=[f"experiment=im2im/{experiment_type}"] + overrides,
             )
 
         with open_dict(cfg):
@@ -79,9 +77,6 @@ class CytoDLModel:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         self.cfg = cfg
-        OmegaConf.save(
-            self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml'
-        )
 
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
@@ -93,6 +88,13 @@ class CytoDLModel:
 
         for k, v in overrides.items():
             OmegaConf.update(self.cfg, k, v)
+
+    def save_config(self, path: Path) -> None:
+        """Save current config to provided path.
+
+        :param path: path at which to save config
+        """
+        OmegaConf.save(self.cfg, path)
 
     async def _train_async(self):
         return train_model(self.cfg)
