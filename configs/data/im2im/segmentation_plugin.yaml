@@ -42,7 +42,7 @@ transforms:
           - _target_: cyto_dl.image.io.MonaiBioReader
             dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
             # [TRAIN] Exposing C as a configurable param for multi-channel segs
-            C:  ${target_col2_channel}
+            C: ${target_col2_channel}
       - _target_: monai.transforms.ThresholdIntensityd
         allow_missing_keys: True
         keys:
