@@ -57,11 +57,7 @@ class CrossAttention(nn.Module):
         """query from decoder (x), key and value from encoder (y)"""
         B, N, C = x.shape
         Ny = y.shape[1]
-        q = (
-            self.q(x)
-            .reshape(B, N, self.num_heads, C // self.num_heads)
-            .permute(0, 2, 1, 3)
-        )
+        q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
         kv = (
             self.kv(y)
             .reshape(B, Ny, 2, self.num_heads, C // self.num_heads)

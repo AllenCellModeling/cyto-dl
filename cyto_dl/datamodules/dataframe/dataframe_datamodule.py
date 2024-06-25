@@ -153,9 +153,7 @@ class DataframeDatamodule(LightningDataModule):
         # always return a Subset
         sample = range(len(self.datasets[split]))
         if sample_size != -1:
-            sample = self.rng.integers(
-                len(self.datasets[split]), size=sample_size
-            ).tolist()
+            sample = self.rng.integers(len(self.datasets[split]), size=sample_size).tolist()
         # this doesn't affect performance because it returns a Subset,
         # which loads from the underlying dataset lazily
         return self.datasets[split][sample]
@@ -169,9 +167,7 @@ class DataframeDatamodule(LightningDataModule):
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
 
-        if (split not in self.dataloaders) or (
-            sample_size != -1 and self.refresh_subsample
-        ):
+        if (split not in self.dataloaders) or (sample_size != -1 and self.refresh_subsample):
             # if we want to use a subsample per epoch, we need to remake the
             # dataloader, to refresh the sample
             self.dataloaders[split] = self.make_dataloader(split)

@@ -58,13 +58,9 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(
-            torch.zeros(np.prod(num_patches) + 1, 1, emb_dim)
-        )
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
 
-        self.head = torch.nn.Linear(
-            emb_dim, torch.prod(torch.as_tensor(base_patch_size))
-        )
+        self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
         self.num_patches = torch.as_tensor(num_patches)
 
         if spatial_dims == 3:
@@ -149,9 +145,7 @@ class CrossMAE_Decoder(torch.nn.Module):
         # add back in visible/encoded tokens that we don't calculate loss on
         patches = torch.cat(
             [
-                torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(
-                    patches
-                ),
+                torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches),
                 patches,
             ],
             dim=0,

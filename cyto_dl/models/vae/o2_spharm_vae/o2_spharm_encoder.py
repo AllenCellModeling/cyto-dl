@@ -69,9 +69,7 @@ class O2SpharmEncoder(nn.EquivariantModule):
 
         for dim in hidden_layers[1:]:
             blocks.append(
-                _make_block(
-                    blocks[-1].out_type, dim, self.gspace, _hidden_irrep_ids, grid_size
-                )
+                _make_block(blocks[-1].out_type, dim, self.gspace, _hidden_irrep_ids, grid_size)
             )
 
         if reflections:

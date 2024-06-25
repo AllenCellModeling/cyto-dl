@@ -1,11 +1,11 @@
+import numpy as np
+import pandas as pd
+import point_cloud_utils as pcu
 import torch
 from monai.transforms import Transform
-from skimage.io import imread
-from skimage import measure
-import numpy as np
 from scipy import ndimage
-import point_cloud_utils as pcu
-import pandas as pd
+from skimage import measure
+from skimage.io import imread
 
 
 def _rescale(img, thresh_max, thresh_min) -> torch.Tensor:

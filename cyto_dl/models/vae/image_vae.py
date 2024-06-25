@@ -12,9 +12,9 @@ from monai.networks.layers.simplelayers import Reshape
 from cyto_dl.image.transforms import RotationMask
 from cyto_dl.models.vae.base_vae import BaseVAE
 from cyto_dl.utils.rotation import RotationModule
-from .priors import Prior
 
 from .image_encoder import ImageEncoder
+from .priors import Prior
 
 Array = Union[torch.Tensor, np.ndarray, Sequence[float]]
 logger = logging.getLogger("lightning")
@@ -133,9 +133,7 @@ class ImageVAE(BaseVAE):
         assert len(_strides) + 1 == len(_channels)
 
         decode_blocks = []
-        for i, (s, c_in, c_out) in enumerate(
-            zip(_strides, _channels[:-1], _channels[1:])
-        ):
+        for i, (s, c_in, c_out) in enumerate(zip(_strides, _channels[:-1], _channels[1:])):
             last_block = i + 1 == len(_strides)
 
             size = None if not last_block else in_shape
@@ -170,9 +168,7 @@ class ImageVAE(BaseVAE):
 
             decode_blocks.append(nn.Sequential(upsample, res))
 
-        init_shape = (
-            self.final_size if decoder_initial_shape is None else decoder_initial_shape
-        )
+        init_shape = self.final_size if decoder_initial_shape is None else decoder_initial_shape
 
         first_upsample = nn.Sequential(
             nn.Linear(latent_dim, _channels[0] * int(np.product(init_shape))),
@@ -210,9 +206,7 @@ class ImageVAE(BaseVAE):
         )
 
         if group is not None:
-            self.rotation_module = RotationModule(
-                group, spatial_dims, background_value, eps
-            )
+            self.rotation_module = RotationModule(group, spatial_dims, background_value, eps)
         else:
             self.rotation_module = None
 

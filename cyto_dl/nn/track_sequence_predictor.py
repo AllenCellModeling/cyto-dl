@@ -20,9 +20,7 @@ class TrackClassifier(torch.nn.Module):
     ) -> None:
         super().__init__()
 
-        self.register_buffer(
-            "pos_embedding", positionalencoding1d(emb_dim, pos_embedding_length)
-        )
+        self.register_buffer("pos_embedding", positionalencoding1d(emb_dim, pos_embedding_length))
         self.pos_embedding.requires_grad = False
 
         self.image_encoder = Regressor(
@@ -71,8 +69,7 @@ def positionalencoding1d(d_model, length):
     """
     if d_model % 2 != 0:
         raise ValueError(
-            "Cannot use sin/cos positional encoding with "
-            "odd dim (got dim={:d})".format(d_model)
+            "Cannot use sin/cos positional encoding with " "odd dim (got dim={:d})".format(d_model)
         )
     pe = torch.zeros(length, d_model)
     position = torch.arange(0, length).unsqueeze(1)

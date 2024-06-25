@@ -80,9 +80,7 @@ class AlternatingBatchSampler(BatchSampler):
 
         # order is subset.monai_dataset.dataframewrapper.dataframe
         idx_to_take = list(subset.indices)
-        subset_df = (
-            subset.dataset.data.dataframe.take(idx_to_take).to_pandas().reset_index()
-        )
+        subset_df = subset.dataset.data.dataframe.take(idx_to_take).to_pandas().reset_index()
         samplers = []
         if target_columns is not None:
             for name in target_columns:
@@ -124,13 +122,9 @@ class AlternatingBatchSampler(BatchSampler):
         samples_per_sampler = len(self) // len(self.samplers)
 
         if samples_per_sampler <= 0:
-            raise ValueError(
-                "Insufficient examples per task head. Please decrease batch size."
-            )
+            raise ValueError("Insufficient examples per task head. Please decrease batch size.")
 
-        interleaved_sampler_order = repeat(
-            range(len(self.samplers)), samples_per_sampler
-        )
+        interleaved_sampler_order = repeat(range(len(self.samplers)), samples_per_sampler)
         interleaved_sampler_order = chain.from_iterable(interleaved_sampler_order)
         interleaved_sampler_order = list(interleaved_sampler_order)
 
@@ -142,16 +136,10 @@ class AlternatingBatchSampler(BatchSampler):
     def __iter__(self) -> Iterator[List[int]]:
         for sampler_ix in self.sampler_order:
             try:
-                yield [
-                    next(self.sampler_iterators[sampler_ix])
-                    for _ in range(self.batch_size)
-                ]
+                yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
             except StopIteration:
                 self._sampler_generator()
-                yield [
-                    next(self.sampler_iterators[sampler_ix])
-                    for _ in range(self.batch_size)
-                ]
+                yield [next(self.sampler_iterators[sampler_ix]) for _ in range(self.batch_size)]
 
     def __len__(self) -> int:
         min_num_samples = min(len(sampler) for sampler in self.samplers)
@@ -298,9 +286,7 @@ def make_multiple_dataframe_splits(
 
 def parse_transforms(transforms):
     if not isinstance(transforms, (DictConfig, dict)):
-        transforms = {
-            split: transforms for split in ["train", "val", "test", "predict"]
-        }
+        transforms = {split: transforms for split in ["train", "val", "test", "predict"]}
 
     for k, v in transforms.items():
         if isinstance(v, (list, tuple, ListConfig)):

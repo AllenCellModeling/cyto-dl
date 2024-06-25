@@ -94,8 +94,7 @@ class MultiTaskIm2Im(BaseModel):
                     opt = self.optimizer[key](
                         filter(
                             lambda p: p.requires_grad,
-                            list(self.backbone.parameters())
-                            + list(self.task_heads.parameters()),
+                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
                         )
                     )
                 elif key == "discriminator":
@@ -110,8 +109,7 @@ class MultiTaskIm2Im(BaseModel):
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
-            task: self.task_heads[task].run_head(z, batch, stage, save_image)
-            for task in run_heads
+            task: self.task_heads[task].run_head(z, batch, stage, save_image) for task in run_heads
         }
 
     def forward(self, x, run_heads):
@@ -214,9 +212,7 @@ class MultiTaskIm2Im(BaseModel):
         batch = self._to_tensor(batch)
         save_image = self.should_save_image(batch_idx, stage)
         outs = self.run_forward(batch, stage, save_image, run_heads)
-        losses = {
-            head_name: head_result["loss"] for head_name, head_result in outs.items()
-        }
+        losses = {head_name: head_result["loss"] for head_name, head_result in outs.items()}
         return self._sum_losses(losses), None, None
 
     def predict_step(self, batch, batch_idx):

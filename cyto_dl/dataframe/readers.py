@@ -169,9 +169,7 @@ def read_dataframe(
         elif dataframe.suffix == ".h5ad":
             dataframe = read_h5ad(dataframe, include_columns)
         else:
-            raise TypeError(
-                "File type of provided manifest is not in [.csv, .parquet, .h5ad]"
-            )
+            raise TypeError("File type of provided manifest is not in [.csv, .parquet, .h5ad]")
 
     elif isinstance(dataframe, pd.DataFrame):
         if include_columns is not None:
@@ -196,9 +194,7 @@ def read_dataframe(
     if isinstance(dataframe, anndata.AnnData):
         # Make dataframe out of anndata object
         X = dataframe.X.toarray()
-        X = pd.DataFrame(X, columns=[f"X_{i}" for i in range(X.shape[1])]).reset_index(
-            drop=True
-        )
+        X = pd.DataFrame(X, columns=[f"X_{i}" for i in range(X.shape[1])]).reset_index(drop=True)
         index = pd.DataFrame(dataframe.obs_names)
         dataframe = dataframe.obs.reset_index(drop=True)
         dataframe = pd.concat([X, dataframe], axis=1)

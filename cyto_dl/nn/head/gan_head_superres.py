@@ -76,9 +76,7 @@ class GANHead_resize(GANHead, ResBlocksHead):
         return x, y
 
     def _calculate_loss(self, y_hat, batch, discriminator):
-        batch[self.head_name], y_hat = self._ensure_same_shape(
-            batch[self.head_name], y_hat
-        )
+        batch[self.head_name], y_hat = self._ensure_same_shape(batch[self.head_name], y_hat)
         return GANHead._calculate_loss(self, y_hat, batch, discriminator)
 
     def forward(self, x):

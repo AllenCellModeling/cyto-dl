@@ -93,8 +93,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
     def _generate_slice(start_coords: Sequence[int], roi_size: Sequence[int]) -> slice:
         """Creates slice starting at `start_coords` of size `roi_size`"""
         return [slice(None, None)] + [
-            slice(start, end)
-            for start, end in zip(start_coords, start_coords + roi_size)
+            slice(start, end) for start, end in zip(start_coords, start_coords + roi_size)
         ]
 
     def _get_max_start_indices(self, image_dict: Dict):
@@ -109,9 +108,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
             max_start_indices_img = shape - roi_size
             max_start_indices = np.minimum(max_start_indices_img, max_start_indices)
             if np.any(max_start_indices < 0):
-                raise ValueError(
-                    f"Crop size {roi_size} is too large for image size {shape}"
-                )
+                raise ValueError(f"Crop size {roi_size} is too large for image size {shape}")
             max_start_indices += max_start_indices == 0
         return max_start_indices
 
@@ -126,9 +123,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
         }
 
         return {
-            k: self._generate_slice(
-                scaled_start_indices[k], (self.roi_size * v).astype(int)
-            )
+            k: self._generate_slice(scaled_start_indices[k], (self.roi_size * v).astype(int))
             for k, v in self.scale_dict.items()
         }
 
@@ -150,8 +145,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
             slices = self.generate_slices({k: image_dict[k] for k in available_keys})
 
             patch_dict = {
-                key: self._apply_slice(image_dict[key], slices[key])
-                for key in available_keys
+                key: self._apply_slice(image_dict[key], slices[key]) for key in available_keys
             }
 
             patch_dict.update(meta_dict)

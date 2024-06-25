@@ -1,17 +1,18 @@
 import logging
 import os
 import tempfile
+import time
 from pathlib import Path
 from typing import Optional
-import time
+
 import matplotlib.pyplot as plt
 import mlflow
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import torch
-from lightning import Callback, LightningModule, Trainer
 from codecarbon import EmissionsTracker
+from lightning import Callback, LightningModule, Trainer
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -89,12 +90,8 @@ class GetEmbeddings(Callback):
 
 def gen_forward(pl_module, batch, x_label):
     if hasattr(pl_module, "backbone"):
-        features, backward_indexes, patch_size = pl_module.backbone.encoder(
-            batch[x_label]
-        )
-        predicted_img, mask = pl_module.backbone.decoder(
-            features, backward_indexes, patch_size
-        )
+        features, backward_indexes, patch_size = pl_module.backbone.encoder(batch[x_label])
+        predicted_img, mask = pl_module.backbone.decoder(features, backward_indexes, patch_size)
         xhat, z_parts_params = {}, {}
         xhat[x_label] = predicted_img
         z_parts_params[x_label] = features
@@ -124,9 +121,7 @@ def get_all_embeddings(
     split = []
     all_loss = []
 
-    zip_iter = zip(
-        ["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader]
-    )
+    zip_iter = zip(["train", "val", "test"], [train_dataloader, val_dataloader, test_dataloader])
     if track_emissions:
         zip_iter = zip(["test"], [test_dataloader])
         all_emissions_df = []
@@ -143,11 +138,7 @@ def get_all_embeddings(
             _split = np.empty(_len, dtype=object)
             _ids = None
 
-            id_label = (
-                pl_module.hparams.get("id_label", None)
-                if id_label is None
-                else id_label
-            )
+            id_label = pl_module.hparams.get("id_label", None) if id_label is None else id_label
 
             for index, batch in enumerate(tqdm(dataloader)):
                 if _ids is None:
@@ -239,9 +230,7 @@ def get_all_embeddings(
     cell_ids = np.hstack(cell_ids) if cell_ids[0] is not None else None
     split = np.hstack(split)
 
-    df = pd.DataFrame(
-        all_embeddings, columns=[f"mu_{i}" for i in range(all_embeddings.shape[1])]
-    )
+    df = pd.DataFrame(all_embeddings, columns=[f"mu_{i}" for i in range(all_embeddings.shape[1])])
     df["split"] = split
     if cell_ids is not None:
         df["CellId"] = cell_ids
@@ -308,5 +297,4 @@ def sample_points(orig, skew_scale):
 def apply_sample_points(data, use_sample_points, skew_scale):
     if use_sample_points:
         return sample_points(data, skew_scale)
-    else:
-        return data
+    return data

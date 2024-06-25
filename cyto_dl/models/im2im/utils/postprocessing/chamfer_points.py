@@ -9,7 +9,7 @@ from skimage.measure import label
 
 
 class ChamferPoints:
-    """postprocessing transform for sampling points and applying chamfer loss"""
+    """postprocessing transform for sampling points and applying chamfer loss."""
 
     def __init__(
         self,

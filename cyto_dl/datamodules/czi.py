@@ -137,18 +137,14 @@ class CZIDataset(Dataset):
         img_data["scene"] = scene
         data_i = self._ensure_channel_first(data_i)
         output_img = (
-            apply_transform(self.transform, data_i)
-            if self.transform is not None
-            else data_i
+            apply_transform(self.transform, data_i) if self.transform is not None else data_i
         )
 
         return {
             self.out_key: MetaTensor(
                 output_img,
                 meta={
-                    "filename_or_obj": original_path.replace(
-                        ".", self._metadata_to_str(img_data)
-                    )
+                    "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
                 },
             )
         }

@@ -42,9 +42,7 @@ class SkimageReader(ImageReader):
                 this_im = rescale(this_im)
 
             if isinstance(self.project, int):
-                this_im = np.expand_dims(
-                    np.expand_dims(this_im.max(self.project), axis=0), axis=0
-                )
+                this_im = np.expand_dims(np.expand_dims(this_im.max(self.project), axis=0), axis=0)
 
             if self.transforms:
                 for transform in self.transforms:

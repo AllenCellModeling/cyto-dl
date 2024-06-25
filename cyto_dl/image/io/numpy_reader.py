@@ -76,9 +76,7 @@ class ReadNumpyFile(MapTransform):
                     res[key] = torch.nn.functional.interpolate(
                         res[key], size=(self.interpolate, self.interpolate)
                     ).squeeze(dim=0)
-                    res[key] = (res[key] - res[key].min()) / (
-                        res[key].max() - res[key].min()
-                    )
+                    res[key] = (res[key] - res[key].min()) / (res[key].max() - res[key].min())
 
                 if self.noise:
                     res[key] = res[key] + (0.001**0.5) * torch.randn(*res[key].shape)

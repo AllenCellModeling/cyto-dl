@@ -48,9 +48,7 @@ class BaseHead(ABC, torch.nn.Module):
         # filename is determined by step in training during train/val and by its source filename for prediction/testing
         filename_map = {"input": meta.get("filename_or_obj", [batch_idx])}
         if stage in ("train", "val", "test"):
-            out_paths = [
-                Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"
-            ]
+            out_paths = [Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"]
         else:
             out_paths = [
                 Path(self.save_dir) / self.head_name / f"{Path(fn).stem}.tif"
@@ -70,16 +68,10 @@ class BaseHead(ABC, torch.nn.Module):
             OmeTiffWriter.save(data=y_hat_out[i], uri=out_path)
             if stage in ("train", "val"):
                 y_out = self._postprocess(batch[self.head_name], img_type="input")
-                OmeTiffWriter.save(
-                    data=y_out[i], uri=str(out_path).replace(".t", "_label.t")
-                )
+                OmeTiffWriter.save(data=y_out[i], uri=str(out_path).replace(".t", "_label.t"))
                 if self.save_input:
-                    raw_out = self._postprocess(
-                        batch[self.x_key][i : i + 1], img_type="input"
-                    )
-                    OmeTiffWriter.save(
-                        data=raw_out, uri=str(out_path).replace(".t", "_input.t")
-                    )
+                    raw_out = self._postprocess(batch[self.x_key][i : i + 1], img_type="input")
+                    OmeTiffWriter.save(data=raw_out, uri=str(out_path).replace(".t", "_input.t"))
         return y_hat_out, y_out
 
     def forward(self, x):

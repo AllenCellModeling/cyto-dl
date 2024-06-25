@@ -40,8 +40,8 @@ class MultiScaleDiscriminator(nn.Module):
                 source_img = self.pooling_fn(
                     kernel_size=3, padding=1, stride=2, count_include_pad=False
                 )(source_img)
-                img = self.pooling_fn(
-                    kernel_size=3, padding=1, stride=2, count_include_pad=False
-                )(img)
+                img = self.pooling_fn(kernel_size=3, padding=1, stride=2, count_include_pad=False)(
+                    img
+                )
             features[key] = result
         return features

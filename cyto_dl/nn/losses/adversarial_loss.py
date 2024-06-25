@@ -2,9 +2,7 @@ from torch.nn.modules.loss import _Loss as Loss
 
 
 class AdversarialLoss(Loss):
-    def __init__(
-        self, discriminator, loss, argmax=False, reduction="mean", squeeze=False
-    ):
+    def __init__(self, discriminator, loss, argmax=False, reduction="mean", squeeze=False):
         super().__init__(None, None, reduction)
         self.discriminator = discriminator
         self.loss = loss

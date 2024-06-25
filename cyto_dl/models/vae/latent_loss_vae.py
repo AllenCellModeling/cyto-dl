@@ -74,9 +74,7 @@ class LatentLossVAE(BaseVAE):
         self.continuous_labels = continuous_labels
         self.discrete_labels = discrete_labels
         if len(self.continuous_labels) > 1:
-            self.comb_label = (
-                self.continuous_labels[-1] + f"_{self.continuous_labels[0]}"
-            )
+            self.comb_label = self.continuous_labels[-1] + f"_{self.continuous_labels[0]}"
         self.argmax_discrete = argmax_discrete
 
         if not isinstance(latent_loss, (dict, DictConfig)):
@@ -125,9 +123,7 @@ class LatentLossVAE(BaseVAE):
 
     def encode(self, batch, **kwargs):
         encoded = {}
-        encoded = self.encoder[self.hparams.x_label](
-            batch[self.hparams.x_label], **kwargs
-        )
+        encoded = self.encoder[self.hparams.x_label](batch[self.hparams.x_label], **kwargs)
         for part in self.discrete_labels:
             if self.argmax_discrete:
                 encoded[part] = self.encoder[part](batch[part].argmax(1))
@@ -166,9 +162,9 @@ class LatentLossVAE(BaseVAE):
 
         if self.basal_head_loss:
             for key in self.basal_head_loss.keys():
-                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[
-                    key
-                ](z[key], x[key].squeeze(dim=-1))
+                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[key](
+                    z[key], x[key].squeeze(dim=-1)
+                )
         return rcl_reduced
 
     def decode(self, z_parts, return_canonical=False, batch=None):
@@ -178,13 +174,9 @@ class LatentLossVAE(BaseVAE):
                     batch[self.point_label], z_parts["grid_feats"]
                 )
             else:
-                base_xhat = self.decoder[self.hparams.x_label](
-                    z_parts[self.hparams.x_label]
-                )
+                base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
         else:
-            base_xhat = self.decoder[self.hparams.x_label](
-                z_parts[self.hparams.x_label]
-            )
+            base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
 
         if self.get_rotation:
             rotation = z_parts["rotation"]
@@ -199,9 +191,7 @@ class LatentLossVAE(BaseVAE):
 
         return {self.hparams.x_label: xhat}
 
-    def forward(
-        self, batch, decode=False, inference=True, return_params=False, **kwargs
-    ):
+    def forward(self, batch, decode=False, inference=True, return_params=False, **kwargs):
         is_inference = inference or not self.training
 
         z_params = self.encode(batch, get_rotation=self.get_rotation)
@@ -235,9 +225,9 @@ class LatentLossVAE(BaseVAE):
                 else:
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
             # shared encoder
-            z_parts[self.hparams.x_label] = self.condition_encoder[
-                self.hparams.x_label
-            ](cond_feats)
+            z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
+                cond_feats
+            )
 
         return z_parts[self.hparams.x_label]
 
@@ -251,13 +241,11 @@ class LatentLossVAE(BaseVAE):
                     # cond_inputs = torch.squeeze(batch[key], dim=(-1))
                 else:
                     cond_inputs = torch.cat((cond_inputs, batch[key]), dim=1)
-                cond_feats = torch.cat(
-                    (cond_inputs, z_parts[self.hparams.x_label]), dim=1
-                )
+                cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
-            z_parts[self.hparams.x_label] = self.condition_decoder[
-                self.hparams.x_label
-            ](cond_feats)
+            z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
+                cond_feats
+            )
         return z_parts
 
     def model_step(self, stage, batch, batch_idx):
@@ -286,12 +274,8 @@ class LatentLossVAE(BaseVAE):
         weighted_adv_loss = 0
         adv_loss = 0
         for part in self.latent_loss.keys():
-            if isinstance(
-                self.latent_loss[part].loss, torch.nn.modules.loss.BCEWithLogitsLoss
-            ):
-                batch[self.latent_loss_target[part]] = batch[
-                    self.latent_loss_target[part]
-                ].gt(0)
+            if isinstance(self.latent_loss[part].loss, torch.nn.modules.loss.BCEWithLogitsLoss):
+                batch[self.latent_loss_target[part]] = batch[self.latent_loss_target[part]].gt(0)
 
             _loss[part], _adv_preds[part] = self.latent_loss[part](
                 mu, batch[self.latent_loss_target[part]], return_pred=True
@@ -388,17 +372,13 @@ class LatentLossVAE(BaseVAE):
         ]
 
         self.latent_loss_optimizer_map = {}
-        for optim_ix, (group_key, group) in enumerate(
-            self.latent_loss_optimizer.items()
-        ):
+        for optim_ix, (group_key, group) in enumerate(self.latent_loss_optimizer.items()):
             self.latent_loss_optimizer_map[optim_ix] = group_key
             _parameters3 = self.get_params(self.latent_loss[group["keys"][0]])
             if len(group["keys"]) > 1:
                 for key in group["keys"][1:]:
                     _parameters3.extend(self.get_params(self.latent_loss[key]))
             optimizers.append(group["opt"](_parameters3))
-            lr_schedulers.append(
-                self.latent_loss_scheduler[group_key](optimizer=optimizers[-1])
-            )
+            lr_schedulers.append(self.latent_loss_scheduler[group_key](optimizer=optimizers[-1]))
 
         return optimizers, lr_schedulers

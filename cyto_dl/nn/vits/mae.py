@@ -83,12 +83,8 @@ class MAE_Encoder(torch.nn.Module):
         trunc_normal_(self.cls_token, std=0.02)
 
     def forward(self, img, mask_ratio=0.75):
-        patches, mask, forward_indexes, backward_indexes = self.patchify(
-            img, mask_ratio
-        )
-        patches = torch.cat(
-            [self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0
-        )
+        patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
+        patches = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0)
         patches = rearrange(patches, "t b c -> b t c")
 
         if self.intermediate_weighter is not None:
@@ -137,9 +133,7 @@ class MAE_Decoder(torch.nn.Module):
         self.projection_norm = nn.LayerNorm(emb_dim)
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(
-            torch.zeros(np.prod(num_patches) + 1, 1, emb_dim)
-        )
+        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
 
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
@@ -265,9 +259,7 @@ class MAE_ViT(torch.nn.Module):
         if isinstance(base_patch_size, int):
             base_patch_size = [base_patch_size] * spatial_dims
 
-        assert (
-            len(num_patches) == spatial_dims
-        ), "num_patches must be of length spatial_dims"
+        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
         assert (
             len(base_patch_size) == spatial_dims
         ), "base_patch_size must be of length spatial_dims"
@@ -300,8 +292,6 @@ class MAE_ViT(torch.nn.Module):
         )
 
     def forward(self, img):
-        features, mask, forward_indexes, backward_indexes = self.encoder(
-            img, self.mask_ratio
-        )
+        features, mask, forward_indexes, backward_indexes = self.encoder(img, self.mask_ratio)
         predicted_img = self.decoder(features, forward_indexes, backward_indexes)
         return predicted_img, mask

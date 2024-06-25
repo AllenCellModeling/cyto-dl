@@ -53,9 +53,7 @@ class MaskHead(BaseHead):
             )
         loss = None
         if stage != "predict":
-            loss = self._calculate_loss(
-                y_hat, batch[self.head_name], batch[self.mask_key]
-            )
+            loss = self._calculate_loss(y_hat, batch[self.head_name], batch[self.mask_key])
 
         y_hat_out, y_out = None, None
         if save_image:

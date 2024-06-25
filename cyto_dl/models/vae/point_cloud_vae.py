@@ -212,9 +212,7 @@ class PointCloudVAE(BaseVAE):
                 )
             else:
                 if isinstance(self.decoder[self.hparams.x_label], FoldingNet):
-                    base_xhat = self.decoder[self.hparams.x_label](
-                        z_parts[self.hparams.x_label]
-                    )
+                    base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
                 else:
                     if self.get_rotation:
                         rotation = z_parts["rotation"]
@@ -235,9 +233,7 @@ class PointCloudVAE(BaseVAE):
                     return {self.hparams.x_label: xhat}
         else:
             if isinstance(self.decoder[self.hparams.x_label], FoldingNet):
-                base_xhat = self.decoder[self.hparams.x_label](
-                    z_parts[self.hparams.x_label]
-                )
+                base_xhat = self.decoder[self.hparams.x_label](z_parts[self.hparams.x_label])
             else:
                 if self.get_rotation:
                     rotation = z_parts["rotation"]
@@ -274,9 +270,7 @@ class PointCloudVAE(BaseVAE):
         if self.basal_head:
             z_parts[self.hparams.x_label + "_basal"] = z_parts[self.hparams.x_label]
             for key in self.basal_head.keys():
-                z_parts[key] = self.basal_head[key](
-                    z_parts[self.hparams.x_label + "_basal"]
-                )
+                z_parts[key] = self.basal_head[key](z_parts[self.hparams.x_label + "_basal"])
 
         if self.condition_keys:
             for j, key in enumerate([self.hparams.x_label] + self.condition_keys):
@@ -294,18 +288,16 @@ class PointCloudVAE(BaseVAE):
                         if f"{key}" in self.mask_keys:
                             # mask is 1 for batch elements to mask, 0 otherwise
                             this_mask = (
-                                batch[f"{key}_mask"]
-                                .byte()
-                                .repeat(1, this_z_parts.shape[-1])
+                                batch[f"{key}_mask"].byte().repeat(1, this_z_parts.shape[-1])
                             )
                             # multiply inverse mask with batch part, so every mask element of 1 is set to 0
                             this_z_parts = this_z_parts * ~this_mask.bool()
                     cond_feats = torch.cat((cond_feats, this_z_parts), dim=1)
 
             # shared encoder
-            z_parts[self.hparams.x_label] = self.condition_encoder[
-                self.hparams.x_label
-            ](cond_feats)
+            z_parts[self.hparams.x_label] = self.condition_encoder[self.hparams.x_label](
+                cond_feats
+            )
         if self.embedding_head:
             for key in self.embedding_head.keys():
                 z_parts[key] = self.embedding_head[key](z_parts[self.hparams.x_label])
@@ -322,9 +314,7 @@ class PointCloudVAE(BaseVAE):
                     # if mask, then mask this batch part
                     if f"{key}" in self.mask_keys:
                         this_mask = (
-                            batch[f"{key}_mask"]
-                            .byte()
-                            .repeat(1, this_batch_part.shape[-1])
+                            batch[f"{key}_mask"].byte().repeat(1, this_batch_part.shape[-1])
                         )
                         # multiply inverse mask with batch part, so every mask element of 1 is set to 0
                         this_batch_part = this_batch_part * ~this_mask.bool()
@@ -339,9 +329,9 @@ class PointCloudVAE(BaseVAE):
             # )
             cond_feats = torch.cat((cond_inputs, z_parts[self.hparams.x_label]), dim=1)
             # shared decoder
-            z_parts[self.hparams.x_label] = self.condition_decoder[
-                self.hparams.x_label
-            ](cond_feats)
+            z_parts[self.hparams.x_label] = self.condition_decoder[self.hparams.x_label](
+                cond_feats
+            )
         return z_parts
 
     def calculate_rcl(self, batch, xhat, input_key, target_key=None):
@@ -381,15 +371,15 @@ class PointCloudVAE(BaseVAE):
 
         if self.embedding_head_loss:
             for key in self.embedding_head_loss.keys():
-                rcl_reduced[key] = self.embedding_head_weight[
-                    key
-                ] * self.embedding_head_loss[key](z[key], x[key])
+                rcl_reduced[key] = self.embedding_head_weight[key] * self.embedding_head_loss[key](
+                    z[key], batch[key]
+                )
 
         if self.basal_head_loss:
             for key in self.basal_head_loss.keys():
-                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[
-                    key
-                ](z[key], x[key])
+                rcl_reduced[key] = self.basal_head_weight[key] * self.basal_head_loss[key](
+                    z[key], batch[key]
+                )
 
         return rcl_reduced
 
@@ -419,18 +409,12 @@ class PointCloudVAE(BaseVAE):
                     if j == 0:
                         batch["target"] = batch[f"{key}"]
                         batch["target_mask"] = (
-                            torch.zeros(batch[f"{key}"].shape)
-                            .bernoulli_(this_mask)
-                            .byte()
+                            torch.zeros(batch[f"{key}"].shape).bernoulli_(this_mask).byte()
                         )
                     else:
-                        batch["target"] = torch.cat(
-                            [batch["target"], batch[f"{key}"]], dim=1
-                        )
+                        batch["target"] = torch.cat([batch["target"], batch[f"{key}"]], dim=1)
                         this_part_mask = (
-                            torch.zeros(batch[f"{key}"].shape)
-                            .bernoulli_(this_mask)
-                            .byte()
+                            torch.zeros(batch[f"{key}"].shape).bernoulli_(this_mask).byte()
                         )
                         batch["target_mask"] = torch.cat(
                             [batch["target_mask"], this_part_mask], dim=1

@@ -68,9 +68,7 @@ class SmartcacheDatamodule(LightningDataModule):
             # read img_data if it's a path, otherwise set to empty dict
             self.img_data["train"] = [
                 row._asdict()
-                for row in pd.read_csv(
-                    Path(img_data) / "train_img_data.csv"
-                ).itertuples()
+                for row in pd.read_csv(Path(img_data) / "train_img_data.csv").itertuples()
             ]
             self.img_data["val"] = [
                 row._asdict()
@@ -78,9 +76,7 @@ class SmartcacheDatamodule(LightningDataModule):
             ]
         elif csv_path is not None:
             self.csv_path = Path(csv_path)
-            (self.csv_path.parents[0] / "loaded_data").mkdir(
-                exist_ok=True, parents=True
-            )
+            (self.csv_path.parents[0] / "loaded_data").mkdir(exist_ok=True, parents=True)
             self.df = pd.read_csv(csv_path)
         else:
             raise ValueError("csv_path or img_data must be specified")
@@ -143,9 +139,7 @@ class SmartcacheDatamodule(LightningDataModule):
         """Parallelize getting the image loading arguments enumerating all
         timepoints/channels/scenes for each file in the dataframe."""
         with ProgressBar():
-            img_data = dask.compute(
-                *[self._get_file_args(row) for row in df.itertuples()]
-            )
+            img_data = dask.compute(*[self._get_file_args(row) for row in df.itertuples()])
         img_data = [item for sublist in img_data for item in sublist]
         return img_data
 
@@ -192,9 +186,7 @@ class SmartcacheDatamodule(LightningDataModule):
 
         elif stage in ("test", "predict"):
             self.img_data[stage] = self.get_per_file_args(self.df)
-            self.datasets[stage] = Dataset(
-                self.img_data[stage], transform=self.transforms[stage]
-            )
+            self.datasets[stage] = Dataset(self.img_data[stage], transform=self.transforms[stage])
 
     def make_dataloader(self, split):
         # smartcachedataset can't have persistent workers

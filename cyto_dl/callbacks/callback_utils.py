@@ -59,9 +59,9 @@ class BaseCallback(Callback):
 
                 pl_module._cached_outputs[split] = []
                 for batch_idx, batch in enumerate(dl):
-                    batch[pl_module.hparams.x_label] = batch[
-                        pl_module.hparams.x_label
-                    ].to(pl_module.device)
+                    batch[pl_module.hparams.x_label] = batch[pl_module.hparams.x_label].to(
+                        pl_module.device
+                    )
 
                     if pl_module.hparams.loss_mask_label is not None:
                         batch[pl_module.hparams.loss_mask_label] = batch[
@@ -131,9 +131,7 @@ def log_artifacts(outputs, prefix, current_epoch, latent_dim):
         dataframe["test_kld_per_latent_dim"].append(mean_kld_per_dim[k])
         dataframe["mu_std_per_latent_dim"].append(dim_std[k])
         dataframe["mu_mean_per_latent_dim"].append(dim_mean[k])
-        dataframe["explained_variance"].append(
-            (mean_kld_per_dim[k] / total_mean_kld) * 100
-        )
+        dataframe["explained_variance"].append((mean_kld_per_dim[k] / total_mean_kld) * 100)
 
     stats_per_dim = pd.DataFrame(dataframe)
 

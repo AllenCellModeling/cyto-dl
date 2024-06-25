@@ -187,15 +187,9 @@ class ReadPointCloud(MapTransform):
 
             if self.jitter:
                 disp = 0.001
-                points[:, 0] = (
-                    points[:, 0] + (np.random.rand(len(points[:, 0])) - 0.5) * disp
-                )
-                points[:, 1] = (
-                    points[:, 1] + (np.random.rand(len(points[:, 1])) - 0.5) * disp
-                )
-                points[:, 2] = (
-                    points[:, 2] + (np.random.rand(len(points[:, 2])) - 0.5) * disp
-                )
+                points[:, 0] = points[:, 0] + (np.random.rand(len(points[:, 0])) - 0.5) * disp
+                points[:, 1] = points[:, 1] + (np.random.rand(len(points[:, 1])) - 0.5) * disp
+                points[:, 2] = points[:, 2] + (np.random.rand(len(points[:, 2])) - 0.5) * disp
 
             res[key] = torch.tensor(
                 points,

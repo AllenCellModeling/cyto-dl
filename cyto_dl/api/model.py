@@ -38,9 +38,7 @@ class CytoDLModel:
         """Load configuration file."""
         config_path = Path(config_path)
         assert config_path.exists(), f"config file {config_path} does not exist"
-        assert (
-            config_path.suffix == ".yaml"
-        ), f"config file {config_path} must be a yaml file"
+        assert config_path.suffix == ".yaml", f"config file {config_path} must be a yaml file"
 
         # load config
         self.cfg = OmegaConf.load(config_path)

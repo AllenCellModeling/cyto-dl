@@ -76,9 +76,7 @@ class GAN(MultiTaskIm2Im):
         else:
             self.discriminator = discriminator
 
-        assert (
-            len(self.task_heads.keys()) == 1
-        ), "Only single-head GANs are supported currently."
+        assert len(self.task_heads.keys()) == 1, "Only single-head GANs are supported currently."
         self.inference_heads = list(self.task_heads.keys())
 
         for k, head in self.task_heads.items():
@@ -91,8 +89,7 @@ class GAN(MultiTaskIm2Im):
             if key in self.optimizer.keys():
                 if key == "generator":
                     opt = self.optimizer[key](
-                        list(self.backbone.parameters())
-                        + list(self.task_heads.parameters())
+                        list(self.backbone.parameters()) + list(self.task_heads.parameters())
                     )
                 elif key == "discriminator":
                     opt = self.optimizer[key](self.discriminator.parameters())
@@ -149,9 +146,7 @@ class GAN(MultiTaskIm2Im):
     def model_step(self, stage, batch, batch_idx):
         run_heads, _ = self._get_run_heads(batch, stage, batch_idx)
         batch = self._to_tensor(batch)
-        outs = self.run_forward(
-            batch, stage, self.should_save_image(batch_idx, stage), run_heads
-        )
+        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
 
         loss_D = self._extract_loss(outs, "loss_D")
         loss_G = self._extract_loss(outs, "loss_G")

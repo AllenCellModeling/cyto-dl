@@ -64,8 +64,6 @@ class AICSImageLoaderd(Transform):
         else:
             img = img.get_image_data(**kwargs)
         img = img.astype(self.dtype)
-        data[self.out_key] = MetaTensor(
-            img, meta={"filename_or_obj": path, "kwargs": kwargs}
-        )
+        data[self.out_key] = MetaTensor(img, meta={"filename_or_obj": path, "kwargs": kwargs})
 
         return data

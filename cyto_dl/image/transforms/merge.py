@@ -70,11 +70,7 @@ class Merged(Transform):
 
         base_image = input_dict[base_image_name]
         merge_image = input_dict[
-            (
-                self.image_keys[0]
-                if self.image_keys[1] == base_image_name
-                else self.image_keys[1]
-            )
+            (self.image_keys[0] if self.image_keys[1] == base_image_name else self.image_keys[1])
         ]
 
         input_dict[self.output_name] = (base_image * ~mask) + (merge_image * mask)

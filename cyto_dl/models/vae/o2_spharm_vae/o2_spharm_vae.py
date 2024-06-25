@@ -104,9 +104,7 @@ class O2SpharmVAE(BaseVAE):
 
         if self.reflections:
             z3 = z[:, 2 * self.latent_dim + 2 :]
-            ortho_z2 = parts["angle"][:, [1, 0]] * torch.tensor(
-                (-1, 1), device=z.device
-            )
+            ortho_z2 = parts["angle"][:, [1, 0]] * torch.tensor((-1, 1), device=z.device)
             z3 = ortho_z2 * (z3 * ortho_z2).sum(axis=1).unsqueeze(1)
             z3 = z3 / (torch.norm(z3, dim=-1, keepdim=True) + self.eps)
             parts["flip"] = (
@@ -122,9 +120,7 @@ class O2SpharmVAE(BaseVAE):
         if self.reflections:
             # flip the image to the canonical flip, and correct the rotation vector
             xhat = flip_spharm(base_xhat, self.paired_indices, flips=z_parts["flip"])
-            _angles = torch.stack(
-                (angles[:, 0] * z_parts["flip"].squeeze(), angles[:, 1]), dim=1
-            )
+            _angles = torch.stack((angles[:, 0] * z_parts["flip"].squeeze(), angles[:, 1]), dim=1)
         else:
             _angles = angles
 

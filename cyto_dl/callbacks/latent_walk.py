@@ -168,9 +168,7 @@ def compute_projections(
     matplotlib.rcParams["ytick.minor.width"] = 0.1
 
     # get mu means NOT ORDERED by rank
-    mu_means = torch.tensor(
-        [mu_mean_list[ranked_z_dim_list.index(_)] for _ in range(latent_dims)]
-    )
+    mu_means = torch.tensor([mu_mean_list[ranked_z_dim_list.index(_)] for _ in range(latent_dims)])
 
     all_features_df = []
     for rank, z_dim in enumerate(ranked_z_dim_list):
@@ -195,9 +193,7 @@ def compute_projections(
             proj_list = [0, 1, 2]
             if input_mode == "spharm":
                 x_hat = decoder(z_inf).cpu()
-                img = get_image_from_shcoeffs(
-                    x_hat[0, :], spharm_cols_filter, dna_spharm_cols
-                )
+                img = get_image_from_shcoeffs(x_hat[0, :], spharm_cols_filter, dna_spharm_cols)
             # elif input_mode == 'fourier':
             #     proj_list = [0]
             #     x_hat = decoder(z_inf).cpu()
@@ -227,9 +223,7 @@ def compute_projections(
                     ax_array[proj, value_index].imshow(img.max(proj), cmap="gray")
                 else:
                     ax_array[proj, value_index].imshow(img, cmap="gray")
-                ax_array[proj, value_index].set_title(
-                    f"{value}" r"$\sigma$", fontsize=14
-                )
+                ax_array[proj, value_index].set_title(f"{value}" r"$\sigma$", fontsize=14)
                 ax_array[proj, value_index].set_xlim([0, plot_limits[1]])
                 ax_array[proj, value_index].set_ylim([0, plot_limits[3]])
                 for tick in ax_array[proj, value_index].xaxis.get_major_ticks():
@@ -243,9 +237,7 @@ def compute_projections(
         # Save figure
         with tempfile.TemporaryDirectory() as tmp_dir:
             dest_path = os.path.join(tmp_dir, f"dim_{z_dim}_rank_{rank + 1}.png")
-            ax_array.flatten()[0].get_figure().savefig(
-                dest_path, dpi=300, bbox_inches="tight"
-            )
+            ax_array.flatten()[0].get_figure().savefig(dest_path, dpi=300, bbox_inches="tight")
 
             mlflow.log_artifact(local_path=dest_path, artifact_path="images")
 
@@ -313,9 +305,9 @@ def get_surface_area(input_img):
     input_img[:, :, [0, -1]] = 0
     input_img[:, [0, -1], :] = 0
     input_img[[0, -1], :, :] = 0
-    input_img_surface = np.logical_xor(
-        input_img, skmorpho.binary_erosion(input_img)
-    ).astype(np.uint8)
+    input_img_surface = np.logical_xor(input_img, skmorpho.binary_erosion(input_img)).astype(
+        np.uint8
+    )
     # Loop through the boundary voxels to calculate the number of
     # boundary faces. Using 6-neighborhod.
     pxl_z, pxl_y, pxl_x = np.nonzero(input_img_surface)

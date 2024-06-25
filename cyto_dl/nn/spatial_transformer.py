@@ -35,18 +35,14 @@ class STN(torch.nn.Module):
             4,
         )
         # final_number_of_convs * final_conv_output shape
-        self.output_shape = (
-            2 ** (depth - 1) * n_conv_filters * np.prod(patch_shape) // 8**depth
-        )
+        self.output_shape = 2 ** (depth - 1) * n_conv_filters * np.prod(patch_shape) // 8**depth
 
         in_filters = n_input_ch
         kernels = [7, 5, 5, 5, 3, 3, 3, 3, 3]
         localization = []
         for i in range(depth):
             out_filters = n_conv_filters * (2**i)
-            localization.append(
-                ConvPoolReLU(in_filters, out_filters, kernel_size=kernels[i])
-            )
+            localization.append(ConvPoolReLU(in_filters, out_filters, kernel_size=kernels[i]))
             in_filters = out_filters
         self.localization = nn.Sequential(*localization)
 

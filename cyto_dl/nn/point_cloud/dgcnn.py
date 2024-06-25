@@ -188,24 +188,16 @@ class DGCNN(nn.Module):
             _prev_slice = -1
             self.pool = meanpool
             # rotation module
-            self.rotation = VNRotationMatrix(
-                self.num_features, dim=3, return_rotated=True
-            )
+            self.rotation = VNRotationMatrix(self.num_features, dim=3, return_rotated=True)
             # final embedding
             self.embedding_head = VNLinear(self.num_features, self.num_features)
         else:
-            _scale_in_list = [2] + [
-                (i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)
-            ]
-            _scale_out_list = [1] + [
-                (i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)
-            ]
+            _scale_in_list = [2] + [(i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)]
+            _scale_out_list = [1] + [(i + 1) * 2 for i in range(len(hidden_conv2d_channels) - 2)]
             _prev_slice = -3
             _mode = "scalar"
             self.pool = maxpool
-            self.embedding_head = nn.Linear(
-                self.hidden_conv1d_channels[-1], self.num_features
-            )
+            self.embedding_head = nn.Linear(self.hidden_conv1d_channels[-1], self.num_features)
 
         for j, (c_1, c_2) in enumerate(
             zip(self.hidden_conv2d_channels[:-1], self.hidden_conv2d_channels[1:])
@@ -224,9 +216,7 @@ class DGCNN(nn.Module):
             zip(self.hidden_conv1d_channels[:-1], self.hidden_conv1d_channels[1:])
         ):
             if j == 1:
-                self.final_conv += _make_conv(
-                    c_1, c_2, final=True, add_in=_prev_in, mode=_mode
-                )
+                self.final_conv += _make_conv(c_1, c_2, final=True, add_in=_prev_in, mode=_mode)
             else:
                 self.final_conv += _make_conv(c_1, c_2, final=True, mode=_mode)
             _prev_in = self.final_conv[_prev_slice].in_channels
@@ -289,9 +279,7 @@ class DGCNN(nn.Module):
         fea_plane = cond.new_zeros(*view_dims1)
         cond = cond.permute(*permute_dims1)  # B x 512 x T
         fea_plane = scatter_mean(cond, index, out=fea_plane)  # B x 512 x reso^2
-        fea_plane = fea_plane.reshape(
-            *view_dims2
-        )  # sparce matrix (B x 512 x reso x reso)
+        fea_plane = fea_plane.reshape(*view_dims2)  # sparce matrix (B x 512 x reso x reso)
 
         # process the plane features with UNet
         if self.unet is not None:
@@ -323,13 +311,9 @@ class DGCNN(nn.Module):
         for key in keys:
             # scatter plane features from points
             if key == "grid":
-                fea = self.scatter(
-                    c.permute(0, 2, 1), index[key], dim_size=self.reso_grid**3
-                )
+                fea = self.scatter(c.permute(0, 2, 1), index[key], dim_size=self.reso_grid**3)
             else:
-                fea = self.scatter(
-                    c.permute(0, 2, 1), index[key], dim_size=self.reso_plane**2
-                )
+                fea = self.scatter(c.permute(0, 2, 1), index[key], dim_size=self.reso_plane**2)
             if self.scatter == scatter_max:
                 fea = fea[0]
             # gather feature back to points

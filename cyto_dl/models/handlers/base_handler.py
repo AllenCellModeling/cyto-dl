@@ -25,9 +25,7 @@ class BaseHandler(_BaseHandler):
         super().__init__()
 
         if "config.yaml" not in os.listdir():
-            raise FileNotFoundError(
-                "`config.yaml` was probably not included in the model archive"
-            )
+            raise FileNotFoundError("`config.yaml` was probably not included in the model archive")
 
         OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
         self.config = OmegaConf.load("config.yaml")

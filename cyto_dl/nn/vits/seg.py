@@ -74,9 +74,7 @@ class SuperresDecoder(torch.nn.Module):
 
         self.upsampling = torch.nn.ModuleDict()
         for i in range(self.num_layer):
-            skip = EncodedSkip(
-                spatial_dims, num_patches, emb_dim, input_n_decoder_filters, i
-            )
+            skip = EncodedSkip(spatial_dims, num_patches, emb_dim, input_n_decoder_filters, i)
             n_input_channels = (
                 n_decoder_filters + skip.n_out_channels if i > 0 else n_decoder_filters
             )
