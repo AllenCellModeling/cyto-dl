@@ -9,12 +9,12 @@ jobs:
     environment: release
     permissions:
       id-token: write
-      contents: write  # Add this permission to allow pushing the version bump
+      contents: write # Add this permission to allow pushing the version bump
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v2
