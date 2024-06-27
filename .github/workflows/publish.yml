@@ -3,21 +3,37 @@ name: publish
 on:
   push:
     branches: [main]
-
 jobs:
   publish:
     runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
+      contents: write # Add this permission to allow pushing the version bump
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v2
         with:
           python-version: "3.10"
+
+      - name: Install bumpversion
+        run: pip install bumpversion
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Apply bumpversion minor
+        run: |
+          bumpversion minor
+          git push
+          git push --tags
 
       - name: Build package
         run: pdm build
