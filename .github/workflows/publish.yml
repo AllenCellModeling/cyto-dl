@@ -31,9 +31,18 @@ jobs:
 
       - name: Apply bumpversion minor
         run: |
+          git checkout -b version-bump
           bumpversion minor
-          git push
-          git push --tags
+          git push origin version-bump
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: admin/version-bump
+          title: admin/version-bump
+          body: "Automated version bump"
+          base: main
+          delete-branch: true
 
       - name: Build package
         run: pdm build
