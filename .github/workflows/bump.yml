@@ -38,19 +38,13 @@ jobs:
         run: |
           git push origin --delete admin/version-bump || true
 
-      - name: Print file contents before bumpversion
-        run: cat .bumpversion.cfg
-
       - name: Apply bumpversion minor
         run: |
           git checkout -b admin/version-bump
           bumpversion minor --verbose --list
           git log -1
-          git push admin/version-bump
+          git push origin admin/version-bump
           git push --tags
-
-      - name: Print file contents before bumpversion
-        run: cat .bumpversion.cfg
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
