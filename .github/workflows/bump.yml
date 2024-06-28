@@ -1,18 +1,20 @@
 ---
-name: publish
+name: bump
 on:
   pull_request:
     types: [closed]
     branches: [main]
+
 jobs:
-  publish:
-    # only publish when the PR is a version bump PR and the pr is merged to main
-    if: github.event.pull_request.title == 'admin/version-bump' && github.event.pull_request.merged == true
+  bump:
+    # make sure this job runs only when the PR is not a version bump PR and the pr is merged to main (not just closed)
+    if: github.event.pull_request.title != 'admin/version-bump' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
       contents: write # Add this permission to allow pushing the version bump
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,14 +34,20 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
 
+      - name: Delete remote branch # delete the branch if it exists
+        run: |
+          git push origin --delete admin/version-bump || true
+
       - name: Apply bumpversion minor
         run: |
+          git checkout -b admin/version-bump
           bumpversion minor
-          git push
-          git push --tags
+          git push origin admin/version-bump
 
-      - name: Build package
-        run: pdm build
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: admin/version-bump
+          title: admin/version-bump
+          body: "Automated version bump"
+          base: main
