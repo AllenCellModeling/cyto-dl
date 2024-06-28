@@ -44,8 +44,12 @@ jobs:
       - name: Apply bumpversion minor
         run: |
           git checkout -b admin/version-bump
-          bumpversion minor --verbose
+          bumpversion minor --verbose --list
+          git log-1
           git push origin admin/version-bump
+
+      - name: Print file contents before bumpversion
+        run: cat .bumpversion.cfg
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
