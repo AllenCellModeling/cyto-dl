@@ -45,7 +45,7 @@ jobs:
         run: |
           git checkout -b admin/version-bump
           bumpversion minor --verbose --list
-          git log-1
+          git log -1
           git push origin admin/version-bump
 
       - name: Print file contents before bumpversion
