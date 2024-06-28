@@ -46,7 +46,8 @@ jobs:
           git checkout -b admin/version-bump
           bumpversion minor --verbose --list
           git log -1
-          git push origin admin/version-bump
+          git push admin/version-bump
+          git push --tags
 
       - name: Print file contents before bumpversion
         run: cat .bumpversion.cfg

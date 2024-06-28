@@ -24,19 +24,10 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install bumpversion
-        run: pip install bumpversion
-
       - name: Configure Git
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-
-      - name: Apply bumpversion minor
-        run: |
-          bumpversion minor
-          git push
-          git push --tags
 
       - name: Build package
         run: pdm build
