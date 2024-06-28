@@ -1,0 +1,53 @@
+---
+name: bump
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  bump:
+    # make sure this job runs only when the PR is not a version bump PR and the pr is merged to main (not just closed)
+    if: github.event.pull_request.title != 'admin/version-bump' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+      contents: write # Add this permission to allow pushing the version bump
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install bumpversion
+        run: pip install bumpversion
+
+      - name: Configure Git
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Delete remote branch # delete the branch if it exists
+        run: |
+          git push origin --delete admin/version-bump || true
+
+      - name: Apply bumpversion minor
+        run: |
+          git checkout -b admin/version-bump
+          bumpversion minor
+          git push origin admin/version-bump
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: admin/version-bump
+          title: admin/version-bump
+          body: "Automated version bump"
+          base: main
