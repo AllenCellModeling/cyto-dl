@@ -41,10 +41,12 @@ jobs:
       - name: Apply bumpversion minor
         run: |
           git checkout -b admin/version-bump
-          bumpversion minor --verbose --list
-          git log -1
-          git push origin admin/version-bump
-          git push --tags
+          bumpversion minor --verbose
+
+      - name: Create new branch
+        uses: stefanzweifel/git-auto-commit-action@v5
+        branch: admin/version-bump
+        create_branch: true
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
