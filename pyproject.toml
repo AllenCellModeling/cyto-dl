@@ -4,7 +4,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "cyto-dl"
-version = "0.1.7"
+version = "0.1.8"
 description = """\
   Collection of representation learning models, techniques, callbacks, utils, \
   used to create latent variable models of cell shape, morphology and \
@@ -72,7 +72,7 @@ torchserve = [
 ]
 pcloud = [
     "pyntcloud>=0.3.1",
-    "aicsshparam>=0.1.7",
+    "aicsshparam>=0.1.8",
     "torch-geometric>=2.3.1",
     "point-cloud-utils>=0.29.6",
     "geomloss>=0.2.6",
