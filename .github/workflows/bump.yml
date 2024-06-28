@@ -18,8 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0 # Fetch all history for all branches and tags
+        # with:
+        #   fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Setup PDM
         uses: pdm-project/setup-pdm@v2
@@ -38,10 +38,13 @@ jobs:
         run: |
           git push origin --delete admin/version-bump || true
 
+      - name: Print file contents before bumpversion
+        run: cat .bumpversion.cfg
+
       - name: Apply bumpversion minor
         run: |
           git checkout -b admin/version-bump
-          bumpversion minor
+          bumpversion minor --verbose
           git push origin admin/version-bump
 
       - name: Create Pull Request
