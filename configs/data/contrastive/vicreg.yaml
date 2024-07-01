@@ -22,48 +22,48 @@ train_dataloaders:
       - _target_: monai.transforms.CopyItemsd
         keys: image
         times: 1
-        names: ['image_aug']
+        names: ["image_aug"]
 
       # augment original image
       - _target_: monai.transforms.RandRotate90d
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.85
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ['image']
+        keys: ["image"]
         sigma_x: [0.5, 1.0]
         prob: 1.0
         sigma_y: [0.5, 1.0]
 
       # augment copy
       - _target_: monai.transforms.RandRotate90d
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 1.0
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         sigma_x: [0.5, 1.0]
         prob: 0.1
         sigma_y: [0.5, 1.0]
@@ -89,49 +89,48 @@ val_dataloaders:
       - _target_: monai.transforms.CopyItemsd
         keys: image
         times: 1
-        names: ['image_aug']
+        names: ["image_aug"]
 
       # augment original image
       - _target_: monai.transforms.RandRotate90d
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ['image']
+        keys: ["image"]
         prob: 0.85
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ['image']
+        keys: ["image"]
         sigma_x: [0.5, 1.0]
         prob: 1.0
         sigma_y: [0.5, 1.0]
 
       # augment copy
       - _target_: monai.transforms.RandRotate90d
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         prob: 1.0
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ['image_aug']
+        keys: ["image_aug"]
         sigma_x: [0.5, 1.0]
         prob: 0.1
         sigma_y: [0.5, 1.0]
-  
