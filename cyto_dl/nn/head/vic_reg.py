@@ -1,14 +1,24 @@
 from cyto_dl.nn.head import BaseHead
 from torch import nn
 
-def Projector(dimensions=[2048, 8192, 8192, 8192]):
-    layers = []
-    for i in range(len(dimensions)-1):
-        layers.append(nn.Linear(dimensions[i], dimensions[i + 1]))
-        layers.append(nn.BatchNorm1d(dimensions[i + 1]))
-        layers.append(nn.ReLU(True))
-    layers.append(nn.Linear(dimensions[-2], dimensions[-1], bias=False))
-    return nn.Sequential(*layers)
+class Projector(nn.Module):
+    def __init__(self, dimensions=[2048, 8192, 8192, 8192]):
+        """
+        Parameters
+        ----------
+        dimensions
+            List of dimensions for projector network. Should start with output dimension of backone network. Subsequent dimensions should be ~4x larger following vicreg
+        """
+        super().__init__()
+        layers = []
+        for i in range(len(dimensions)-1):
+            layers.append(nn.Linear(dimensions[i], dimensions[i + 1]))
+            layers.append(nn.BatchNorm1d(dimensions[i + 1]))
+            layers.append(nn.ReLU(True))
+        layers.append(nn.Linear(dimensions[-2], dimensions[-1], bias=False))
+        self.model = nn.Sequential(*layers)
+    def forward(self, x):
+        return self.model(x)
 
 
 class VICRegHead(BaseHead):
@@ -23,8 +33,7 @@ class VICRegHead(BaseHead):
         loss
             Loss function for task
         dimensions
-            List of dimensions for projector network. Should start with output dimension of backone network. Subsequent dimensions should be much larger following vicreg
-
+            List of dimensions for projector network. Should start with output dimension of backone network. Subsequent dimensions should be ~4x larger following vicreg
         """
         super().__init__(loss)
         self.model = Projector(dimensions)
