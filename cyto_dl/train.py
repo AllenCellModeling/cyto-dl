@@ -8,6 +8,7 @@ from typing import List, Optional, Tuple
 import hydra
 import lightning
 import pyrootutils
+import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig, OmegaConf
@@ -94,6 +95,16 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
+
+        if cfg.get("weights_only"):
+            assert cfg.get(
+                "ckpt_path"
+            ), "ckpt_path must be provided to with argument weights_only=True"
+            # load model from state dict to get around trainer.max_epochs limit, useful for resuming model training from existing weights
+            state_dict = torch.load(cfg["ckpt_path"])["state_dict"]
+            model.load_state_dict(state_dict)
+            cfg["ckpt_path"] = None
+
         if isinstance(data, LightningDataModule):
             trainer.fit(model=model, datamodule=data, ckpt_path=cfg.get("ckpt_path"))
         else:

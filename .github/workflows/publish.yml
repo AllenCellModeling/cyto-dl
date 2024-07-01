@@ -1,11 +1,13 @@
 ---
 name: publish
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: [main]
-
 jobs:
   publish:
+    # only publish when the PR is a version bump PR and the pr is merged to main
+    if: github.event.pull_request.title == 'admin/version-bump' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: release
     permissions:
