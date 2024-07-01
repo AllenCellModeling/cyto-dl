@@ -1,15 +1,14 @@
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
+from sklearn.decomposition import PCA
 from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
-
-from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
 
 
 class Contrastive(BaseModel):
@@ -17,24 +16,33 @@ class Contrastive(BaseModel):
         self,
         backbone: nn.Module,
         task_head: nn.Module,
-        anchor_key: str = 'image',
-        positive_key: str = 'image_aug',
-        target_key: str = 'target',
+        anchor_key: str = "image",
+        positive_key: str = "image_aug",
+        target_key: str = "target",
+        meta_keys: list[str] = [],
         save_dir: str = "./",
         viz_freq: int = 10,
-        *,
-        model: nn.Module,
         **base_kwargs,
     ):
         """
         Parameters
         ----------
-        model: nn.Module
-            model network, parameters are shared between task heads
-        save_dir="./"
-            directory to save images during training and validation
-        save_images_every_n_epochs=1
-            Frequency to save out images during training
+        backbone: nn.Module
+            Backbone model
+        task_head: nn.Module
+            Task head model
+        anchor_key: str
+            Key in batch dictionary for anchor image
+        positive_key: str
+            Key in batch dictionary for positive image
+        target_key: str
+            OPTIONAL Key in batch dictionary for target, used only for visualization
+        meta_keys: list[str]
+            List of keys in batch dictionary to save to csv during prediction
+        save_dir: str
+            Directory to save visualizations
+        viz_freq: int
+            Frequency to save visualizations
         **base_kwargs:
             Additional arguments passed to BaseModel
         """
@@ -56,14 +64,14 @@ class Contrastive(BaseModel):
         # calculate pca on predictions and label by labels
         pca = PCA(n_components=2)
         pca.fit(embedding1)
-        
+
         embedding1 = pca.transform(embedding1)
         fig, ax = plt.subplots()
         counts, xedges, yedges = np.histogram2d(embedding1[:, 0], embedding1[:, 1], bins=30)
-        ax.imshow(counts, extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]], origin='lower')
+        ax.imshow(counts, extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]], origin="lower")
         fig.savefig(Path(self.hparams.save_dir) / f"{self.current_epoch}_heatmap.png")
         plt.close(fig)
-        
+
         random_examples = np.random.choice(embedding1.shape[0], 10)
         embedding1 = embedding1[random_examples]
         embedding2 = pca.transform(embedding2[random_examples])
@@ -71,19 +79,17 @@ class Contrastive(BaseModel):
         fig, ax = plt.subplots()
 
         # plot anchor embeddings in gray
-        ax.scatter(embedding1[:, 0], embedding1[:, 1], c='green')
+        ax.scatter(embedding1[:, 0], embedding1[:, 1], c="green")
 
         # plot positive embeddings in green
-        ax.scatter(embedding2[:, 0], embedding2[:, 1], c='green')
-
+        ax.scatter(embedding2[:, 0], embedding2[:, 1], c="green")
 
         # draw lines between anchor and positive, anchor and negative
-        ax.plot([embedding1[:, 0], embedding2[:, 0]], [embedding1[:, 1], embedding2[:, 1]], 'gray')
+        ax.plot([embedding1[:, 0], embedding2[:, 0]], [embedding1[:, 1], embedding2[:, 1]], "gray")
 
         fig.savefig(Path(self.hparams.save_dir) / f"{self.current_epoch}_neighbors.png")
         plt.close(fig)
 
-    
     def plot_classes(self, predictions, labels):
         # calculate pca on predictions and label by labels
         pca = PCA(n_components=2)
@@ -100,31 +106,32 @@ class Contrastive(BaseModel):
         ax.add_artist(legend1)
         fig.savefig(Path(self.hparams.save_dir) / f"{self.current_epoch}_classes.png")
         plt.close(fig)
-  
+
     def model_step(self, stage, batch, batch_idx):
-        x1= batch[self.hparams.anchor_key].as_tensor()
+        x1 = batch[self.hparams.anchor_key].as_tensor()
         x2 = batch[self.hparams.positive_key].as_tensor()
 
         backbone_features = self.forward(x1, x2)
         out = self.task_head.run_head(backbone_features, batch, stage)
 
-        if stage == 'val' and batch_idx == 0:
+        if stage == "val" and batch_idx == 0:
             with torch.no_grad():
-                embedding1 = out['y_hat_out'].detach().cpu().numpy()
+                embedding1 = out["y_hat_out"].detach().cpu().numpy()
                 if self.hparams.target_key in batch:
                     self.plot_classes(embedding1, batch[self.hparams.target_key])
                 else:
-                    embedding2 = out['y_out'].detach().cpu().numpy()
+                    embedding2 = out["y_out"].detach().cpu().numpy()
                     self.plot_neighbors(embedding1, embedding2)
 
-        return out['loss'], None, None
+        return out["loss"], None, None
 
     def predict_step(self, batch, batch_idx):
         x = batch[self.hparams.anchor_key].as_tensor()
         embeddings = self.backbone(x)
-        preds = pd.DataFrame(embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])])
-        preds['filename'] = batch['filename']
-        preds['Gene'] = batch['Gene'] #.detach().cpu().numpy()
-        preds['drug_label'] = batch['drug_label'] #.detach().cpu().numpy()
+        preds = pd.DataFrame(
+            embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])]
+        )
+        for key in self.hparams.meta_keys:
+            preds[key] = batch[key]
         preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
         return None, None, None
