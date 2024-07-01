@@ -1,0 +1,64 @@
+# takes the most recent commit on main, bumps version based on
+# semver_component input, and PRs change back to main
+name: Bump version and PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      semver_component:
+        description: "Semantic versioning component to bump"
+        required: true
+        type: choice
+        default: "patch"
+        options:
+          - major
+          - minor
+          - patch
+          - dev
+
+jobs:
+  publish:
+    name: Bump and PR
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bumpver
+
+      - name: Bump version
+        run: |
+          git config --global user.name 'aicsgithub'
+          git config --global user.email 'aicsgithub@alleninstitute.org'
+          python publish_bumpver_handler.py ${{ inputs.semver_component }}
+      
+      # takes the commit from the last step, pushes to new branch, release, and creates PR
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: workflow-release
+          base: main
+          title: Bump version and publish
+          body: See commit message or diff for new version number
+      
+      - name: Tag version
+        run: |
+          git checkout workflow-release
+          python tag_with_current_version.py
+          git push origin --tags
+
+      
