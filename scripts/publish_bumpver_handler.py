@@ -41,7 +41,7 @@ TESTING:
 - git tag --delete 1.0.0 2.0.0 2.1.0 2.1.1 2.1.2 2.1.2.dev0 2.1.2.dev1
 """
 
-import subprocess
+import subprocess  # nosec
 import sys
 from typing import List, Set
 
@@ -76,9 +76,9 @@ def main():
     elif len(version_components) == 3:
         if component == "dev":
             # increment patch and begin at dev0 (e.g. 1.0.0 -> 1.0.1.dev0)
-            update_output = subprocess.run(
+            update_output = subprocess.run(  # nosec
                 ["bumpver", "update", "--patch", "--tag=dev", "-n"]
-            )  # nosec
+            )
         else:
             update_output = subprocess.run(["bumpver", "update", f"--{component}", "-n"])  # nosec
 

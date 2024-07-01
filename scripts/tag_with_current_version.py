@@ -1,14 +1,14 @@
 # This file is intended to be called by a github workflow
-import subprocess
+import subprocess  # nosec
 
 import toml
 
 
 def main():
     version: str = toml.load("pyproject.toml")["project"]["version"]
-    tag_output: subprocess.CompletedProcess = subprocess.run(
+    tag_output: subprocess.CompletedProcess = subprocess.run(  # nosec
         ["git", "tag", f"v{version}"]
-    )  # nosec
+    )
     if tag_output.returncode != 0:
         raise RuntimeError("failed to tag")
 
