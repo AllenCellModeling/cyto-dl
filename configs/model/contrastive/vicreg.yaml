@@ -1,6 +1,5 @@
 _target_: cyto_dl.models.contrastive.Contrastive
 
-
 anchor_key: image
 positive_key: image_aug
 target_key: target
@@ -11,17 +10,16 @@ backbone:
   _target_: monai.networks.nets.Regressor
   in_shape: [1, 28, 28] # CYX, should be CZYX for 3D
   out_shape: ${model._aux.latent_dim}
-  channels: [2, 4, 6, 8]
-  strides: [2, 2, 2, 2]
+  channels: [2, 4, 8]
+  strides: [2, 2, 2]
   kernel_size: 3
-
 
 task_head:
   _target_: cyto_dl.nn.head.vic_reg.VICRegHead
-  loss: 
+  loss:
     _target_: cyto_dl.nn.losses.vic_reg.VICRegLoss
     num_features: ${model._aux.latent_dim}
-  dimensions: 
+  dimensions:
     - ${model._aux.latent_dim}
     - 256
     - 256
