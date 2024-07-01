@@ -118,7 +118,10 @@ class Contrastive(BaseModel):
             with torch.no_grad():
                 embedding1 = out["y_hat_out"].detach().cpu().numpy()
                 if self.hparams.target_key in batch:
-                    self.plot_classes(embedding1, batch[self.hparams.target_key])
+                    labels = batch[self.hparams.target_key]
+                    if isinstance(labels, torch.Tensor):
+                        labels = labels.cpu().numpy()
+                    self.plot_classes(embedding1, labels)
                 else:
                     embedding2 = out["y_out"].detach().cpu().numpy()
                     self.plot_neighbors(embedding1, embedding2)
