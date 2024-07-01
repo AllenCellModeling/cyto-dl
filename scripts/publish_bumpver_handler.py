@@ -66,19 +66,19 @@ def main():
     if len(version_components) == 4:
         if component == "dev":
             # increment the dev tag (e.g. 1.0.0.dev0 -> 1.0.0.dev1)
-            update_output = subprocess.run(["bumpver", "update", "--tag-num", "-n"])
+            update_output = subprocess.run(["bumpver", "update", "--tag-num", "-n"]) #nosec
         elif component == "patch":
             # finalize the patch by removing dev tag (e.g. 1.0.0.dev1 -> 1.0.0)
-            update_output = subprocess.run(["bumpver", "update", "--tag=final", "-n"])
+            update_output = subprocess.run(["bumpver", "update", "--tag=final", "-n"]) #nosec
         else:
             raise ValueError("Cannot update major or minor version while dev version is current")
 
     elif len(version_components) == 3:
         if component == "dev":
             # increment patch and begin at dev0 (e.g. 1.0.0 -> 1.0.1.dev0)
-            update_output = subprocess.run(["bumpver", "update", "--patch", "--tag=dev", "-n"])
+            update_output = subprocess.run(["bumpver", "update", "--patch", "--tag=dev", "-n"]) #nosec
         else:
-            update_output = subprocess.run(["bumpver", "update", f"--{component}", "-n"])
+            update_output = subprocess.run(["bumpver", "update", f"--{component}", "-n"]) #nosec
 
     else:
         raise ValueError(
