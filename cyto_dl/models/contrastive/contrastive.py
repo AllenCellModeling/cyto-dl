@@ -65,6 +65,7 @@ class Contrastive(BaseModel):
         pca = PCA(n_components=2)
         pca.fit(embedding1)
 
+        # plot PC1 vs PC2 as heatmap
         embedding1 = pca.transform(embedding1)
         fig, ax = plt.subplots()
         counts, xedges, yedges = np.histogram2d(embedding1[:, 0], embedding1[:, 1], bins=30)
@@ -72,12 +73,12 @@ class Contrastive(BaseModel):
         fig.savefig(Path(self.hparams.save_dir) / f"{self.current_epoch}_heatmap.png")
         plt.close(fig)
 
+        # Plot anchor/positive relationship for a subsample
         random_examples = np.random.choice(embedding1.shape[0], 10)
         embedding1 = embedding1[random_examples]
         embedding2 = pca.transform(embedding2[random_examples])
 
         fig, ax = plt.subplots()
-
         # plot anchor embeddings in gray
         ax.scatter(embedding1[:, 0], embedding1[:, 1], c="green")
 
