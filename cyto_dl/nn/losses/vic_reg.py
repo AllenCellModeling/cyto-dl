@@ -20,7 +20,7 @@ class VICRegLoss(torch.nn.Module):
 
     def forward(self, x, y):
         batch_size, num_features = x.shape
-        
+
         # view invarance loss
         repr_loss = F.mse_loss(x, y)
 
@@ -34,13 +34,9 @@ class VICRegLoss(torch.nn.Module):
         # covariance loss
         cov_x = (x.T @ x) / (batch_size - 1)
         cov_y = (y.T @ y) / (batch_size - 1)
-        cov_loss = off_diagonal(cov_x).pow_(2).sum().div(
-            num_features
-        ) + off_diagonal(cov_y).pow_(2).sum().div(num_features)
+        cov_loss = off_diagonal(cov_x).pow_(2).sum().div(num_features) + off_diagonal(cov_y).pow_(
+            2
+        ).sum().div(num_features)
 
-        loss = (
-            self.sim_coeff * repr_loss
-            + self.std_coeff * std_loss
-            + self.cov_coeff * cov_loss
-        )
+        loss = self.sim_coeff * repr_loss + self.std_coeff * std_loss + self.cov_coeff * cov_loss
         return loss
