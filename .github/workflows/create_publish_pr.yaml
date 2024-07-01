@@ -45,7 +45,7 @@ jobs:
           git config --global user.name 'aicsgithub'
           git config --global user.email 'aicsgithub@alleninstitute.org'
           python scripts/publish_bumpver_handler.py ${{ inputs.semver_component }}
-      
+
       # takes the commit from the last step, pushes to new branch, release, and creates PR
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6
@@ -54,11 +54,9 @@ jobs:
           base: main
           title: Bump version and publish
           body: See commit message or diff for new version number
-      
+
       - name: Tag version
         run: |
           git checkout workflow-release
           python scripts/tag_with_current_version.py
           git push origin --tags
-
-      
