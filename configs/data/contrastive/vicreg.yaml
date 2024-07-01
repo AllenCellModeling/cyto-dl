@@ -1,0 +1,137 @@
+_aux:
+  batch_size: 128
+
+train_dataloaders:
+  _target_: monai.data.dataloader.DataLoader
+  batch_size: ${data._aux.batch_size}
+  num_workers: 8
+  shuffle: true
+  persistent_workers: false
+  dataset:
+    _target_: cyto_dl.datamodules.torchvision.MNIST
+    root: /tmp/mnist
+    download: true
+    train: true
+    transform:
+      - _target_: monai.transforms.ToTensord
+        keys: image
+        track_meta: false
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: image
+
+      - _target_: monai.transforms.CopyItemsd
+        keys: image
+        times: 1
+        names: ['image_aug']
+
+      # augment original image
+      - _target_: monai.transforms.RandRotate90d
+        keys: ['image']
+        prob: 0.5
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image']
+        prob: 0.5
+        spatial_axis: 0
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image']
+        prob: 0.5
+        spatial_axis: 1
+      - _target_: monai.transforms.RandShiftIntensityd
+        keys: ['image']
+        prob: 0.85
+        offsets: 0.5
+      - _target_: monai.transforms.RandGaussianSmoothd
+        keys: ['image']
+        sigma_x: [0.5, 1.0]
+        prob: 1.0
+        sigma_y: [0.5, 1.0]
+
+      # augment copy
+      - _target_: monai.transforms.RandRotate90d
+        keys: ['image_aug']
+        prob: 0.5
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image_aug']
+        prob: 0.5
+        spatial_axis: 0
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image_aug']
+        prob: 0.5
+        spatial_axis: 1
+      - _target_: monai.transforms.RandShiftIntensityd
+        keys: ['image_aug']
+        prob: 1.0
+        offsets: 0.5
+      - _target_: monai.transforms.RandGaussianSmoothd
+        keys: ['image_aug']
+        sigma_x: [0.5, 1.0]
+        prob: 0.1
+        sigma_y: [0.5, 1.0]
+
+val_dataloaders:
+  _target_: monai.data.dataloader.DataLoader
+  batch_size: ${data._aux.batch_size}
+  num_workers: 8
+  persistent_workers: false
+  pin_memory: true
+  dataset:
+    _target_: cyto_dl.datamodules.torchvision.MNIST
+    root: /tmp/mnist
+    download: true
+    train: false
+    transform:
+      - _target_: monai.transforms.ToTensord
+        keys: image
+        track_meta: false
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: image
+
+      - _target_: monai.transforms.CopyItemsd
+        keys: image
+        times: 1
+        names: ['image_aug']
+
+      # augment original image
+      - _target_: monai.transforms.RandRotate90d
+        keys: ['image']
+        prob: 0.5
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image']
+        prob: 0.5
+        spatial_axis: 0
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image']
+        prob: 0.5
+        spatial_axis: 1
+      - _target_: monai.transforms.RandShiftIntensityd
+        keys: ['image']
+        prob: 0.85
+        offsets: 0.5
+      - _target_: monai.transforms.RandGaussianSmoothd
+        keys: ['image']
+        sigma_x: [0.5, 1.0]
+        prob: 1.0
+        sigma_y: [0.5, 1.0]
+
+      # augment copy
+      - _target_: monai.transforms.RandRotate90d
+        keys: ['image_aug']
+        prob: 0.5
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image_aug']
+        prob: 0.5
+        spatial_axis: 0
+      - _target_: monai.transforms.RandFlipd
+        keys: ['image_aug']
+        prob: 0.5
+        spatial_axis: 1
+      - _target_: monai.transforms.RandShiftIntensityd
+        keys: ['image_aug']
+        prob: 1.0
+        offsets: 0.5
+      - _target_: monai.transforms.RandGaussianSmoothd
+        keys: ['image_aug']
+        sigma_x: [0.5, 1.0]
+        prob: 0.1
+        sigma_y: [0.5, 1.0]
+  
