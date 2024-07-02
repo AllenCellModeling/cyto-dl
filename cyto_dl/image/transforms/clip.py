@@ -30,7 +30,7 @@ class Clip(Transform):
             low = percentile(img, low)
             high = percentile(img, high)
 
-        return torch.clip(img, low, high)
+        return clip(img, low, high)
 
 
 class Clipd(Transform):
