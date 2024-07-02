@@ -417,6 +417,7 @@
 
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span>
 
 
 <div class="viewcode-block" id="MaxProjectd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.project.html#cyto_dl.image.transforms.project.MaxProjectd">[docs]</a><span class="k">class</span> <span class="nc">MaxProjectd</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
@@ -439,7 +440,7 @@
 <span class="sd">            Whether to raise error if specified key is missing</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">allow_missing_keys</span> <span class="o">=</span> <span class="n">allow_missing_keys</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection_dim</span> <span class="o">=</span> <span class="n">projection_dim</span>
 

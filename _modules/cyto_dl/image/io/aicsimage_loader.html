@@ -447,7 +447,7 @@
 <span class="sd">        scene_key : str = &quot;scene&quot;</span>
 <span class="sd">            Key for the scene number</span>
 <span class="sd">        kwargs_keys : List = [&quot;dimension_order_out&quot;, &quot;C&quot;, &quot;T&quot;]</span>
-<span class="sd">            Keys for the kwargs to pass to BioImage.get_image_dask_data</span>
+<span class="sd">            Keys for the kwargs to pass to BioImage.get_image_dask_data. Values in the csv can be comma separated list.</span>
 <span class="sd">        out_key : str = &quot;raw&quot;</span>
 <span class="sd">            Key for the output image</span>
 <span class="sd">        allow_missing_keys : bool = False</span>
@@ -464,6 +464,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dask_load</span> <span class="o">=</span> <span class="n">dask_load</span>
 
+<div class="viewcode-block" id="AICSImageLoaderd.split_args"><a class="viewcode-back" href="../../../../cyto_dl.image.io.aicsimage_loader.html#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd.split_args">[docs]</a>    <span class="k">def</span> <span class="nf">split_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">arg</span></div>
+
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># copying prevents the dataset from being modified inplace - important when using partially cached datasets so that the memory use doesn&#39;t increase over time</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -473,7 +478,7 @@
         <span class="n">img</span> <span class="o">=</span> <span class="n">BioImage</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_key</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">img</span><span class="o">.</span><span class="n">set_scene</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_key</span><span class="p">])</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_keys</span><span class="p">}</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_args</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs_keys</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">}</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dask_load</span><span class="p">:</span>
             <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_image_dask_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
