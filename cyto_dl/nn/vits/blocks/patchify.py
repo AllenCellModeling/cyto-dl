@@ -32,11 +32,11 @@ class Patchify(torch.nn.Module):
         Parameters
         ----------
         patch_size: List[int]
-            Size of each patch
+            Size of each patch in pix (ZYX order for 3D, YX order for 2D)
         emb_dim: int
             Dimension of encoder
         n_patches: List[int]
-            Number of patches in each spatial dimension
+            Number of patches in each spatial dimension (ZYX order for 3D, YX order for 2D)
         spatial_dims: int
             Number of spatial dimensions
         context_pixels: List[int]
@@ -95,14 +95,14 @@ class Patchify(torch.nn.Module):
                 *[
                     Rearrange(
                         "(n_patch_y n_patch_x) b c ->  b c n_patch_y n_patch_x",
-                        n_patch_y=n_patches[1],
-                        n_patch_x=n_patches[2],
+                        n_patch_y=n_patches[0],
+                        n_patch_x=n_patches[1],
                     ),
                     Reduce(
                         "b c  n_patch_y n_patch_x -> b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
                         reduction="repeat",
-                        patch_size_y=patch_size[1],
-                        patch_size_x=patch_size[2],
+                        patch_size_y=patch_size[0],
+                        patch_size_x=patch_size[1],
                     ),
                 ]
             )

@@ -90,7 +90,8 @@ class CrossMAE_Decoder(torch.nn.Module):
 
     def forward(self, features, forward_indexes, backward_indexes):
         # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
-        features = features[0]
+        # features can be n t b c (if intermediate feature weighter used) or t b c if not
+        features = features[0] if len(features.shape) == 4 else features
         T, B, C = features.shape
         # we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now
         features = self.projection_norm(self.projection(features))
