@@ -1,7 +1,6 @@
 _aux:
   batch_size: 128
 
-
 train_dataloaders:
   _target_: monai.data.dataloader.DataLoader
   batch_size: ${data._aux.batch_size}

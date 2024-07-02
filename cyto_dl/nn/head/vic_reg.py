@@ -1,15 +1,14 @@
-from torch import nn
 from typing import List
-from cyto_dl.nn.head import BaseHead
+
+from torch import nn
+
 from cyto_dl.nn import MLP
+from cyto_dl.nn.head import BaseHead
 
 
 class VICRegHead(BaseHead):
     def __init__(
-        self,
-        loss,
-        dims: List[int]=[2048, 8192],
-        hidden_layers: List[int] = [8192, 8192]
+        self, loss, dims: List[int] = [2048, 8192], hidden_layers: List[int] = [8192, 8192]
     ):
         """
         Parameters

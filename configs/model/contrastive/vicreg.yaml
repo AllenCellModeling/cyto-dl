@@ -19,7 +19,7 @@ task_head:
   loss:
     _target_: cyto_dl.nn.losses.vic_reg.VICRegLoss
     num_features: ${model._aux.latent_dim}
-  dims: 
+  dims:
     - ${model._aux.latent_dim}
     - 256
   hidden_layers:
