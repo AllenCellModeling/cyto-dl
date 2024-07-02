@@ -1,7 +1,7 @@
 _target_: cyto_dl.models.contrastive.Contrastive
 
-anchor_key: image
-positive_key: image_aug
+anchor_key: ${anchor_key}
+positive_key: ${positive_key}
 target_key: target
 save_dir: ${paths.output_dir}
 viz_freq: 10
@@ -19,8 +19,10 @@ task_head:
   loss:
     _target_: cyto_dl.nn.losses.vic_reg.VICRegLoss
     num_features: ${model._aux.latent_dim}
-  dimensions:
+  dims: 
     - ${model._aux.latent_dim}
+    - 256
+  hidden_layers:
     - 256
     - 256
     - 256

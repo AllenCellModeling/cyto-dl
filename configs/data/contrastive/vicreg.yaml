@@ -1,6 +1,7 @@
 _aux:
   batch_size: 128
 
+
 train_dataloaders:
   _target_: monai.data.dataloader.DataLoader
   batch_size: ${data._aux.batch_size}
@@ -14,56 +15,56 @@ train_dataloaders:
     train: true
     transform:
       - _target_: monai.transforms.ToTensord
-        keys: image
+        keys: ${anchor_key}
         track_meta: false
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: image
+        keys: ${anchor_key}
 
       - _target_: monai.transforms.CopyItemsd
-        keys: image
+        keys: ${anchor_key}
         times: 1
-        names: ["image_aug"]
+        names: ${positive_key}
 
       # augment original image
       - _target_: monai.transforms.RandRotate90d
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.85
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ["image"]
+        keys: ${anchor_key}
         sigma_x: [0.5, 1.0]
         prob: 1.0
         sigma_y: [0.5, 1.0]
 
       # augment copy
       - _target_: monai.transforms.RandRotate90d
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 1.0
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         sigma_x: [0.5, 1.0]
         prob: 0.1
         sigma_y: [0.5, 1.0]
@@ -81,56 +82,56 @@ val_dataloaders:
     train: false
     transform:
       - _target_: monai.transforms.ToTensord
-        keys: image
+        keys: ${anchor_key}
         track_meta: false
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: image
+        keys: ${anchor_key}
 
       - _target_: monai.transforms.CopyItemsd
-        keys: image
+        keys: ${anchor_key}
         times: 1
-        names: ["image_aug"]
+        names: ${positive_key}
 
       # augment original image
       - _target_: monai.transforms.RandRotate90d
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ["image"]
+        keys: ${anchor_key}
         prob: 0.85
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ["image"]
+        keys: ${anchor_key}
         sigma_x: [0.5, 1.0]
         prob: 1.0
         sigma_y: [0.5, 1.0]
 
       # augment copy
       - _target_: monai.transforms.RandRotate90d
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
       - _target_: monai.transforms.RandFlipd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
         spatial_axis: 0
       - _target_: monai.transforms.RandFlipd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 0.5
         spatial_axis: 1
       - _target_: monai.transforms.RandShiftIntensityd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         prob: 1.0
         offsets: 0.5
       - _target_: monai.transforms.RandGaussianSmoothd
-        keys: ["image_aug"]
+        keys: ${positive_key}
         sigma_x: [0.5, 1.0]
         prob: 0.1
         sigma_y: [0.5, 1.0]

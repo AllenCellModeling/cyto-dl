@@ -19,6 +19,9 @@ seed: 12345
 experiment_name: vicreg
 run_name: mnist
 
+anchor_key: image
+positive_key: image_aug
+
 trainer:
   max_epochs: 1000
   check_val_every_n_epoch: 10
