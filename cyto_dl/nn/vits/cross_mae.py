@@ -90,18 +90,28 @@ class CrossMAE_Decoder(torch.nn.Module):
 
     def forward(self, features, forward_indexes, backward_indexes):
         # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
-        features = features.squeeze(0)
+        features = features[0]
         T, B, C = features.shape
         # we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now
         features = self.projection_norm(self.projection(features))
 
         # add cls token
         backward_indexes = torch.cat(
-            [torch.zeros(1, backward_indexes.shape[1]).to(backward_indexes), backward_indexes + 1],
+            [
+                torch.zeros(
+                    1, backward_indexes.shape[1], device=backward_indexes.device, dtype=torch.long
+                ),
+                backward_indexes + 1,
+            ],
             dim=0,
         )
         forward_indexes = torch.cat(
-            [torch.zeros(1, forward_indexes.shape[1]).to(forward_indexes), forward_indexes + 1],
+            [
+                torch.zeros(
+                    1, forward_indexes.shape[1], device=forward_indexes.device, dtype=torch.long
+                ),
+                forward_indexes + 1,
+            ],
             dim=0,
         )
         # fill in masked regions
@@ -138,11 +148,18 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         # add back in visible/encoded tokens that we don't calculate loss on
         patches = torch.cat(
-            [torch.zeros((T - 1, B, patches.shape[-1]), requires_grad=False).to(patches), patches],
+            [
+                torch.zeros(
+                    (T - 1, B, patches.shape[-1]),
+                    requires_grad=False,
+                    device=patches.device,
+                    dtype=patches.dtype,
+                ),
+                patches,
+            ],
             dim=0,
         )
         patches = take_indexes(patches, backward_indexes[1:] - 1)
         # patches to image
         img = self.patch2img(patches)
-
         return img
