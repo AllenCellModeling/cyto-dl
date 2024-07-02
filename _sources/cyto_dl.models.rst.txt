@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    cyto_dl.models.classification
+   cyto_dl.models.contrastive
    cyto_dl.models.handlers
    cyto_dl.models.im2im
    cyto_dl.models.utils

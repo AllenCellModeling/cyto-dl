@@ -1,0 +1,7 @@
+cyto\_dl.nn.head.vic\_reg module
+================================
+
+.. automodule:: cyto_dl.nn.head.vic_reg
+   :members:
+   :undoc-members:
+   :show-inheritance:

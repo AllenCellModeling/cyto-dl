@@ -18,3 +18,4 @@ Submodules
    cyto_dl.nn.head.mae_head
    cyto_dl.nn.head.mask_head
    cyto_dl.nn.head.res_blocks_head
+   cyto_dl.nn.head.vic_reg

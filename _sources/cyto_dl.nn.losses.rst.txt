@@ -22,5 +22,6 @@ Submodules
    cyto_dl.nn.losses.loss_wrapper
    cyto_dl.nn.losses.spharm_loss
    cyto_dl.nn.losses.threshold_loss
+   cyto_dl.nn.losses.vic_reg
    cyto_dl.nn.losses.weibull
    cyto_dl.nn.losses.weighted_mse_loss
