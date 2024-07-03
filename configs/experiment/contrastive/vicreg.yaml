@@ -1,0 +1,28 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: contrastive/vicreg.yaml
+  - override /model: contrastive/vicreg.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: vicreg
+run_name: mnist
+
+anchor_key: image
+positive_key: image_aug
+
+trainer:
+  max_epochs: 1000
+  check_val_every_n_epoch: 10
+  devices: [0]
