@@ -299,12 +299,10 @@ class IWMPredictor(torch.nn.Module):
         # map context embedding to predictor dimension
         context_emb = self.predictor_embed(context_emb)
 
-
         #add target domain information via concatenation + token mixing
-        target_domain_embedding = torch.cat([self.domain_embeddings[td] for td in target_domain]).repeat(1, context_emb.shape[1], 1)
+        target_domain_embedding = torch.cat([self.domain_embeddings[td] for td in target_domain]).repeat(b, context_emb.shape[1], 1)
         context_emb = torch.cat([context_emb, target_domain_embedding], dim=-1)
         context_emb = self.context_mixer(context_emb)
-
 
         # add masked positional embedding to mask tokens
         mask = self.mask_token.expand(t, b, -1)

@@ -7,6 +7,8 @@ import copy
 from cyto_dl.nn.vits.utils import take_indexes
 import pandas as pd
 from pathlib import Path
+import numpy as np
+from einops import repeat
 
 class IJEPA(BaseModel):
     def __init__(
@@ -134,10 +136,38 @@ class IJEPA(BaseModel):
     #     loss = self.loss(predictions, target_embeddings)
     #     return loss, None, None
 
+    def get_predict_masks(self, batch_size, num_patches=[4, 16, 16]):
+        mask = torch.ones(num_patches, dtype=bool)
+        mask = rearrange(mask, 'z y x -> (z y x)')
+        mask = torch.argwhere(mask).squeeze()
+
+        return repeat(mask, 't -> t b', b=batch_size)
+    
+    # IWM
     def predict_step(self, batch, batch_idx):
-        x=batch[self.hparams.x_key]
-        embeddings = self(x).mean(axis=1)
-        preds = pd.DataFrame(embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])])
-        preds['CellId'] =batch['CellId']
-        preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
+        source = batch[f'{self.hparams.x_key}_brightfield'].squeeze(0)
+        target = batch[f'{self.hparams.x_key}_struct'].squeeze(0)
+
+        # use predictor to predict each patch
+        target_masks = self.get_predict_masks(source.shape[0])
+        # mean across patches
+        bf_embeddings = self.encoder(source)
+        pred_target_embeddings = self.predictor(bf_embeddings, target_masks, batch['structure_name']).mean(axis=1)
+        pred_feats = pd.DataFrame(pred_target_embeddings.detach().cpu().numpy(), columns=[f'{i}_pred' for i in range(pred_target_embeddings.shape[1])])
+
+        # get target embeddings
+        target_embeddings = self.encoder(target).mean(axis=1)
+        ctxt_feats = pd.DataFrame(target_embeddings.detach().cpu().numpy(), columns=[f'{i}_ctxt' for i in range(target_embeddings.shape[1])])
+
+        all_feats = pd.concat([ctxt_feats, pred_feats], axis=1)
+
+        all_feats.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
         return None, None, None
+
+    # def predict_step(self, batch, batch_idx):
+    #     x=batch[self.hparams.x_key]
+    #     embeddings = self(x).mean(axis=1)
+    #     preds = pd.DataFrame(embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])])
+    #     preds['CellId'] =batch['CellId']
+    #     preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
+    #     return None, None, None
