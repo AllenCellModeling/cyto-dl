@@ -128,14 +128,8 @@ class Contrastive(BaseModel):
                     self.plot_neighbors(embedding1, embedding2)
 
         return out["loss"], None, None
-
+    
     def predict_step(self, batch, batch_idx):
-        x = batch[self.hparams.anchor_key].as_tensor()
+        x = batch[self.hparams.anchor_key]
         embeddings = self.backbone(x)
-        preds = pd.DataFrame(
-            embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])]
-        )
-        for key in self.hparams.meta_keys:
-            preds[key] = batch[key]
-        preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
-        return None, None, None
+        return embeddings.detach().cpu().numpy(), x.meta
