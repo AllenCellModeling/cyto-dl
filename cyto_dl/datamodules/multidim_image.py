@@ -137,6 +137,9 @@ class MultiDimImageDataset(Dataset):
                 meta=meta,
             )
         raise ValueError(f"Expected img to be MetaTensor or torch.Tensor, got {type(img)}")
+                
+    def is_batch(self, x):
+        return isinstance(x, list) or len(x.shape) == self.spatial_dims + 2
 
     def _transform(self, index: int):
         img_data = self.img_data.pop()
@@ -156,7 +159,10 @@ class MultiDimImageDataset(Dataset):
         output_img = (
             apply_transform(self.transform, data_i) if self.transform is not None else data_i
         )
-        return [{ self.out_key: self.create_metatensor(img, meta=img_data)}  for img in output_img]
+        # some monai transforms return a batch. When collated, the batch dimension gets moved to the channel dimension
+        if self.is_batch(output_img):
+            return [{self.out_key: self.create_metatensor(img, meta=img_data)} for img in output_img]
+        return {self.out_key: self.create_metatensor(output_img, meta=img_data)}
 
     def __len__(self):
         return len(self.img_data)
@@ -227,6 +233,6 @@ def make_multidim_image_dataloader(
         dict_meta=dict_meta,
         transform=transforms,
     )
-    # currently only supports a single worker
-    dataloader_kwargs.pop('num_workers')
-    return DataLoader(dataset,num_workers=1, **dataloader_kwargs)
+    # currently only supports a 0/1 workers
+    num_workers = min(dataloader_kwargs.pop('num_workers'), 1)
+    return DataLoader(dataset,num_workers=num_workers, **dataloader_kwargs)
