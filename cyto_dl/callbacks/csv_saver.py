@@ -1,6 +1,8 @@
-from lightning.pytorch.callbacks import Callback
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+from lightning.pytorch.callbacks import Callback
+
 
 class CSVSaver(Callback):
     def __init__(self, save_dir, meta_keys=[]):
@@ -13,6 +15,6 @@ class CSVSaver(Callback):
         feats = []
         for pred, meta in predictions:
             batch_feats = pd.DataFrame(pred)
-            batch_feats['filename'] = meta['filename_or_obj']
+            batch_feats["filename"] = meta["filename_or_obj"]
             feats.append(batch_feats)
-        pd.concat(feats).to_csv(self.save_dir / 'predictions.csv', index=False)
+        pd.concat(feats).to_csv(self.save_dir / "predictions.csv", index=False)

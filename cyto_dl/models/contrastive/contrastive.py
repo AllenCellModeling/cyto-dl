@@ -127,7 +127,7 @@ class Contrastive(BaseModel):
                     self.plot_neighbors(embedding1, embedding2)
 
         return out["loss"], None, None
-    
+
     def predict_step(self, batch, batch_idx):
         x = batch[self.hparams.anchor_key]
         embeddings = self.backbone(x if isinstance(x, torch.Tensor) else x.as_tensor())

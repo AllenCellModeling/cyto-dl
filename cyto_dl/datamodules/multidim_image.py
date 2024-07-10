@@ -1,18 +1,18 @@
 from pathlib import Path
-from typing import Callable, Optional, Union, Dict, List, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import torch
 from bioio import BioImage
 from monai.data import DataLoader, Dataset, MetaTensor
 from monai.transforms import Compose, apply_transform
 from omegaconf import ListConfig
-import torch
 
 
 class MultiDimImageDataset(Dataset):
-    """Dataset converting a `.csv` file listing multi dimensional (timelapse or multi-scene) files and some metadata into batches of single-
-    scene, single-timepoint, single-channel images."""
+    """Dataset converting a `.csv` file listing multi dimensional (timelapse or multi-scene) files
+    and some metadata into batches of single- scene, single-timepoint, single-channel images."""
 
     def __init__(
         self,
@@ -95,7 +95,7 @@ class MultiDimImageDataset(Dataset):
         start = row.get(self.time_start_column, 0)
         stop = row.get(self.time_stop_column, -1)
         step = row.get(self.time_step_column, 1)
-        timepoints = range(start, stop + 1, step) if stop>0 else range(img.dims.T)
+        timepoints = range(start, stop + 1, step) if stop > 0 else range(img.dims.T)
         return list(timepoints)
 
     def get_per_file_args(self, df):
@@ -126,7 +126,7 @@ class MultiDimImageDataset(Dataset):
         while len(img.shape) < self.spatial_dims + 1:
             img = np.expand_dims(img, 0)
         return img
-    
+
     def create_metatensor(self, img, meta):
         if isinstance(img, MetaTensor):
             img.meta.update(meta)
@@ -137,7 +137,7 @@ class MultiDimImageDataset(Dataset):
                 meta=meta,
             )
         raise ValueError(f"Expected img to be MetaTensor or torch.Tensor, got {type(img)}")
-                
+
     def is_batch(self, x):
         return isinstance(x, list) or len(x.shape) == self.spatial_dims + 2
 
@@ -161,17 +161,20 @@ class MultiDimImageDataset(Dataset):
         )
         # some monai transforms return a batch. When collated, the batch dimension gets moved to the channel dimension
         if self.is_batch(output_img):
-            return [{self.out_key: self.create_metatensor(img, meta=img_data)} for img in output_img]
+            return [
+                {self.out_key: self.create_metatensor(img, meta=img_data)} for img in output_img
+            ]
         return {self.out_key: self.create_metatensor(output_img, meta=img_data)}
 
     def __len__(self):
         return len(self.img_data)
 
+
 def make_multidim_image_dataloader(
     csv_path: Optional[Union[Path, str]] = None,
-    img_path_column: str = 'path',
-    channel_column: str = 'channel',
-    out_key: str = 'image',
+    img_path_column: str = "path",
+    channel_column: str = "channel",
+    out_key: str = "image",
     spatial_dims: int = 3,
     scene_column: str = "scene",
     time_start_column: str = "start",
@@ -181,8 +184,8 @@ def make_multidim_image_dataloader(
     transforms: Optional[Union[List[Callable], Tuple[Callable], ListConfig]] = None,
     **dataloader_kwargs,
 ) -> DataLoader:
-    """Function to create a MultiDimImage Dataset. Currently, this dataset is only useful during prediction
-    and cannot be used for training or testing.
+    """Function to create a MultiDimImage Dataset. Currently, this dataset is only useful during
+    prediction and cannot be used for training or testing.
 
     Parameters
     ----------
@@ -234,5 +237,5 @@ def make_multidim_image_dataloader(
         transform=transforms,
     )
     # currently only supports a 0/1 workers
-    num_workers = min(dataloader_kwargs.pop('num_workers'), 1)
-    return DataLoader(dataset,num_workers=num_workers, **dataloader_kwargs)
+    num_workers = min(dataloader_kwargs.pop("num_workers"), 1)
+    return DataLoader(dataset, num_workers=num_workers, **dataloader_kwargs)
