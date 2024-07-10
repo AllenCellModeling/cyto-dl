@@ -220,6 +220,7 @@ class MAE_ViT(torch.nn.Module):
         use_crossmae: Optional[bool] = False,
         context_pixels: Optional[List[int]] = [0, 0, 0],
         input_channels: Optional[int] = 1,
+        features_only: Optional[bool] = False,
     ) -> None:
         """
         Parameters
@@ -247,6 +248,9 @@ class MAE_ViT(torch.nn.Module):
         context_pixels: List[int]
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         input_channels: int
+            Number of input channels
+        features_only: bool
+            Only use encoder to extract features
         """
         super().__init__()
         assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
@@ -262,6 +266,7 @@ class MAE_ViT(torch.nn.Module):
         ), "base_patch_size must be of length spatial_dims"
 
         self.mask_ratio = mask_ratio
+        self.features_only = features_only
 
         self.encoder = MAE_Encoder(
             num_patches,
@@ -290,5 +295,7 @@ class MAE_ViT(torch.nn.Module):
 
     def forward(self, img):
         features, mask, forward_indexes, backward_indexes = self.encoder(img, self.mask_ratio)
+        if self.features_only:
+            return features
         predicted_img = self.decoder(features, forward_indexes, backward_indexes)
         return predicted_img, mask
