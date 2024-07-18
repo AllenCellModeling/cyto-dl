@@ -51,4 +51,3 @@ _aux:
           prediction:
             _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel
             rescale_dtype: numpy.uint8
-        save_input: True
