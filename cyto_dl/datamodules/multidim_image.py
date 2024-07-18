@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 from bioio import BioImage
 from monai.data import DataLoader, Dataset, MetaTensor
-from monai.transforms import Compose, apply_transform, ToTensor
+from monai.transforms import Compose, ToTensor, apply_transform
 from omegaconf import ListConfig
 
 
@@ -159,15 +159,13 @@ class MultiDimImageDataset(Dataset):
         img_data["original_path"] = original_path
         data_i = self._ensure_channel_first(data_i)
         data_i = self.create_metatensor(data_i, img_data)
-                
+
         output_img = (
             apply_transform(self.transform, data_i) if self.transform is not None else data_i
         )
         # some monai transforms return a batch. When collated, the batch dimension gets moved to the channel dimension
         if self.is_batch(output_img):
-            return [
-                {self.out_key: img} for img in output_img
-            ]
+            return [{self.out_key: img} for img in output_img]
         return {self.out_key: img}
 
     def __len__(self):
@@ -188,7 +186,7 @@ def make_multidim_image_dataloader(
     transforms: Optional[Union[List[Callable], Tuple[Callable], ListConfig]] = None,
     **dataloader_kwargs,
 ) -> DataLoader:
-    """Function to create a MultiDimImage Dataset. Currently, this dataset is only useful during
+    """Function to create a MultiDimImage DataLoader. Currently, this dataset is only useful during
     prediction and cannot be used for training or testing.
 
     Parameters
