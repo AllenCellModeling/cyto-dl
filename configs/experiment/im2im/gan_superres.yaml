@@ -42,3 +42,18 @@ callbacks:
 
   early_stopping:
     monitor: val/loss/generator_loss
+
+  # prediction
+  # saving:
+  #   _target_: cyto_dl.callbacks.image_saver.ImageSaver
+  #   save_dir: ${paths.output_dir}
+  #   save_every_n_epochs: ${model.save_images_every_n_epochs}
+  #   stages: ["predict"]
+  #   save_input: False
+  # training
+  saving:
+    _target_: cyto_dl.callbacks.image_saver.ImageSaver
+    save_dir: ${paths.output_dir}
+    save_every_n_epochs: ${model.save_images_every_n_epochs}
+    stages: ["train", "test", "val"]
+    save_input: True
