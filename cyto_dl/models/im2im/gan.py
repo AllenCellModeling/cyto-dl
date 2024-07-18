@@ -163,7 +163,6 @@ class GAN(MultiTaskIm2Im):
         results.update({f"generator_{key}": loss for key, loss in loss_G.items()})
         results["loss"] = results["generator_loss"]
 
-        
         if n_postprocess > 0:
             # add postprocessed images to return dict
             for k in ("pred", "target", "input"):
