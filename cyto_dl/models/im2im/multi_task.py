@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+import warnings
 from typing import Dict, List, Union
 
 import torch
@@ -10,6 +11,7 @@ from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
+warnings.simplefilter('once', UserWarning)
 
 class MultiTaskIm2Im(BaseModel):
     def __init__(
@@ -191,8 +193,13 @@ class MultiTaskIm2Im(BaseModel):
         if stage in ("train", "val", "test"):
             run_heads = [key for key in self.task_heads.keys() if key in batch]
             return run_heads, None
-
-        filenames = batch[self.hparams.x_key].meta["filename_or_obj"]
+        filenames = batch[self.hparams.x_key].meta.get("filename_or_obj", None)
+        if filenames is None:
+            warnings.warn(
+                'Batch MetaTensors must have "filename_or_obj" to be saved out. Returning array prediction instead...',
+                UserWarning
+            )
+            return run_heads, None
 
         # IO_map is only generated for prediction
         io_map = {h: self.task_heads[h].generate_io_map(filenames) for h in run_heads}
