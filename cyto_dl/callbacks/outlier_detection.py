@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from einops import reduce
 from lightning.pytorch.callbacks import Callback
-from ostats import add_sample
+from online_stats import add_sample
 from scipy.spatial.distance import mahalanobis
 
 
