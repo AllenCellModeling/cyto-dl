@@ -67,7 +67,7 @@ class ImageSaver(Callback):
             self.save(outputs, "test", trainer.global_step)
 
     def _should_save(self, batch_idx, epoch):
-        return batch_idx == 0 and (epoch + 1) % self.save_every_n_epochs == 0
+        return batch_idx == (epoch + 1) % self.save_every_n_epochs == 0
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0):
         if "train" in self.stages and self._should_save(batch_idx, trainer.current_epoch):

@@ -1,6 +1,6 @@
 import sys
-from pathlib import Path
 import warnings
+from pathlib import Path
 from typing import Dict, List, Union
 
 import torch
@@ -11,7 +11,8 @@ from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 
-warnings.simplefilter('once', UserWarning)
+warnings.simplefilter("once", UserWarning)
+
 
 class MultiTaskIm2Im(BaseModel):
     def __init__(
@@ -151,8 +152,9 @@ class MultiTaskIm2Im(BaseModel):
         # save first batch every n epochs during train/val
         if (
             stage in ("train", "val")
-            and batch_idx == 0
-            and (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs == 0
+            and batch_idx
+            == (self.current_epoch + 1) % self.hparams.save_images_every_n_epochs
+            == 0
         ):
             return 1
         # postprocess all images in batch for predict/test
@@ -197,7 +199,7 @@ class MultiTaskIm2Im(BaseModel):
         if filenames is None:
             warnings.warn(
                 'Batch MetaTensors must have "filename_or_obj" to be saved out. Returning array prediction instead...',
-                UserWarning
+                UserWarning,
             )
             return run_heads, None
 
