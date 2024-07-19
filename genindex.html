@@ -172,6 +172,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -196,9 +197,9 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.czi.html">cyto_dl.datamodules.czi module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
@@ -550,6 +551,8 @@
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.HardwareType.CPU">CPU (cyto_dl.api.data.HardwareType attribute)</a>
 </li>
+        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.create_metatensor">create_metatensor() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
+</li>
         <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.CropResize">CropResize (class in cyto_dl.image.transforms.track_transforms)</a>
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.CrossAttention">CrossAttention (class in cyto_dl.nn.vits.blocks.cross_attention)</a>
@@ -673,13 +676,6 @@
 </li>
         </ul></li>
         <li>
-    cyto_dl.datamodules.czi
-
-        <ul>
-          <li><a href="cyto_dl.datamodules.czi.html#module-cyto_dl.datamodules.czi">module</a>
-</li>
-        </ul></li>
-        <li>
     cyto_dl.datamodules.data_dict
 
         <ul>
@@ -719,6 +715,13 @@
 
         <ul>
           <li><a href="cyto_dl.datamodules.folder.html#module-cyto_dl.datamodules.folder">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.datamodules.multidim_image
+
+        <ul>
+          <li><a href="cyto_dl.datamodules.multidim_image.html#module-cyto_dl.datamodules.multidim_image">module</a>
 </li>
         </ul></li>
         <li>
@@ -917,6 +920,8 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -924,8 +929,6 @@
           <li><a href="cyto_dl.models.classification.timepoint_classification.html#module-cyto_dl.models.classification.timepoint_classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.contrastive
 
@@ -1413,8 +1416,6 @@
 </li>
         <li><a href="cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel">CytoDLModel (class in cyto_dl.api.model)</a>
 </li>
-        <li><a href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset">CZIDataset (class in cyto_dl.datamodules.czi)</a>
-</li>
     </ul></td>
   </tr></table>
 </section>
@@ -1683,7 +1684,7 @@
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_patch_size">get_patch_size() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
-        <li><a href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args">get_per_file_args() (cyto_dl.datamodules.czi.CZIDataset method)</a>
+        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.get_per_file_args">get_per_file_args() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
 
         <ul>
           <li><a href="cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.get_per_file_args">(cyto_dl.datamodules.smartcache.SmartcacheDatamodule method)</a>
@@ -1766,6 +1767,8 @@
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_loggers">instantiate_loggers() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher">IntermediateWeigher (class in cyto_dl.nn.vits.blocks.intermediate_weigher)</a>
+</li>
+        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.is_batch">is_batch() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
 </li>
         <li><a href="cyto_dl.utils.config.html#cyto_dl.utils.config.is_config">is_config() (in module cyto_dl.utils.config)</a>
 </li>
@@ -1883,8 +1886,6 @@
           <li><a href="cyto_dl.train.html#cyto_dl.train.main">(in module cyto_dl.train)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.datamodules.czi.html#cyto_dl.datamodules.czi.make_CZI_dataloader">make_CZI_dataloader() (in module cyto_dl.datamodules.czi)</a>
-</li>
         <li><a href="cyto_dl.datamodules.data_dict.html#cyto_dl.datamodules.data_dict.make_data_dict_dataloader">make_data_dict_dataloader() (in module cyto_dl.datamodules.data_dict)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html#cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule.make_dataloader">make_dataloader() (cyto_dl.datamodules.dataframe.dataframe_datamodule.DataframeDatamodule method)</a>
@@ -1896,6 +1897,8 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.datamodules.folder.html#cyto_dl.datamodules.folder.make_folder_dataloader">make_folder_dataloader() (in module cyto_dl.datamodules.folder)</a>
+</li>
+        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.make_multidim_image_dataloader">make_multidim_image_dataloader() (in module cyto_dl.datamodules.multidim_image)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits">make_multiple_dataframe_splits() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
@@ -1975,8 +1978,6 @@
 </li>
           <li><a href="cyto_dl.datamodules.html#module-cyto_dl.datamodules">cyto_dl.datamodules</a>
 </li>
-          <li><a href="cyto_dl.datamodules.czi.html#module-cyto_dl.datamodules.czi">cyto_dl.datamodules.czi</a>
-</li>
           <li><a href="cyto_dl.datamodules.data_dict.html#module-cyto_dl.datamodules.data_dict">cyto_dl.datamodules.data_dict</a>
 </li>
           <li><a href="cyto_dl.datamodules.dataframe.html#module-cyto_dl.datamodules.dataframe">cyto_dl.datamodules.dataframe</a>
@@ -1988,6 +1989,8 @@
           <li><a href="cyto_dl.datamodules.dataframe.utils.html#module-cyto_dl.datamodules.dataframe.utils">cyto_dl.datamodules.dataframe.utils</a>
 </li>
           <li><a href="cyto_dl.datamodules.folder.html#module-cyto_dl.datamodules.folder">cyto_dl.datamodules.folder</a>
+</li>
+          <li><a href="cyto_dl.datamodules.multidim_image.html#module-cyto_dl.datamodules.multidim_image">cyto_dl.datamodules.multidim_image</a>
 </li>
           <li><a href="cyto_dl.datamodules.smartcache.html#module-cyto_dl.datamodules.smartcache">cyto_dl.datamodules.smartcache</a>
 </li>
@@ -2191,6 +2194,8 @@
         <li><a href="cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader">MonaiBioReader (class in cyto_dl.image.io.monai_bio_reader)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.MovingMNIST">MovingMNIST (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset">MultiDimImageDataset (class in cyto_dl.datamodules.multidim_image)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.AutoThresholdMethod.MULTIOTSU">MULTIOTSU (cyto_dl.api.data.AutoThresholdMethod attribute)</a>
 </li>

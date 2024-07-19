@@ -1,0 +1,7 @@
+cyto\_dl.datamodules.multidim\_image module
+===========================================
+
+.. automodule:: cyto_dl.datamodules.multidim_image
+   :members:
+   :undoc-members:
+   :show-inheritance:

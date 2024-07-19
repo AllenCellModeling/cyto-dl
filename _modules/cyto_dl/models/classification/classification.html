@@ -173,6 +173,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -197,9 +198,9 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.czi.html">cyto_dl.datamodules.czi module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
@@ -539,13 +540,10 @@
         <span class="k">return</span> <span class="n">loss</span><span class="p">,</span> <span class="n">logits</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">labels</span></div>
 
 <div class="viewcode-block" id="Classification.predict_step"><a class="viewcode-back" href="../../../../cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.predict_step">[docs]</a>    <span class="k">def</span> <span class="nf">predict_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">):</span>
-        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">anchor_key</span><span class="p">]</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">preds</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">write_batch_predictions</span><span class="p">:</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">preds</span><span class="p">])</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-                <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">save_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;predictions_batch=</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">preds</span></div></div>
+        <span class="k">return</span> <span class="n">preds</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">meta</span></div></div>
 </pre></div>
         </article>
       </div>

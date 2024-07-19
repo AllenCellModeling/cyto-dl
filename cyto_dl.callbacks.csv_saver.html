@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.datamodules.data_dict module" href="cyto_dl.datamodules.data_dict.html" /><link rel="prev" title="cyto_dl.datamodules.dataframe.utils module" href="cyto_dl.datamodules.dataframe.utils.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.callbacks.latent_walk module" href="cyto_dl.callbacks.latent_walk.html" /><link rel="prev" title="cyto_dl.callbacks.callback_utils module" href="cyto_dl.callbacks.callback_utils.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.datamodules.czi module - cyto-dl 0.1.8 documentation</title>
+        <title>cyto_dl.callbacks.csv_saver module - cyto-dl 0.1.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -172,8 +172,9 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.api.model.html">cyto_dl.api.model module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.callbacks.csv_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -191,16 +192,16 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.dataframe.readers.html">cyto_dl.dataframe.readers module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.datamodules.html">cyto_dl.datamodules package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.datamodules.html">cyto_dl.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.datamodules.dataframe.html">cyto_dl.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.datamodules.dataframe.dataframe_datamodule.html">cyto_dl.datamodules.dataframe.dataframe_datamodule module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.html">cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.datamodules.czi module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
@@ -414,75 +415,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.datamodules.czi">
-<span id="cyto-dl-datamodules-czi-module"></span><h1>cyto_dl.datamodules.czi module<a class="headerlink" href="#module-cyto_dl.datamodules.czi" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.datamodules.czi.CZIDataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.czi.</span></span><span class="sig-name descname"><span class="pre">CZIDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_path_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'scene'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_start_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'start'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stop_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'stop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'step'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_load</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/czi.html#CZIDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.czi.CZIDataset" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
-<p>Dataset converting a <cite>.csv</cite> file listing CZI files and some metadata into batches of single-
-scene, single-timepoint, single-channel images.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>csv_path</strong> (<em>Union[Path, str]</em>) – path to csv</p></li>
-<li><p><strong>img_path_column</strong> (<em>str</em>) – column in <cite>csv_path</cite> that contains path to CZI file</p></li>
-<li><p><strong>channel_column</strong> (<em>str</em>) – Column in <cite>csv_path</cite> that contains which channel to extract from CZI file. Should be an integer.</p></li>
-<li><p><strong>out_key</strong> (<em>str</em>) – Key where single-scene/timepoint/channel is saved in output dictionary</p></li>
-<li><p><strong>spatial_dims</strong> (<em>int=3</em>) – Spatial dimension of output image. Must be 2 for YX or 3 for ZYX</p></li>
-<li><p><strong>scene_column</strong> (<em>str=”scene”,</em>) – Column in <cite>csv_path</cite> that contains scenes to extract from CZI file. If not specified, all scenes will
-be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. <cite>scene1,scene2</cite>)</p></li>
-<li><p><strong>time_start_column</strong> (<em>str=”start”</em>) – Column in <cite>csv_path</cite> specifying which timepoint in timelapse CZI to start extracting. If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite>
-are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>time_stop_column</strong> (<em>str=”stop”</em>) – Column in <cite>csv_path</cite> specifying which timepoint in timelapse CZI to stop extracting. If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite>
-are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>time_step_column</strong> (<em>str=”step”</em>) – Column in <cite>csv_path</cite> specifying step between timepoints. For example, values in this column should be <cite>2</cite> if every other timepoint should be run.
-If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite> are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>transform</strong> (<em>Optional[Callable] = None</em>) – Callable to that accepts numpy array. For example, image normalization functions could be passed here.</p></li>
-<li><p><strong>dask_load</strong> (<em>bool = True</em>) – Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.datamodules.czi.CZIDataset.get_per_file_args">
-<span class="sig-name descname"><span class="pre">get_per_file_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/czi.html#CZIDataset.get_per_file_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="cyto_dl.datamodules.czi.make_CZI_dataloader">
-<span class="sig-prename descclassname"><span class="pre">cyto_dl.datamodules.czi.</span></span><span class="sig-name descname"><span class="pre">make_CZI_dataloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_path_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scene'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_start_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'start'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_stop_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'stop'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'step'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transforms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dataloader_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/datamodules/czi.html#make_CZI_dataloader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.datamodules.czi.make_CZI_dataloader" title="Permalink to this definition">#</a></dt>
-<dd><p>Function to create a CZI Dataset. Currently, this dataset is only useful during prediction
-and cannot be used for training or testing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>csv_path</strong> (<em>Union[Path, str]</em>) – path to csv</p></li>
-<li><p><strong>img_path_column</strong> (<em>str</em>) – column in <cite>csv_path</cite> that contains path to CZI file</p></li>
-<li><p><strong>channel_column</strong> (<em>str</em>) – Column in <cite>csv_path</cite> that contains which channel to extract from CZI file. Should be an integer.</p></li>
-<li><p><strong>out_key</strong> (<em>str</em>) – Key where single-scene/timepoint/channel is saved in output dictionary</p></li>
-<li><p><strong>spatial_dims</strong> (<em>int=3</em>) – Spatial dimension of output image. Must be 2 for YX or 3 for ZYX</p></li>
-<li><p><strong>scene_column</strong> (<em>str=”scene”,</em>) – Column in <cite>csv_path</cite> that contains scenes to extract from CZI file. If not specified, all scenes will
-be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. <cite>scene1,scene2</cite>)</p></li>
-<li><p><strong>time_start_column</strong> (<em>str=”start”</em>) – Column in <cite>csv_path</cite> specifying which timepoint in timelapse CZI to start extracting. If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite>
-are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>time_stop_column</strong> (<em>str=”stop”</em>) – Column in <cite>csv_path</cite> specifying which timepoint in timelapse CZI to stop extracting. If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite>
-are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>time_step_column</strong> (<em>str=”step”</em>) – Column in <cite>csv_path</cite> specifying step between timepoints. For example, values in this column should be <cite>2</cite> if every other timepoint should be run.
-If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_column</cite> are not specified, all timepoints are extracted.</p></li>
-<li><p><strong>transform</strong> (<em>Optional[Callable] = None</em>) – Callable to that accepts numpy array. For example, image normalization functions could be passed here.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+          <section id="cyto-dl-callbacks-csv-saver-module">
+<h1>cyto_dl.callbacks.csv_saver module<a class="headerlink" href="#cyto-dl-callbacks-csv-saver-module" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -490,23 +430,23 @@ If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_col
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.datamodules.data_dict.html">
+          <a class="next-page" href="cyto_dl.callbacks.latent_walk.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.datamodules.data_dict module</div>
+                <div class="title">cyto_dl.callbacks.latent_walk module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.datamodules.dataframe.utils.html">
+          <a class="prev-page" href="cyto_dl.callbacks.callback_utils.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.datamodules.dataframe.utils module</div>
+                <div class="title">cyto_dl.callbacks.callback_utils module</div>
                 
               </div>
             </a>
@@ -528,31 +468,8 @@ If any of <cite>start_column</cite>, <cite>stop_column</cite>, or <cite>step_col
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">cyto_dl.datamodules.czi module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.datamodules.czi.CZIDataset"><code class="docutils literal notranslate"><span class="pre">CZIDataset</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.datamodules.czi.CZIDataset.get_per_file_args"><code class="docutils literal notranslate"><span class="pre">CZIDataset.get_per_file_args()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#cyto_dl.datamodules.czi.make_CZI_dataloader"><code class="docutils literal notranslate"><span class="pre">make_CZI_dataloader()</span></code></a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
