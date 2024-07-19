@@ -2,7 +2,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.decomposition import PCA
@@ -130,12 +129,6 @@ class Contrastive(BaseModel):
         return out["loss"], None, None
 
     def predict_step(self, batch, batch_idx):
-        x = batch[self.hparams.anchor_key].as_tensor()
-        embeddings = self.backbone(x)
-        preds = pd.DataFrame(
-            embeddings.detach().cpu().numpy(), columns=[str(i) for i in range(embeddings.shape[1])]
-        )
-        for key in self.hparams.meta_keys:
-            preds[key] = batch[key]
-        preds.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
-        return None, None, None
+        x = batch[self.hparams.anchor_key]
+        embeddings = self.backbone(x if isinstance(x, torch.Tensor) else x.as_tensor())
+        return embeddings.detach().cpu().numpy(), x.meta
