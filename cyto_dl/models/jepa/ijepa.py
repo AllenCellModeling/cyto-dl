@@ -106,35 +106,34 @@ class IJEPA(BaseModel):
         return rearrange(batch[key], "b t -> t b")
 
     #IWM
-    def model_step(self, stage, batch, batch_idx):
-        self.update_teacher()
-        source = batch[f'{self.hparams.x_key}_brightfield']
-        target = batch[f'{self.hparams.x_key}_struct']
-
-        target_masks = self.get_mask(batch, 'target_mask')
-        context_masks = self.get_mask(batch, 'context_mask')
-        target_embeddings = self.get_target_embeddings(target, target_masks)
-        context_embeddings = self.get_context_embeddings(source, context_masks)
-        predictions= self.predictor(context_embeddings, target_masks, batch['structure_name'])
-
-        loss = self.loss(predictions, target_embeddings)
-        return loss, None, None
-
-    # ijepa
     # def model_step(self, stage, batch, batch_idx):
-    #     breakpoint()
     #     self.update_teacher()
-    #     input=batch[self.hparams.x_key]
+    #     source = batch[f'{self.hparams.x_key}_brightfield']
+    #     target = batch[f'{self.hparams.x_key}_struct']
 
     #     target_masks = self.get_mask(batch, 'target_mask')
     #     context_masks = self.get_mask(batch, 'context_mask')
-
-    #     target_embeddings = self.get_target_embeddings(input, target_masks)
-    #     context_embeddings = self.get_context_embeddings(input, context_masks)
-    #     predictions= self.predictor(context_embeddings, target_masks)
+    #     target_embeddings = self.get_target_embeddings(target, target_masks)
+    #     context_embeddings = self.get_context_embeddings(source, context_masks)
+    #     predictions= self.predictor(context_embeddings, target_masks, batch['structure_name'])
 
     #     loss = self.loss(predictions, target_embeddings)
     #     return loss, None, None
+
+    # ijepa
+    def model_step(self, stage, batch, batch_idx):
+        self.update_teacher()
+        input=batch[self.hparams.x_key]
+
+        target_masks = self.get_mask(batch, 'target_mask')
+        context_masks = self.get_mask(batch, 'context_mask')
+
+        target_embeddings = self.get_target_embeddings(input, target_masks)
+        context_embeddings = self.get_context_embeddings(input, context_masks)
+        predictions= self.predictor(context_embeddings, target_masks)
+
+        loss = self.loss(predictions, target_embeddings)
+        return loss, None, None
 
     def get_predict_masks(self, batch_size, num_patches=[4, 16, 16]):
         mask = torch.ones(num_patches, dtype=bool)
