@@ -16,7 +16,14 @@ class JEPAMaskGenerator(RandomizableTransform):
         self.target_pix = int(mask_ratio * np.prod(num_patches))
         self.mask = np.zeros(num_patches)
         self.edge_mask = np.ones(num_patches)
-        self.edge_mask[1:-1, 1:-1, 1:-1] = 0
+
+        self.spatial_dims = len(num_patches)
+        if self.spatial_dims == 3:
+            self.edge_mask[1:-1, 1:-1, 1:-1] = 0
+        elif self.spatial_dims == 2:
+            self.edge_mask[1:-1, 1:-1] = 0
+        else:
+            raise ValueError("num_patches must be 2 or 3 dimensions")
 
     def __call__(self, img_dict):
         # generate context (small) and target(large) masks
@@ -27,9 +34,13 @@ class JEPAMaskGenerator(RandomizableTransform):
             aspect_ratio = np.random.uniform(*self.mask_aspect_ratio)
             width = int(self.mask_size*aspect_ratio)
             height = int(self.mask_size/aspect_ratio)
-            x = np.random.randint(0, self.num_patches[2]-width+1)
-            y = np.random.randint(0, self.num_patches[1]-height+1)
-            mask[:, y:y+height, x:x+width] = 1
+            x = np.random.randint(0, self.num_patches[-1]-width+1)
+            y = np.random.randint(0, self.num_patches[-2]-height+1)
+            if self.spatial_dims == 3:
+                mask[:, y:y+height, x:x+width] = 1
+            else:
+                mask[y:y+height, x:x+width] = 1
+
         bound = find_boundaries(mask, mode='inner')
         # include image edge as boundary, not just 1:0 transitions
         edge_mask = np.logical_and(mask, self.edge_mask)
@@ -39,8 +50,12 @@ class JEPAMaskGenerator(RandomizableTransform):
         excess = int(mask.sum() - self.target_pix)
         remove = np.random.choice(range(bound_coords.shape[0]), excess, replace=False)
         remove_coords = bound_coords[remove]
-        mask[remove_coords[:, 0], remove_coords[:, 1], remove_coords[:, 2]] = 0
-        mask = rearrange(mask, 'z y x -> (z y x)').astype(bool)
+        if self.spatial_dims == 3:
+            mask[remove_coords[:, 0], remove_coords[:, 1], remove_coords[:, 2]] = 0
+            mask = rearrange(mask, 'z y x -> (z y x)').astype(bool)
+        else:
+            mask[remove_coords[:, 0], remove_coords[:, 1]] = 0
+            mask = rearrange(mask, 'y x -> (y x)').astype(bool)
         context_mask = np.argwhere(~mask).squeeze()
         target_mask = np.argwhere(mask).squeeze()
         img_dict['context_mask'] = context_mask
