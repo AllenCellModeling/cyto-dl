@@ -174,6 +174,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -420,10 +421,8 @@
         </div>
         <article role="main">
           <h1>Source code for cyto_dl.nn.head.res_blocks_head</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">monai.networks.blocks</span> <span class="kn">import</span> <span class="n">DenseBlock</span><span class="p">,</span> <span class="n">UnetOutBlock</span><span class="p">,</span> <span class="n">UnetResBlock</span><span class="p">,</span> <span class="n">UpSample</span>
 
@@ -442,7 +441,6 @@
         <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">final_act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">(),</span>
         <span class="n">postprocess</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">,</span> <span class="s2">&quot;prediction&quot;</span><span class="p">:</span> <span class="n">detach</span><span class="p">},</span>
-        <span class="n">save_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">resolution</span><span class="o">=</span><span class="s2">&quot;lr&quot;</span><span class="p">,</span>
         <span class="n">spatial_dims</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">n_convs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -463,8 +461,6 @@
 <span class="sd">            Final activation applied to logits</span>
 <span class="sd">        postprocess={&quot;input&quot;: detach, &quot;prediction&quot;: detach}</span>
 <span class="sd">            Postprocessing functions for ground truth and model predictions</span>
-<span class="sd">        save_input=False</span>
-<span class="sd">            Whether to save raw image examples during training</span>
 <span class="sd">        resolution=&quot;lr&quot;</span>
 <span class="sd">            Resolution of output image. If `lr`, no upsampling is done. If `hr`, `upsample_method` and `upsample_ratio` are used</span>
 <span class="sd">            to determine how to perform upsampling.</span>
@@ -483,7 +479,7 @@
 <span class="sd">        dense=False</span>
 <span class="sd">            Whether to use dense connections between convolutional layers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">,</span> <span class="n">save_input</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
         <span class="n">conv_input_channels</span> <span class="o">=</span> <span class="n">in_channels</span>

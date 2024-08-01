@@ -175,6 +175,7 @@
 <li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">cyto_dl.callbacks package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -421,14 +422,31 @@
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-callbacks-package">
-<h1>cyto_dl.callbacks package<a class="headerlink" href="#cyto-dl-callbacks-package" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.callbacks">
+<span id="cyto-dl-callbacks-package"></span><h1>cyto_dl.callbacks package<a class="headerlink" href="#module-cyto_dl.callbacks" title="Permalink to this heading">#</a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver"><code class="docutils literal notranslate"><span class="pre">CSVSaver</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.on_predict_epoch_end"><code class="docutils literal notranslate"><span class="pre">CSVSaver.on_predict_epoch_end()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver"><code class="docutils literal notranslate"><span class="pre">ImageSaver</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_predict_batch_end"><code class="docutils literal notranslate"><span class="pre">ImageSaver.on_predict_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_test_batch_end"><code class="docutils literal notranslate"><span class="pre">ImageSaver.on_test_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_train_batch_end"><code class="docutils literal notranslate"><span class="pre">ImageSaver.on_train_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_validation_batch_end"><code class="docutils literal notranslate"><span class="pre">ImageSaver.on_validation_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.save"><code class="docutils literal notranslate"><span class="pre">ImageSaver.save()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html#cyto_dl.callbacks.layer_freeze.LayerFreeze"><code class="docutils literal notranslate"><span class="pre">LayerFreeze</span></code></a><ul>
@@ -437,8 +455,31 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.GetEmbeddings"><code class="docutils literal notranslate"><span class="pre">GetEmbeddings</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.GetEmbeddings.on_test_epoch_end"><code class="docutils literal notranslate"><span class="pre">GetEmbeddings.on_test_epoch_end()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.get_all_embeddings"><code class="docutils literal notranslate"><span class="pre">get_all_embeddings()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.save_predictions_classifier"><code class="docutils literal notranslate"><span class="pre">save_predictions_classifier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection"><code class="docutils literal notranslate"><span class="pre">OutlierDetection</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.calculate_mahalanobis_hook"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.calculate_mahalanobis_hook()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.flatten_activations"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.flatten_activations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_load_checkpoint"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_load_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_batch_end"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_predict_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_epoch_start"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_predict_epoch_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_save_checkpoint"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_save_checkpoint()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_test_batch_end"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_test_batch_end()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_test_epoch_start"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_test_epoch_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_train_epoch_start"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.on_train_epoch_start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.update_covariance_hook"><code class="docutils literal notranslate"><span class="pre">OutlierDetection.update_covariance_hook()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </section>

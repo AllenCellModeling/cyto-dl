@@ -1,0 +1,7 @@
+cyto\_dl.callbacks.image\_saver module
+======================================
+
+.. automodule:: cyto_dl.callbacks.image_saver
+   :members:
+   :undoc-members:
+   :show-inheritance:

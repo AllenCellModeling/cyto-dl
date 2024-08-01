@@ -174,6 +174,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -429,7 +430,7 @@
         <span class="n">backbone_features</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">,</span>
         <span class="n">stage</span><span class="p">,</span>
-        <span class="n">save_image</span><span class="p">,</span>
+        <span class="n">n_postprocess</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">run_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">y_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -446,14 +447,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">loss</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
-        <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">save_image</span><span class="p">:</span>
-            <span class="n">y_hat_out</span><span class="p">,</span> <span class="n">y_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">(</span><span class="n">y_hat</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="p">,</span>
-            <span class="s2">&quot;y_hat_out&quot;</span><span class="p">:</span> <span class="n">y_hat_out</span><span class="p">,</span>
-            <span class="s2">&quot;y_out&quot;</span><span class="p">:</span> <span class="n">y_out</span><span class="p">,</span>
+            <span class="s2">&quot;pred&quot;</span><span class="p">:</span> <span class="n">y_hat</span><span class="p">,</span>
+            <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span>
+            <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">head_name</span><span class="p">],</span>
         <span class="p">}</span></div></div>
 </pre></div>
         </article>

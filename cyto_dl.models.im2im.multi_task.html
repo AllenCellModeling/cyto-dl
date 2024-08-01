@@ -175,6 +175,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -453,23 +454,18 @@
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_n_postprocess_image">
+<span class="sig-name descname"><span class="pre">get_n_postprocess_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.get_n_postprocess_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_n_postprocess_image" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_per_head">
+<span class="sig-name descname"><span class="pre">get_per_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.get_per_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_per_head" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">
 <span class="sig-name descname"><span class="pre">model_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.model_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_end">
-<span class="sig-name descname"><span class="pre">on_train_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.on_train_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_end" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_epoch_end">
-<span class="sig-name descname"><span class="pre">on_train_epoch_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.on_train_epoch_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_epoch_end" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_start">
-<span class="sig-name descname"><span class="pre">on_train_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.on_train_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_start" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -479,12 +475,22 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward">
-<span class="sig-name descname"><span class="pre">run_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_heads</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.run_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">run_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_postprocess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_heads</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.run_forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image">
-<span class="sig-name descname"><span class="pre">should_save_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.should_save_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.test_step">
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.test_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.test_step" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.training_step">
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.training_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.training_step" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/im2im/multi_task.html#MultiTaskIm2Im.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.validation_step" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -550,13 +556,14 @@
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im</span></code></a><ul>
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.configure_optimizers()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.forward"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_n_postprocess_image"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.get_n_postprocess_image()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_per_head"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.get_per_head()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.model_step()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_end"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.on_train_end()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_epoch_end"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.on_train_epoch_end()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_start"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.on_train_start()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.predict_step"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.predict_step()</span></code></a></li>
 <li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.run_forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.should_save_image()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.test_step"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.test_step()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.training_step"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.training_step()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.validation_step"><code class="docutils literal notranslate"><span class="pre">MultiTaskIm2Im.validation_step()</span></code></a></li>
 </ul>
 </li>
 </ul>

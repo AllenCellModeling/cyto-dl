@@ -173,6 +173,7 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
@@ -485,6 +486,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo">calculate_elbo() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.calculate_mahalanobis_hook">calculate_mahalanobis_hook() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl">calculate_rcl() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
 </li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.calculate_rcl_dict">calculate_rcl_dict() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
@@ -563,6 +566,8 @@
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.CrossSelfBlock">CrossSelfBlock (class in cyto_dl.nn.vits.blocks.cross_attention)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver">CSVSaver (class in cyto_dl.callbacks.csv_saver)</a>
+</li>
         <li>
     cyto_dl
 
@@ -613,10 +618,45 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.callbacks
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.html#module-cyto_dl.callbacks">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.csv_saver
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.csv_saver.html#module-cyto_dl.callbacks.csv_saver">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.image_saver
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.image_saver.html#module-cyto_dl.callbacks.image_saver">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.callbacks.layer_freeze
 
         <ul>
           <li><a href="cyto_dl.callbacks.layer_freeze.html#module-cyto_dl.callbacks.layer_freeze">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.model_utils
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.model_utils.html#module-cyto_dl.callbacks.model_utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.outlier_detection
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.outlier_detection.html#module-cyto_dl.callbacks.outlier_detection">module</a>
 </li>
         </ul></li>
         <li>
@@ -899,6 +939,8 @@
           <li><a href="cyto_dl.models.base_model.html#module-cyto_dl.models.base_model">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.basic_model
 
@@ -920,8 +962,6 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1502,6 +1542,8 @@
 </li>
         <li><a href="cyto_dl.models.utils.utils.html#cyto_dl.models.utils.utils.find_indices">find_indices() (in module cyto_dl.models.utils.utils)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.flatten_activations">flatten_activations() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flickr30k">Flickr30k (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Flickr8k">Flickr8k (class in cyto_dl.datamodules.torchvision)</a>
@@ -1636,6 +1678,8 @@
 </li>
         <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.GenerateTrackLabels">GenerateTrackLabels (class in cyto_dl.image.transforms.track_transforms)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.get_all_embeddings">get_all_embeddings() (in module cyto_dl.callbacks.model_utils)</a>
+</li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_canonical_split_name">get_canonical_split_name() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.get_config">get_config() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
@@ -1664,10 +1708,10 @@
           <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_dataset">(in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.get_experiment_name">get_experiment_name() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss">get_feature_matching_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss">get_gan_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
@@ -1682,6 +1726,8 @@
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.get_metric_value">get_metric_value() (in module cyto_dl.utils.template_utils)</a>
 </li>
+        <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_n_postprocess_image">get_n_postprocess_image() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_patch_size">get_patch_size() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.get_per_file_args">get_per_file_args() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
@@ -1690,6 +1736,8 @@
           <li><a href="cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.get_per_file_args">(cyto_dl.datamodules.smartcache.SmartcacheDatamodule method)</a>
 </li>
         </ul></li>
+        <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.get_per_head">get_per_head() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+</li>
         <li><a href="cyto_dl.utils.pylogger.html#cyto_dl.utils.pylogger.get_pylogger">get_pylogger() (in module cyto_dl.utils.pylogger)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_raw_image_channels">get_raw_image_channels() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
@@ -1701,6 +1749,8 @@
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_split_column">get_split_column() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.GANLoss.get_target_tensor">get_target_tensor() (cyto_dl.nn.losses.gan_loss.GANLoss method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.GetEmbeddings">GetEmbeddings (class in cyto_dl.callbacks.model_utils)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.HardwareType.GPU">GPU (cyto_dl.api.data.HardwareType attribute)</a>
 </li>
@@ -1739,6 +1789,8 @@
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageFolder">ImageFolder (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.ImageNet">ImageNet (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver">ImageSaver (class in cyto_dl.callbacks.image_saver)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.INaturalist">INaturalist (class in cyto_dl.datamodules.torchvision)</a>
 </li>
@@ -1960,7 +2012,17 @@
 </li>
           <li><a href="cyto_dl.api.model.html#module-cyto_dl.api.model">cyto_dl.api.model</a>
 </li>
+          <li><a href="cyto_dl.callbacks.html#module-cyto_dl.callbacks">cyto_dl.callbacks</a>
+</li>
+          <li><a href="cyto_dl.callbacks.csv_saver.html#module-cyto_dl.callbacks.csv_saver">cyto_dl.callbacks.csv_saver</a>
+</li>
+          <li><a href="cyto_dl.callbacks.image_saver.html#module-cyto_dl.callbacks.image_saver">cyto_dl.callbacks.image_saver</a>
+</li>
           <li><a href="cyto_dl.callbacks.layer_freeze.html#module-cyto_dl.callbacks.layer_freeze">cyto_dl.callbacks.layer_freeze</a>
+</li>
+          <li><a href="cyto_dl.callbacks.model_utils.html#module-cyto_dl.callbacks.model_utils">cyto_dl.callbacks.model_utils</a>
+</li>
+          <li><a href="cyto_dl.callbacks.outlier_detection.html#module-cyto_dl.callbacks.outlier_detection">cyto_dl.callbacks.outlier_detection</a>
 </li>
           <li><a href="cyto_dl.dataframe.html#module-cyto_dl.dataframe">cyto_dl.dataframe</a>
 </li>
@@ -2233,19 +2295,43 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.Omniglot">Omniglot (class in cyto_dl.datamodules.torchvision)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_end">on_train_end() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_load_checkpoint">on_load_checkpoint() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_epoch_end">on_train_epoch_end() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.on_train_start">on_train_start() (cyto_dl.models.base_model.BaseModel method)</a>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_predict_batch_end">on_predict_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
 
         <ul>
-          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.on_train_start">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
+          <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_batch_end">(cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
         </ul></li>
+        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.on_predict_epoch_end">on_predict_epoch_end() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_epoch_start">on_predict_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_save_checkpoint">on_save_checkpoint() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_test_batch_end">on_test_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_test_batch_end">(cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.GetEmbeddings.on_test_epoch_end">on_test_epoch_end() (cyto_dl.callbacks.model_utils.GetEmbeddings method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_test_epoch_start">on_test_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_train_batch_end">on_train_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_train_epoch_start">on_train_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
+</li>
+        <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.on_train_start">on_train_start() (cyto_dl.models.base_model.BaseModel method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_validation_batch_end">on_validation_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+</li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.AutoThresholdMethod.OTSU">OTSU (cyto_dl.api.data.AutoThresholdMethod attribute)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection">OutlierDetection (class in cyto_dl.callbacks.outlier_detection)</a>
 </li>
         <li><a href="cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.override_config">override_config() (cyto_dl.api.model.CytoDLModel method)</a>
 </li>
@@ -2437,6 +2523,8 @@
 </li>
         <li><a href="cyto_dl.image.transforms.save.html#cyto_dl.image.transforms.save.Save">Save (class in cyto_dl.image.transforms.save)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.save">save() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.save_config">save_config() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 
         <ul>
@@ -2445,9 +2533,9 @@
         </ul></li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.save_file">save_file() (in module cyto_dl.utils.template_utils)</a>
 </li>
-        <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.save_image">save_image() (cyto_dl.nn.head.base_head.BaseHead method)</a>
-</li>
         <li><a href="cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.save_images">save_images() (cyto_dl.models.classification.classification.Classification method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.save_predictions_classifier">save_predictions_classifier() (in module cyto_dl.callbacks.model_utils)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.save.html#cyto_dl.image.transforms.save.Saved">Saved (class in cyto_dl.image.transforms.save)</a>
 </li>
@@ -2469,10 +2557,10 @@
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_hardware_type">set_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
-        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_input_channel">set_input_channel() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_input_channel">set_input_channel() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_manifest_column_names">set_manifest_column_names() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_patch_size">set_patch_size() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
@@ -2490,11 +2578,7 @@
         <li><a href="cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.setup_paths">setup_paths() (in module cyto_dl.utils.download_test_data)</a>
 </li>
         <li><a href="cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.should_save_image">should_save_image() (cyto_dl.models.classification.classification.Classification method)</a>
-
-        <ul>
-          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.should_save_image">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
-        </ul></li>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd.shrink">shrink() (cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd method)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd.skeleton_tall">skeleton_tall() (cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd method)</a>
@@ -2546,7 +2630,11 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.test_step">test_step() (cyto_dl.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.test_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.nn.losses.threshold_loss.html#cyto_dl.nn.losses.threshold_loss.ThresholdLoss">ThresholdLoss (class in cyto_dl.nn.losses.threshold_loss)</a>
 </li>
         <li><a href="cyto_dl.models.classification.timepoint_classification.html#cyto_dl.models.classification.timepoint_classification.TimepointClassification">TimepointClassification (class in cyto_dl.models.classification.timepoint_classification)</a>
@@ -2574,7 +2662,11 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.training_step">training_step() (cyto_dl.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.training_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.AutoThresholdMethod.TRIANGLE">TRIANGLE (cyto_dl.api.data.AutoThresholdMethod attribute)</a>
 </li>
     </ul></td>
@@ -2587,10 +2679,12 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.UCF101">UCF101 (class in cyto_dl.datamodules.torchvision)</a>
 </li>
-        <li><a href="cyto_dl.models.im2im.utils.noise_annealer.html#cyto_dl.models.im2im.utils.noise_annealer.NoiseAnnealer.update_noise">update_noise() (cyto_dl.models.im2im.utils.noise_annealer.NoiseAnnealer method)</a>
+        <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.update_covariance_hook">update_covariance_hook() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.im2im.utils.noise_annealer.html#cyto_dl.models.im2im.utils.noise_annealer.NoiseAnnealer.update_noise">update_noise() (cyto_dl.models.im2im.utils.noise_annealer.NoiseAnnealer method)</a>
+</li>
         <li><a href="cyto_dl.nn.head.base_head.html#cyto_dl.nn.head.base_head.BaseHead.update_params">update_params() (cyto_dl.nn.head.base_head.BaseHead method)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.USPS">USPS (class in cyto_dl.datamodules.torchvision)</a>
@@ -2612,7 +2706,11 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.validation_step">validation_step() (cyto_dl.models.base_model.BaseModel method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.validation_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.image.io.monai_bio_reader.html#cyto_dl.image.io.monai_bio_reader.MonaiBioReader.verify_suffix">verify_suffix() (cyto_dl.image.io.monai_bio_reader.MonaiBioReader method)</a>
 
         <ul>
