@@ -1,9 +1,7 @@
-import math
 from typing import Callable
 
 import numpy as np
 import torch
-from monai.networks.blocks import DenseBlock, UnetOutBlock, UnetResBlock, UpSample
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
 from cyto_dl.nn.losses import Pix2PixHD
@@ -23,7 +21,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
-        save_input=False,
         final_act: Callable = torch.nn.Identity(),
         resolution="lr",
         spatial_dims=3,
@@ -45,8 +42,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
             Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        save_input=False
-            Whether to save out example input images during training
         """
         ResBlocksHead.__init__(
             self,
@@ -55,7 +50,6 @@ class GANHead_resize(GANHead, ResBlocksHead):
             out_channels=out_channels,
             final_act=final_act,
             postprocess=postprocess,
-            save_input=save_input,
             resolution=resolution,
             spatial_dims=spatial_dims,
             n_convs=n_convs,

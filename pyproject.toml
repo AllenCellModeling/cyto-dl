@@ -46,7 +46,8 @@ dependencies = [
     "bioio>=1.0.1",
     "bioio-czi",
     "bioio-ome-tiff",
-    "bioio-tifffile"
+    "bioio-tifffile",
+    "online-stats>=2023",
 ]
 requires-python = ">=3.9,<3.11"
 

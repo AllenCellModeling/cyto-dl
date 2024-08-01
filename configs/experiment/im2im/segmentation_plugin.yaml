@@ -61,3 +61,19 @@ model:
   _aux:
     filters: MUST_OVERRIDE
     overlap: 0
+
+callbacks:
+  # prediction
+  # saving:
+  #   _target_: cyto_dl.callbacks.ImageSaver
+  #   save_dir: ${paths.output_dir}
+  #   save_every_n_epochs: ${model.save_images_every_n_epochs}
+  #   stages: ["predict"]
+  #   save_input: False
+  # training
+  saving:
+    _target_: cyto_dl.callbacks.ImageSaver
+    save_dir: ${paths.output_dir}
+    save_every_n_epochs: ${model.save_images_every_n_epochs}
+    stages: ["train", "test", "val"]
+    save_input: True

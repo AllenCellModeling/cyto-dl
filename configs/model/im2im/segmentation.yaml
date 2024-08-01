@@ -54,4 +54,3 @@ _aux:
             activation:
               _target_: torch.nn.Sigmoid
             rescale_dtype: numpy.uint8
-        save_input: True

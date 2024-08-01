@@ -18,7 +18,6 @@ class GANHead(BaseHead):
         reconstruction_loss=torch.nn.MSELoss(),
         reconstruction_loss_weight=100,
         postprocess={"input": detach, "prediction": detach},
-        save_input=False,
     ):
         """
         Parameters
@@ -31,10 +30,8 @@ class GANHead(BaseHead):
             Weighting of reconstruction loss
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        save_input=False
-            Whether to save out example input images during training
         """
-        super().__init__(None, postprocess, save_input)
+        super().__init__(None, postprocess)
         self.gan_loss = gan_loss
         self.reconstruction_loss = reconstruction_loss
         self.reconstruction_loss_weight = reconstruction_loss_weight
@@ -61,7 +58,7 @@ class GANHead(BaseHead):
         backbone_features,
         batch,
         stage,
-        save_image,
+        n_postprocess=1,
         discriminator=None,
         run_forward=True,
         y_hat=None,
@@ -80,13 +77,18 @@ class GANHead(BaseHead):
                 )
             loss_D, loss_G = self._calculate_loss(y_hat, batch, discriminator)
 
-        y_hat_out, y_out = None, None
-        if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
-
         return {
             "loss_D": loss_D,
             "loss_G": loss_G,
-            "y_hat_out": y_hat_out,
-            "y_out": y_out,
+            "pred": self._postprocess(y_hat, img_type="prediction", n_postprocess=n_postprocess),
+            "target": self._postprocess(
+                batch[self.head_name], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
+            "input": self._postprocess(
+                batch[self.x_key], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
         }

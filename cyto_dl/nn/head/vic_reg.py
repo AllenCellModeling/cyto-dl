@@ -1,7 +1,5 @@
 from typing import List
 
-from torch import nn
-
 from cyto_dl.nn import MLP
 from cyto_dl.nn.head import BaseHead
 
@@ -28,7 +26,7 @@ class VICRegHead(BaseHead):
         backbone_features,
         batch,
         stage,
-        save_image=False,
+        n_postprocess=1,
         run_forward=True,
         y_hat=None,
     ):

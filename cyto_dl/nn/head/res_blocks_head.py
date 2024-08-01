@@ -1,7 +1,5 @@
-import math
 from typing import Callable
 
-import numpy as np
 import torch
 from monai.networks.blocks import DenseBlock, UnetOutBlock, UnetResBlock, UpSample
 
@@ -20,7 +18,6 @@ class ResBlocksHead(BaseHead):
         out_channels: int,
         final_act: Callable = torch.nn.Identity(),
         postprocess={"input": detach, "prediction": detach},
-        save_input=False,
         resolution="lr",
         spatial_dims=3,
         n_convs=1,
@@ -41,8 +38,6 @@ class ResBlocksHead(BaseHead):
             Final activation applied to logits
         postprocess={"input": detach, "prediction": detach}
             Postprocessing functions for ground truth and model predictions
-        save_input=False
-            Whether to save raw image examples during training
         resolution="lr"
             Resolution of output image. If `lr`, no upsampling is done. If `hr`, `upsample_method` and `upsample_ratio` are used
             to determine how to perform upsampling.
@@ -61,7 +56,7 @@ class ResBlocksHead(BaseHead):
         dense=False
             Whether to use dense connections between convolutional layers
         """
-        super().__init__(loss, postprocess, save_input)
+        super().__init__(loss, postprocess)
 
         self.resolution = resolution
         conv_input_channels = in_channels
