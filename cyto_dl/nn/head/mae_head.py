@@ -7,7 +7,7 @@ class MAEHead(BaseHead):
         backbone_features,
         batch,
         stage,
-        save_image,
+        n_postprocess=1,
         run_forward=True,
         y_hat=None,
     ):
@@ -24,12 +24,9 @@ class MAEHead(BaseHead):
         else:
             loss = loss.mean()
 
-        y_hat_out, y_out = None, None
-        if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
-
         return {
             "loss": loss,
-            "y_hat_out": y_hat_out,
-            "y_out": y_out,
+            "pred": y_hat,
+            "target": batch[self.head_name],
+            "input": batch[self.head_name],
         }

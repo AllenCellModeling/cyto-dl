@@ -141,8 +141,10 @@ class GAN(MultiTaskIm2Im):
 
     def model_step(self, stage, batch, batch_idx):
         run_heads, _ = self._get_run_heads(batch, stage, batch_idx)
+        n_postprocess = self.get_n_postprocess_image(batch, batch_idx, stage)
+
         batch = self._to_tensor(batch)
-        outs = self.run_forward(batch, stage, self.should_save_image(batch_idx, stage), run_heads)
+        outs = self.run_forward(batch, stage, n_postprocess, run_heads)
 
         loss_D = self._extract_loss(outs, "loss_D")
         loss_G = self._extract_loss(outs, "loss_G")
@@ -157,17 +159,24 @@ class GAN(MultiTaskIm2Im):
             d_opt.zero_grad()
             self.manual_backward(loss_D["loss"])
             d_opt.step()
-        loss_dict = {f"discriminator_{key}": loss for key, loss in loss_D.items()}
-        loss_dict.update({f"generator_{key}": loss for key, loss in loss_G.items()})
-        loss_dict["loss"] = loss_dict["generator_loss"]
+        results = {f"discriminator_{key}": loss for key, loss in loss_D.items()}
+        results.update({f"generator_{key}": loss for key, loss in loss_G.items()})
+        results["loss"] = results["generator_loss"]
 
-        return loss_dict, None, None
+        if n_postprocess > 0:
+            # add postprocessed images to return dict
+            for k in ("pred", "target", "input"):
+                results[k] = self.get_per_head(outs, k)
+
+        self.compute_metrics(results, None, None, stage)
+        return results
 
     def predict_step(self, batch, batch_idx):
         stage = "predict"
         run_heads, io_map = self._get_run_heads(batch, stage, batch_idx)
+        outs = None
         if len(run_heads) > 0:
+            n_postprocess = self.get_n_postprocess_image(batch, batch_idx, stage)
             batch = self._to_tensor(batch)
-            save_image = self.should_save_image(batch_idx, stage)
-            self.run_forward(batch, stage, save_image, run_heads)
-        return io_map
+            outs = self.run_forward(batch, stage, n_postprocess, run_heads)
+        return io_map, outs
