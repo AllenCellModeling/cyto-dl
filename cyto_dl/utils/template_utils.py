@@ -4,7 +4,7 @@ import time
 import warnings
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, List
 
 import hydra
 from lightning import Callback
@@ -19,6 +19,7 @@ from . import pylogger, rich_utils
 log = pylogger.get_pylogger(__name__)
 
 __all__ = [
+    "create_dataloader",
     "task_wrapper",
     "extras",
     "save_file",
@@ -28,6 +29,23 @@ __all__ = [
     "get_metric_value",
     "close_loggers",
 ]
+
+
+def create_dataloader(data_cfg, data=None):
+    data_cfg = OmegaConf.to_object(data_cfg)
+    if data is not None:
+        # inference, using make_array_dataloader
+        if "data" in data_cfg:
+            data_cfg["data"] = data
+        # training, has train_dataloaders/val_dataloaders
+        for split in ("train", "val", "test"):
+            if f"{split}_dataloaders" in data_cfg:
+                data_cfg[f"{split}_dataloaders"]["data"] = data[split]
+
+    # Instantiate the dataloader with the dataset
+    dataloader = hydra.utils.instantiate(data_cfg)
+
+    return dataloader
 
 
 def task_wrapper(task_func: Callable) -> Callable:
@@ -43,14 +61,14 @@ def task_wrapper(task_func: Callable) -> Callable:
     - Logging the output dir
     """
 
-    def wrap(cfg: DictConfig):
+    def wrap(cfg: DictConfig, data: Any = None):
         # apply extra utilities
         extras(cfg)
 
         # execute the task
         try:
             start_time = time.time()
-            out = task_func(cfg=cfg)
+            out = task_func(cfg=cfg, data=data)
         except Exception as ex:
             log.exception("")  # save exception to `.log` file
             raise ex

@@ -23,7 +23,7 @@ with suppress(ValueError):
 
 
 @utils.task_wrapper
-def train(cfg: DictConfig) -> Tuple[dict, dict]:
+def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
@@ -57,7 +57,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
-    data = hydra.utils.instantiate(cfg.data)
+    data = utils.create_dataloader(cfg.data, data)
     if not isinstance(data, LightningDataModule):
         if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
             raise ValueError(

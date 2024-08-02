@@ -3,6 +3,7 @@ from .pylogger import get_pylogger
 from .rich_utils import enforce_tags, print_config_tree
 from .template_utils import (
     close_loggers,
+    create_dataloader,
     extras,
     get_metric_value,
     instantiate_callbacks,
