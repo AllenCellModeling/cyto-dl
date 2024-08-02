@@ -1,10 +1,13 @@
+import copy
+
 import torch
 import torch.nn as nn
-from torchmetrics import MeanMetric
 from einops import rearrange
+from torchmetrics import MeanMetric
+
 from cyto_dl.models.base_model import BaseModel
-import copy
 from cyto_dl.nn.vits.utils import take_indexes
+
 
 class JEPABase(BaseModel):
     def __init__(
@@ -13,13 +16,12 @@ class JEPABase(BaseModel):
         encoder: nn.Module,
         predictor: nn.Module,
         x_key: str,
-        save_dir: str= './',
-        momentum: float=0.998,
-        max_epochs: int=100,
+        save_dir: str = "./",
+        momentum: float = 0.998,
+        max_epochs: int = 100,
         **base_kwargs,
     ):
-        """
-        Initialize the IJEPA model.
+        """Base for IJEPA and IWM models.
 
         Parameters
         ----------
@@ -46,11 +48,11 @@ class JEPABase(BaseModel):
 
         self.encoder = encoder
         self.predictor = predictor
-        
+
         self.teacher = copy.deepcopy(self.encoder)
         for p in self.teacher.parameters():
             p.requires_grad = False
-        
+
         self.loss = torch.nn.L1Loss()
 
     def configure_optimizers(self):
@@ -69,11 +71,14 @@ class JEPABase(BaseModel):
 
     def forward(self, x):
         return self.encoder(x)
-    
+
     def _get_momentum(self):
         # linearly increase the momentum from self.momentum to 1 over course of self.hparam.max_epochs
-        return self.hparams.momentum + (1 - self.hparams.momentum) * self.current_epoch / self.hparams.max_epochs
-    
+        return (
+            self.hparams.momentum
+            + (1 - self.hparams.momentum) * self.current_epoch / self.hparams.max_epochs
+        )
+
     def update_teacher(self):
         # ema of teacher
         momentum = self._get_momentum()
@@ -85,7 +90,7 @@ class JEPABase(BaseModel):
     def get_target_embeddings(self, x, mask):
         # embed the target with full context for maximally informative embeddings
         with torch.no_grad():
-            target_embeddings= self.teacher(x)
+            target_embeddings = self.teacher(x)
         target_embeddings = rearrange(target_embeddings, "b t c -> t b c")
         target_embeddings = take_indexes(target_embeddings, mask)
         target_embeddings = rearrange(target_embeddings, "t b c -> b t c")
@@ -95,17 +100,17 @@ class JEPABase(BaseModel):
         # mask context pre-embedding to prevent leakage of target information
         context_patches, _, _, _ = self.encoder.patchify(x, 0)
         context_patches = take_indexes(context_patches, mask)
-        context_patches= self.encoder.transformer_forward(context_patches)
+        context_patches = self.encoder.transformer_forward(context_patches)
         return context_patches
-    
+
     def get_mask(self, batch, key):
         return rearrange(batch[key], "b t -> t b")
-    
+
     def model_step(self, stage, batch, batch_idx):
         raise NotImplementedError
 
     def predict_step(self, batch, batch_idx):
-        x=batch[self.hparams.x_key]
+        x = batch[self.hparams.x_key]
         embeddings = self(x)
 
         return embeddings.detach().cpu().numpy(), x.meta

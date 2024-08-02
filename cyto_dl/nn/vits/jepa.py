@@ -1,14 +1,16 @@
 from typing import List, Optional
+
+import numpy as np
 import torch
 import torch.nn.functional
 from einops import rearrange
-from timm.models.vision_transformer import Block
-from cyto_dl.nn.vits.blocks import Patchify
-import numpy as np
-from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-from cyto_dl.nn.vits.utils import take_indexes
-from timm.models.layers import trunc_normal_
 from einops.layers.torch import Rearrange
+from timm.models.layers import trunc_normal_
+from timm.models.vision_transformer import Block
+
+from cyto_dl.nn.vits.blocks import CrossAttentionBlock, Patchify
+from cyto_dl.nn.vits.utils import take_indexes
+
 
 class JEPAEncoder(torch.nn.Module):
     def __init__(
@@ -61,7 +63,6 @@ class JEPAEncoder(torch.nn.Module):
     def forward(self, img):
         patches, _, _, _ = self.patchify(img, mask_ratio=0)
         return self.transformer_forward(patches)
-    
 
 
 class JEPAPredictor(torch.nn.Module):
@@ -86,7 +87,7 @@ class JEPAPredictor(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-        
+
         self.transformer = torch.nn.ParameterList(
             [
                 CrossAttentionBlock(
@@ -100,7 +101,6 @@ class JEPAPredictor(torch.nn.Module):
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
-
 
         self.predictor_embed = torch.nn.Linear(input_dim, emb_dim)
 
@@ -130,7 +130,9 @@ class JEPAPredictor(torch.nn.Module):
         mask = self.projector_embed(self.norm(mask))
         return mask
 
+
 from monai.networks.blocks import UnetOutBlock, UnetResBlock
+
 
 class JEPASeg(torch.nn.Module):
     """Class for training a simple convolutional decoder on top of a pretrained ViT backbone."""
@@ -204,8 +206,13 @@ class JEPASeg(torch.nn.Module):
                 param.requires_grad = "intermediate_weighter" in name
 
         self.decoder = torch.nn.Sequential(
-            torch.nn.Linear(emb_dim, 16*emb_dim),
-            Rearrange('b (n_patch_z n_patch_y n_patch_x) c -> b c n_patch_z n_patch_y n_patch_x', n_patch_z=num_patches[0], n_patch_y=num_patches[1], n_patch_x=num_patches[2]),
+            torch.nn.Linear(emb_dim, 16 * emb_dim),
+            Rearrange(
+                "b (n_patch_z n_patch_y n_patch_x) c -> b c n_patch_z n_patch_y n_patch_x",
+                n_patch_z=num_patches[0],
+                n_patch_y=num_patches[1],
+                n_patch_x=num_patches[2],
+            ),
             UnetResBlock(
                 spatial_dims=spatial_dims,
                 in_channels=4096,
@@ -221,21 +228,21 @@ class JEPASeg(torch.nn.Module):
                 out_channels=256,
                 dropout=0,
             ),
-            Rearrange('b (c size_z size_y size_x) n_patch_z n_patch_y n_patch_x -> b c (n_patch_z size_z) (n_patch_y size_y) (n_patch_x size_x)', 
-                n_patch_z=num_patches[0], 
-                n_patch_y=num_patches[1], 
-                n_patch_x=num_patches[2], 
-                size_y=patch_size[1], 
-                size_x=patch_size[2], 
-                size_z=patch_size[0]
-            )
+            Rearrange(
+                "b (c size_z size_y size_x) n_patch_z n_patch_y n_patch_x -> b c (n_patch_z size_z) (n_patch_y size_y) (n_patch_x size_x)",
+                n_patch_z=num_patches[0],
+                n_patch_y=num_patches[1],
+                n_patch_x=num_patches[2],
+                size_y=patch_size[1],
+                size_x=patch_size[2],
+                size_z=patch_size[0],
+            ),
         )
 
     def forward(self, img):
         features = self.encoder(img)
         features = self.decoder(features)
         return features
-
 
 
 class IWMPredictor(torch.nn.Module):
@@ -261,7 +268,7 @@ class IWMPredictor(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-        
+
         self.transformer = torch.nn.ParameterList(
             [
                 CrossAttentionBlock(
@@ -274,11 +281,9 @@ class IWMPredictor(torch.nn.Module):
         )
 
         self.domain_embeddings = torch.nn.ParameterDict(
-            {
-                d: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for d in domains
-            }
+            {d: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for d in domains}
         )
-        self.context_mixer = torch.nn.Linear(2*emb_dim, emb_dim, 1)
+        self.context_mixer = torch.nn.Linear(2 * emb_dim, emb_dim, 1)
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
@@ -299,8 +304,10 @@ class IWMPredictor(torch.nn.Module):
         # map context embedding to predictor dimension
         context_emb = self.predictor_embed(context_emb)
 
-        #add target domain information via concatenation + token mixing
-        target_domain_embedding = torch.cat([self.domain_embeddings[td] for td in target_domain]).repeat(b, context_emb.shape[1], 1)
+        # add target domain information via concatenation + token mixing
+        target_domain_embedding = torch.cat(
+            [self.domain_embeddings[td] for td in target_domain]
+        ).repeat(b, context_emb.shape[1], 1)
         context_emb = torch.cat([context_emb, target_domain_embedding], dim=-1)
         context_emb = self.context_mixer(context_emb)
 
