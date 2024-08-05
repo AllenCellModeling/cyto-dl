@@ -14,8 +14,3 @@ transforms:
     channel_wise: true
     keys:
       - ${source_col}
-_aux:
-  patch_shape:
-  - 40
-  - 256
-  - 256
