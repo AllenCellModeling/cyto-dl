@@ -1,6 +1,7 @@
-from omegaconf import OmegaConf
-import hydra 
+import hydra
 import numpy as np
+from omegaconf import OmegaConf
+
 
 def create_dataloader(data_cfg, data=None):
     """Create a dataloader from a data config and optional data."""
@@ -33,7 +34,7 @@ def extract_array_predictions(output, task_heads=None):
         for head in task_heads:
             if head not in predictions:
                 predictions[head] = []
-            predictions[head] += batch_pred[head]['pred']
+            predictions[head] += batch_pred[head]["pred"]
     # stack head predictions into numpy array
     for head, pred in predictions.items():
         predictions[head] = np.stack(pred)

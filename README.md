@@ -75,7 +75,7 @@ model.train()
 await model.train(run_async=True)
 ```
 
-Most models work by passing data paths in the data config. For training or predicting on datasets that are already in memory, you can pass the data directly to the model. Note that this use case is primarily for programmatic use (e.g. in a workflow or a jupyter notebook), not through the normal CLI. An experiment showing a possible config setup for this use case is demonstrated with the [im2im/segmentation_array](configs/experiment/im2im/segmentation_array.yaml) experiment. For training, data must be passed as a dictionary with keys "train" and "val" containing lists of dictionaries with keys corresponding to the data config. 
+Most models work by passing data paths in the data config. For training or predicting on datasets that are already in memory, you can pass the data directly to the model. Note that this use case is primarily for programmatic use (e.g. in a workflow or a jupyter notebook), not through the normal CLI. An experiment showing a possible config setup for this use case is demonstrated with the [im2im/segmentation_array](configs/experiment/im2im/segmentation_array.yaml) experiment. For training, data must be passed as a dictionary with keys "train" and "val" containing lists of dictionaries with keys corresponding to the data config.
 
 ```python
 from cyto_dl.api import CytoDLModel
@@ -87,17 +87,13 @@ model.print_config()
 
 # create CZYX dummy data
 data = {
-    "train": [
-        {"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}
-    ],
-    "val": [
-        {"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}
-    ],
+    "train": [{"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}],
+    "val": [{"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}],
 }
 model.train(data=data)
 ```
 
-For predicting, data must be passed as a list of numpy arrays. The resulting predictions will be processed in a dictionary with one key for each task head in the model config and corresponding values in BC(Z)YX order. 
+For predicting, data must be passed as a list of numpy arrays. The resulting predictions will be processed in a dictionary with one key for each task head in the model config and corresponding values in BC(Z)YX order.
 
 ```python
 from cyto_dl.api import CytoDLModel
@@ -105,11 +101,13 @@ import numpy as np
 from cyto_dl.utils import extract_array_predictions
 
 model = CytoDLModel()
-model.load_default_experiment("segmentation_array", output_dir="./output", overrides=['data=im2im/numpy_dataloader_predict'])
+model.load_default_experiment(
+    "segmentation_array", output_dir="./output", overrides=["data=im2im/numpy_dataloader_predict"]
+)
 model.print_config()
 
 # create CZYX dummy data
-data =  [np.random.rand(1, 32, 64, 64), np.random.rand(1, 32, 64, 64)]
+data = [np.random.rand(1, 32, 64, 64), np.random.rand(1, 32, 64, 64)]
 
 _, _, output = model.predict(data=data)
 preds = extract_array_predictions(output)
