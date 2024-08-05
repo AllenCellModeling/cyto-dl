@@ -12,7 +12,7 @@ def make_array_dataloader(
     source_key: str = "input",
     **dataloader_kwargs,
 ):
-    """Create a dataloader based on arrays and lists of arrays
+    """Create a dataloader from a an array dataset
 
     Parameters
     ----------
