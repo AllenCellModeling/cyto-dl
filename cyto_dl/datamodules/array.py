@@ -1,4 +1,5 @@
-from typing import Callable, Sequence, Union, Dict, List
+from typing import Callable, Dict, List, Sequence, Union
+
 import numpy as np
 from monai.data import DataLoader, Dataset
 from monai.transforms import Compose
@@ -11,8 +12,7 @@ def make_array_dataloader(
     source_key: str = "input",
     **dataloader_kwargs,
 ):
-    """
-    Create a dataloader based on a numpy array. For training, 
+    """Create a dataloader based on a numpy array. For training,
 
     Parameters
     ----------
@@ -35,14 +35,13 @@ def make_array_dataloader(
         transforms = Compose(transforms)
     data = OmegaConf.to_object(data)
     if isinstance(data, (list, tuple, ListConfig)):
-        data = [
-            {source_key: d} if isinstance(d, np.ndarray) else d
-            for d in data
-        ]
+        data = [{source_key: d} if isinstance(d, np.ndarray) else d for d in data]
     elif isinstance(data, np.ndarray):
         data = [{source_key: data}]
     else:
-        raise ValueError(f"Invalid data type: {type(data)}. Data must be a numpy array or list of numpy arrays.")
+        raise ValueError(
+            f"Invalid data type: {type(data)}. Data must be a numpy array or list of numpy arrays."
+        )
 
     dataset = Dataset(data, transform=transforms)
 
