@@ -10,7 +10,7 @@ import hydra
 from lightning import Callback
 from lightning.pytorch.loggers import Logger
 from lightning.pytorch.utilities import rank_zero_only
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 from cyto_dl.loggers import MLFlowLogger
 
@@ -19,7 +19,6 @@ from . import pylogger, rich_utils
 log = pylogger.get_pylogger(__name__)
 
 __all__ = [
-    "create_dataloader",
     "task_wrapper",
     "extras",
     "save_file",
@@ -29,23 +28,6 @@ __all__ = [
     "get_metric_value",
     "close_loggers",
 ]
-
-
-def create_dataloader(data_cfg, data=None):
-    data_cfg = OmegaConf.to_object(data_cfg)
-    if data is not None:
-        # inference, using make_array_dataloader
-        if "data" in data_cfg:
-            data_cfg["data"] = data
-        # training, has train_dataloaders/val_dataloaders
-        for split in ("train", "val", "test"):
-            if f"{split}_dataloaders" in data_cfg:
-                data_cfg[f"{split}_dataloaders"]["data"] = data[split]
-
-    # Instantiate the dataloader with the dataset
-    dataloader = hydra.utils.instantiate(data_cfg)
-
-    return dataloader
 
 
 def task_wrapper(task_func: Callable) -> Callable:
