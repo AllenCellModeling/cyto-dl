@@ -17,7 +17,10 @@ defaults:
 tags: ["dev"]
 seed: 12345
 
-ckpt_path: null # must override for prediction
+checkpoint:
+  ckpt_path: null # must override for prediction
+  weights_only: null 
+  strict: False 
 
 experiment_name: experiment_name
 run_name: run_name

@@ -83,7 +83,7 @@ def compile(cfg: DictConfig) -> Tuple[dict, dict]:
             {
                 "model_file": str(Path(pkg_root) / cfg.model_file),
                 "handler": str(Path(pkg_root) / cfg.handler_file),
-                "serialized_file": cfg.ckpt_path,
+                "serialized_file": cfg.checkpoint.ckpt_path,
                 "model_name": name,
                 "version": version,
                 "extra_files": str(cfg_path),

@@ -47,7 +47,9 @@ train: True
 test: True
 
 # simply provide checkpoint path to resume training
-ckpt_path: null
-
+checkpoint:
+  ckpt_path: null
+  weights_only: null
+  strict: True
 # seed for random number generators in pytorch, numpy and python.random
 seed: null
