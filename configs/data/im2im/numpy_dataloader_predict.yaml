@@ -1,0 +1,16 @@
+_target_: cyto_dl.datamodules.array.make_array_dataloader
+data:
+num_workers: 1
+batch_size: 1
+source_key: ${source_col}
+transforms:
+  - _target_: monai.transforms.ToTensord
+    keys:
+      - ${source_col}
+  - _target_: cyto_dl.image.transforms.clip.Clipd
+    keys:
+      - ${source_col}
+  - _target_: monai.transforms.NormalizeIntensityd
+    channel_wise: true
+    keys:
+      - ${source_col}
