@@ -42,23 +42,58 @@ class Patchify(torch.nn.Module):
         """
         super().__init__()
         self.n_patches = np.asarray(n_patches)
+
+        if spatial_dims not in (2, 3):
+            raise ValueError("Only 2D and 3D images are supported")
         self.spatial_dims = spatial_dims
 
         self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(n_patches), 1, emb_dim))
 
-        context_pixels = context_pixels[:spatial_dims]
+        self.patch2img = self.create_patch2img(n_patches, patch_size) 
+        self.img2token = self.create_img2token()
+        self.conv = self.create_conv(input_channels, emb_dim, patch_size, context_pixels)
+
+        self.task_embedding = torch.nn.ParameterDict(
+            {task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in tasks}
+        )
+        self._init_weight()
+
+    def create_conv(self, input_channels, emb_dim, patch_size, context_pixels):
+        context_pixels = context_pixels[:self.spatial_dims]
         weight_size = np.asarray(patch_size) + np.round(np.array(context_pixels) * 2).astype(int)
 
-        if spatial_dims == 3:
-            self.conv = nn.Conv3d(
+        if self.spatial_dims == 3:
+            return nn.Conv3d(
                 in_channels=input_channels,
                 out_channels=emb_dim,
                 kernel_size=weight_size,
                 stride=patch_size,
                 padding=context_pixels,
             )
-            self.img2token = Rearrange("b c z y x -> (z y x) b c")
-            self.patch2img = torch.nn.Sequential(
+        elif self.spatial_dims == 2:
+            return nn.Conv2d(
+                in_channels=input_channels,
+                out_channels=emb_dim,
+                kernel_size=weight_size,
+                stride=patch_size,
+                padding=context_pixels,
+            )
+
+    def create_img2token(self):
+        """
+        Rearranges the image tensor to a sequence of patches
+        """
+        if self.spatial_dims == 3:
+            return Rearrange("b c z y x -> (z y x) b c")
+        elif self.spatial_dims == 2:
+            return Rearrange("b c y x -> (y x) b c")
+
+    def create_patch2img(self, n_patches, patch_size):
+        """
+        Converts boolean array of whether to keep index of each patch to an image-shaped mask of same size as input image
+        """
+        if self.spatial_dims == 3:
+            return torch.nn.Sequential(
                 *[
                     Rearrange(
                         "(n_patch_z n_patch_y n_patch_x) b c ->  b c n_patch_z n_patch_y n_patch_x",
@@ -75,17 +110,8 @@ class Patchify(torch.nn.Module):
                     ),
                 ]
             )
-
-        elif spatial_dims == 2:
-            self.conv = nn.Conv2d(
-                in_channels=input_channels,
-                out_channels=emb_dim,
-                kernel_size=weight_size,
-                stride=patch_size,
-                padding=context_pixels,
-            )
-            self.img2token = Rearrange("b c y x -> (y x) b c")
-            self.patch2img = torch.nn.Sequential(
+        elif self.spatial_dims == 2:
+            return torch.nn.Sequential(
                 *[
                     Rearrange(
                         "(n_patch_y n_patch_x) b c ->  b c n_patch_y n_patch_x",
@@ -100,17 +126,20 @@ class Patchify(torch.nn.Module):
                     ),
                 ]
             )
-        self.task_embedding = torch.nn.ParameterDict(
-            {task: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for task in tasks}
-        )
-        self._init_weight()
+
 
     def _init_weight(self):
         trunc_normal_(self.pos_embedding, std=0.02)
         for task in self.task_embedding:
             trunc_normal_(self.task_embedding[task], std=0.02)
 
-    def get_mask(self, img, n_visible_patches, num_patches):
+    def get_mask_args(self, mask_ratio):
+        num_patches = np.prod(self.n_patches)
+        n_visible_patches = int(num_patches * (1 - mask_ratio))
+        return n_visible_patches, num_patches
+
+    def get_mask(self, img, mask_ratio, n_visible_patches, num_patches):
+
         B = img.shape[0]
 
         indexes = [random_indexes(num_patches, img.device) for _ in range(B)]
@@ -127,23 +156,30 @@ class Patchify(torch.nn.Module):
         mask = self.patch2img(mask)
 
         return mask, forward_indexes, backward_indexes
-
+    
+    def extract_visible_tokens(self, tokens, forward_indexes, n_visible_patches):
+        return take_indexes(tokens, forward_indexes)[:n_visible_patches]
+    
     def forward(self, img, mask_ratio, task=None):
         # generate mask
-        num_patches = np.prod(self.n_patches)
-        n_visible_patches = int(num_patches * (1 - mask_ratio))
-        mask, forward_indexes, backward_indexes = self.get_mask(
-            img, n_visible_patches, num_patches
-        )
+        mask = torch.ones_like(img)
+        forward_indexes, backward_indexes = None, None
+        if mask_ratio > 0:
+            n_visible_patches, num_patches = self.get_mask_args(mask_ratio)
+            mask, forward_indexes, backward_indexes = self.get_mask(img, mask_ratio, n_visible_patches, num_patches)
+
         # generate patches
         tokens = self.conv(img * mask)
         tokens = self.img2token(tokens)
+        
         # add position embedding
         tokens = tokens + self.pos_embedding
+        
+        # extract visible patches        
         if mask_ratio > 0:
-            # extract visible patches
-            tokens = take_indexes(tokens, forward_indexes)[:n_visible_patches]
-
+            tokens = self.extract_visible_tokens(tokens, forward_indexes, n_visible_patches)
+        
+        # add task embedding
         if task in self.task_embedding:
             tokens = tokens + self.task_embedding[task]
 
