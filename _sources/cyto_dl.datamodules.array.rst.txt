@@ -1,0 +1,7 @@
+cyto\_dl.datamodules.array module
+=================================
+
+.. automodule:: cyto_dl.datamodules.array
+   :members:
+   :undoc-members:
+   :show-inheritance:

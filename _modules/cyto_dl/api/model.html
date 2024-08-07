@@ -199,6 +199,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.datamodules.array.html">cyto_dl.datamodules.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
@@ -372,6 +373,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.utils.download_test_data.html">cyto_dl.utils.download_test_data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
@@ -524,19 +526,19 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_predict_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CytoDLModel.train"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CytoDLModel.train"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Configuration must be loaded before training!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">run_async</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_async</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">train_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">train_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CytoDLModel.predict"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_async</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CytoDLModel.predict"><a class="viewcode-back" href="../../../cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Configuration must be loaded before predicting!&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">run_async</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_async</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

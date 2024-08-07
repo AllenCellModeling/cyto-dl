@@ -20,6 +20,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   cyto_dl.utils.array
    cyto_dl.utils.config
    cyto_dl.utils.download_test_data
    cyto_dl.utils.dummy_dataset

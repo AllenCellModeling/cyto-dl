@@ -199,6 +199,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.datamodules.array.html">cyto_dl.datamodules.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
@@ -372,6 +373,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.utils.download_test_data.html">cyto_dl.utils.download_test_data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
@@ -430,8 +432,9 @@
 <span class="kn">import</span> <span class="nn">hydra</span>
 <span class="kn">from</span> <span class="nn">lightning</span> <span class="kn">import</span> <span class="n">Callback</span><span class="p">,</span> <span class="n">LightningDataModule</span><span class="p">,</span> <span class="n">LightningModule</span><span class="p">,</span> <span class="n">Trainer</span>
 <span class="kn">from</span> <span class="nn">lightning.pytorch.loggers</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">DataLoader</span> <span class="k">as</span> <span class="n">MonaiDataLoader</span>
 <span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">,</span> <span class="n">OmegaConf</span>
-<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span> <span class="k">as</span> <span class="n">TorchDataLoader</span>
 
 <span class="kn">from</span> <span class="nn">cyto_dl</span> <span class="kn">import</span> <span class="n">utils</span>
 
@@ -443,7 +446,7 @@
 
 
 <span class="nd">@utils</span><span class="o">.</span><span class="n">task_wrapper</span>
-<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="n">cfg</span><span class="p">:</span> <span class="n">DictConfig</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Evaluates given checkpoint on a datamodule testset.</span>
 
 <span class="sd">    This method is wrapped in optional @task_wrapper decorator which applies extra utilities</span>
@@ -464,9 +467,8 @@
 
     <span class="c1"># remove aux section after resolving and before instantiating</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">remove_aux_key</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
-
-    <span class="n">data</span> <span class="o">=</span> <span class="n">hydra</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">LightningDataModule</span><span class="p">,</span> <span class="n">DataLoader</span><span class="p">)):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_dataloader</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">LightningDataModule</span><span class="p">,</span> <span class="n">TorchDataLoader</span><span class="p">,</span> <span class="n">MonaiDataLoader</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;If the `data` config for eval/prediction is a dict it must have a &quot;</span>
