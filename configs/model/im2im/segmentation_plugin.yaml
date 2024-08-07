@@ -32,8 +32,6 @@ task_heads:
         _target_: cyto_dl.models.im2im.utils.postprocessing.AutoThreshold
         method: "threshold_otsu"
 
-    save_input: True
-
 optimizer:
   generator:
     _partial_: True

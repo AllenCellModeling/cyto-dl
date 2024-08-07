@@ -12,7 +12,6 @@ class MaskHead(BaseHead):
         loss,
         mask_key: str = "mask",
         postprocess={"input": detach, "prediction": detach},
-        save_input=False,
     ):
         """
         Parameters
@@ -23,10 +22,8 @@ class MaskHead(BaseHead):
             Postprocessing for `input` and `predictions` of head
         calculate_metric=False
             Whether to calculate a metric during training. Not used by GAN head.
-        save_input=False
-            Whether to save out example input images during training
         """
-        super().__init__(loss, postprocess=postprocess, save_input=save_input)
+        super().__init__(loss, postprocess=postprocess)
         self.mask_key = mask_key
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
@@ -39,7 +36,7 @@ class MaskHead(BaseHead):
         backbone_features,
         batch,
         stage,
-        save_image,
+        n_postprocess,
         run_forward=True,
         y_hat=None,
     ):
@@ -55,12 +52,18 @@ class MaskHead(BaseHead):
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name], batch[self.mask_key])
 
-        y_hat_out, y_out = None, None
-        if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
-
+        # no need to postprocess input and target during prediction
         return {
             "loss": loss,
-            "y_hat_out": y_hat_out,
-            "y_out": y_out,
+            "pred": self._postprocess(y_hat, img_type="prediction", n_postprocess=n_postprocess),
+            "target": self._postprocess(
+                batch[self.head_name], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
+            "input": self._postprocess(
+                batch[self.x_key], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
         }

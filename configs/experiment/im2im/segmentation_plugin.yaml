@@ -29,6 +29,8 @@ test: False
 source_col: raw
 target_col1: seg1
 target_col2: seg2
+target_col1_channel: 0
+target_col2_channel: 0
 merge_mask_col: merge_mask
 exclude_mask_col: exclude_mask
 base_image_col: base_image
@@ -59,3 +61,19 @@ model:
   _aux:
     filters: MUST_OVERRIDE
     overlap: 0
+
+callbacks:
+  # prediction
+  # saving:
+  #   _target_: cyto_dl.callbacks.ImageSaver
+  #   save_dir: ${paths.output_dir}
+  #   save_every_n_epochs: ${model.save_images_every_n_epochs}
+  #   stages: ["predict"]
+  #   save_input: False
+  # training
+  saving:
+    _target_: cyto_dl.callbacks.ImageSaver
+    save_dir: ${paths.output_dir}
+    save_every_n_epochs: ${model.save_images_every_n_epochs}
+    stages: ["train", "test", "val"]
+    save_input: True

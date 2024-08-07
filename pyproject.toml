@@ -4,7 +4,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "cyto-dl"
-version = "0.1.7"
+version = "0.1.8"
 description = """\
   Collection of representation learning models, techniques, callbacks, utils, \
   used to create latent variable models of cell shape, morphology and \
@@ -46,7 +46,8 @@ dependencies = [
     "bioio>=1.0.1",
     "bioio-czi",
     "bioio-ome-tiff",
-    "bioio-tifffile"
+    "bioio-tifffile",
+    "online-stats>=2023",
 ]
 requires-python = ">=3.9,<3.11"
 
@@ -136,3 +137,17 @@ exclude_lines = [
     "raise NotImplementedError()",
     "if __name__ == .__main__.:",
 ]
+
+# https://pypi.org/project/bumpver
+[tool.bumpver]
+current_version = "0.2.1"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = false # no longer useful to tag here, must happen in create_publish_pr.yaml
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"version.toml" = ['version = "{version}"']
+"cyto_dl/__init__.py" = ['__version__ = "{version}"']

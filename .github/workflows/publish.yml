@@ -2,8 +2,10 @@
 name: publish
 on:
   push:
-    branches: [main]
-
+    branches:
+      - main
+    paths:
+      - version.toml
 jobs:
   publish:
     runs-on: ubuntu-latest

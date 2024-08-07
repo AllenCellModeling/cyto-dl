@@ -1,0 +1,46 @@
+_target_: cyto_dl.models.contrastive.Contrastive
+
+anchor_key: ${anchor_key}
+positive_key: ${positive_key}
+target_key: target
+save_dir: ${paths.output_dir}
+viz_freq: 10
+
+backbone:
+  _target_: monai.networks.nets.Regressor
+  in_shape: [1, 28, 28] # CYX, should be CZYX for 3D
+  out_shape: ${model._aux.latent_dim}
+  channels: [2, 4, 8]
+  strides: [2, 2, 2]
+  kernel_size: 3
+
+task_head:
+  _target_: cyto_dl.nn.head.vic_reg.VICRegHead
+  loss:
+    _target_: cyto_dl.nn.losses.vic_reg.VICRegLoss
+    num_features: ${model._aux.latent_dim}
+  dims:
+    - ${model._aux.latent_dim}
+    - 256
+  hidden_layers:
+    - 256
+    - 256
+    - 256
+
+optimizer:
+  _partial_: True
+  _target_: torch.optim.SGD
+  lr: 0.1
+  weight_decay: 0.00001
+  momentum: 0.9
+
+lr_scheduler:
+  _partial_: True
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: 0.1
+  epochs: ${trainer.max_epochs}
+  steps_per_epoch: 1
+  pct_start: 0.02
+
+_aux:
+  latent_dim: 64
