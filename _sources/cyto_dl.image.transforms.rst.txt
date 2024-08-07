@@ -12,6 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   cyto_dl.image.transforms.add_meta
    cyto_dl.image.transforms.bright_sampler
    cyto_dl.image.transforms.clip
    cyto_dl.image.transforms.contrastadjust

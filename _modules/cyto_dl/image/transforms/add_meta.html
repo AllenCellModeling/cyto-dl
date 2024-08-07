@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.losses.chamfer_loss - cyto-dl 0.1.8 documentation</title>
+        <title>cyto_dl.image.transforms.add_meta - cyto-dl 0.1.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -421,42 +421,42 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.losses.chamfer_loss</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Adapted from: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/chamfer_distance.py</span>
-<span class="sd">LICENSE: https://github.com/Sentinal4D/cellshape-cloud/blob/main/cellshape_cloud/vendor/LICENSE_AnTao</span>
-<span class="sd">&quot;&quot;&quot;</span>
+          <h1>Source code for cyto_dl.image.transforms.add_meta</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">monai.data</span> <span class="kn">import</span> <span class="n">MetaTensor</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
 
 
-<div class="viewcode-block" id="ChamferLoss"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss">[docs]</a><span class="k">class</span> <span class="nc">ChamferLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<div class="viewcode-block" id="AddMeta"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.add_meta.html#cyto_dl.image.transforms.add_meta.AddMeta">[docs]</a><span class="k">class</span> <span class="nc">AddMeta</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform to update image key metadata with new keys.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="ChamferLoss.batch_pairwise_dist"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist">[docs]</a>    <span class="k">def</span> <span class="nf">batch_pairwise_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">bs</span><span class="p">,</span> <span class="n">num_points_x</span><span class="p">,</span> <span class="n">points_dim</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">num_points_y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-        <span class="n">xx</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">yy</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">zz</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">rx</span> <span class="o">=</span> <span class="n">xx</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">zz</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">ry</span> <span class="o">=</span> <span class="n">yy</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">zz</span><span class="p">)</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="n">rx</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">ry</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">zz</span>
-        <span class="k">return</span> <span class="n">P</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">meta_keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">delete</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        image_key: str</span>
+<span class="sd">            Key in batch dictionary for image data. Must be a MetaTensor</span>
+<span class="sd">        meta_keys: Sequence[str]</span>
+<span class="sd">            List of keys to add to image metadata</span>
+<span class="sd">        delete: bool</span>
+<span class="sd">            If True, delete the original meta_keys from the image metadata after they have been added as metadata</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_key</span> <span class="o">=</span> <span class="n">image_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span> <span class="o">=</span> <span class="n">meta_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete</span> <span class="o">=</span> <span class="n">delete</span>
 
-<div class="viewcode-block" id="ChamferLoss.batch_pairwise_dist2"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist2">[docs]</a>    <span class="k">def</span> <span class="nf">batch_pairwise_dist2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">P</span></div>
-
-<div class="viewcode-block" id="ChamferLoss.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">):</span>
-        <span class="n">P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_pairwise_dist2</span><span class="p">(</span><span class="n">gts</span><span class="p">,</span> <span class="n">preds</span><span class="p">)</span>
-        <span class="n">mins</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">loss_1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">mins</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">loss_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mins</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">loss_1</span> <span class="o">+</span> <span class="n">loss_2</span></div></div>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">],</span> <span class="n">MetaTensor</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Image key </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="si">}</span><span class="s2"> must be a MetaTensor, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">new_meta</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">image_key</span><span class="p">]</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_meta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
 </pre></div>
         </article>
       </div>
