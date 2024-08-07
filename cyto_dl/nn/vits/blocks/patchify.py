@@ -6,13 +6,7 @@ import torch.nn as nn
 from einops.layers.torch import Rearrange, Reduce
 from timm.models.layers import trunc_normal_
 
-from cyto_dl.nn.vits.utils import take_indexes
-
-
-def random_indexes(size: int, device):
-    forward_indexes = torch.randperm(size, device=device, dtype=torch.long)
-    backward_indexes = torch.argsort(forward_indexes)
-    return forward_indexes, backward_indexes
+from cyto_dl.nn.vits.utils import random_indexes, take_indexes
 
 
 class Patchify(torch.nn.Module):
