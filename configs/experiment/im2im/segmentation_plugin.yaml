@@ -19,8 +19,8 @@ seed: 12345
 
 checkpoint:
   ckpt_path: null # must override for prediction
-  weights_only: null 
-  strict: False 
+  weights_only: null
+  strict: False
 
 experiment_name: experiment_name
 run_name: run_name

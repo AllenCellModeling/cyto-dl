@@ -95,7 +95,7 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-        
+
         load_params = cfg.get("checkpoint")
         if load_params.get("weights_only"):
             assert load_params.get(
