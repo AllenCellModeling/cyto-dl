@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import numpy as np
 import torch
@@ -14,9 +14,9 @@ from cyto_dl.nn.vits.utils import take_indexes
 class JEPAEncoder(torch.nn.Module):
     def __init__(
         self,
-        num_patches: List[int],
+        num_patches: Union[int, List[int]],
         spatial_dims: int = 3,
-        patch_size: List[int] = (16, 16, 16),
+        patch_size: Union[int, List[int]] = (16, 16, 16),
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
         num_head: Optional[int] = 3,
@@ -44,6 +44,10 @@ class JEPAEncoder(torch.nn.Module):
             Number of input channels
         """
         super().__init__()
+        if isinstance(num_patches, int):
+            num_patches = [num_patches] * spatial_dims
+        if isinstance(patch_size, int):
+            patch_size = [patch_size] * spatial_dims
         self.patchify = Patchify(
             patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
         )
@@ -63,9 +67,10 @@ class JEPAEncoder(torch.nn.Module):
         features = self.layer_norm(self.transformer(patches))
         return features
 
+
 class JEPAPredictor(torch.nn.Module):
-    """Class for predicting target features from context embedding
-    """
+    """Class for predicting target features from context embedding."""
+
     def __init__(
         self,
         num_patches: List[int],
@@ -87,7 +92,6 @@ class JEPAPredictor(torch.nn.Module):
             Number of heads in transformer
         """
         super().__init__()
-
         self.transformer = torch.nn.ParameterList(
             [
                 CrossAttentionBlock(
@@ -124,7 +128,7 @@ class JEPAPredictor(torch.nn.Module):
         # cross attention from mask tokens to context embedding
         for transformer in self.transformer:
             mask = transformer(mask, context_emb)
-            
+
         # norm and project back to input dimension
         mask = self.projector_embed(self.norm(mask))
         return mask
@@ -137,8 +141,9 @@ class JEPAPredictor(torch.nn.Module):
 
 
 class IWMPredictor(JEPAPredictor):
-    """Specialized JEPA predictor that can conditionally predict between different domains (e.g. predict from brightfield to multiple flourescent tags)
-    """
+    """Specialized JEPA predictor that can conditionally predict between different domains (e.g.
+    predict from brightfield to multiple fluorescent tags)"""
+
     def __init__(
         self,
         domains: List[str],
