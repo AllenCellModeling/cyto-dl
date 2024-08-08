@@ -79,6 +79,7 @@ class JEPABase(BaseModel):
             + (1 - self.hparams.momentum) * self.current_epoch / self.hparams.max_epochs
         )
 
+    # modified from https://github.com/facebookresearch/jepa/blob/main/app/vjepa/train.py
     def update_teacher(self):
         # ema of teacher
         momentum = self._get_momentum()
@@ -100,7 +101,7 @@ class JEPABase(BaseModel):
         # mask context pre-embedding to prevent leakage of target information
         context_patches, _, _, _ = self.encoder.patchify(x, 0)
         context_patches = take_indexes(context_patches, mask)
-        context_patches = self.encoder.transformer_forward(context_patches)
+        context_patches = self.encoder(context_patches, patchify=False)
         return context_patches
 
     def get_mask(self, batch, key):
