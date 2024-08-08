@@ -54,17 +54,18 @@ class JEPAEncoder(torch.nn.Module):
 
         self.layer_norm = torch.nn.LayerNorm(emb_dim)
 
-    def transformer_forward(self, patches):
+    def forward(self, img, patchify=True):
+        if patchify:
+            patches, _, _, _ = self.patchify(img, mask_ratio=0)
+        else:
+            patches = img
         patches = rearrange(patches, "t b c -> b t c")
         features = self.layer_norm(self.transformer(patches))
         return features
 
-    def forward(self, img):
-        patches, _, _, _ = self.patchify(img, mask_ratio=0)
-        return self.transformer_forward(patches)
-
-
 class JEPAPredictor(torch.nn.Module):
+    """Class for predicting target features from context embedding
+    """
     def __init__(
         self,
         num_patches: List[int],
@@ -111,26 +112,33 @@ class JEPAPredictor(torch.nn.Module):
         trunc_normal_(self.mask_token, std=0.02)
         trunc_normal_(self.pos_embedding, std=0.02)
 
-    def forward(self, context_emb, target_masks):
+    def predict_target_features(self, context_emb, target_masks):
         t, b = target_masks.shape
-        # map context embedding to predictor dimension
-        context_emb = self.predictor_embed(context_emb)
-
         # add masked positional embedding to mask tokens
         mask = self.mask_token.expand(t, b, -1)
         pe = self.pos_embedding.expand(-1, b, -1)
         pe = take_indexes(pe, target_masks)
         mask = mask + pe
         mask = rearrange(mask, "t b c -> b t c")
+
         # cross attention from mask tokens to context embedding
         for transformer in self.transformer:
             mask = transformer(mask, context_emb)
+            
         # norm and project back to input dimension
         mask = self.projector_embed(self.norm(mask))
         return mask
 
+    def forward(self, context_emb, target_masks):
+        # map context embedding to predictor dimension
+        context_emb = self.predictor_embed(context_emb)
+        target_features = self.predict_target_features(context_emb, target_masks)
+        return target_features
 
-class IWMPredictor(torch.nn.Module):
+
+class IWMPredictor(JEPAPredictor):
+    """Specialized JEPA predictor that can conditionally predict between different domains (e.g. predict from brightfield to multiple flourescent tags)
+    """
     def __init__(
         self,
         domains: List[str],
@@ -143,6 +151,8 @@ class IWMPredictor(torch.nn.Module):
         """
         Parameters
         ----------
+        domains: List[str]
+            List of names of target domains
         num_patches: List[int]
             Number of patches in each dimension
         emb_dim: int
@@ -152,40 +162,15 @@ class IWMPredictor(torch.nn.Module):
         num_head: int
             Number of heads in transformer
         """
-        super().__init__()
-
-        self.transformer = torch.nn.ParameterList(
-            [
-                CrossAttentionBlock(
-                    encoder_dim=emb_dim,
-                    decoder_dim=emb_dim,
-                    num_heads=num_head,
-                )
-                for _ in range(num_layer)
-            ]
-        )
+        super().__init__(num_patches, input_dim, emb_dim, num_layer, num_head)
 
         self.domain_embeddings = torch.nn.ParameterDict(
             {d: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for d in domains}
         )
         self.context_mixer = torch.nn.Linear(2 * emb_dim, emb_dim, 1)
 
-        self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
-
-        self.predictor_embed = torch.nn.Linear(input_dim, emb_dim)
-
-        self.projector_embed = torch.nn.Linear(emb_dim, input_dim)
-        self.norm = torch.nn.LayerNorm(emb_dim)
-        self.init_weight()
-
-    def init_weight(self):
-        trunc_normal_(self.mask_token, std=0.02)
-        trunc_normal_(self.pos_embedding, std=0.02)
-
     def forward(self, context_emb, target_masks, target_domain):
-        t, b = target_masks.shape
-
+        _, b = target_masks.shape
         # map context embedding to predictor dimension
         context_emb = self.predictor_embed(context_emb)
 
@@ -196,15 +181,5 @@ class IWMPredictor(torch.nn.Module):
         context_emb = torch.cat([context_emb, target_domain_embedding], dim=-1)
         context_emb = self.context_mixer(context_emb)
 
-        # add masked positional embedding to mask tokens
-        mask = self.mask_token.expand(t, b, -1)
-        pe = self.pos_embedding.expand(-1, b, -1)
-        pe = take_indexes(pe, target_masks)
-        mask = mask + pe
-        mask = rearrange(mask, "t b c -> b t c")
-        # cross attention from mask tokens to context embedding
-        for transformer in self.transformer:
-            mask = transformer(mask, context_emb)
-        # norm and project back to input dimension
-        mask = self.projector_embed(self.norm(mask))
-        return mask
+        target_features = self.predict_target_features(context_emb, target_masks)
+        return target_features
