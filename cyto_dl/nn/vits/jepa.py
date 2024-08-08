@@ -4,7 +4,6 @@ import numpy as np
 import torch
 import torch.nn.functional
 from einops import rearrange
-from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
@@ -129,120 +128,6 @@ class JEPAPredictor(torch.nn.Module):
         # norm and project back to input dimension
         mask = self.projector_embed(self.norm(mask))
         return mask
-
-
-from monai.networks.blocks import UnetOutBlock, UnetResBlock
-
-
-class JEPASeg(torch.nn.Module):
-    """Class for training a simple convolutional decoder on top of a pretrained ViT backbone."""
-
-    def __init__(
-        self,
-        spatial_dims: int = 3,
-        num_patches: Optional[List[int]] = [2, 32, 32],
-        patch_size: Optional[List[int]] = [16, 16, 16],
-        emb_dim: Optional[int] = 768,
-        encoder_ckpt: Optional[str] = None,
-        freeze_encoder: Optional[bool] = True,
-        **encoder_kwargs,
-    ) -> None:
-        """
-        Parameters
-        ----------
-        spatial_dims: Optional[int]=3
-            Number of spatial dimensions
-        num_patches: Optional[List[int]]=[2, 32, 32]
-            Number of patches in each dimension (ZYX) order
-        patch_size: Optional[List[int]]=[16, 16, 16]
-            Base patch size in each dimension (ZYX) order
-        emb_dim: Optional[int] =768
-            Embedding dimension of ViT backbone
-        encoder_layer: Optional[int] =12
-            Number of layers in ViT backbone
-        encoder_head: Optional[int] =8
-            Number of heads in ViT backbone
-        decoder_layer: Optional[int] =3
-            Number of layers in convolutional decoder
-        n_decoder_filters: Optional[int] =16
-            Number of filters in convolutional decoder
-        out_channels: Optional[int] =6
-            Number of output channels in convolutional decoder. Should be 6 for instance segmentation.
-        mask_ratio: Optional[int] =0.75
-            Ratio of patches to be masked out during training
-        upsample_factor:Optional[List[int]] = [2.6134, 2.5005, 2.5005]
-            Upsampling factor for each dimension (ZYX) order. Default is AICS 20x to 100x object upsampling
-        encoder_ckpt: Optional[str]=None
-            Path to pretrained ViT backbone checkpoint
-        """
-        super().__init__()
-        assert spatial_dims in (2, 3)
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(patch_size, int):
-            patch_size = [patch_size] * spatial_dims
-        assert len(num_patches) == spatial_dims
-        assert len(patch_size) == spatial_dims
-
-        self.encoder = JEPAEncoder(
-            spatial_dims=spatial_dims,
-            num_patches=num_patches,
-            patch_size=patch_size,
-            emb_dim=emb_dim,
-            **encoder_kwargs,
-        )
-        if encoder_ckpt is not None:
-            model = torch.load(encoder_ckpt, map_location="cuda:0")
-            enc_state_dict = {
-                k.replace("backbone.encoder.", ""): v
-                for k, v in model["state_dict"].items()
-                if "encoder" in k and "intermediate" not in k
-            }
-            self.encoder.load_state_dict(enc_state_dict, strict=False)
-
-        if freeze_encoder:
-            for name, param in self.encoder.named_parameters():
-                # allow different weighting of internal activations for finetuning
-                param.requires_grad = "intermediate_weighter" in name
-
-        self.decoder = torch.nn.Sequential(
-            torch.nn.Linear(emb_dim, 16 * emb_dim),
-            Rearrange(
-                "b (n_patch_z n_patch_y n_patch_x) c -> b c n_patch_z n_patch_y n_patch_x",
-                n_patch_z=num_patches[0],
-                n_patch_y=num_patches[1],
-                n_patch_x=num_patches[2],
-            ),
-            UnetResBlock(
-                spatial_dims=spatial_dims,
-                in_channels=4096,
-                out_channels=256,
-                stride=1,
-                kernel_size=3,
-                norm_name="INSTANCE",
-                dropout=0,
-            ),
-            UnetOutBlock(
-                spatial_dims=spatial_dims,
-                in_channels=256,
-                out_channels=256,
-                dropout=0,
-            ),
-            Rearrange(
-                "b (c size_z size_y size_x) n_patch_z n_patch_y n_patch_x -> b c (n_patch_z size_z) (n_patch_y size_y) (n_patch_x size_x)",
-                n_patch_z=num_patches[0],
-                n_patch_y=num_patches[1],
-                n_patch_x=num_patches[2],
-                size_y=patch_size[1],
-                size_x=patch_size[2],
-                size_z=patch_size[0],
-            ),
-        )
-
-    def forward(self, img):
-        features = self.encoder(img)
-        features = self.decoder(features)
-        return features
 
 
 class IWMPredictor(torch.nn.Module):
