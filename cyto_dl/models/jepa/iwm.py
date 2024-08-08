@@ -14,7 +14,9 @@ class IWM(JEPABase):
         *,
         encoder: nn.Module,
         predictor: nn.Module,
-        x_key: str,
+        source_key: str = 'source',
+        target_key: str= 'target',
+        target_domain_key: str = 'target_domain',
         save_dir: str = "./",
         momentum: float = 0.998,
         max_epochs: int = 100,
@@ -29,8 +31,14 @@ class IWM(JEPABase):
             The encoder module used for feature extraction.
         predictor : nn.Module
             The predictor module used for generating predictions.
-        x_key : str
-            The key used to access the input data.
+        source_key : str
+            The key used to access the source data.
+        target_key : str
+            The key used to access the target data.
+        target_domain_key : str
+            The key used to access the target domain data.
+        save_dir : str, optional
+            The directory to save the model predictions (default is "./").
         momentum : float, optional
             The momentum value for the exponential moving average of the model weights (default is 0.998).
         max_epochs : int, optional
@@ -41,7 +49,7 @@ class IWM(JEPABase):
         super().__init__(
             encoder=encoder,
             predictor=predictor,
-            x_key=x_key,
+            x_key=source_key,
             save_dir=save_dir,
             momentum=momentum,
             max_epochs=max_epochs,
@@ -50,8 +58,8 @@ class IWM(JEPABase):
 
     def model_step(self, stage, batch, batch_idx):
         self.update_teacher()
-        source = batch[f"{self.hparams.x_key}_brightfield"]
-        target = batch[f"{self.hparams.x_key}_struct"]
+        source = batch[self.hparams.source_key]
+        target = batch[self.hparams.target_key]
 
         target_masks = self.get_mask(batch, "target_mask")
         context_masks = self.get_mask(batch, "context_mask")
@@ -70,29 +78,19 @@ class IWM(JEPABase):
         return repeat(mask, "t -> t b", b=batch_size)
 
     def predict_step(self, batch, batch_idx):
-        source = batch[f"{self.hparams.x_key}_brightfield"].squeeze(0)
-        target = batch[f"{self.hparams.x_key}_struct"].squeeze(0)
+        source = batch[self.hparams.source_key].squeeze(0)
+        target = batch[self.hparams.target_key].squeeze(0)
 
         # use predictor to predict each patch
         target_masks = self.get_predict_masks(source.shape[0])
-        # mean across patches
-        bf_embeddings = self.encoder(source)
+
+        # mean across patches, no cls token to remove
+        source_embeddings = self.encoder(source).mean(axis=1)
+        # predict target embeddings from source embeddings
         pred_target_embeddings = self.predictor(
-            bf_embeddings, target_masks, batch["structure_name"]
-        ).mean(axis=1)
-        pred_feats = pd.DataFrame(
-            pred_target_embeddings.detach().cpu().numpy(),
-            columns=[f"{i}_pred" for i in range(pred_target_embeddings.shape[1])],
-        )
-
+            source_embeddings, target_masks, batch[self.haparams.target_domain_key]
+        ).mean(axis=1).detach().cpu().numpy()
         # get target embeddings
-        target_embeddings = self.encoder(target).mean(axis=1)
-        ctxt_feats = pd.DataFrame(
-            target_embeddings.detach().cpu().numpy(),
-            columns=[f"{i}_ctxt" for i in range(target_embeddings.shape[1])],
-        )
+        target_embeddings = self.encoder(target).mean(axis=1).detach().cpu().numpy()
 
-        all_feats = pd.concat([ctxt_feats, pred_feats], axis=1)
-
-        all_feats.to_csv(Path(self.hparams.save_dir) / f"{batch_idx}_predictions.csv")
-        return None, None, None
+        return (source_embeddings, target_embeddings, pred_target_embeddings), source.meta
