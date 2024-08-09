@@ -42,7 +42,7 @@ def test_array_train_predict(tmp_path):
         "logger": None,
         "trainer.accelerator": "cpu",
         "trainer.devices": 1,
-        "ckpt_path": ckpt_path,
+        "checkpoint.ckpt_path": ckpt_path,
     }
 
     model.load_default_experiment(

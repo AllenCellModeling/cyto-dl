@@ -33,7 +33,7 @@ def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
-    if not cfg.ckpt_path:
+    if not cfg.checkpoint.ckpt_path:
         raise ValueError("Checkpoint path must be included for testing")
 
     # resolve config to avoid unresolvable interpolations in the stored config
@@ -84,7 +84,7 @@ def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
 
     log.info("Starting testing!")
     method = trainer.test if cfg.get("test", False) else trainer.predict
-    output = method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
+    output = method(model=model, dataloaders=data, ckpt_path=cfg.checkpoint.ckpt_path)
     metric_dict = trainer.callback_metrics
 
     return metric_dict, object_dict, output

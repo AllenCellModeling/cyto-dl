@@ -108,7 +108,7 @@ class CytoDLBaseModel(ABC):
         self._set_cfg("task_name", "train" if train else "predict")
 
     def _set_ckpt(self, ckpt: Optional[Path]) -> None:
-        self._set_cfg("ckpt_path", str(ckpt.resolve()) if ckpt else ckpt)
+        self._set_cfg("checkpoint.ckpt_path", str(ckpt.resolve()) if ckpt else ckpt)
 
     # does experiment name have any effect?
     def set_experiment_name(self, name: str) -> None:

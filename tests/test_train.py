@@ -63,7 +63,7 @@ def test_train_resume(tmp_path, cfg_train, spatial_dims):
     assert "epoch_000.ckpt" in files
 
     with open_dict(cfg_train):
-        cfg_train.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
+        cfg_train.checkpoint.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
         cfg_train.trainer.max_epochs = 2
 
     metric_dict_2, _ = train(cfg_train)
