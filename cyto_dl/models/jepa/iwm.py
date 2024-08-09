@@ -1,6 +1,3 @@
-from pathlib import Path
-
-import pandas as pd
 import torch
 import torch.nn as nn
 from einops import rearrange, repeat
@@ -14,16 +11,17 @@ class IWM(JEPABase):
         *,
         encoder: nn.Module,
         predictor: nn.Module,
-        source_key: str = 'source',
-        target_key: str= 'target',
-        target_domain_key: str = 'target_domain',
+        source_key: str = "source",
+        target_key: str = "target",
+        target_domain_key: str = "target_domain",
         save_dir: str = "./",
         momentum: float = 0.998,
         max_epochs: int = 100,
+        predict_target: bool = False,
         **base_kwargs,
     ):
-        """Image World Model for self-supervised learning of encoder and predictor of
-        transformations in image latent space.
+        """Image World Model for self-supervised learning of encoder and predictor of image
+        translation in latent space.
 
         Parameters
         ----------
@@ -43,6 +41,8 @@ class IWM(JEPABase):
             The momentum value for the exponential moving average of the model weights (default is 0.998).
         max_epochs : int, optional
             The maximum number of training epochs (default is 100).
+        predict_target : bool, optional
+            Whether to predict the target embeddings instead of just extracting embeddings of source image (default is False).
         **base_kwargs : dict
             Additional arguments passed to the BaseModel.
         """
@@ -65,32 +65,61 @@ class IWM(JEPABase):
         context_masks = self.get_mask(batch, "context_mask")
         target_embeddings = self.get_target_embeddings(target, target_masks)
         context_embeddings = self.get_context_embeddings(source, context_masks)
-        predictions = self.predictor(context_embeddings, target_masks, batch["structure_name"])
+        predictions = self.predictor(
+            context_embeddings, target_masks, batch[self.hparams.target_domain_key]
+        )
 
         loss = self.loss(predictions, target_embeddings)
         return loss, None, None
 
-    def get_predict_masks(self, batch_size, num_patches=[4, 16, 16]):
-        mask = torch.ones(num_patches, dtype=bool)
+    def get_predict_masks(self, batch_size, device):
+        mask = torch.ones(self.hparams.encoder["num_patches"], dtype=bool, device=device)
         mask = rearrange(mask, "z y x -> (z y x)")
         mask = torch.argwhere(mask).squeeze()
 
         return repeat(mask, "t -> t b", b=batch_size)
 
+    def extract_embeddings(self, tensor):
+        # mean across patches, no cls token to remove
+        return tensor.mean(axis=1).detach().cpu().numpy()
+
+    def remove_first_dim(self, tensor):
+        # account for grid patching transform
+        return tensor.squeeze(0) if len(tensor.shape) == 6 else tensor
+
     def predict_step(self, batch, batch_idx):
-        source = batch[self.hparams.source_key].squeeze(0)
-        target = batch[self.hparams.target_key].squeeze(0)
+        source = batch[self.hparams.source_key]
+        source = self.remove_first_dim(source)
+
+        embeddings = self.encoder(source)
+        if self.hparams.predict_target:
+            # use predictor to predict each patch
+            target_masks = self.get_predict_masks(source.shape[0], device=source.device)
+            # predict target embeddings from source embeddings
+            embeddings = self.predictor(
+                embeddings, target_masks, batch[self.hparams.target_domain_key]
+            )
+        return self.extract_embeddings(embeddings), source.meta
+
+    def test_step(self, batch, batch_idx):
+        source = batch[self.hparams.source_key]
+        source = self.remove_first_dim(source)
+        target = batch[self.hparams.target_key]
+        target = self.remove_first_dim(target)
 
         # use predictor to predict each patch
-        target_masks = self.get_predict_masks(source.shape[0])
+        target_masks = self.get_predict_masks(source.shape[0], device=source.device)
 
         # mean across patches, no cls token to remove
-        source_embeddings = self.encoder(source).mean(axis=1)
+        source_embeddings = self.encoder(source)
         # predict target embeddings from source embeddings
         pred_target_embeddings = self.predictor(
-            source_embeddings, target_masks, batch[self.haparams.target_domain_key]
-        ).mean(axis=1).detach().cpu().numpy()
+            source_embeddings, target_masks, batch[self.hparams.target_domain_key]
+        )
         # get target embeddings
-        target_embeddings = self.encoder(target).mean(axis=1).detach().cpu().numpy()
+        target_embeddings = self.encoder(target)
 
-        return (source_embeddings, target_embeddings, pred_target_embeddings), source.meta
+        loss = self.loss(pred_target_embeddings, target_embeddings)
+        self.log("test/loss", loss, on_step=True, on_epoch=True, prog_bar=True)
+
+        return loss
