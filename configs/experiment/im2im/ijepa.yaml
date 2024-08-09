@@ -13,14 +13,13 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-
 tags: ["dev"]
 seed: 12345
 
 experiment_name: YOUR_EXP_NAME
 run_name: YOUR_RUN_NAME
 
-# only source_col is needed for masked autoencoder
+# only source_col is needed for ijepa
 source_col: raw
 spatial_dims: 3
 raw_im_channels: 1
@@ -43,5 +42,5 @@ model:
   _aux:
     # 3D
     num_patches: [8, 8, 8]
-    # 2d  
+    # 2d
     # num_patches: [8, 8]

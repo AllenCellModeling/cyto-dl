@@ -1,8 +1,7 @@
 _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 
-path: //allen/aics/assay-dev/users/Benji/CurrentProjects/mae_pretrain/nucmorph_movies_with_drug/loaded_data/subsample_manifests
-# path: //allen/aics/assay-dev/users/Benji/CurrentProjects/im2im_dev/cyto-dl/data/nucmorph_contrastive/manifests
-cache_dir: /storage/benji.the.kid/cache/jepa
+path:
+cache_dir:
 
 num_workers: 0
 shuffle: True
@@ -115,7 +114,6 @@ transforms:
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
         mask_size: 4
         num_patches: ${model._aux.num_patches}
-
 
 _aux:
   _scales_dict:

@@ -12,7 +12,7 @@ encoder:
   num_layer: 2
   num_head: 1
 
-predictor: 
+predictor:
   _target_: cyto_dl.nn.vits.jepa.JEPAPredictor
   num_patches: ${model._aux.num_patches}
   input_dim: ${model.encoder.emb_dim}
