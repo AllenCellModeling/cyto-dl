@@ -14,6 +14,7 @@ EXAMPLE_DATA_FILENAME = "s3_paths.csv"
 DATA_PATHS = {
     "raw": "s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff",
     "seg": "s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff",
+    "struct": "SEC61B",
 }
 
 
@@ -49,7 +50,8 @@ def download_test_data(limit=-1):
         df = df.iloc[:limit]
 
     local_data = {col: [] for col in df.columns}
-    for col in df.columns:
+    local_data["struct"] = DATA_PATHS["struct"]
+    for col in ("raw", "seg"):
         for fn in df[col].unique():
             bucket, s3_path, local_file_name = parse_s3_path(fn)
             local_file_path = EXAMPLE_DATA_DIR / "s3_data" / local_file_name
