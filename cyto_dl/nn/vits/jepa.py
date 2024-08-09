@@ -176,13 +176,15 @@ class IWMPredictor(JEPAPredictor):
 
     def forward(self, context_emb, target_masks, target_domain):
         _, b = target_masks.shape
+        if len(target_domain) == 1:
+            target_domain = target_domain * b
         # map context embedding to predictor dimension
         context_emb = self.predictor_embed(context_emb)
 
         # add target domain information via concatenation + token mixing
         target_domain_embedding = torch.cat(
             [self.domain_embeddings[td] for td in target_domain]
-        ).repeat(b, context_emb.shape[1], 1)
+        ).repeat(1, context_emb.shape[1], 1)
         context_emb = torch.cat([context_emb, target_domain_embedding], dim=-1)
         context_emb = self.context_mixer(context_emb)
 
