@@ -61,6 +61,14 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}
+        patch_size: ${data._aux.patch_shape}
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
 
   predict:
     _target_: monai.transforms.Compose
@@ -83,6 +91,11 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}
+        patch_size: ${data._aux.patch_shape}
 
   valid:
     _target_: monai.transforms.Compose

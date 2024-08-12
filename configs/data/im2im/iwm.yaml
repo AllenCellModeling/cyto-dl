@@ -1,7 +1,7 @@
 _target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
 
-path: 
-cache_dir: 
+path:
+cache_dir:
 
 num_workers: 0
 shuffle: True
@@ -32,27 +32,27 @@ transforms:
         keep_size: False
       # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
       - _target_: monai.transforms.SplitDimd
-        keys:  ${source_col}
+        keys: ${source_col}
         output_postfixes:
-        - struct
-        - brightfield
+          - struct
+          - brightfield
       # delete original key
       - _target_: monai.transforms.DeleteItemsd
         keys: ${source_col}
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
         channel_wise: True
       - _target_: monai.transforms.RandSpatialCropSamplesd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
-        roi_size: ${data._aux.patch_shape}  
+        roi_size: ${data._aux.patch_shape}
         num_samples: 1
         random_size: False
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
@@ -78,25 +78,25 @@ transforms:
         keep_size: False
       # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
       - _target_: monai.transforms.SplitDimd
-        keys:  ${source_col}
+        keys: ${source_col}
         output_postfixes:
-        - struct
-        - brightfield
+          - struct
+          - brightfield
       # delete original key
       - _target_: monai.transforms.DeleteItemsd
         keys: ${source_col}
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
         channel_wise: True
       # extract out all patches
       - _target_: monai.transforms.GridPatchd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
         patch_size: ${data._aux.patch_shape}
@@ -119,18 +119,17 @@ transforms:
         zoom: 0.25
         keep_size: False
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - ${source_col}
         channel_wise: True
       # extract out all patches
       - _target_: monai.transforms.GridPatchd
-        keys: 
+        keys:
           - ${source_col}
         patch_size: ${data._aux.patch_shape}
-
 
   valid:
     _target_: monai.transforms.Compose
@@ -151,27 +150,27 @@ transforms:
         keep_size: False
       # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
       - _target_: monai.transforms.SplitDimd
-        keys:  ${source_col}
+        keys: ${source_col}
         output_postfixes:
-        - struct
-        - brightfield
+          - struct
+          - brightfield
       # delete original key
       - _target_: monai.transforms.DeleteItemsd
         keys: ${source_col}
       - _target_: monai.transforms.ToTensord
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
       - _target_: monai.transforms.NormalizeIntensityd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
         channel_wise: True
       - _target_: monai.transforms.RandSpatialCropSamplesd
-        keys: 
+        keys:
           - ${source_col}_struct
           - ${source_col}_brightfield
-        roi_size: ${data._aux.patch_shape}  
+        roi_size: ${data._aux.patch_shape}
         num_samples: 1
         random_size: False
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
