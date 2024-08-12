@@ -82,9 +82,11 @@ def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
 
+    model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
+
     log.info("Starting testing!")
     method = trainer.test if cfg.get("test", False) else trainer.predict
-    output = method(model=model, dataloaders=data, ckpt_path=cfg.checkpoint.ckpt_path)
+    output = method(model=model, dataloaders=data, ckpt_path=load_params.ckpt_path)
     metric_dict = trainer.callback_metrics
 
     return metric_dict, object_dict, output
