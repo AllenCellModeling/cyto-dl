@@ -83,10 +83,6 @@ class IWM(JEPABase):
         # mean across patches, no cls token to remove
         return tensor.mean(axis=1).detach().cpu().numpy()
 
-    def remove_first_dim(self, tensor):
-        # account for grid patching transform
-        return tensor.squeeze(0) if len(tensor.shape) == 6 else tensor
-
     def predict_step(self, batch, batch_idx):
         source = batch[self.hparams.source_key]
         source = self.remove_first_dim(source)

@@ -69,6 +69,10 @@ class JEPABase(BaseModel):
             },
         }
 
+    def remove_first_dim(self, tensor):
+        # account for grid patching transform
+        return tensor.squeeze(0) if len(tensor.shape) == 6 else tensor
+
     def forward(self, x):
         return self.encoder(x)
 
@@ -112,6 +116,8 @@ class JEPABase(BaseModel):
 
     def predict_step(self, batch, batch_idx):
         x = batch[self.hparams.x_key]
+        x = self.remove_first_dim(x)
+
         embeddings = self(x)
 
         return embeddings.detach().cpu().numpy(), x.meta

@@ -45,6 +45,7 @@ class IJEPA(JEPABase):
     def model_step(self, stage, batch, batch_idx):
         self.update_teacher()
         input = batch[self.hparams.x_key]
+        input = self.remove_first_dim(input)
 
         target_masks = self.get_mask(batch, "target_mask")
         context_masks = self.get_mask(batch, "context_mask")
