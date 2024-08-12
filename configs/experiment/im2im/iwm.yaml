@@ -8,11 +8,10 @@ defaults:
   - override /model: im2im/iwm.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow.yaml
+  - override /logger: csv.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
-
 
 tags: ["dev"]
 seed: 12345
@@ -43,7 +42,7 @@ model:
   _aux:
     # 3D
     num_patches: [8, 8, 8]
-    # 2d  
+    # 2d
     # num_patches: [8, 8]
 
 callbacks:
