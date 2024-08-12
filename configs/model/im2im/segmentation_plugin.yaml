@@ -18,7 +18,7 @@ backbone:
   filters: ${model._aux.filters}
 
 task_heads:
-  target:
+  seg:
     _target_: cyto_dl.nn.head.MaskHead
     mask_key: ${exclude_mask_col}
     loss:
