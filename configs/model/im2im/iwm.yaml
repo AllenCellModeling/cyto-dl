@@ -15,7 +15,7 @@ encoder:
   num_layer: 1
   num_head: 1
 
-predictor: 
+predictor:
   _target_: cyto_dl.nn.vits.jepa.IWMPredictor
   domains: [SEC61B]
   num_patches: ${model._aux.num_patches}
