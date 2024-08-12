@@ -120,15 +120,15 @@ transforms:
         keep_size: False
       - _target_: monai.transforms.ToTensord
         keys: 
-          - ${source_col}_struct
+          - ${source_col}
       - _target_: monai.transforms.NormalizeIntensityd
         keys: 
-          - ${source_col}_struct
+          - ${source_col}
         channel_wise: True
       # extract out all patches
       - _target_: monai.transforms.GridPatchd
         keys: 
-          - ${source_col}_struct
+          - ${source_col}
         patch_size: ${data._aux.patch_shape}
 
 
