@@ -18,7 +18,7 @@ def test_train_config(cfg_train: DictConfig, spatial_dims: int):
     with open_dict(cfg_train):
         cfg_train.spatial_dims = spatial_dims
         if spatial_dims == 2:
-            cfg_train.data._aux.patch_shape = [64, 64]
+            cfg_train.data._aux.patch_shape = [16, 16]
 
     HydraConfig().set_config(cfg_train)
     resolve_readonly(cfg_train)
@@ -39,7 +39,7 @@ def test_eval_config(cfg_eval: DictConfig, spatial_dims: int):
     with open_dict(cfg_eval):
         cfg_eval.spatial_dims = spatial_dims
         if spatial_dims == 2:
-            cfg_eval.data._aux.patch_shape = [64, 64]
+            cfg_eval.data._aux.patch_shape = [16, 16]
 
     HydraConfig().set_config(cfg_eval)
     resolve_readonly(cfg_eval)
