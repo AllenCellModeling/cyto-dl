@@ -1,6 +1,5 @@
 from typing import List, Optional
 
-import numpy as np
 import torch
 import torch.nn as nn
 from einops import rearrange
@@ -8,7 +7,7 @@ from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-from cyto_dl.nn.vits.utils import take_indexes
+from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
 
 
 class CrossMAE_Decoder(torch.nn.Module):
@@ -24,6 +23,7 @@ class CrossMAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -40,6 +40,8 @@ class CrossMAE_Decoder(torch.nn.Module):
             Number of transformer layers
         num_head: int
             Number of heads in transformer
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used
         """
         super().__init__()
 
@@ -58,7 +60,10 @@ class CrossMAE_Decoder(torch.nn.Module):
 
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
+
+        self.pos_embedding = get_positional_embedding(
+            num_patches, emb_dim, learnable=learnable_pos_embedding
+        )
 
         self.head = torch.nn.Linear(emb_dim, torch.prod(torch.as_tensor(base_patch_size)))
         self.num_patches = torch.as_tensor(num_patches)
@@ -86,7 +91,6 @@ class CrossMAE_Decoder(torch.nn.Module):
 
     def init_weight(self):
         trunc_normal_(self.mask_token, std=0.02)
-        trunc_normal_(self.pos_embedding, std=0.02)
 
     def forward(self, features, forward_indexes, backward_indexes):
         # HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers
