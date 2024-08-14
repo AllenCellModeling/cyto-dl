@@ -1,6 +1,5 @@
 from typing import List, Optional, Union
 
-import numpy as np
 import torch
 import torch.nn.functional
 from einops import rearrange
@@ -8,7 +7,7 @@ from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock, Patchify
-from cyto_dl.nn.vits.utils import take_indexes
+from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
 
 
 class JEPAEncoder(torch.nn.Module):
@@ -22,6 +21,7 @@ class JEPAEncoder(torch.nn.Module):
         num_head: Optional[int] = 3,
         context_pixels: Optional[List[int]] = [0, 0, 0],
         input_channels: Optional[int] = 1,
+        learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -42,6 +42,8 @@ class JEPAEncoder(torch.nn.Module):
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         input_channels: int
             Number of input channels
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         if isinstance(num_patches, int):
@@ -49,7 +51,13 @@ class JEPAEncoder(torch.nn.Module):
         if isinstance(patch_size, int):
             patch_size = [patch_size] * spatial_dims
         self.patchify = Patchify(
-            patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
+            patch_size,
+            emb_dim,
+            num_patches,
+            spatial_dims,
+            context_pixels,
+            input_channels,
+            learnable_pos_embedding=learnable_pos_embedding,
         )
 
         self.transformer = torch.nn.Sequential(
@@ -78,6 +86,7 @@ class JEPAPredictor(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
         num_head: Optional[int] = 3,
+        learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -90,6 +99,8 @@ class JEPAPredictor(torch.nn.Module):
             Number of transformer layers
         num_head: int
             Number of heads in transformer
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.transformer = torch.nn.ParameterList(
@@ -104,7 +115,9 @@ class JEPAPredictor(torch.nn.Module):
         )
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches), 1, emb_dim))
+        self.pos_embedding = get_positional_embedding(
+            num_patches, emb_dim, use_cls_token=False, learnable=learnable_pos_embedding
+        )
 
         self.predictor_embed = torch.nn.Linear(input_dim, emb_dim)
 
