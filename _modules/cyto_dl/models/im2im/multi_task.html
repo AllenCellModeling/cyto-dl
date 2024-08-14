@@ -492,6 +492,12 @@
         <span class="p">}</span>
 
         <span class="k">for</span> <span class="n">head</span> <span class="ow">in</span> <span class="n">task_heads</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">head</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="s2">&quot;loss&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;pred&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;target&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;input&quot;</span><span class="p">,</span>
+            <span class="p">),</span> <span class="s2">&quot;Task head name cannot be &#39;loss&#39;, &#39;pred&#39;, &#39;target&#39;, or &#39;input&#39;&quot;</span>
             <span class="n">_DEFAULT_METRICS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                 <span class="p">{</span>
                     <span class="sa">f</span><span class="s2">&quot;train/loss/</span><span class="si">{</span><span class="n">head</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">MeanMetric</span><span class="p">(),</span>
