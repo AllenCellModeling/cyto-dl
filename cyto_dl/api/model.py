@@ -100,16 +100,16 @@ class CytoDLModel:
     async def _predict_async(self):
         return evaluate(self.cfg)
 
-    def train(self, run_async=False):
+    def train(self, run_async=False, data=None):
         if self.cfg is None:
             raise ValueError("Configuration must be loaded before training!")
         if run_async:
             return self._train_async()
-        return train_model(self.cfg)
+        return train_model(self.cfg, data)
 
-    def predict(self, run_async=False):
+    def predict(self, run_async=False, data=None):
         if self.cfg is None:
             raise ValueError("Configuration must be loaded before predicting!")
         if run_async:
             return self._predict_async()
-        return evaluate(self.cfg)
+        return evaluate(self.cfg, data)

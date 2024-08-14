@@ -37,7 +37,7 @@ def test_train_eval(tmp_path, cfg_train, cfg_eval, spatial_dims, request):
     assert "last.ckpt" in os.listdir(tmp_path / "checkpoints")
 
     with open_dict(cfg_eval):
-        cfg_eval.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
+        cfg_eval.checkpoint.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
         cfg_eval.test = True
 
         cfg_eval.spatial_dims = spatial_dims

@@ -6,7 +6,7 @@ import torch.nn as nn
 from einops.layers.torch import Rearrange, Reduce
 from timm.models.layers import trunc_normal_
 
-from cyto_dl.nn.vits.utils import take_indexes
+from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
 
 
 def random_indexes(size: int, device):
@@ -27,6 +27,7 @@ class Patchify(torch.nn.Module):
         context_pixels: List[int] = [0, 0, 0],
         input_channels: int = 1,
         tasks: Optional[List[str]] = [],
+        learnable_pos_embedding: bool = True,
     ):
         """
         Parameters
@@ -45,12 +46,16 @@ class Patchify(torch.nn.Module):
             Number of input channels
         tasks: List[str]
             List of tasks to encode
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.n_patches = np.asarray(n_patches)
         self.spatial_dims = spatial_dims
 
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(n_patches), 1, emb_dim))
+        self.pos_embedding = get_positional_embedding(
+            n_patches, emb_dim, learnable=learnable_pos_embedding, use_cls_token=False
+        )
 
         context_pixels = context_pixels[:spatial_dims]
         weight_size = np.asarray(patch_size) + np.round(np.array(context_pixels) * 2).astype(int)
@@ -112,7 +117,6 @@ class Patchify(torch.nn.Module):
         self._init_weight()
 
     def _init_weight(self):
-        trunc_normal_(self.pos_embedding, std=0.02)
         for task in self.task_embedding:
             trunc_normal_(self.task_embedding[task], std=0.02)
 

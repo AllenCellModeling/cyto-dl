@@ -11,6 +11,7 @@ class ExperimentType(Enum):
     LABEL_FREE = "labelfree"
     SEGMENTATION_PLUGIN = "segmentation_plugin"
     SEGMENTATION = "segmentation"
+    SEGMENTATION_ARRAY = "segmentation_array"
 
 
 class HardwareType(Enum):

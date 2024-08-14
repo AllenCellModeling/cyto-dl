@@ -53,7 +53,7 @@ def cfg_eval_global(request) -> DictConfig:
             config_name="eval.yaml",
             return_hydra_config=True,
             overrides=[
-                "ckpt_path=.",
+                "checkpoint.ckpt_path=.",
                 f"experiment=im2im/{request.param}.yaml",
                 "trainer=cpu.yaml",
             ],

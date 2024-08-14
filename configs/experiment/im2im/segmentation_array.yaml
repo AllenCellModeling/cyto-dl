@@ -1,0 +1,40 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=example
+defaults:
+  - override /data: im2im/numpy_dataloader_train.yaml
+  - override /model: im2im/segmentation.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+source_col: raw
+target_col: seg
+spatial_dims: 3
+raw_im_channels: 1
+
+trainer:
+  max_epochs: 100
+
+data:
+  _aux:
+    # 2D
+    # patch_shape: [64, 64]
+    # 3D
+    patch_shape: [16, 32, 32]
+
+callbacks:
+  saving:
+    _target_: cyto_dl.callbacks.ImageSaver
+    save_dir: ${paths.output_dir}
+    save_every_n_epochs: ${model.save_images_every_n_epochs}
+    stages: ["train", "test", "val"]
+    save_input: True

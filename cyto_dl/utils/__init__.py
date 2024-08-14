@@ -1,3 +1,4 @@
+from .array import create_dataloader, extract_array_predictions
 from .config import kv_to_dict, remove_aux_key
 from .pylogger import get_pylogger
 from .rich_utils import enforce_tags, print_config_tree
