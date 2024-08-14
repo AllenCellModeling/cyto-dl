@@ -51,7 +51,7 @@ def test_train_resume(tmp_path, cfg_train, spatial_dims, request):
     """Run 1 epoch, finish, and resume for another epoch."""
     with open_dict(cfg_train):
         cfg_train.trainer.max_epochs = 2
-        cfg_train.callbacks.model_checkpoint.monitor = 'train/loss'
+        cfg_train.callbacks.model_checkpoint.monitor = "train/loss"
         cfg_train.callbacks.model_checkpoint.save_top_k = 2
 
         cfg_train.spatial_dims = spatial_dims
