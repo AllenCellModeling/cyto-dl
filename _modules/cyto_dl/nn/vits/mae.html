@@ -438,7 +438,7 @@
 
 <span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.blocks</span> <span class="kn">import</span> <span class="n">IntermediateWeigher</span><span class="p">,</span> <span class="n">Patchify</span>
 <span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.cross_mae</span> <span class="kn">import</span> <span class="n">CrossMAE_Decoder</span>
-<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">take_indexes</span>
+<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">get_positional_embedding</span><span class="p">,</span> <span class="n">take_indexes</span>
 
 
 <div class="viewcode-block" id="MAE_Encoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Encoder">[docs]</a><span class="k">class</span> <span class="nc">MAE_Encoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -533,6 +533,7 @@
         <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
         <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">num_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">learnable_pos_embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -549,12 +550,17 @@
 <span class="sd">            Number of transformer layers</span>
 <span class="sd">        num_head: int</span>
 <span class="sd">            Number of heads in transformer</span>
+<span class="sd">        learnable_pos_embedding: bool</span>
+<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">enc_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">get_positional_embedding</span><span class="p">(</span>
+            <span class="n">num_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">learnable</span><span class="o">=</span><span class="n">learnable_pos_embedding</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
             <span class="o">*</span><span class="p">[</span><span class="n">Block</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">num_head</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layer</span><span class="p">)]</span>
@@ -586,8 +592,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_weight</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MAE_Decoder.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
-        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">):</span>
         <span class="c1"># project from encoder dimension to decoder dimension</span>
@@ -647,6 +652,7 @@
         <span class="n">context_pixels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
         <span class="n">input_channels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">features_only</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">learnable_pos_embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -677,6 +683,8 @@
 <span class="sd">            Number of input channels</span>
 <span class="sd">        features_only: bool</span>
 <span class="sd">            Only use encoder to extract features</span>
+<span class="sd">        learnable_pos_embedding: bool</span>
+<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">spatial_dims</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">&quot;Spatial dims must be 2 or 3&quot;</span>
@@ -717,6 +725,7 @@
             <span class="n">emb_dim</span><span class="o">=</span><span class="n">decoder_dim</span><span class="p">,</span>
             <span class="n">num_layer</span><span class="o">=</span><span class="n">decoder_layer</span><span class="p">,</span>
             <span class="n">num_head</span><span class="o">=</span><span class="n">decoder_head</span><span class="p">,</span>
+            <span class="n">learnable_pos_embedding</span><span class="o">=</span><span class="n">learnable_pos_embedding</span><span class="p">,</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="MAE_ViT.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_ViT.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>

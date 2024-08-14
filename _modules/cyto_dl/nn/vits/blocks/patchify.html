@@ -432,7 +432,7 @@
 <span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span><span class="p">,</span> <span class="n">Reduce</span>
 <span class="kn">from</span> <span class="nn">timm.models.layers</span> <span class="kn">import</span> <span class="n">trunc_normal_</span>
 
-<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">take_indexes</span>
+<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">get_positional_embedding</span><span class="p">,</span> <span class="n">take_indexes</span>
 
 
 <div class="viewcode-block" id="random_indexes"><a class="viewcode-back" href="../../../../../cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.random_indexes">[docs]</a><span class="k">def</span> <span class="nf">random_indexes</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
@@ -453,6 +453,7 @@
         <span class="n">context_pixels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
         <span class="n">input_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">tasks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">learnable_pos_embedding</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -471,12 +472,16 @@
 <span class="sd">            Number of input channels</span>
 <span class="sd">        tasks: List[str]</span>
 <span class="sd">            List of tasks to encode</span>
+<span class="sd">        learnable_pos_embedding: bool</span>
+<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n_patches</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">n_patches</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">get_positional_embedding</span><span class="p">(</span>
+            <span class="n">n_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">learnable</span><span class="o">=</span><span class="n">learnable_pos_embedding</span><span class="p">,</span> <span class="n">use_cls_token</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
 
         <span class="n">context_pixels</span> <span class="o">=</span> <span class="n">context_pixels</span><span class="p">[:</span><span class="n">spatial_dims</span><span class="p">]</span>
         <span class="n">weight_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">context_pixels</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
@@ -538,7 +543,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_weight</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">:</span>
             <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
 

@@ -424,12 +424,48 @@
         </div>
         <article role="main">
           <h1>Source code for cyto_dl.nn.vits.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">einops</span> <span class="kn">import</span> <span class="n">repeat</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Sequence</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">einops</span> <span class="kn">import</span> <span class="n">rearrange</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">from</span> <span class="nn">positional_encodings.torch_encodings</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PositionalEncoding2D</span><span class="p">,</span>
+    <span class="n">PositionalEncoding3D</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">timm.models.layers</span> <span class="kn">import</span> <span class="n">trunc_normal_</span>
 
 
 <div class="viewcode-block" id="take_indexes"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.utils.html#cyto_dl.nn.vits.utils.take_indexes">[docs]</a><span class="k">def</span> <span class="nf">take_indexes</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="n">indexes</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">sequences</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">indexes</span><span class="p">,</span> <span class="s2">&quot;t b -&gt; t b c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">sequences</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="get_positional_embedding"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.utils.html#cyto_dl.nn.vits.utils.get_positional_embedding">[docs]</a><span class="k">def</span> <span class="nf">get_positional_embedding</span><span class="p">(</span>
+    <span class="n">num_patches</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">emb_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_cls_token</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">learnable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a positional embedding (with or without a cls token) for a given number of patches</span>
+<span class="sd">    and embedding dimension.</span>
+
+<span class="sd">    Can be either learnable or fixed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">learnable</span><span class="p">:</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">use_cls_token</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="n">pe</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pe</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">test_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">num_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only 2d and 3d positional encodings are supported&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding2D</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)(</span><span class="n">test_tensor</span><span class="p">)</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">pe</span><span class="p">,</span> <span class="s2">&quot;b y x c -&gt; (y x) b c&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">PositionalEncoding3D</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)(</span><span class="n">test_tensor</span><span class="p">)</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">pe</span><span class="p">,</span> <span class="s2">&quot;b z y x c -&gt; (z y x) b c&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_cls_token</span><span class="p">:</span>
+            <span class="n">cls_token</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">cls_token</span><span class="p">,</span> <span class="n">pe</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">pe</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </pre></div>
         </article>
       </div>
