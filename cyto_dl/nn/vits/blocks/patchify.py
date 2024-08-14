@@ -47,7 +47,7 @@ class Patchify(torch.nn.Module):
         tasks: List[str]
             List of tasks to encode
         learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.n_patches = np.asarray(n_patches)

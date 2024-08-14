@@ -17,6 +17,11 @@ def take_indexes(sequences, indexes):
 def get_positional_embedding(
     num_patches: Sequence[int], emb_dim: int, use_cls_token: bool = True, learnable: bool = True
 ):
+    """Generate a positional embedding (with or without a cls token) for a given number of patches
+    and embedding dimension.
+
+    Can be either learnable or fixed.
+    """
     if learnable:
         pe = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + int(use_cls_token), 1, emb_dim))
         trunc_normal_(pe, std=0.02)

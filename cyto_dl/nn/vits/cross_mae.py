@@ -41,7 +41,7 @@ class CrossMAE_Decoder(torch.nn.Module):
         num_head: int
             Number of heads in transformer
         learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
 

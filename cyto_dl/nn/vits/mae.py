@@ -125,7 +125,7 @@ class MAE_Decoder(torch.nn.Module):
         num_head: int
             Number of heads in transformer
         learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.projection_norm = nn.LayerNorm(emb_dim)
@@ -258,7 +258,7 @@ class MAE_ViT(torch.nn.Module):
         features_only: bool
             Only use encoder to extract features
         learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
