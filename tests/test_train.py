@@ -50,8 +50,9 @@ def test_train_fast_dev_run_gpu(cfg_train, spatial_dims, request):
 def test_train_resume(tmp_path, cfg_train, spatial_dims, request):
     """Run 1 epoch, finish, and resume for another epoch."""
     with open_dict(cfg_train):
-        cfg_train.trainer.max_epochs = 1
-        cfg_train.callbacks.model_checkpoint.monitor = None
+        cfg_train.trainer.max_epochs = 2
+        cfg_train.callbacks.model_checkpoint.monitor = 'train/loss'
+        cfg_train.callbacks.model_checkpoint.save_top_k = 2
 
         cfg_train.spatial_dims = spatial_dims
         if spatial_dims == 2:
@@ -68,9 +69,7 @@ def test_train_resume(tmp_path, cfg_train, spatial_dims, request):
     assert "epoch_000.ckpt" in files
 
     with open_dict(cfg_train):
-        cfg_train.checkpoint.ckpt_path = str(tmp_path / "checkpoints" / "last.ckpt")
-        cfg_train.trainer.max_epochs = 2
-
+        cfg_train.checkpoint.ckpt_path = str(tmp_path / "checkpoints" / "epoch_000.ckpt")
     metric_dict_2, _ = train(cfg_train)
 
     files = os.listdir(tmp_path / "checkpoints")
