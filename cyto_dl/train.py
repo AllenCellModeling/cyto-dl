@@ -95,17 +95,7 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-
-        load_params = cfg.get("checkpoint")
-        if load_params.get("weights_only"):
-            assert load_params.get(
-                "ckpt_path"
-            ), "ckpt_path must be provided to with argument weights_only=True"
-            # load model from state dict to get around trainer.max_epochs limit, useful for resuming model training from existing weights
-            state_dict = torch.load(load_params["ckpt_path"])["state_dict"]
-            model.load_state_dict(state_dict, strict=load_params.get("strict", True))
-            load_params["ckpt_path"] = None
-
+        model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
         if isinstance(data, LightningDataModule):
             trainer.fit(model=model, datamodule=data, ckpt_path=load_params.get("ckpt_path"))
         else:
