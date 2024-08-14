@@ -1,0 +1,17 @@
+cyto\_dl.models.jepa package
+============================
+
+.. automodule:: cyto_dl.models.jepa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.models.jepa.ijepa
+   cyto_dl.models.jepa.iwm
+   cyto_dl.models.jepa.jepa_base

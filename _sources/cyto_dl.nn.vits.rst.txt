@@ -21,6 +21,7 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.nn.vits.cross_mae
+   cyto_dl.nn.vits.jepa
    cyto_dl.nn.vits.mae
    cyto_dl.nn.vits.seg
    cyto_dl.nn.vits.utils

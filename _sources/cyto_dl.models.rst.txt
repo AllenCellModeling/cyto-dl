@@ -16,6 +16,7 @@ Subpackages
    cyto_dl.models.contrastive
    cyto_dl.models.handlers
    cyto_dl.models.im2im
+   cyto_dl.models.jepa
    cyto_dl.models.utils
    cyto_dl.models.vae
 

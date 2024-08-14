@@ -1,0 +1,7 @@
+cyto\_dl.models.jepa.ijepa module
+=================================
+
+.. automodule:: cyto_dl.models.jepa.ijepa
+   :members:
+   :undoc-members:
+   :show-inheritance:
