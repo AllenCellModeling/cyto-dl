@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.utils.download_test_data - cyto-dl 0.3.0 documentation</title>
+        <title>cyto_dl.utils.checkpoint - cyto-dl 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -432,80 +432,23 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.utils.download_test_data</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">import</span> <span class="nn">boto3</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pyrootutils</span>
-<span class="kn">from</span> <span class="nn">botocore</span> <span class="kn">import</span> <span class="n">UNSIGNED</span>
-<span class="kn">from</span> <span class="nn">botocore.client</span> <span class="kn">import</span> <span class="n">Config</span>
-
-<span class="n">EXAMPLE_DATA_DIR</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="n">EXAMPLE_DATA_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;s3_paths.csv&quot;</span>
+          <h1>Source code for cyto_dl.utils.checkpoint</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">torch</span>
 
 
-<span class="n">DATA_PATHS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;raw&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;seg&quot;</span><span class="p">:</span> <span class="s2">&quot;s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;struct&quot;</span><span class="p">:</span> <span class="s2">&quot;SEC61B&quot;</span><span class="p">,</span>
-<span class="p">}</span>
-
-
-<div class="viewcode-block" id="parse_s3_path"><a class="viewcode-back" href="../../../cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.parse_s3_path">[docs]</a><span class="k">def</span> <span class="nf">parse_s3_path</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;s3:&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Expected an s3 path, got </span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">return</span> <span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">:]),</span> <span class="n">path</span><span class="o">.</span><span class="n">parts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="setup_paths"><a class="viewcode-back" href="../../../cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.setup_paths">[docs]</a><span class="k">def</span> <span class="nf">setup_paths</span><span class="p">():</span>
-    <span class="k">global</span> <span class="n">EXAMPLE_DATA_DIR</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="n">pyrootutils</span><span class="o">.</span><span class="n">setup_root</span><span class="p">(</span>
-        <span class="n">search_from</span><span class="o">=</span><span class="vm">__file__</span><span class="p">,</span>
-        <span class="n">project_root_env_var</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">dotenv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">pythonpath</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">cwd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># do NOT change working directory to root (would cause problems in DDP mode)</span>
-        <span class="n">indicator</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;pyproject.toml&quot;</span><span class="p">,</span> <span class="s2">&quot;README.md&quot;</span><span class="p">),</span>
-    <span class="p">)</span>
-    <span class="n">EXAMPLE_DATA_DIR</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;example_experiment_data&quot;</span>
-    <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;s3_data&quot;</span><span class="p">,</span> <span class="s2">&quot;segmentation&quot;</span><span class="p">,</span> <span class="s2">&quot;labelfree&quot;</span><span class="p">):</span>
-        <span class="p">(</span><span class="n">EXAMPLE_DATA_DIR</span> <span class="o">/</span> <span class="n">subdir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="download_test_data"><a class="viewcode-back" href="../../../cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.download_test_data">[docs]</a><span class="k">def</span> <span class="nf">download_test_data</span><span class="p">(</span><span class="n">limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">setup_paths</span><span class="p">()</span>
-
-    <span class="n">s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="n">signature_version</span><span class="o">=</span><span class="n">UNSIGNED</span><span class="p">))</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">DATA_PATHS</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="n">limit</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
-
-    <span class="n">local_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">}</span>
-    <span class="n">local_data</span><span class="p">[</span><span class="s2">&quot;struct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">DATA_PATHS</span><span class="p">[</span><span class="s2">&quot;struct&quot;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;seg&quot;</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
-            <span class="n">bucket</span><span class="p">,</span> <span class="n">s3_path</span><span class="p">,</span> <span class="n">local_file_name</span> <span class="o">=</span> <span class="n">parse_s3_path</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-            <span class="n">local_file_path</span> <span class="o">=</span> <span class="n">EXAMPLE_DATA_DIR</span> <span class="o">/</span> <span class="s2">&quot;s3_data&quot;</span> <span class="o">/</span> <span class="n">local_file_name</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">local_file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="n">s3</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">s3_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">local_file_path</span><span class="p">))</span>
-            <span class="n">local_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">local_file_path</span><span class="p">)</span>
-
-    <span class="n">local_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">local_data</span><span class="p">)</span>
-    <span class="n">labelfree_data</span> <span class="o">=</span> <span class="n">local_data</span><span class="p">[[</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">]]</span>
-    <span class="n">labelfree_data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;brightfield&quot;</span><span class="p">,</span> <span class="s2">&quot;signal&quot;</span><span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="n">local_data</span><span class="p">,</span> <span class="n">labelfree_data</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;segmentation&quot;</span><span class="p">,</span> <span class="s2">&quot;labelfree&quot;</span><span class="p">)):</span>
-        <span class="k">for</span> <span class="n">csv_type</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">):</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">EXAMPLE_DATA_DIR</span> <span class="o">/</span> <span class="n">data_type</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">csv_type</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="delete_test_data"><a class="viewcode-back" href="../../../cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.delete_test_data">[docs]</a><span class="k">def</span> <span class="nf">delete_test_data</span><span class="p">():</span>
-    <span class="k">for</span> <span class="n">subdir</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;segmentation&quot;</span><span class="p">,</span> <span class="s2">&quot;labelfree&quot;</span><span class="p">,</span> <span class="s2">&quot;s3_data&quot;</span><span class="p">):</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">EXAMPLE_DATA_DIR</span> <span class="o">/</span> <span class="n">subdir</span><span class="p">)</span></div>
+<div class="viewcode-block" id="load_checkpoint"><a class="viewcode-back" href="../../../cyto_dl.utils.checkpoint.html#cyto_dl.utils.checkpoint.load_checkpoint">[docs]</a><span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">load_params</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">load_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weights_only&quot;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">load_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;ckpt_path&quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;ckpt_path must be provided to with argument weights_only=True&quot;</span>
+        <span class="c1"># load model from state dict to get around trainer.max_epochs limit, useful for resuming model training from existing weights</span>
+        <span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">load_params</span><span class="p">[</span><span class="s2">&quot;ckpt_path&quot;</span><span class="p">])[</span><span class="s2">&quot;state_dict&quot;</span><span class="p">]</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">load_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strict&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># set ckpt_path to None to avoid loading checkpoint again with model.fit/model.test</span>
+        <span class="n">load_params</span><span class="p">[</span><span class="s2">&quot;ckpt_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">load_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;strict&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;To use `strict=False`, `weights_only` must be set to True&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">load_params</span></div>
 </pre></div>
         </article>
       </div>

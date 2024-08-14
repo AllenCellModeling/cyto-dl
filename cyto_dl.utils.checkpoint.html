@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.point_cloud.vnn module" href="cyto_dl.nn.point_cloud.vnn.html" /><link rel="prev" title="cyto_dl.nn.point_cloud.folding_net module" href="cyto_dl.nn.point_cloud.folding_net.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.utils.config module" href="cyto_dl.utils.config.html" /><link rel="prev" title="cyto_dl.utils.array module" href="cyto_dl.utils.array.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.point_cloud.graph_functions module - cyto-dl 0.3.0 documentation</title>
+        <title>cyto_dl.utils.checkpoint module - cyto-dl 0.3.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -309,7 +309,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.discriminators.multi_scale_discriminator.html">cyto_dl.nn.discriminators.multi_scale_discriminator module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.discriminators.n_layer_discriminator.html">cyto_dl.nn.discriminators.n_layer_discriminator module</a></li>
@@ -341,10 +341,10 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.point_cloud.html">cyto_dl.nn.point_cloud package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.nn.point_cloud.html">cyto_dl.nn.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.point_cloud.dgcnn.html">cyto_dl.nn.point_cloud.dgcnn module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.point_cloud.folding_net.html">cyto_dl.nn.point_cloud.folding_net module</a></li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.point_cloud.graph_functions module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.point_cloud.graph_functions.html">cyto_dl.nn.point_cloud.graph_functions module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.point_cloud.vnn.html">cyto_dl.nn.point_cloud.vnn module</a></li>
 </ul>
 </li>
@@ -376,14 +376,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.checkpoint.html">cyto_dl.utils.checkpoint module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.utils.checkpoint module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.download_test_data.html">cyto_dl.utils.download_test_data module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
@@ -428,14 +428,19 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-nn-point-cloud-graph-functions-module">
-<h1>cyto_dl.nn.point_cloud.graph_functions module<a class="headerlink" href="#cyto-dl-nn-point-cloud-graph-functions-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.utils.checkpoint">
+<span id="cyto-dl-utils-checkpoint-module"></span><h1>cyto_dl.utils.checkpoint module<a class="headerlink" href="#module-cyto_dl.utils.checkpoint" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.utils.checkpoint.load_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.checkpoint.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/utils/checkpoint.html#load_checkpoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.checkpoint.load_checkpoint" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </section>
 
         </article>
@@ -443,23 +448,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.nn.point_cloud.vnn.html">
+          <a class="next-page" href="cyto_dl.utils.config.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.nn.point_cloud.vnn module</div>
+                <div class="title">cyto_dl.utils.config module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.nn.point_cloud.folding_net.html">
+          <a class="prev-page" href="cyto_dl.utils.array.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.nn.point_cloud.folding_net module</div>
+                <div class="title">cyto_dl.utils.array module</div>
                 
               </div>
             </a>
@@ -481,8 +486,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.utils.checkpoint module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.utils.checkpoint.load_checkpoint"><code class="docutils literal notranslate"><span class="pre">load_checkpoint()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
