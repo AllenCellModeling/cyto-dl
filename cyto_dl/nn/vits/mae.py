@@ -2,7 +2,6 @@
 
 from typing import List, Optional
 
-import numpy as np
 import torch
 import torch.nn as nn
 from einops import rearrange
@@ -107,6 +106,7 @@ class MAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        has_cls_token: Optional[bool] = False,
         learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
@@ -124,10 +124,14 @@ class MAE_Decoder(torch.nn.Module):
             Number of transformer layers
         num_head: int
             Number of heads in transformer
+        has_cls_token: bool
+            Whether encoder features have a cls token
         learnable_pos_embedding: bool
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
+        self.has_cls_token = has_cls_token
+
         self.projection_norm = nn.LayerNorm(emb_dim)
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
@@ -140,7 +144,7 @@ class MAE_Decoder(torch.nn.Module):
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
         )
         out_dim = torch.prod(torch.as_tensor(base_patch_size)).item()
-        self.head_norm = nn.LayerNorm(out_dim)
+        self.decoder_norm = nn.LayerNorm(emb_dim)
         self.head = torch.nn.Linear(emb_dim, out_dim)
         self.num_patches = torch.as_tensor(num_patches)
 
@@ -168,21 +172,22 @@ class MAE_Decoder(torch.nn.Module):
     def init_weight(self):
         trunc_normal_(self.mask_token, std=0.02)
 
-    def forward(self, features, forward_indexes, backward_indexes):
-        # project from encoder dimension to decoder dimension
-        features = self.projection_norm(self.projection(features))
-
-        backward_indexes = torch.cat(
-            [
-                torch.zeros(
-                    1, backward_indexes.shape[1], device=backward_indexes.device, dtype=torch.long
-                ),
-                backward_indexes + 1,
-            ],
-            dim=0,
-        )
-        # fill in masked regions
-        features = torch.cat(
+    def adjust_indices_for_cls(self, indexes):
+        if self.has_cls_token:
+            return torch.cat(
+                [
+                    torch.zeros(
+                        1, indexes.shape[1], device=indexes.device, dtype=torch.long
+                    ),
+                    indexes + 1,
+                ],
+                dim=0,
+            )
+        return indexes
+    
+    def add_mask_tokens(self, features, backward_indexes):
+        # fill in deleted masked regions with mask token
+        return torch.cat(
             [
                 features,
                 self.mask_token.expand(
@@ -191,6 +196,15 @@ class MAE_Decoder(torch.nn.Module):
             ],
             dim=0,
         )
+
+    def forward(self, features, forward_indexes, backward_indexes):
+        # project from encoder dimension to decoder dimension
+        features = self.projection_norm(self.projection(features))
+
+        backward_indexes = self.adjust_indices_for_cls(backward_indexes)
+
+        features = self.add_mask_tokens(features, backward_indexes)
+
         # unshuffle to original positions
         features = take_indexes(features, backward_indexes)
         features = features + self.pos_embedding
@@ -199,10 +213,12 @@ class MAE_Decoder(torch.nn.Module):
         features = rearrange(features, "t b c -> b t c")
         features = self.transformer(features)
         features = rearrange(features, "b t c -> t b c")
-        features = features[1:]  # remove global feature
+        
+        if self.has_cls_token:
+            features = features[1:]  # remove global feature
 
         # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (z y x)
-        patches = self.head_norm(self.head(features))
+        patches = self.head(self.decoder_norm(features))
 
         # patches to image
         img = self.patch2img(patches)

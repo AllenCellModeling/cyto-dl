@@ -11,7 +11,7 @@ from einops.layers.torch import Rearrange
 from timm.models.vision_transformer import Block
 
 from cyto_dl.nn.vits.blocks.masked_unit_attention import HieraBlock
-from cyto_dl.nn.vits.blocks.patchify_hiera import PatchifyHiera
+from cyto_dl.nn.vits.blocks.patchify import PatchifyHiera
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
 from cyto_dl.nn.vits.mae import MAE_Decoder
 
@@ -88,15 +88,15 @@ class HieraEncoder(torch.nn.Module):
             Whether to save the intermediate layer outputs
         """
         super().__init__()
+        self.mask_ratio = mask_ratio
         self.save_layers = save_layers
         self.patchify = PatchifyHiera(
             patch_size,
             num_patches,
-            mask_ratio,
-            num_mask_units,
             emb_dim,
             spatial_dims,
             context_pixels,
+            mask_units_per_dim=num_mask_units,
         )
 
         patches_per_mask_unit = np.array(num_patches) // np.array(num_mask_units)
@@ -161,7 +161,7 @@ class HieraEncoder(torch.nn.Module):
         self.layer_norm = torch.nn.LayerNorm(self.final_dim)
 
     def forward(self, img):
-        patches, mask, forward_indexes, backward_indexes = self.patchify(img)
+        patches, mask, forward_indexes, backward_indexes = self.patchify(img, self.mask_ratio)
 
         # mask unit attention
         mask_unit_embeddings = 0.0

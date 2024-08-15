@@ -54,7 +54,6 @@ class Patchify(torch.nn.Module):
         )
 
         self.patch2img = self.create_patch2img(n_patches, patch_size) 
-        self.img2token = self.create_img2token()
         self.conv = self.create_conv(input_channels, emb_dim, patch_size, context_pixels)
 
         self.task_embedding = torch.nn.ParameterDict(
@@ -141,8 +140,7 @@ class Patchify(torch.nn.Module):
         n_visible_patches = int(num_patches * (1 - mask_ratio))
         return n_visible_patches, num_patches
 
-    def get_mask(self, img, mask_ratio, n_visible_patches, num_patches):
-
+    def get_mask(self, img, n_visible_patches, num_patches):
         B = img.shape[0]
 
         indexes = [random_indexes(num_patches, img.device) for _ in range(B)]
@@ -169,7 +167,7 @@ class Patchify(torch.nn.Module):
         forward_indexes, backward_indexes = None, None
         if mask_ratio > 0:
             n_visible_patches, num_patches = self.get_mask_args(mask_ratio)
-            mask, forward_indexes, backward_indexes = self.get_mask(img, mask_ratio, n_visible_patches, num_patches)
+            mask, forward_indexes, backward_indexes = self.get_mask(img, n_visible_patches, num_patches)
 
         # generate patches
         tokens = self.conv(img * mask)

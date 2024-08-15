@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from einops import repeat
 from einops.layers.torch import Rearrange
+from timm.models.layers import trunc_normal_
 
 from cyto_dl.nn.vits.blocks.patchify.patchify_base import Patchify
 
@@ -34,8 +35,8 @@ class PatchifyHiera(Patchify):
     def __init__(
         self,
         patch_size: List[int],
-        emb_dim: int = 64,
         n_patches: List[int],
+        emb_dim: int = 64,
         spatial_dims: int = 3,
         context_pixels: List[int] = [0, 0, 0],
         input_channels: int = 1,
@@ -45,10 +46,10 @@ class PatchifyHiera(Patchify):
         """
         patch_size: List[int]
             Size of each patch in pix (ZYX order for 3D, YX order for 2D)
-        emb_dim: int
-            Dimension of encoder
         n_patches: List[int]
             Number of patches in each spatial dimension (ZYX order for 3D, YX order for 2D)
+        emb_dim: int
+            Dimension of encoder
         spatial_dims: int
             Number of spatial dimensions
         context_pixels: List[int]
@@ -74,8 +75,14 @@ class PatchifyHiera(Patchify):
         mask_unit_size_pix = patches_per_mask_unit * patch_size
         self.patch2img = self.create_patch2img(mask_units_per_dim, mask_unit_size_pix)
 
+        self._init_weight()
 
-    def create_img2token(self, mask_units_per_dim):
+    def _init_weight(self):
+        trunc_normal_(self.pos_embedding, std=0.02)
+
+    def create_img2token(self, mask_units_per_dim=None):
+        if mask_units_per_dim is None:
+            return
         if self.spatial_dims == 3:
             return Rearrange(
                 "b c (n_mu_z z) (n_mu_y y) (n_mu_x x) -> b (n_mu_z n_mu_y n_mu_x) (z y x) c ",
@@ -92,7 +99,7 @@ class PatchifyHiera(Patchify):
 
     # in hiera, the level of masking is at the mask unit, not the patch level
     def get_mask_args(self, mask_ratio):
-        n_visible_patches = int(total_n_mask_units * (1 - mask_ratio))
+        n_visible_patches = int(self.total_n_mask_units * (1 - mask_ratio))
         return n_visible_patches, self.total_n_mask_units
 
     def extract_visible_tokens(self, tokens, forward_indexes, n_visible_patches):
