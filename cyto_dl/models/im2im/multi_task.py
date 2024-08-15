@@ -58,6 +58,12 @@ class MultiTaskIm2Im(BaseModel):
         }
 
         for head in task_heads.keys():
+            assert head not in (
+                "loss",
+                "pred",
+                "target",
+                "input",
+            ), "Task head name cannot be 'loss', 'pred', 'target', or 'input'"
             _DEFAULT_METRICS.update(
                 {
                     f"train/loss/{head}": MeanMetric(),

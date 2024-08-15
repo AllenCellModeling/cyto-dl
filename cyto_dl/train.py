@@ -23,7 +23,7 @@ with suppress(ValueError):
 
 
 @utils.task_wrapper
-def train(cfg: DictConfig) -> Tuple[dict, dict]:
+def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
     """Trains the model. Can additionally evaluate on a testset, using best weights obtained during
     training.
 
@@ -57,7 +57,7 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
     utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
-    data = hydra.utils.instantiate(cfg.data)
+    data = utils.create_dataloader(cfg.data, data)
     if not isinstance(data, LightningDataModule):
         if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
             raise ValueError(
@@ -95,24 +95,15 @@ def train(cfg: DictConfig) -> Tuple[dict, dict]:
 
     if cfg.get("train"):
         log.info("Starting training!")
-
-        if cfg.get("weights_only"):
-            assert cfg.get(
-                "ckpt_path"
-            ), "ckpt_path must be provided to with argument weights_only=True"
-            # load model from state dict to get around trainer.max_epochs limit, useful for resuming model training from existing weights
-            state_dict = torch.load(cfg["ckpt_path"])["state_dict"]
-            model.load_state_dict(state_dict)
-            cfg["ckpt_path"] = None
-
+        model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
         if isinstance(data, LightningDataModule):
-            trainer.fit(model=model, datamodule=data, ckpt_path=cfg.get("ckpt_path"))
+            trainer.fit(model=model, datamodule=data, ckpt_path=load_params.get("ckpt_path"))
         else:
             trainer.fit(
                 model=model,
                 train_dataloaders=data.train_dataloaders,
                 val_dataloaders=data.val_dataloaders,
-                ckpt_path=cfg.get("ckpt_path"),
+                ckpt_path=load_params.get("ckpt_path"),
             )
 
     train_metrics = trainer.callback_metrics

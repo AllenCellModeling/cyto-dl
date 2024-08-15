@@ -6,8 +6,7 @@ import torch.nn as nn
 from einops.layers.torch import Rearrange, Reduce
 from timm.models.layers import trunc_normal_
 
-from cyto_dl.nn.vits.utils import random_indexes, take_indexes
-
+from cyto_dl.nn.vits.utils import random_indexes, take_indexes, get_positional_embedding
 
 class Patchify(torch.nn.Module):
     """Class for converting images to a masked sequence of patches with positional embeddings."""
@@ -21,6 +20,7 @@ class Patchify(torch.nn.Module):
         context_pixels: List[int] = [0, 0, 0],
         input_channels: int = 1,
         tasks: Optional[List[str]] = [],
+        learnable_pos_embedding: bool = True,
     ):
         """
         Parameters
@@ -39,6 +39,8 @@ class Patchify(torch.nn.Module):
             Number of input channels
         tasks: List[str]
             List of tasks to encode
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.n_patches = np.asarray(n_patches)
@@ -47,7 +49,9 @@ class Patchify(torch.nn.Module):
             raise ValueError("Only 2D and 3D images are supported")
         self.spatial_dims = spatial_dims
 
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(n_patches), 1, emb_dim))
+        self.pos_embedding = get_positional_embedding(
+            n_patches, emb_dim, learnable=learnable_pos_embedding, use_cls_token=False
+        )
 
         self.patch2img = self.create_patch2img(n_patches, patch_size) 
         self.img2token = self.create_img2token()
@@ -129,7 +133,6 @@ class Patchify(torch.nn.Module):
 
 
     def _init_weight(self):
-        trunc_normal_(self.pos_embedding, std=0.02)
         for task in self.task_embedding:
             trunc_normal_(self.task_embedding[task], std=0.02)
 

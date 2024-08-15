@@ -26,7 +26,15 @@ class MAEHead(BaseHead):
 
         return {
             "loss": loss,
-            "pred": y_hat,
-            "target": batch[self.head_name],
-            "input": batch[self.head_name],
+            "pred": self._postprocess(y_hat, img_type="prediction", n_postprocess=n_postprocess),
+            "target": self._postprocess(
+                batch[self.head_name], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
+            "input": self._postprocess(
+                batch[self.x_key], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
         }

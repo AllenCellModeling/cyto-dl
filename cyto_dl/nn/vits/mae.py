@@ -12,7 +12,7 @@ from timm.models.vision_transformer import Block
 
 from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
-from cyto_dl.nn.vits.utils import take_indexes
+from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
 
 
 class MAE_Encoder(torch.nn.Module):
@@ -107,6 +107,7 @@ class MAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -123,12 +124,17 @@ class MAE_Decoder(torch.nn.Module):
             Number of transformer layers
         num_head: int
             Number of heads in transformer
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         self.projection_norm = nn.LayerNorm(emb_dim)
         self.projection = torch.nn.Linear(enc_dim, emb_dim)
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.pos_embedding = torch.nn.Parameter(torch.zeros(np.prod(num_patches) + 1, 1, emb_dim))
+
+        self.pos_embedding = get_positional_embedding(
+            num_patches, emb_dim, learnable=learnable_pos_embedding
+        )
 
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
@@ -161,7 +167,6 @@ class MAE_Decoder(torch.nn.Module):
 
     def init_weight(self):
         trunc_normal_(self.mask_token, std=0.02)
-        trunc_normal_(self.pos_embedding, std=0.02)
 
     def forward(self, features, forward_indexes, backward_indexes):
         # project from encoder dimension to decoder dimension
@@ -221,6 +226,7 @@ class MAE_ViT(torch.nn.Module):
         context_pixels: Optional[List[int]] = [0, 0, 0],
         input_channels: Optional[int] = 1,
         features_only: Optional[bool] = False,
+        learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
         """
         Parameters
@@ -251,6 +257,8 @@ class MAE_ViT(torch.nn.Module):
             Number of input channels
         features_only: bool
             Only use encoder to extract features
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
         assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
@@ -291,6 +299,7 @@ class MAE_ViT(torch.nn.Module):
             emb_dim=decoder_dim,
             num_layer=decoder_layer,
             num_head=decoder_head,
+            learnable_pos_embedding=learnable_pos_embedding,
         )
 
     def forward(self, img):

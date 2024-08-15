@@ -74,12 +74,12 @@ transforms:
           - ${target_col1}
           - ${target_col2}
         base_image_key: ${base_image_col}
-        output_name: target
+        output_name: seg
 
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
-          - target
+          - seg
           - ${exclude_mask_col}
         dtype: float16
 
@@ -87,7 +87,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys:
           - ${source_col}
-          - target
+          - seg
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: ${data._aux.patch_per_image}
@@ -143,12 +143,12 @@ transforms:
           - ${target_col1}
           - ${target_col2}
         base_image_key: ${base_image_col}
-        output_name: target
+        output_name: seg
 
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
-          - target
+          - seg
           - ${exclude_mask_col}
         dtype: float16
 
@@ -232,12 +232,12 @@ transforms:
           - ${target_col1}
           - ${target_col2}
         base_image_key: ${base_image_col}
-        output_name: target
+        output_name: seg
 
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
-          - target
+          - seg
           - ${exclude_mask_col}
         dtype: float16
 
@@ -245,7 +245,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
         keys:
           - ${source_col}
-          - target
+          - seg
           - ${exclude_mask_col}
         patch_shape: ${data._aux.patch_shape}
         patch_per_image: ${data._aux.patch_per_image}
@@ -254,7 +254,7 @@ transforms:
 _aux:
   patch_per_image: 1
   _scales_dict:
-    - - target
+    - - seg
       - [1]
     - - ${source_col}
       - [1]

@@ -13,7 +13,7 @@ OmegaConf.register_new_resolver("kv_to_dict", kv_to_dict)
 OmegaConf.register_new_resolver("eval", eval)
 
 # Experiment configs to test
-experiment_types = ["segmentation", "labelfree", "gan", "instance_seg"]
+experiment_types = ["mae", "ijepa", "iwm", "segmentation", "labelfree", "gan", "instance_seg"]
 
 
 @pytest.fixture(scope="package", params=experiment_types)
@@ -53,7 +53,7 @@ def cfg_eval_global(request) -> DictConfig:
             config_name="eval.yaml",
             return_hydra_config=True,
             overrides=[
-                "ckpt_path=.",
+                "checkpoint.ckpt_path=.",
                 f"experiment=im2im/{request.param}.yaml",
                 "trainer=cpu.yaml",
             ],

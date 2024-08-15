@@ -4,13 +4,13 @@ import time
 import warnings
 from importlib.util import find_spec
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, List
 
 import hydra
 from lightning import Callback
 from lightning.pytorch.loggers import Logger
 from lightning.pytorch.utilities import rank_zero_only
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 from cyto_dl.loggers import MLFlowLogger
 
@@ -43,14 +43,14 @@ def task_wrapper(task_func: Callable) -> Callable:
     - Logging the output dir
     """
 
-    def wrap(cfg: DictConfig):
+    def wrap(cfg: DictConfig, data: Any = None):
         # apply extra utilities
         extras(cfg)
 
         # execute the task
         try:
             start_time = time.time()
-            out = task_func(cfg=cfg)
+            out = task_func(cfg=cfg, data=data)
         except Exception as ex:
             log.exception("")  # save exception to `.log` file
             raise ex
@@ -181,11 +181,15 @@ def log_hyperparameters(object_dict: dict) -> None:
 
     hparams["task_name"] = cfg.get("task_name")
     hparams["tags"] = cfg.get("tags")
-    hparams["ckpt_path"] = cfg.get("ckpt_path")
+    hparams["ckpt_path"] = cfg.checkpoint.get("ckpt_path")
     hparams["seed"] = cfg.get("seed")
 
-    reqs = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])  # nosec: B603
-    hparams["requirements"] = str(reqs).split("\\n")
+    try:
+        reqs = subprocess.check_output([sys.executable, "-m", "pip", "freeze"])  # nosec: B603
+        hparams["requirements"] = str(reqs).split("\\n")
+    except subprocess.CalledProcessError:
+        # not mandatory to save requirements; allows segmenter plugin devs to use PDM
+        pass
 
     # send hparams to all loggers
     for logger in trainer.loggers:

@@ -29,7 +29,7 @@ As part of the [Allen Institute for Cell Science's](https://allencell.org) missi
 
 The bulk of `CytoDL`'s underlying structure bases the [lightning-hydra-template](https://github.com/ashleve/lightning-hydra-template) organization - we highly recommend that you familiarize yourself with their (short) docs for detailed instructions on running training, overrides, etc.
 
-Our currently available code is roughly split into two domains: image-to-image transformations and representation learning. The image-to-image code (denoted im2im) contains configuration files detailing how to train and predict using models for resolution enhancement using conditional GANs (e.g. predicting 100x images from 20x images), semantic and instance segmentation, and label-free prediction. We also provide configs for Masked Autoencoder (MAE) pretraining using a Vision Transformer (ViT) backbone and for training segmentation decoders from these pretrained features. Representation learning code includes a wide variety of Variational Auto Encoder (VAE) architectures and contrastive learning methods such as [VICReg](https://github.com/facebookresearch/vicreg). Due to dependency issues, equivariant autoencoders are not currently supported on Windows.
+Our currently available code is roughly split into two domains: image-to-image transformations and representation learning. The image-to-image code (denoted im2im) contains configuration files detailing how to train and predict using models for resolution enhancement using conditional GANs (e.g. predicting 100x images from 20x images), semantic and instance segmentation, and label-free prediction. We also provide configs for Masked Autoencoder (MAE) and Joint Embedding Prediction Architecture ([JEPA](https://github.com/facebookresearch/jepa)) pretraining on 2D and 3D images using a Vision Transformer (ViT) backbone and for training segmentation decoders from these pretrained features. Representation learning code includes a wide variety of Variational Auto Encoder (VAE) architectures and contrastive learning methods such as [VICReg](https://github.com/facebookresearch/vicreg). Due to dependency issues, equivariant autoencoders are not currently supported on Windows.
 
 As we rely on recent versions of pytorch, users wishing to train and run models on GPU hardware will need up-to-date NVIDIA drivers. Users with older GPUs should not expect code to work out of the box. Similarly, we do not currently support training/predicting on Mac GPUs. In most cases, cpu-based training should work when GPU training fails.
 
@@ -73,6 +73,44 @@ model.train()
 
 # [OPTIONAL] async training
 await model.train(run_async=True)
+```
+
+Most models work by passing data paths in the data config. For training or predicting on datasets that are already in memory, you can pass the data directly to the model. Note that this use case is primarily for programmatic use (e.g. in a workflow or a jupyter notebook), not through the normal CLI. An experiment showing a possible config setup for this use case is demonstrated with the [im2im/segmentation_array](configs/experiment/im2im/segmentation_array.yaml) experiment. For training, data must be passed as a dictionary with keys "train" and "val" containing lists of dictionaries with keys corresponding to the data config.
+
+```python
+from cyto_dl.api import CytoDLModel
+import numpy as np
+
+model = CytoDLModel()
+model.load_default_experiment("segmentation_array", output_dir="./output")
+model.print_config()
+
+# create CZYX dummy data
+data = {
+    "train": [{"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}],
+    "val": [{"raw": np.random.randn(1, 40, 256, 256), "seg": np.ones((1, 40, 256, 256))}],
+}
+model.train(data=data)
+```
+
+For predicting, data must be passed as a list of numpy arrays. The resulting predictions will be processed in a dictionary with one key for each task head in the model config and corresponding values in BC(Z)YX order.
+
+```python
+from cyto_dl.api import CytoDLModel
+import numpy as np
+from cyto_dl.utils import extract_array_predictions
+
+model = CytoDLModel()
+model.load_default_experiment(
+    "segmentation_array", output_dir="./output", overrides=["data=im2im/numpy_dataloader_predict"]
+)
+model.print_config()
+
+# create CZYX dummy data
+data = [np.random.rand(1, 32, 64, 64), np.random.rand(1, 32, 64, 64)]
+
+_, _, output = model.predict(data=data)
+preds = extract_array_predictions(output)
 ```
 
 Train model with chosen experiment configuration from [configs/experiment/](configs/experiment/)

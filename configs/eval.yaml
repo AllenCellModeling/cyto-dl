@@ -20,4 +20,7 @@ task_name: "eval"
 tags: ["dev"]
 
 # passing checkpoint path is necessary for evaluation
-ckpt_path: ???
+checkpoint:
+  ckpt_path: ???
+  weights_only: null
+  strict: True
