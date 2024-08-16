@@ -6,16 +6,31 @@ save_dir: ${paths.output_dir}
 x_key: ${source_col}
 
 backbone:
-  _target_: cyto_dl.nn.vits.MAE
-  spatial_dims: ${spatial_dims}
-  # patch_size* num_patches should be your patch shape
-  patch_size: 2
-  num_patches: 8
-  emb_dim: 16
-  encoder_layer: 2
-  encoder_head: 1
+  _target_: cyto_dl.nn.vits.mae.HieraMAE
+  spatial_dims: 3
+  patch_size: [2, 2, 2] # patch_size* num_patches should be your patch shape
+  num_patches: [8, 8, 8] # patch_size * num_patches = img_shape
+  num_mask_units: [4, 4, 4] #img_shape / num_mask_units = size of each mask unit in pixels, num_patches/num_mask_units = number of patches permask unit
+  emb_dim: 2
+  architecture:
+    # mask_unit_attention blocks - attention is only done within a mask unit and not across mask units
+    # the total amount of q_stride across the architecture must be less than the number of patches per mask unit
+    - repeat: 1
+      q_stride: [1,1,1]
+      num_heads: 1
+    - repeat: 1
+      q_stride: [2,2,2]
+      num_heads: 4
+    # self attention transformer - attention is done across all patches, irrespective of which mask unit they're in
+    - repeat: 2
+      num_heads: 8
+      self_attention: True
   decoder_layer: 1
+  decoder_dim: 16
+  mask_ratio: 0.66666666666
+  context_pixels: [4,4,4]
   use_crossmae: True
+
 task_heads: ${kv_to_dict:${model._aux._tasks}}
 
 optimizer:

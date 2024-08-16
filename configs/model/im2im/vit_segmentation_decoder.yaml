@@ -8,8 +8,8 @@ x_key: ${source_col}
 backbone:
   _target_: cyto_dl.nn.vits.Seg_ViT
   spatial_dims: ${spatial_dims}
-  # base_patch_size* num_patches should be your patch shape
-  base_patch_size: 2
+  # patch_size* num_patches should be your patch shape
+  patch_size: 2
   num_patches: 8
   emb_dim: 16
   encoder_layer: 2
