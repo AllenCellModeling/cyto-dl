@@ -6,7 +6,7 @@ from einops import repeat
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 
-from cyto_dl.nn.vits.blocks.patchify.patchify_base import Patchify
+from cyto_dl.nn.vits.blocks.patchify.patchify_base import PatchifyBase
 
 
 def take_indexes_mask(sequences, indexes):
@@ -29,7 +29,7 @@ def take_indexes_mask(sequences, indexes):
     )
 
 
-class PatchifyHiera(Patchify):
+class PatchifyHiera(PatchifyBase):
     """Class for converting images to a masked sequence of patches with positional embeddings."""
 
     def __init__(
@@ -61,28 +61,51 @@ class PatchifyHiera(Patchify):
         mask_units_per_dim: List[int]
             Number of mask units in each spatial dimension (ZYX order for 3D, YX order for 2D)
         """
-        super().__init__(patch_size, emb_dim, n_patches, spatial_dims, context_pixels, input_channels, tasks)
+        super().__init__(
+            patch_size,
+            emb_dim,
+            n_patches,
+            spatial_dims,
+            context_pixels,
+            input_channels,
+            tasks,
+            True,
+        )
 
         self.total_n_mask_units = np.prod(mask_units_per_dim)
-        patches_per_mask_unit = n_patches // self.total_n_mask_units
+        # img shape = patch_size * n_patches
+        # mask_unit_size  = img shape / mask_units_per_dim
+        mask_unit_size_pix = (
+            (np.array(patch_size) * np.array(n_patches)) / np.array(mask_units_per_dim)
+        ).astype(int)
+
+        patches_per_mask_unit = mask_unit_size_pix // patch_size
         self.pos_embedding = torch.nn.Parameter(
             torch.zeros(1, self.total_n_mask_units, np.prod(patches_per_mask_unit), emb_dim)
         )
 
-        # redefine this to work with mask units instead of patches
-        self.img2token = self.create_img2token(mask_units_per_dim)
+        self.mask_units_per_dim = mask_units_per_dim
 
-        mask_unit_size_pix = patches_per_mask_unit * patch_size
         self.patch2img = self.create_patch2img(mask_units_per_dim, mask_unit_size_pix)
 
         self._init_weight()
 
     def _init_weight(self):
         trunc_normal_(self.pos_embedding, std=0.02)
+        for task in self.task_embedding:
+            trunc_normal_(self.task_embedding[task], std=0.02)
 
-    def create_img2token(self, mask_units_per_dim=None):
-        if mask_units_per_dim is None:
-            return
+    @property
+    def img2token(self):
+        # redefine this to work with mask units instead of patches
+        return self.create_img2token(self.mask_units_per_dim)
+
+    # in hiera, the level of masking is at the mask unit, not the patch level
+    def get_mask_args(self, mask_ratio):
+        n_visible_patches = int(self.total_n_mask_units * (1 - mask_ratio))
+        return n_visible_patches, self.total_n_mask_units
+
+    def create_img2token(self, mask_units_per_dim):
         if self.spatial_dims == 3:
             return Rearrange(
                 "b c (n_mu_z z) (n_mu_y y) (n_mu_x x) -> b (n_mu_z n_mu_y n_mu_x) (z y x) c ",
@@ -97,11 +120,5 @@ class PatchifyHiera(Patchify):
                 n_mu_x=mask_units_per_dim[2],
             )
 
-    # in hiera, the level of masking is at the mask unit, not the patch level
-    def get_mask_args(self, mask_ratio):
-        n_visible_patches = int(self.total_n_mask_units * (1 - mask_ratio))
-        return n_visible_patches, self.total_n_mask_units
-
     def extract_visible_tokens(self, tokens, forward_indexes, n_visible_patches):
         return take_indexes_mask(tokens, forward_indexes)[:, :n_visible_patches]
-
