@@ -1,236 +1,65 @@
 # modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 
-from typing import List, Optional
+from abc import ABC, abstractmethod
+from typing import Dict, List, Optional
 
+import numpy as np
 import torch
-import torch.nn as nn
-from einops import rearrange
-from einops.layers.torch import Rearrange
-from timm.models.layers import trunc_normal_
-from timm.models.vision_transformer import Block
 
-from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
-from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
-from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
+from cyto_dl.nn.vits.decoder import CrossMAE_Decoder, MAE_Decoder
+from cyto_dl.nn.vits.encoder import HieraEncoder, MAE_Encoder
 
 
-class MAE_Encoder(torch.nn.Module):
-    def __init__(
-        self,
-        num_patches: List[int],
-        spatial_dims: int = 3,
-        base_patch_size: List[int] = (16, 16, 16),
-        emb_dim: Optional[int] = 192,
-        num_layer: Optional[int] = 12,
-        num_head: Optional[int] = 3,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
-        input_channels: Optional[int] = 1,
-        n_intermediate_weights: Optional[int] = -1,
-    ) -> None:
-        """
-        Parameters
-        ----------
-        num_patches: List[int]
-            Number of patches in each dimension
-        spatial_dims: int
-            Number of spatial dimensions
-        base_patch_size: List[int]
-            Size of each patch
-        emb_dim: int
-            Dimension of embedding
-        num_layer: int
-            Number of transformer layers
-        num_head: int
-            Number of heads in transformer
-        context_pixels: List[int]
-            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
-        input_channels: int
-            Number of input channels
-        weight_intermediates: bool
-            Whether to output linear combination of intermediate layers as final output like CrossMAE
-        """
+class MAE_Base(torch.nn.Module, ABC):
+    def __init__(self, spatial_dims, num_patches, patch_size, mask_ratio, features_only):
         super().__init__()
-        self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-        self.patchify = Patchify(
-            base_patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
-        )
-        weight_intermediates = n_intermediate_weights > 0
-        if weight_intermediates:
-            self.transformer = torch.nn.ModuleList(
-                [Block(emb_dim, num_head) for _ in range(num_layer)]
-            )
-        else:
-            self.transformer = torch.nn.Sequential(
-                *[Block(emb_dim, num_head) for _ in range(num_layer)]
-            )
+        assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
 
-        self.layer_norm = torch.nn.LayerNorm(emb_dim)
+        if isinstance(num_patches, int):
+            num_patches = [num_patches] * spatial_dims
+        if isinstance(patch_size, int):
+            patch_size = [patch_size] * spatial_dims
 
-        self.intermediate_weighter = (
-            IntermediateWeigher(num_layer, emb_dim, n_intermediate_weights)
-            if weight_intermediates
-            else None
-        )
-        self.init_weight()
+        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
+        assert len(patch_size) == spatial_dims, "patch_size must be of length spatial_dims"
 
-    def init_weight(self):
-        trunc_normal_(self.cls_token, std=0.02)
+        self.spatial_dims = spatial_dims
+        self.num_patches = num_patches
+        self.patch_size = patch_size
+        self.mask_ratio = mask_ratio
+        self.features_only = features_only
 
-    def forward(self, img, mask_ratio=0.75):
-        patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
-        patches = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0)
-        patches = rearrange(patches, "t b c -> b t c")
+    # encoder and decoder must be defined in subclasses
+    @property
+    @abstractmethod
+    def encoder(self):
+        pass
 
-        if self.intermediate_weighter is not None:
-            intermediates = [patches]
-            for block in self.transformer:
-                patches = block(patches)
-                intermediates.append(patches)
-            features = self.layer_norm(self.intermediate_weighter(intermediates))
-            features = rearrange(features, "n b t c -> n t b c")
-        else:
-            features = self.layer_norm(self.transformer(patches))
-            features = rearrange(features, "b t c -> t b c")
-        if mask_ratio > 0:
-            return features, mask, forward_indexes, backward_indexes
-        return features
+    @property
+    @abstractmethod
+    def decoder(self):
+        pass
+
+    def init_encoder(self):
+        raise NotImplementedError
+
+    def init_decoder(self):
+        raise NotImplementedError
+
+    def forward(self, img):
+        features, mask, forward_indexes, backward_indexes = self.encoder(img, self.mask_ratio)
+        if self.features_only:
+            return features
+        predicted_img = self.decoder(features, forward_indexes, backward_indexes)
+        return predicted_img, mask
 
 
-class MAE_Decoder(torch.nn.Module):
-    def __init__(
-        self,
-        num_patches: List[int],
-        spatial_dims: int = 3,
-        base_patch_size: Optional[List[int]] = [4, 8, 8],
-        enc_dim: Optional[int] = 768,
-        emb_dim: Optional[int] = 192,
-        num_layer: Optional[int] = 4,
-        num_head: Optional[int] = 3,
-        has_cls_token: Optional[bool] = False,
-        learnable_pos_embedding: Optional[bool] = True,
-    ) -> None:
-        """
-        Parameters
-        ----------
-        num_patches: List[int]
-            Number of patches in each dimension
-        base_patch_size: Tuple[int]
-            Size of each patch
-        enc_dim: int
-            Dimension of encoder
-        emb_dim: int
-            Dimension of decoder
-        num_layer: int
-            Number of transformer layers
-        num_head: int
-            Number of heads in transformer
-        has_cls_token: bool
-            Whether encoder features have a cls token
-        learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
-        """
-        super().__init__()
-        self.has_cls_token = has_cls_token
-
-        self.projection_norm = nn.LayerNorm(emb_dim)
-        self.projection = torch.nn.Linear(enc_dim, emb_dim)
-        self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
-
-        self.pos_embedding = get_positional_embedding(
-            num_patches, emb_dim, learnable=learnable_pos_embedding
-        )
-
-        self.transformer = torch.nn.Sequential(
-            *[Block(emb_dim, num_head) for _ in range(num_layer)]
-        )
-        out_dim = torch.prod(torch.as_tensor(base_patch_size)).item()
-        self.decoder_norm = nn.LayerNorm(emb_dim)
-        self.head = torch.nn.Linear(emb_dim, out_dim)
-        self.num_patches = torch.as_tensor(num_patches)
-
-        if spatial_dims == 3:
-            self.patch2img = Rearrange(
-                "(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) ->  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-                n_patch_z=num_patches[0],
-                n_patch_y=num_patches[1],
-                n_patch_x=num_patches[2],
-                patch_size_z=base_patch_size[0],
-                patch_size_y=base_patch_size[1],
-                patch_size_x=base_patch_size[2],
-            )
-        elif spatial_dims == 2:
-            self.patch2img = Rearrange(
-                "(n_patch_y n_patch_x) b (c patch_size_y patch_size_x) ->  b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)",
-                n_patch_y=num_patches[0],
-                n_patch_x=num_patches[1],
-                patch_size_y=base_patch_size[0],
-                patch_size_x=base_patch_size[1],
-            )
-
-        self.init_weight()
-
-    def init_weight(self):
-        trunc_normal_(self.mask_token, std=0.02)
-
-    def adjust_indices_for_cls(self, indexes):
-        if self.has_cls_token:
-            return torch.cat(
-                [
-                    torch.zeros(
-                        1, indexes.shape[1], device=indexes.device, dtype=torch.long
-                    ),
-                    indexes + 1,
-                ],
-                dim=0,
-            )
-        return indexes
-    
-    def add_mask_tokens(self, features, backward_indexes):
-        # fill in deleted masked regions with mask token
-        return torch.cat(
-            [
-                features,
-                self.mask_token.expand(
-                    backward_indexes.shape[0] - features.shape[0], features.shape[1], -1
-                ),
-            ],
-            dim=0,
-        )
-
-    def forward(self, features, forward_indexes, backward_indexes):
-        # project from encoder dimension to decoder dimension
-        features = self.projection_norm(self.projection(features))
-
-        backward_indexes = self.adjust_indices_for_cls(backward_indexes)
-
-        features = self.add_mask_tokens(features, backward_indexes)
-
-        # unshuffle to original positions
-        features = take_indexes(features, backward_indexes)
-        features = features + self.pos_embedding
-
-        # decode
-        features = rearrange(features, "t b c -> b t c")
-        features = self.transformer(features)
-        features = rearrange(features, "b t c -> t b c")
-        
-        if self.has_cls_token:
-            features = features[1:]  # remove global feature
-
-        # (npatches x npatches x npatches) b (emb dim) -> (npatches* npatches * npatches) b (z y x)
-        patches = self.head(self.decoder_norm(features))
-
-        # patches to image
-        img = self.patch2img(patches)
-        return img
-
-
-class MAE_ViT(torch.nn.Module):
+class MAE(MAE_Base):
     def __init__(
         self,
         spatial_dims: int = 3,
         num_patches: Optional[List[int]] = [2, 32, 32],
-        base_patch_size: Optional[List[int]] = [16, 16, 16],
+        patch_size: Optional[List[int]] = [16, 16, 16],
         emb_dim: Optional[int] = 768,
         encoder_layer: Optional[int] = 12,
         encoder_head: Optional[int] = 8,
@@ -251,7 +80,7 @@ class MAE_ViT(torch.nn.Module):
             Number of spatial dimensions
         num_patches: List[int]
             Number of patches in each dimension (ZYX order)
-        base_patch_size: List[int]
+        patch_size: List[int]
             Size of each patch (ZYX order)
         emb_dim: int
             Dimension of encoder embedding
@@ -276,26 +105,18 @@ class MAE_ViT(torch.nn.Module):
         learnable_pos_embedding: bool
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
-        super().__init__()
-        assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
+        super().__init__(
+            spatial_dims=spatial_dims,
+            num_patches=num_patches,
+            patch_size=patch_size,
+            mask_ratio=mask_ratio,
+            features_only=features_only,
+        )
 
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(base_patch_size, int):
-            base_patch_size = [base_patch_size] * spatial_dims
-
-        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
-        assert (
-            len(base_patch_size) == spatial_dims
-        ), "base_patch_size must be of length spatial_dims"
-
-        self.mask_ratio = mask_ratio
-        self.features_only = features_only
-
-        self.encoder = MAE_Encoder(
-            num_patches,
+        self._encoder = MAE_Encoder(
+            self.num_patches,
             spatial_dims,
-            base_patch_size,
+            self.patch_size,
             emb_dim,
             encoder_layer,
             encoder_head,
@@ -307,10 +128,10 @@ class MAE_ViT(torch.nn.Module):
         decoder_class = MAE_Decoder
         if use_crossmae:
             decoder_class = CrossMAE_Decoder
-        self.decoder = decoder_class(
-            num_patches=num_patches,
+        self._decoder = decoder_class(
+            num_patches=self.num_patches,
             spatial_dims=spatial_dims,
-            base_patch_size=base_patch_size,
+            patch_size=self.patch_size,
             enc_dim=emb_dim,
             emb_dim=decoder_dim,
             num_layer=decoder_layer,
@@ -318,9 +139,112 @@ class MAE_ViT(torch.nn.Module):
             learnable_pos_embedding=learnable_pos_embedding,
         )
 
-    def forward(self, img):
-        features, mask, forward_indexes, backward_indexes = self.encoder(img, self.mask_ratio)
-        if self.features_only:
-            return features
-        predicted_img = self.decoder(features, forward_indexes, backward_indexes)
-        return predicted_img, mask
+    @property
+    def encoder(self):
+        return self._encoder
+
+    @property
+    def decoder(self):
+        return self._decoder
+
+
+class HieraMAE(MAE_Base):
+    def __init__(
+        self,
+        architecture: List[Dict],
+        spatial_dims: int = 3,
+        num_patches: Optional[List[int]] = [2, 32, 32],
+        num_mask_units: Optional[List[int]] = [2, 12, 12],
+        patch_size: Optional[List[int]] = [16, 16, 16],
+        emb_dim: Optional[int] = 64,
+        decoder_layer: Optional[int] = 4,
+        decoder_head: Optional[int] = 8,
+        decoder_dim: Optional[int] = 192,
+        mask_ratio: Optional[int] = 0.75,
+        use_crossmae: Optional[bool] = False,
+        context_pixels: Optional[List[int]] = [0, 0, 0],
+        input_channels: Optional[int] = 1,
+        features_only: Optional[bool] = False,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        architecture: List[Dict]
+            List of dictionaries specifying the architecture of the transformer. Each dictionary should have the following keys:
+            - repeat: int
+                Number of times to repeat the block
+            - num_heads: int
+                Number of heads in the multihead attention
+            - q_stride: List[int]
+                Stride for the query in each spatial dimension
+            - self_attention: bool
+                Whether to use self attention or mask unit attention
+        spatial_dims: int
+            Number of spatial dimensions
+        num_patches: List[int]
+            Number of patches in each dimension
+        num_mask_units: List[int]
+            Number of mask units in each dimension
+        patch_size: List[int]
+            Size of each patch
+        emb_dim: int
+            Dimension of embedding
+        decoder_layer: int
+            Number of layers in the decoder
+        decoder_head: int
+            Number of heads in the decoder
+        decoder_dim: int
+            Dimension of the decoder
+        mask_ratio: float
+            Fraction of mask units to remove
+        use_crossmae: bool
+            Use CrossMAE-style decoder instead of MAE decoder
+        context_pixels: List[int]
+            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
+        input_channels: int
+            Number of input channels
+        features_only: bool
+            Only use encoder to extract features
+        """
+        super().__init__(
+            spatial_dims=spatial_dims,
+            num_patches=num_patches,
+            patch_size=patch_size,
+            mask_ratio=mask_ratio,
+            features_only=features_only,
+        )
+
+        self._encoder = HieraEncoder(
+            num_patches=self.num_patches,
+            num_mask_units=num_mask_units,
+            architecture=architecture,
+            emb_dim=emb_dim,
+            spatial_dims=spatial_dims,
+            patch_size=self.patch_size,
+            context_pixels=context_pixels,
+        )
+        # "patches" to the decoder are actually mask units, so num_patches is num_mask_units, patch_size is mask unit size
+        mask_unit_size = (np.array(num_patches) * np.array(patch_size)) / np.array(num_mask_units)
+
+        decoder_class = MAE_Decoder
+        if use_crossmae:
+            decoder_class = CrossMAE_Decoder
+
+        self._decoder = decoder_class(
+            num_patches=num_mask_units,
+            spatial_dims=spatial_dims,
+            patch_size=mask_unit_size.astype(int),
+            enc_dim=self.encoder.final_dim,
+            emb_dim=decoder_dim,
+            num_layer=decoder_layer,
+            num_head=decoder_head,
+            has_cls_token=False,
+        )
+
+    @property
+    def encoder(self):
+        return self._encoder
+
+    @property
+    def decoder(self):
+        return self._decoder

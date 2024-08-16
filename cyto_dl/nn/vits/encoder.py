@@ -1,3 +1,4 @@
+# modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 # inspired by https://github.com/facebookresearch/hiera
 
 from typing import Dict, List, Optional
@@ -8,15 +9,100 @@ import torch.nn as nn
 import torch.nn.functional
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
 from cyto_dl.nn.vits.blocks.masked_unit_attention import HieraBlock
 from cyto_dl.nn.vits.blocks.patchify import PatchifyHiera
-from cyto_dl.nn.vits.cross_mae import CrossMAE_Decoder
-from cyto_dl.nn.vits.mae import MAE_Decoder
+from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
+
+
+class MAE_Encoder(torch.nn.Module):
+    def __init__(
+        self,
+        num_patches: List[int],
+        spatial_dims: int = 3,
+        patch_size: List[int] = (16, 16, 16),
+        emb_dim: Optional[int] = 192,
+        num_layer: Optional[int] = 12,
+        num_head: Optional[int] = 3,
+        context_pixels: Optional[List[int]] = [0, 0, 0],
+        input_channels: Optional[int] = 1,
+        n_intermediate_weights: Optional[int] = -1,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        num_patches: List[int]
+            Number of patches in each dimension
+        spatial_dims: int
+            Number of spatial dimensions
+        patch_size: List[int]
+            Size of each patch
+        emb_dim: int
+            Dimension of embedding
+        num_layer: int
+            Number of transformer layers
+        num_head: int
+            Number of heads in transformer
+        context_pixels: List[int]
+            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
+        input_channels: int
+            Number of input channels
+        weight_intermediates: bool
+            Whether to output linear combination of intermediate layers as final output like CrossMAE
+        """
+        super().__init__()
+        self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
+        self.patchify = Patchify(
+            patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
+        )
+        weight_intermediates = n_intermediate_weights > 0
+        if weight_intermediates:
+            self.transformer = torch.nn.ModuleList(
+                [Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
+        else:
+            self.transformer = torch.nn.Sequential(
+                *[Block(emb_dim, num_head) for _ in range(num_layer)]
+            )
+
+        self.layer_norm = torch.nn.LayerNorm(emb_dim)
+
+        self.intermediate_weighter = (
+            IntermediateWeigher(num_layer, emb_dim, n_intermediate_weights)
+            if weight_intermediates
+            else None
+        )
+        self.init_weight()
+
+    def init_weight(self):
+        trunc_normal_(self.cls_token, std=0.02)
+
+    def forward(self, img, mask_ratio=0.75):
+        patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
+        patches = torch.cat([self.cls_token.expand(-1, patches.shape[1], -1), patches], dim=0)
+        patches = rearrange(patches, "t b c -> b t c")
+
+        if self.intermediate_weighter is not None:
+            intermediates = [patches]
+            for block in self.transformer:
+                patches = block(patches)
+                intermediates.append(patches)
+            features = self.layer_norm(self.intermediate_weighter(intermediates))
+            features = rearrange(features, "n b t c -> n t b c")
+        else:
+            features = self.layer_norm(self.transformer(patches))
+            features = rearrange(features, "b t c -> t b c")
+        if mask_ratio > 0:
+            return features, mask, forward_indexes, backward_indexes
+        return features
 
 
 class SpatialMerger(nn.Module):
+    """
+    Class for converting multi-resolution Hiera features to the same (lowest) spatial resolution via convolution
+    """
     def __init__(self, downsample_factor, in_dim, out_dim):
         super().__init__()
         self.downsample_factor = downsample_factor
@@ -53,9 +139,8 @@ class HieraEncoder(torch.nn.Module):
         emb_dim: int = 64,
         spatial_dims: int = 3,
         patch_size: List[int] = (16, 16, 16),
-        mask_ratio: Optional[float] = 0.75,
         context_pixels: Optional[List[int]] = [0, 0, 0],
-        save_layers: Optional[bool] = True,
+        save_layers: Optional[bool] = False,
     ) -> None:
         """
         Parameters
@@ -80,15 +165,12 @@ class HieraEncoder(torch.nn.Module):
             Number of spatial dimensions
         patch_size: List[int]
             Size of each patch
-        mask_ratio: float
-            Fraction of mask units to remove
         context_pixels: List[int]
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         save_layers: bool
             Whether to save the intermediate layer outputs
         """
         super().__init__()
-        self.mask_ratio = mask_ratio
         self.save_layers = save_layers
         self.patchify = PatchifyHiera(
             patch_size,
@@ -100,6 +182,15 @@ class HieraEncoder(torch.nn.Module):
         )
 
         patches_per_mask_unit = np.array(num_patches) // np.array(num_mask_units)
+
+        total_downsampling_per_axis = np.prod([block.get("q_stride", [1] * spatial_dims) for block in architecture],axis=0)
+        
+        assert np.all(patches_per_mask_unit - total_downsampling_per_axis >= 0), f"Number of mask units must be greater than the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride or increase the number of patches per mask unit."
+        assert np.all(
+            patches_per_mask_unit % total_downsampling_per_axis == 0
+        ), f"Number of mask units must be divisible by the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride"
+
+
         self.final_dim = emb_dim * (2 ** len(architecture))
 
         self.save_block_idxs = []
@@ -160,8 +251,8 @@ class HieraEncoder(torch.nn.Module):
 
         self.layer_norm = torch.nn.LayerNorm(self.final_dim)
 
-    def forward(self, img):
-        patches, mask, forward_indexes, backward_indexes = self.patchify(img, self.mask_ratio)
+    def forward(self, img, mask_ratio):
+        patches, mask, forward_indexes, backward_indexes = self.patchify(img, mask_ratio)
 
         # mask unit attention
         mask_unit_embeddings = 0.0
@@ -177,103 +268,7 @@ class HieraEncoder(torch.nn.Module):
         mask_unit_embeddings = rearrange(mask_unit_embeddings, "b n_mu t c -> b (n_mu t) c")
         mask_unit_embeddings = self.self_attention_transformer(mask_unit_embeddings)
         mask_unit_embeddings = self.layer_norm(mask_unit_embeddings)
+        mask_unit_embeddings = rearrange(mask_unit_embeddings, 'b t c -> t b c')
 
-        return mask_unit_embeddings, mask, forward_indexes, backward_indexes, save_layers
+        return mask_unit_embeddings, mask, forward_indexes, backward_indexes #, save_layers
 
-
-class HieraMAE(torch.nn.Module):
-    def __init__(
-        self,
-        architecture: List[Dict],
-        spatial_dims: int = 3,
-        num_patches: Optional[List[int]] = [2, 32, 32],
-        num_mask_units: Optional[List[int]] = [2, 12, 12],
-        patch_size: Optional[List[int]] = [16, 16, 16],
-        emb_dim: Optional[int] = 64,
-        decoder_layer: Optional[int] = 4,
-        decoder_head: Optional[int] = 8,
-        decoder_dim: Optional[int] = 192,
-        mask_ratio: Optional[int] = 0.75,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
-        use_crossmae: Optional[bool] = False,
-    ) -> None:
-        """
-        Parameters
-        ----------
-        architecture: List[Dict]
-            List of dictionaries specifying the architecture of the transformer. Each dictionary should have the following keys:
-            - repeat: int
-                Number of times to repeat the block
-            - num_heads: int
-                Number of heads in the multihead attention
-            - q_stride: List[int]
-                Stride for the query in each spatial dimension
-            - self_attention: bool
-                Whether to use self attention or mask unit attention
-        spatial_dims: int
-            Number of spatial dimensions
-        num_patches: List[int]
-            Number of patches in each dimension
-        num_mask_units: List[int]
-            Number of mask units in each dimension
-        patch_size: List[int]
-            Size of each patch
-        emb_dim: int
-            Dimension of embedding
-        decoder_layer: int
-            Number of layers in the decoder
-        decoder_head: int
-            Number of heads in the decoder
-        decoder_dim: int
-            Dimension of the decoder
-        mask_ratio: float
-            Fraction of mask units to remove
-        context_pixels: List[int]
-            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
-        """
-        super().__init__()
-        assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
-
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(patch_size, int):
-            patch_size = [patch_size] * spatial_dims
-
-        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
-        assert len(patch_size) == spatial_dims, "patch_size must be of length spatial_dims"
-
-        self.mask_ratio = mask_ratio
-
-        self.encoder = HieraEncoder(
-            num_patches=num_patches,
-            num_mask_units=num_mask_units,
-            architecture=architecture,
-            emb_dim=emb_dim,
-            spatial_dims=spatial_dims,
-            patch_size=patch_size,
-            mask_ratio=mask_ratio,
-            context_pixels=context_pixels,
-        )
-        # "patches" to the decoder are actually mask units, so num_patches is num_mask_units, patch_size is mask unit size
-        mask_unit_size = (np.array(num_patches) * np.array(patch_size)) / np.array(num_mask_units)
-
-        decoder_class = MAE_Decoder
-        if use_crossmae:
-            decoder_class = CrossMAE_Decoder
-
-        self.decoder = decoder_class(
-            num_patches=num_mask_units,
-            spatial_dims=spatial_dims,
-            base_patch_size=mask_unit_size.astype(int),
-            enc_dim=self.encoder.final_dim,
-            emb_dim=decoder_dim,
-            num_layer=decoder_layer,
-            num_head=decoder_head,
-            has_cls_token=False,
-        )
-
-    def forward(self, img):
-        features, mask, forward_indexes, backward_indexes, save_layers = self.encoder(img)
-        features = rearrange(features, "b t c -> t b c")
-        predicted_img = self.decoder(features, forward_indexes, backward_indexes)
-        return predicted_img, mask
