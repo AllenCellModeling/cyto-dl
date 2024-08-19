@@ -1,6 +1,6 @@
 # modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import torch
 import torch.nn as nn
@@ -10,15 +10,19 @@ from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
+from cyto_dl.nn.vits.utils import (
+    get_positional_embedding,
+    take_indexes,
+    validate_spatial_dims,
+)
 
 
 class MAE_Decoder(torch.nn.Module):
     def __init__(
         self,
-        num_patches: List[int],
+        num_patches: Union[int, List[int]],
         spatial_dims: int = 3,
-        patch_size: Optional[List[int]] = [4, 8, 8],
+        patch_size: Optional[Union[int, List[int]]] = 4,
         enc_dim: Optional[int] = 768,
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
@@ -29,10 +33,10 @@ class MAE_Decoder(torch.nn.Module):
         """
         Parameters
         ----------
-        num_patches: List[int]
-            Number of patches in each dimension
-        patch_size: Tuple[int]
-            Size of each patch
+        num_patches: List[int], int
+            Number of patches in each dimension. If int, the same number of patches is used for all dimensions.
+        patch_size: Tuple[int], int
+            Size of each patch. If int, the same patch size is used for all dimensions.
         enc_dim: int
             Dimension of encoder
         emb_dim: int
@@ -47,6 +51,8 @@ class MAE_Decoder(torch.nn.Module):
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
+        num_patches, patch_size = validate_spatial_dims(spatial_dims, [num_patches, patch_size])
+
         self.has_cls_token = has_cls_token
 
         self.projection_norm = nn.LayerNorm(emb_dim)
@@ -144,9 +150,9 @@ class CrossMAE_Decoder(MAE_Decoder):
 
     def __init__(
         self,
-        num_patches: List[int],
+        num_patches: Union[int, List[int]],
         spatial_dims: int = 3,
-        patch_size: Optional[List[int]] = [4, 8, 8],
+        patch_size: Optional[Union[int, List[int]]] = 4,
         enc_dim: Optional[int] = 768,
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
@@ -157,10 +163,10 @@ class CrossMAE_Decoder(MAE_Decoder):
         """
         Parameters
         ----------
-        num_patches: List[int]
-            Number of patches in each dimension
+        num_patches: List[int], int
+            Number of patches in each dimension. If int, the same number of patches is used for all dimensions.
         patch_size: Tuple[int]
-            Size of each patch
+            Size of each patch in each dimension. If int, the same patch size is used for all dimensions.
         enc_dim: int
             Dimension of encoder
         emb_dim: int

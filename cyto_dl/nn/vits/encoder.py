@@ -23,19 +23,19 @@ class MAE_Encoder(torch.nn.Module):
         self,
         num_patches: List[int],
         spatial_dims: int = 3,
-        patch_size: List[int] = (16, 16, 16),
+        patch_size: Union[int, List[int]] = 4,
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
         num_head: Optional[int] = 3,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
+        context_pixels: Optional[Union[int, List[int]]] = 0,
         input_channels: Optional[int] = 1,
         n_intermediate_weights: Optional[int] = -1,
     ) -> None:
         """
         Parameters
         ----------
-        num_patches: List[int]
-            Number of patches in each dimension
+        num_patches: List[int], int
+            Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.
         spatial_dims: int
             Number of spatial dimensions
         patch_size: List[int]
@@ -46,8 +46,8 @@ class MAE_Encoder(torch.nn.Module):
             Number of transformer layers
         num_head: int
             Number of heads in transformer
-        context_pixels: List[int]
-            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
+        context_pixels: List[int], int
+            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension. If a single int is provided, the number of context pixels in each dimension will be the same.
         input_channels: int
             Number of input channels
         n_intermediate_weights: bool
@@ -104,6 +104,72 @@ class MAE_Encoder(torch.nn.Module):
         return features
 
 
+class JEPAEncoder(torch.nn.Module):
+    def __init__(
+        self,
+        num_patches: Union[int, List[int]],
+        spatial_dims: int = 3,
+        patch_size: Union[int, List[int]] = 4,
+        emb_dim: Optional[int] = 192,
+        num_layer: Optional[int] = 12,
+        num_head: Optional[int] = 3,
+        context_pixels: Optional[Union[int, List[int]]] = 0,
+        input_channels: Optional[int] = 1,
+        learnable_pos_embedding: Optional[bool] = True,
+    ) -> None:
+        """
+        Parameters
+        ----------
+        num_patches: List[int], int
+            Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.
+        spatial_dims: int
+            Number of spatial dimensions
+        patch_size: List[int]
+            Size of each patch
+        emb_dim: int
+            Dimension of embedding
+        num_layer: int
+            Number of transformer layers
+        num_head: int
+            Number of heads in transformer
+        context_pixels: List[int], int
+            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension. If a single int is provided, the number of context pixels in each dimension will be the same.
+        input_channels: int
+            Number of input channels
+        learnable_pos_embedding: bool
+            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
+        """
+        super().__init__()
+        num_patches, patch_size, context_pixels = validate_spatial_dims(
+            spatial_dims, [num_patches, patch_size, context_pixels]
+        )
+
+        self.patchify = Patchify(
+            patch_size=patch_size,
+            emb_dim=emb_dim,
+            n_patches=num_patches,
+            spatial_dims=spatial_dims,
+            context_pixels=context_pixels,
+            input_channels=input_channels,
+            learnable_pos_embedding=learnable_pos_embedding,
+        )
+
+        self.transformer = torch.nn.Sequential(
+            *[Block(emb_dim, num_head) for _ in range(num_layer)]
+        )
+
+        self.layer_norm = torch.nn.LayerNorm(emb_dim)
+
+    def forward(self, img, patchify=True):
+        if patchify:
+            patches, _, _, _ = self.patchify(img, mask_ratio=0)
+        else:
+            patches = img
+        patches = rearrange(patches, "t b c -> b t c")
+        features = self.layer_norm(self.transformer(patches))
+        return features
+
+
 class SpatialMerger(nn.Module):
     """Class for converting multi-resolution Hiera features to the same (lowest) spatial resolution
     via convolution."""
@@ -157,8 +223,8 @@ class HieraEncoder(torch.nn.Module):
         architecture: List[Dict],
         emb_dim: int = 64,
         spatial_dims: int = 3,
-        patch_size: List[int] = (16, 16, 16),
-        context_pixels: Optional[List[int]] = [0, 0, 0],
+        patch_size: Union[int, List[int]] = 4,
+        context_pixels: Optional[Union[int, List[int]]] = 0,
         input_channels: Optional[int] = 1,
         save_layers: Optional[bool] = False,
     ) -> None:

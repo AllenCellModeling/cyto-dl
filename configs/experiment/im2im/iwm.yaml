@@ -38,13 +38,6 @@ data:
     # 3D
     patch_shape: [16, 16, 16]
 
-model:
-  _aux:
-    # 3D
-    num_patches: [8, 8, 8]
-    # 2d
-    # num_patches: [8, 8]
-
 callbacks:
   prediction_saver:
     _target_: cyto_dl.callbacks.csv_saver.CSVSaver

@@ -161,7 +161,7 @@ class PatchifyBase(torch.nn.Module, ABC):
 
     def forward(self, img, mask_ratio, task=None):
         # generate mask
-        mask = torch.ones_like(img)
+        mask = torch.ones_like(img).bool()
         forward_indexes, backward_indexes = None, None
         if mask_ratio > 0:
             n_visible_patches, num_patches = self.get_mask_args(mask_ratio)

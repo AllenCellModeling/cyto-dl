@@ -5,15 +5,16 @@ max_epochs: ${trainer.max_epochs}
 save_dir: ${paths.output_dir}
 
 encoder:
-  _target_: cyto_dl.nn.vits.jepa.JEPAEncoder
-  patch_size: 2
+  _target_: cyto_dl.nn.vits.encoder.JEPAEncoder
+  patch_size: 2 # patch_size * num_patches should equl data._aux.patch_shape
   num_patches: ${model._aux.num_patches}
   emb_dim: 16
   num_layer: 2
   num_head: 1
+  spatial_dims: ${spatial_dims}
 
 predictor:
-  _target_: cyto_dl.nn.vits.jepa.JEPAPredictor
+  _target_: cyto_dl.nn.vits.predictor.JEPAPredictor
   num_patches: ${model._aux.num_patches}
   input_dim: ${model.encoder.emb_dim}
   emb_dim: 8
@@ -34,4 +35,4 @@ lr_scheduler:
   pct_start: 0.1
 
 _aux:
-  num_patches:
+  num_patches: 8
