@@ -32,12 +32,12 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
-      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+      - _target_: monai.transforms.RandSpatialCropSamplesd
         keys:
           - ${source_col}
-        patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
-        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        roi_size: ${data._aux.patch_shape}
+        num_samples: 1
+        random_size: False
 
   test:
     _target_: monai.transforms.Compose
@@ -104,14 +104,11 @@ transforms:
       - _target_: monai.transforms.NormalizeIntensityd
         keys: ${source_col}
         channel_wise: True
-      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+      - _target_: monai.transforms.RandSpatialCropSamplesd
         keys:
           - ${source_col}
-        patch_shape: ${data._aux.patch_shape}
-        patch_per_image: 1
-        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+        roi_size: ${data._aux.patch_shape}
+        num_samples: 1
+        random_size: False
 
 _aux:
-  _scales_dict:
-    - - ${source_col}
-      - [1]

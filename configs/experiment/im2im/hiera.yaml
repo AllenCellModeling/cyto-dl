@@ -29,10 +29,7 @@ trainer:
 data:
   path: ${paths.data_dir}/example_experiment_data/segmentation
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
-  batch_size: 128
-  num_workers: 8
-  subsample:
-    train: 10000
+  batch_size: 1
   _aux:
     # 2D
     # patch_shape: [16, 16]
