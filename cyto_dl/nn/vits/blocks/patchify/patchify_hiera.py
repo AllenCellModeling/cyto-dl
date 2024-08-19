@@ -62,19 +62,18 @@ class PatchifyHiera(PatchifyBase):
             Number of mask units in each spatial dimension (ZYX order for 3D, YX order for 2D)
         """
         super().__init__(
-            patch_size,
-            emb_dim,
-            n_patches,
-            spatial_dims,
-            context_pixels,
-            input_channels,
-            tasks,
-            True,
+            patch_size=patch_size,
+            emb_dim=emb_dim,
+            n_patches=n_patches,
+            spatial_dims=spatial_dims,
+            context_pixels=context_pixels,
+            input_channels=input_channels,
+            tasks=tasks,
+            learnable_pos_embedding=True,
         )
 
         self.total_n_mask_units = np.prod(mask_units_per_dim)
-        # img shape = patch_size * n_patches
-        # mask_unit_size  = img shape / mask_units_per_dim
+        # mask_unit_size is the img shape / mask_units_per_dim, img_shape is size per patch * n_patches
         mask_unit_size_pix = (
             (np.array(patch_size) * np.array(n_patches)) / np.array(mask_units_per_dim)
         ).astype(int)
@@ -116,8 +115,8 @@ class PatchifyHiera(PatchifyBase):
         elif self.spatial_dims == 2:
             return Rearrange(
                 "b c  (n_mu_y y) (n_mu_x x) -> b (n_mu_y n_mu_x) (y x) c ",
-                n_mu_y=mask_units_per_dim[1],
-                n_mu_x=mask_units_per_dim[2],
+                n_mu_y=mask_units_per_dim[0],
+                n_mu_x=mask_units_per_dim[1],
             )
 
     def extract_visible_tokens(self, tokens, forward_indexes, n_visible_patches):

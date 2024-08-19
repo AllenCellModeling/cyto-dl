@@ -3,6 +3,7 @@ from typing import Sequence
 import numpy as np
 import torch
 from einops import rearrange, repeat
+from monai.utils.misc import ensure_tuple_rep
 from positional_encodings.torch_encodings import (
     PositionalEncoding2D,
     PositionalEncoding3D,
@@ -13,10 +14,12 @@ from timm.models.layers import trunc_normal_
 def take_indexes(sequences, indexes):
     return torch.gather(sequences, 0, repeat(indexes, "t b -> t b c", c=sequences.shape[-1]))
 
+
 def random_indexes(size: int, device):
     forward_indexes = torch.randperm(size, device=device, dtype=torch.long)
     backward_indexes = torch.argsort(forward_indexes)
     return forward_indexes, backward_indexes
+
 
 def get_positional_embedding(
     num_patches: Sequence[int], emb_dim: int, use_cls_token: bool = True, learnable: bool = True
@@ -44,3 +47,8 @@ def get_positional_embedding(
             cls_token = torch.zeros(1, 1, emb_dim)
             pe = torch.cat([cls_token, pe], dim=0)
         return torch.nn.Parameter(pe, requires_grad=False)
+
+
+def validate_spatial_dims(spatial_dims, tuples):
+    assert spatial_dims in (2, 3), "spatial_dims must be 2 or 3"
+    return [ensure_tuple_rep(t, spatial_dims) for t in tuples]

@@ -1,33 +1,31 @@
 # modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import torch
 
 from cyto_dl.nn.vits.decoder import CrossMAE_Decoder, MAE_Decoder
 from cyto_dl.nn.vits.encoder import HieraEncoder, MAE_Encoder
+from cyto_dl.nn.vits.utils import validate_spatial_dims
 
 
 class MAE_Base(torch.nn.Module, ABC):
-    def __init__(self, spatial_dims, num_patches, patch_size, mask_ratio, features_only):
+    def __init__(
+        self, spatial_dims, num_patches, patch_size, mask_ratio, features_only, context_pixels
+    ):
         super().__init__()
-        assert spatial_dims in (2, 3), "Spatial dims must be 2 or 3"
-
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(patch_size, int):
-            patch_size = [patch_size] * spatial_dims
-
-        assert len(num_patches) == spatial_dims, "num_patches must be of length spatial_dims"
-        assert len(patch_size) == spatial_dims, "patch_size must be of length spatial_dims"
+        num_patches, patch_size, context_pixels = validate_spatial_dims(
+            spatial_dims, [num_patches, patch_size, context_pixels]
+        )
 
         self.spatial_dims = spatial_dims
         self.num_patches = num_patches
         self.patch_size = patch_size
         self.mask_ratio = mask_ratio
         self.features_only = features_only
+        self.context_pixels = context_pixels
 
     # encoder and decoder must be defined in subclasses
     @property
@@ -111,6 +109,7 @@ class MAE(MAE_Base):
             patch_size=patch_size,
             mask_ratio=mask_ratio,
             features_only=features_only,
+            context_pixels=context_pixels,
         )
 
         self._encoder = MAE_Encoder(
@@ -120,7 +119,7 @@ class MAE(MAE_Base):
             emb_dim,
             encoder_layer,
             encoder_head,
-            context_pixels,
+            self.context_pixels,
             input_channels,
             n_intermediate_weights=-1 if not use_crossmae else decoder_layer,
         )
@@ -153,9 +152,9 @@ class HieraMAE(MAE_Base):
         self,
         architecture: List[Dict],
         spatial_dims: int = 3,
-        num_patches: Optional[List[int]] = [2, 32, 32],
-        num_mask_units: Optional[List[int]] = [2, 12, 12],
-        patch_size: Optional[List[int]] = [16, 16, 16],
+        num_patches: Optional[Union[int, List[int]]] = [2, 32, 32],
+        num_mask_units: Optional[Union[int, List[int]]] = [2, 12, 12],
+        patch_size: Optional[Union[int, List[int]]] = [16, 16, 16],
         emb_dim: Optional[int] = 64,
         decoder_layer: Optional[int] = 4,
         decoder_head: Optional[int] = 8,
@@ -181,12 +180,12 @@ class HieraMAE(MAE_Base):
                 Whether to use self attention or mask unit attention
         spatial_dims: int
             Number of spatial dimensions
-        num_patches: List[int]
-            Number of patches in each dimension
-        num_mask_units: List[int]
-            Number of mask units in each dimension
-        patch_size: List[int]
-            Size of each patch
+        num_patches: int, List[int]
+            Number of patches in each dimension (Z)YX order. If int, the same number of patches is used in each dimension.
+        num_mask_units: int, List[int]
+            Number of mask units in each dimension (Z)YX order. If int, the same number of mask units is used in each dimension.
+        patch_size: int, List[int]
+            Size of each patch (Z)YX order. If int, the same patch size is used in each dimension.
         emb_dim: int
             Dimension of embedding
         decoder_layer: int
@@ -212,19 +211,23 @@ class HieraMAE(MAE_Base):
             patch_size=patch_size,
             mask_ratio=mask_ratio,
             features_only=features_only,
+            context_pixels=context_pixels,
         )
+        num_mask_units = validate_spatial_dims(self.spatial_dims, [num_mask_units])[0]
 
         self._encoder = HieraEncoder(
             num_patches=self.num_patches,
             num_mask_units=num_mask_units,
             architecture=architecture,
             emb_dim=emb_dim,
-            spatial_dims=spatial_dims,
+            spatial_dims=self.spatial_dims,
             patch_size=self.patch_size,
-            context_pixels=context_pixels,
+            context_pixels=self.context_pixels,
         )
         # "patches" to the decoder are actually mask units, so num_patches is num_mask_units, patch_size is mask unit size
-        mask_unit_size = (np.array(num_patches) * np.array(patch_size)) / np.array(num_mask_units)
+        mask_unit_size = (np.array(self.num_patches) * np.array(self.patch_size)) / np.array(
+            num_mask_units
+        )
 
         decoder_class = MAE_Decoder
         if use_crossmae:

@@ -1,7 +1,7 @@
 # modified from https://github.com/IcarusWizard/MAE/blob/main/model.py#L124
 # inspired by https://github.com/facebookresearch/hiera
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import torch
@@ -12,9 +12,10 @@ from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
+from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.blocks.masked_unit_attention import HieraBlock
 from cyto_dl.nn.vits.blocks.patchify import PatchifyHiera
-from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
+from cyto_dl.nn.vits.utils import validate_spatial_dims
 
 
 class MAE_Encoder(torch.nn.Module):
@@ -49,10 +50,14 @@ class MAE_Encoder(torch.nn.Module):
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
         input_channels: int
             Number of input channels
-        weight_intermediates: bool
-            Whether to output linear combination of intermediate layers as final output like CrossMAE
+        n_intermediate_weights: bool
+            Whether to use intermediate weights for weighted sum of intermediate layers
         """
         super().__init__()
+        num_patches, patch_size, context_pixels = validate_spatial_dims(
+            spatial_dims, [num_patches, patch_size, context_pixels]
+        )
+
         self.cls_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.patchify = Patchify(
             patch_size, emb_dim, num_patches, spatial_dims, context_pixels, input_channels
@@ -100,13 +105,18 @@ class MAE_Encoder(torch.nn.Module):
 
 
 class SpatialMerger(nn.Module):
-    """
-    Class for converting multi-resolution Hiera features to the same (lowest) spatial resolution via convolution
-    """
-    def __init__(self, downsample_factor, in_dim, out_dim):
+    """Class for converting multi-resolution Hiera features to the same (lowest) spatial resolution
+    via convolution."""
+
+    def __init__(
+        self, downsample_factor: List[int], in_dim: int, out_dim: int, spatial_dims: int = 3
+    ):
         super().__init__()
-        self.downsample_factor = downsample_factor
-        conv = nn.Conv3d(
+        downsample_factor = validate_spatial_dims(spatial_dims, [downsample_factor])[0]
+
+        self.spatial_dims = spatial_dims
+        conv_fn = nn.Conv3d if spatial_dims == 3 else nn.Conv2d
+        conv = conv_fn(
             in_channels=in_dim,
             out_channels=out_dim,
             kernel_size=downsample_factor,
@@ -114,27 +124,36 @@ class SpatialMerger(nn.Module):
             padding=0,
             bias=False,
         )
-
-        tokens2img = Rearrange(
-            "b n_mu (z y x) c -> (b n_mu) c z y x",
-            z=downsample_factor[0],
-            y=downsample_factor[1],
-            x=downsample_factor[2],
-        )
+        if spatial_dims == 3:
+            tokens2img = Rearrange(
+                "b n_mu (z y x) c -> (b n_mu) c z y x",
+                z=downsample_factor[0],
+                y=downsample_factor[1],
+                x=downsample_factor[2],
+            )
+        else:
+            tokens2img = Rearrange(
+                "b n_mu (y x) c -> (b n_mu) c y x",
+                y=downsample_factor[0],
+                x=downsample_factor[1],
+            )
         self.model = nn.Sequential(tokens2img, conv)
 
     def forward(self, x):
         b, n_mu, _, _ = x.shape
         x = self.model(x)
-        x = rearrange(x, "(b n_mu) c z y x -> b n_mu (z y x) c", b=b, n_mu=n_mu)
+        if self.spatial_dims == 3:
+            x = rearrange(x, "(b n_mu) c z y x -> b n_mu (z y x) c", b=b, n_mu=n_mu)
+        else:
+            x = rearrange(x, "(b n_mu) c y x -> b n_mu (y x) c", b=b, n_mu=n_mu)
         return x
 
 
 class HieraEncoder(torch.nn.Module):
     def __init__(
         self,
-        num_patches: List[int],
-        num_mask_units: List[int],
+        num_patches: Union[int, List[int]],
+        num_mask_units: Union[int, List[int]],
         architecture: List[Dict],
         emb_dim: int = 64,
         spatial_dims: int = 3,
@@ -145,17 +164,17 @@ class HieraEncoder(torch.nn.Module):
         """
         Parameters
         ----------
-        num_patches: List[int]
-            Number of patches in each dimension
-        num_mask_units: List[int]
-            Number of mask units in each dimension
+        num_patches: int, List[int]
+            Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.
+        num_mask_units: int, List[int]
+            Number of mask units in each dimension. If a single int is provided, the number of mask units in each dimension will be the same.
         architecture: List[Dict]
             List of dictionaries specifying the architecture of the transformer. Each dictionary should have the following keys:
             - repeat: int
                 Number of times to repeat the block
             - num_heads: int
                 Number of heads in the multihead attention
-            - q_stride: List[int]
+            - q_stride: int, List[int]
                 Stride for the query in each spatial dimension
             - self_attention: bool
                 Whether to use self attention or mask unit attention
@@ -171,6 +190,16 @@ class HieraEncoder(torch.nn.Module):
             Whether to save the intermediate layer outputs
         """
         super().__init__()
+        num_patches, num_mask_units, patch_size, context_pixels = validate_spatial_dims(
+            spatial_dims, [num_patches, num_mask_units, patch_size, context_pixels]
+        )
+        # make sure q stride shape matches spatial dims
+        for i in range(len(architecture)):
+            if "q_stride" in architecture[i]:
+                architecture[i]["q_stride"] = validate_spatial_dims(
+                    spatial_dims, [architecture[i]["q_stride"]]
+                )[0]
+
         self.save_layers = save_layers
         self.patchify = PatchifyHiera(
             patch_size,
@@ -183,13 +212,16 @@ class HieraEncoder(torch.nn.Module):
 
         patches_per_mask_unit = np.array(num_patches) // np.array(num_mask_units)
 
-        total_downsampling_per_axis = np.prod([block.get("q_stride", [1] * spatial_dims) for block in architecture],axis=0)
-        
-        assert np.all(patches_per_mask_unit - total_downsampling_per_axis >= 0), f"Number of mask units must be greater than the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride or increase the number of patches per mask unit."
+        total_downsampling_per_axis = np.prod(
+            [block.get("q_stride", [1] * spatial_dims) for block in architecture], axis=0
+        )
+
+        assert np.all(
+            patches_per_mask_unit - total_downsampling_per_axis >= 0
+        ), f"Number of mask units must be greater than the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride or increase the number of patches per mask unit."
         assert np.all(
             patches_per_mask_unit % total_downsampling_per_axis == 0
         ), f"Number of mask units must be divisible by the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride"
-
 
         self.final_dim = emb_dim * (2 ** len(architecture))
 
@@ -219,6 +251,7 @@ class HieraEncoder(torch.nn.Module):
                         dim=dim_in,
                         dim_out=dim_out,
                         heads=stage["num_heads"],
+                        spatial_dims=spatial_dims,
                         q_stride=q_stride,
                         patches_per_mask_unit=patches_per_mask_unit,
                     )
@@ -233,7 +266,12 @@ class HieraEncoder(torch.nn.Module):
 
                     # create a spatial merger for combining tokens pre-downsampling, last stage doesn't need merging since it has expected num channels, spatial shape
                     self.spatial_mergers[f"block_{save_block}"] = (
-                        SpatialMerger(patches_per_mask_unit, dim_in, self.final_dim)
+                        SpatialMerger(
+                            patches_per_mask_unit,
+                            dim_in,
+                            self.final_dim,
+                            spatial_dims=spatial_dims,
+                        )
                         if stage_num < len(architecture) - 1
                         else torch.nn.Identity()
                     )
@@ -268,7 +306,6 @@ class HieraEncoder(torch.nn.Module):
         mask_unit_embeddings = rearrange(mask_unit_embeddings, "b n_mu t c -> b (n_mu t) c")
         mask_unit_embeddings = self.self_attention_transformer(mask_unit_embeddings)
         mask_unit_embeddings = self.layer_norm(mask_unit_embeddings)
-        mask_unit_embeddings = rearrange(mask_unit_embeddings, 'b t c -> t b c')
+        mask_unit_embeddings = rearrange(mask_unit_embeddings, "b t c -> t b c")
 
-        return mask_unit_embeddings, mask, forward_indexes, backward_indexes #, save_layers
-
+        return mask_unit_embeddings, mask, forward_indexes, backward_indexes  # , save_layers
