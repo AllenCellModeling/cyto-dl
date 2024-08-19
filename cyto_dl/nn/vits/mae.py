@@ -56,8 +56,8 @@ class MAE(MAE_Base):
     def __init__(
         self,
         spatial_dims: int = 3,
-        num_patches: Optional[List[int]] = [2, 32, 32],
-        patch_size: Optional[List[int]] = [16, 16, 16],
+        num_patches: Optional[List[int]] = 16,
+        patch_size: Optional[List[int]] = 4,
         emb_dim: Optional[int] = 768,
         encoder_layer: Optional[int] = 12,
         encoder_head: Optional[int] = 8,
@@ -66,7 +66,7 @@ class MAE(MAE_Base):
         decoder_dim: Optional[int] = 192,
         mask_ratio: Optional[int] = 0.75,
         use_crossmae: Optional[bool] = False,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
+        context_pixels: Optional[List[int]] = 0,
         input_channels: Optional[int] = 1,
         features_only: Optional[bool] = False,
         learnable_pos_embedding: Optional[bool] = True,
@@ -152,16 +152,16 @@ class HieraMAE(MAE_Base):
         self,
         architecture: List[Dict],
         spatial_dims: int = 3,
-        num_patches: Optional[Union[int, List[int]]] = [2, 32, 32],
-        num_mask_units: Optional[Union[int, List[int]]] = [2, 12, 12],
-        patch_size: Optional[Union[int, List[int]]] = [16, 16, 16],
+        num_patches: Optional[Union[int, List[int]]] = 16,
+        num_mask_units: Optional[Union[int, List[int]]] = 8,
+        patch_size: Optional[Union[int, List[int]]] = 4,
         emb_dim: Optional[int] = 64,
         decoder_layer: Optional[int] = 4,
         decoder_head: Optional[int] = 8,
         decoder_dim: Optional[int] = 192,
         mask_ratio: Optional[int] = 0.75,
         use_crossmae: Optional[bool] = False,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
+        context_pixels: Optional[List[int]] = 0,
         input_channels: Optional[int] = 1,
         features_only: Optional[bool] = False,
     ) -> None:
@@ -223,6 +223,7 @@ class HieraMAE(MAE_Base):
             spatial_dims=self.spatial_dims,
             patch_size=self.patch_size,
             context_pixels=self.context_pixels,
+            input_channels=input_channels,
         )
         # "patches" to the decoder are actually mask units, so num_patches is num_mask_units, patch_size is mask unit size
         mask_unit_size = (np.array(self.num_patches) * np.array(self.patch_size)) / np.array(

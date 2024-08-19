@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import numpy as np
 import torch
-from einops import repeat
+from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 
@@ -79,27 +79,28 @@ class PatchifyHiera(PatchifyBase):
         ).astype(int)
 
         patches_per_mask_unit = mask_unit_size_pix // patch_size
+
+        # rearrange patch embeddings to mask units
         self.pos_embedding = torch.nn.Parameter(
-            torch.zeros(1, self.total_n_mask_units, np.prod(patches_per_mask_unit), emb_dim)
+            rearrange(
+                self.pos_embedding,
+                "(ppmu total_n_mu) 1 emb_dim -> 1 total_n_mu ppmu emb_dim",
+                total_n_mu=self.total_n_mask_units,
+                ppmu=patches_per_mask_unit.prod(),
+                emb_dim=emb_dim,
+            )
         )
 
         self.mask_units_per_dim = mask_units_per_dim
 
         self.patch2img = self.create_patch2img(mask_units_per_dim, mask_unit_size_pix)
 
-        self._init_weight()
-
-    def _init_weight(self):
-        trunc_normal_(self.pos_embedding, std=0.02)
-        for task in self.task_embedding:
-            trunc_normal_(self.task_embedding[task], std=0.02)
-
     @property
     def img2token(self):
         # redefine this to work with mask units instead of patches
         return self.create_img2token(self.mask_units_per_dim)
 
-    # in hiera, the level of masking is at the mask unit, not the patch level
+    # in hiera, the masking is done at the mask unit, not the patch level
     def get_mask_args(self, mask_ratio):
         n_visible_patches = int(self.total_n_mask_units * (1 - mask_ratio))
         return n_visible_patches, self.total_n_mask_units

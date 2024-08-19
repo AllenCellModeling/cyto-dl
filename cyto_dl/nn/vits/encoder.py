@@ -159,6 +159,7 @@ class HieraEncoder(torch.nn.Module):
         spatial_dims: int = 3,
         patch_size: List[int] = (16, 16, 16),
         context_pixels: Optional[List[int]] = [0, 0, 0],
+        input_channels: Optional[int] = 1,
         save_layers: Optional[bool] = False,
     ) -> None:
         """
@@ -186,6 +187,8 @@ class HieraEncoder(torch.nn.Module):
             Size of each patch
         context_pixels: List[int]
             Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
+        input_channels: int
+            Number of input channels
         save_layers: bool
             Whether to save the intermediate layer outputs
         """
@@ -202,11 +205,12 @@ class HieraEncoder(torch.nn.Module):
 
         self.save_layers = save_layers
         self.patchify = PatchifyHiera(
-            patch_size,
-            num_patches,
-            emb_dim,
-            spatial_dims,
-            context_pixels,
+            patch_size=patch_size,
+            n_patches=num_patches,
+            emb_dim=emb_dim,
+            spatial_dims=spatial_dims,
+            context_pixels=context_pixels,
+            input_channels=input_channels,
             mask_units_per_dim=num_mask_units,
         )
 
@@ -223,6 +227,7 @@ class HieraEncoder(torch.nn.Module):
             patches_per_mask_unit % total_downsampling_per_axis == 0
         ), f"Number of mask units must be divisible by the total downsampling ratio, got {patches_per_mask_unit} patches per mask unit and {total_downsampling_per_axis} total downsampling ratio. Please adjust your q_stride"
 
+        # number of output features doubles in each masked unit attention block, stays constant during self attention blocks
         self.final_dim = emb_dim * (2 ** len(architecture))
 
         self.save_block_idxs = []
@@ -276,7 +281,7 @@ class HieraEncoder(torch.nn.Module):
                         else torch.nn.Identity()
                     )
 
-                    # at end of each layer, patches per mask unit is reduced as we pool spatially
+                    # at end of each layer, patches per mask unit is reduced as we pool spatially within mask units
                     patches_per_mask_unit = patches_per_mask_unit // np.array(stage["q_stride"])
                 num_blocks += 1
         self.mask_unit_transformer = torch.nn.Sequential(*transformer)
