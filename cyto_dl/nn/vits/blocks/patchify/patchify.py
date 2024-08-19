@@ -1,12 +1,15 @@
-from cyto_dl.nn.vits.blocks.patchify.patchify_base import PatchifyBase
 from typing import List, Optional
-from einops.layers.torch import Rearrange
+
 import numpy as np
+from einops.layers.torch import Rearrange
+
+from cyto_dl.nn.vits.blocks.patchify.patchify_base import PatchifyBase
 from cyto_dl.nn.vits.utils import take_indexes
 
 
 class Patchify(PatchifyBase):
     """Class for converting images to a masked sequence of patches with positional embeddings."""
+
     def __init__(
         self,
         patch_size: List[int],
@@ -28,11 +31,11 @@ class Patchify(PatchifyBase):
             tasks=tasks,
             learnable_pos_embedding=learnable_pos_embedding,
         )
-    
+
     @property
     def img2token(self):
         return self.create_img2token()
-    
+
     def get_mask_args(self, mask_ratio):
         num_patches = np.prod(self.n_patches)
         n_visible_patches = int(num_patches * (1 - mask_ratio))
@@ -44,6 +47,6 @@ class Patchify(PatchifyBase):
             return Rearrange("b c z y x -> (z y x) b c")
         elif self.spatial_dims == 2:
             return Rearrange("b c y x -> (y x) b c")
-        
+
     def extract_visible_tokens(self, tokens, forward_indexes, n_visible_patches):
         return take_indexes(tokens, forward_indexes)[:n_visible_patches]

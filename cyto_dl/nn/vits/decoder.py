@@ -9,15 +9,8 @@ from einops.layers.torch import Rearrange
 from timm.models.layers import trunc_normal_
 from timm.models.vision_transformer import Block
 
-from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
-
-from typing import List, Optional
-
-import torch
-from einops import rearrange
-
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-from cyto_dl.nn.vits.utils import take_indexes
+from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
 
 
 class MAE_Decoder(torch.nn.Module):
@@ -98,26 +91,24 @@ class MAE_Decoder(torch.nn.Module):
 
     def adjust_indices_for_cls(self, indexes):
         if self.has_cls_token:
-            # add all zeros to indices - this keeps the class token as the first index in the 
+            # add all zeros to indices - this keeps the class token as the first index in the
             # tensor. We also have to add 1 to all the indices to account for the zeros we added
             return torch.cat(
                 [
-                    torch.zeros(
-                        1, indexes.shape[1], device=indexes.device, dtype=torch.long
-                    ),
+                    torch.zeros(1, indexes.shape[1], device=indexes.device, dtype=torch.long),
                     indexes + 1,
                 ],
                 dim=0,
             )
         return indexes
-    
+
     def add_mask_tokens(self, features, backward_indexes):
         # fill in deleted masked regions with mask token
         num_visible_tokens, B, _ = features.shape
         # total number of tokens - number of visible tokens
         num_mask_tokens = backward_indexes.shape[0] - num_visible_tokens
         mask_tokens = repeat(self.mask_token, "1 1 c -> t b c", t=num_mask_tokens, b=B)
-        return torch.cat([features, mask_tokens],dim=0)
+        return torch.cat([features, mask_tokens], dim=0)
 
     def forward(self, features, forward_indexes, backward_indexes):
         # project from encoder dimension to decoder dimension
@@ -135,7 +126,7 @@ class MAE_Decoder(torch.nn.Module):
         features = rearrange(features, "t b c -> b t c")
         features = self.transformer(features)
         features = rearrange(features, "b t c -> t b c")
-        
+
         if self.has_cls_token:
             features = features[1:]  # remove global feature
 
@@ -183,7 +174,17 @@ class CrossMAE_Decoder(MAE_Decoder):
         learnable_pos_embedding: bool
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used. Empirically, fixed positional embeddings work better for brightfield images.
         """
-        super().__init__(num_patches, spatial_dims, patch_size, enc_dim, emb_dim, num_layer, num_head, has_cls_token, learnable_pos_embedding)
+        super().__init__(
+            num_patches,
+            spatial_dims,
+            patch_size,
+            enc_dim,
+            emb_dim,
+            num_layer,
+            num_head,
+            has_cls_token,
+            learnable_pos_embedding,
+        )
 
         self.transformer = torch.nn.ParameterList(
             [
@@ -244,7 +245,11 @@ class CrossMAE_Decoder(MAE_Decoder):
             ],
             dim=0,
         )
-        patches = take_indexes(patches, backward_indexes[1:] - 1) if self.has_cls_token else take_indexes(patches, backward_indexes)
+        patches = (
+            take_indexes(patches, backward_indexes[1:] - 1)
+            if self.has_cls_token
+            else take_indexes(patches, backward_indexes)
+        )
         # patches to image
         img = self.patch2img(patches)
         return img

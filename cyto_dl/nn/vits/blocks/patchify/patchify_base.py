@@ -168,7 +168,6 @@ class PatchifyBase(torch.nn.Module, ABC):
             mask, forward_indexes, backward_indexes = self.get_mask(
                 img, n_visible_patches, num_patches
             )
-
         # generate patches
         tokens = self.conv(img * mask)
         tokens = self.img2token(tokens)
