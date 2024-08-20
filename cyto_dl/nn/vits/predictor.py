@@ -6,7 +6,11 @@ from einops import rearrange
 from timm.models.layers import trunc_normal_
 
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
-from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes, validate_spatial_dims
+from cyto_dl.nn.vits.utils import (
+    get_positional_embedding,
+    take_indexes,
+    validate_spatial_dims,
+)
 
 
 class JEPAPredictor(torch.nn.Module):
@@ -126,12 +130,12 @@ class IWMPredictor(JEPAPredictor):
             Number of heads in transformer
         """
         super().__init__(
-            num_patches=num_patches, 
+            num_patches=num_patches,
             spatial_dims=spatial_dims,
             input_dim=input_dim,
             emb_dim=emb_dim,
             num_layer=num_layer,
-            num_head=num_head
+            num_head=num_head,
         )
 
         self.domain_embeddings = torch.nn.ParameterDict(
