@@ -5,6 +5,8 @@ from einops import rearrange
 from monai.transforms import RandomizableTransform
 from skimage.segmentation import find_boundaries
 
+from cyto_dl.nn.vits.utils import validate_spatial_dims
+
 
 class JEPAMaskGenerator(RandomizableTransform):
     """Transform for generating Block-contiguous masks for JEPA training.
@@ -15,6 +17,7 @@ class JEPAMaskGenerator(RandomizableTransform):
 
     def __init__(
         self,
+        spatial_dims: int,
         mask_size: int = 12,
         block_aspect_ratio: Tuple[float] = (0.5, 1.5),
         num_patches: Tuple[float] = (6, 24, 24),
@@ -23,6 +26,8 @@ class JEPAMaskGenerator(RandomizableTransform):
         """
         Parameters
         ----------
+        spatial_dims : int
+            The number of spatial dimensions of the image (2 or 3)
         mask_size : int, optional
             The size of the blocks used to generate mask. Block dimensions are determined by the mask size and an aspect ratio sampled from the range  `block_aspect_ratio`
         block_aspect_ratio : Tuple[float], optional
@@ -32,7 +37,9 @@ class JEPAMaskGenerator(RandomizableTransform):
         mask_ratio : float, optional
             The proportion of the image to be masked
         """
-        assert mask_ratio < 1, "mask_ratio must be less than 1"
+        assert 0 < mask_ratio < 1, "mask_ratio must be between 0 and 1"
+
+        num_patches = validate_spatial_dims(spatial_dims, [num_patches])[0]
         assert mask_size * max(block_aspect_ratio) < min(
             num_patches[-2:]
         ), "mask_size * max mask aspect ratio must be less than the smallest dimension of num_patches"
@@ -46,7 +53,7 @@ class JEPAMaskGenerator(RandomizableTransform):
         self.mask = np.zeros(num_patches)
         self.edge_mask = np.ones(num_patches)
 
-        self.spatial_dims = len(num_patches)
+        self.spatial_dims = spatial_dims
         # create a mask that identified pixels on the edge of the image
         if self.spatial_dims == 3:
             self.edge_mask[1:-1, 1:-1, 1:-1] = 0
