@@ -15,7 +15,7 @@ from timm.models.vision_transformer import Block
 from cyto_dl.nn.vits.blocks import IntermediateWeigher, Patchify
 from cyto_dl.nn.vits.blocks.masked_unit_attention import HieraBlock
 from cyto_dl.nn.vits.blocks.patchify import PatchifyHiera
-from cyto_dl.nn.vits.utils import validate_spatial_dims
+from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 
 class MAE_Encoder(torch.nn.Module):
@@ -54,7 +54,7 @@ class MAE_Encoder(torch.nn.Module):
             Whether to use intermediate weights for weighted sum of intermediate layers
         """
         super().__init__()
-        num_patches, patch_size, context_pixels = validate_spatial_dims(
+        num_patches, patch_size, context_pixels = match_tuple_dimensions(
             spatial_dims, [num_patches, patch_size, context_pixels]
         )
 
@@ -140,7 +140,7 @@ class JEPAEncoder(torch.nn.Module):
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
-        num_patches, patch_size, context_pixels = validate_spatial_dims(
+        num_patches, patch_size, context_pixels = match_tuple_dimensions(
             spatial_dims, [num_patches, patch_size, context_pixels]
         )
 
@@ -178,7 +178,7 @@ class SpatialMerger(nn.Module):
         self, downsample_factor: List[int], in_dim: int, out_dim: int, spatial_dims: int = 3
     ):
         super().__init__()
-        downsample_factor = validate_spatial_dims(spatial_dims, [downsample_factor])[0]
+        downsample_factor = match_tuple_dimensions(spatial_dims, [downsample_factor])[0]
 
         self.spatial_dims = spatial_dims
         conv_fn = nn.Conv3d if spatial_dims == 3 else nn.Conv2d
@@ -245,6 +245,7 @@ class HieraEncoder(torch.nn.Module):
                 Stride for the query in each spatial dimension
             - self_attention: bool
                 Whether to use self attention or mask unit attention
+            On the last repeat of each non-self-attention block, the embedding dimension is doubled and spatial pooling with `q_stride` is performed within each mask unit. For example, a block with a embed_dim=4, q_stride=2, and repeat=2, the first repeat just does mask unit attention, while the second will produce an 8-dimensional output that has been spatially pooled.
         emb_dim: int
             Dimension of embedding
         spatial_dims: int
@@ -259,13 +260,13 @@ class HieraEncoder(torch.nn.Module):
             Whether to save the intermediate layer outputs
         """
         super().__init__()
-        num_patches, num_mask_units, patch_size, context_pixels = validate_spatial_dims(
+        num_patches, num_mask_units, patch_size, context_pixels = match_tuple_dimensions(
             spatial_dims, [num_patches, num_mask_units, patch_size, context_pixels]
         )
         # make sure q stride shape matches spatial dims
         for i in range(len(architecture)):
             if "q_stride" in architecture[i]:
-                architecture[i]["q_stride"] = validate_spatial_dims(
+                architecture[i]["q_stride"] = match_tuple_dimensions(
                     spatial_dims, [architecture[i]["q_stride"]]
                 )[0]
 

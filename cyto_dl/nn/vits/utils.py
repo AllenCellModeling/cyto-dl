@@ -49,6 +49,10 @@ def get_positional_embedding(
         return torch.nn.Parameter(pe, requires_grad=False)
 
 
-def validate_spatial_dims(spatial_dims, tuples):
+def match_tuple_dimensions(spatial_dims, tuples):
+    """Ensure that each element in a list of tuples has the same length as spatial_dims.
+
+    If a single element, the element is repeated to match the spatial_dims.
+    """
     assert spatial_dims in (2, 3), "spatial_dims must be 2 or 3"
     return [ensure_tuple_rep(t, spatial_dims) for t in tuples]

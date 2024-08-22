@@ -9,7 +9,7 @@ from einops import rearrange, reduce
 from einops.layers.torch import Reduce
 from timm.models.layers import DropPath, Mlp
 
-from cyto_dl.nn.vits.utils import validate_spatial_dims
+from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 
 class MaskUnitAttention(torch.nn.Module):
@@ -20,7 +20,6 @@ class MaskUnitAttention(torch.nn.Module):
         spatial_dims: int = 3,
         num_heads=8,
         qkv_bias=False,
-        qk_scale=None,
         attn_drop=0.0,
         proj_drop=0.0,
         q_stride=[1, 1, 1],
@@ -39,8 +38,6 @@ class MaskUnitAttention(torch.nn.Module):
             Number of attention heads, by default 8.
         qkv_bias : bool, optional
             If True, add a learnable bias to query, key, value, by default False.
-        qk_scale : float, optional
-            Override default qk scale of head_dim ** -0.5 if set, by default None.
         attn_drop : float, optional
             Dropout rate for attention, by default 0.0.
         proj_drop : float, optional
@@ -51,14 +48,13 @@ class MaskUnitAttention(torch.nn.Module):
             Number of patches per mask unit, by default [2, 12, 12].
         """
         super().__init__()
-        q_stride, patches_per_mask_unit = validate_spatial_dims(
+        q_stride, patches_per_mask_unit = match_tuple_dimensions(
             spatial_dims, [q_stride, patches_per_mask_unit]
         )
 
         self.spatial_dims = spatial_dims
         self.num_heads = num_heads
         self.head_dim = dim_out // num_heads
-        self.scale = qk_scale or self.head_dim**-0.5
         self.qkv = nn.Linear(dim, dim_out * 3, bias=qkv_bias)
         self.attn_drop = attn_drop
         self.proj = nn.Linear(dim_out, dim_out)
@@ -87,7 +83,7 @@ class MaskUnitAttention(torch.nn.Module):
             if self.spatial_dims == 3:
                 q = reduce(
                     q,
-                    "b n h (n_patches_z q_stride_z n_patches_y q_stride_y n_patches_x q_stride_x) c ->b n h (n_patches_z n_patches_y n_patches_x) c",
+                    "batch num_mask_units num_heads (n_patches_z q_stride_z n_patches_y q_stride_y n_patches_x q_stride_x) c -> batch num_mask_units num_heads (n_patches_z n_patches_y n_patches_x) c",
                     reduction="max",
                     q_stride_z=self.q_stride[0],
                     q_stride_y=self.q_stride[1],
@@ -99,7 +95,7 @@ class MaskUnitAttention(torch.nn.Module):
             elif self.spatial_dims == 2:
                 q = reduce(
                     q,
-                    "b n h (n_patches_y q_stride_y n_patches_x q_stride_x) c ->b n h (n_patches_y n_patches_x) c",
+                    "batch num_mask_units num_heads (n_patches_y q_stride_y n_patches_x q_stride_x) c ->batch num_mask_units num_heads (n_patches_y n_patches_x) c",
                     reduction="max",
                     q_stride_y=self.q_stride[0],
                     q_stride_x=self.q_stride[1],
@@ -144,25 +140,25 @@ class HieraBlock(nn.Module):
             Dimension of the input features.
         dim_out : int
             Dimension of the output features.
+        heads : int
+            Number of attention heads.
         spatial_dims : int, optional
             Number of spatial dimensions, by default 3.
-        num_heads : int, optional
-            Number of attention heads, by default 8.
-        qkv_bias : bool, optional
-            If True, add a learnable bias to query, key, value, by default False.
-        qk_scale : float, optional
-            Override default qk scale of head_dim ** -0.5 if set, by default None.
-        attn_drop : float, optional
-            Dropout rate for attention, by default 0.0.
-        proj_drop : float, optional
-            Dropout rate for projection, by default 0.0.
+        mlp_ratio : float, optional
+            Ratio of MLP hidden dim to embedding dim, by default 4.0.
+        drop_path : float, optional
+            Dropout rate for the path, by default 0.0.
+        norm_layer : nn.Module, optional
+            Normalization layer, by default nn.LayerNorm.
+        act_layer : nn.Module, optional
+            Activation layer for the MLP, by default nn.GELU.
         q_stride : List[int], optional
             Stride for query, by default [1, 1, 1].
         patches_per_mask_unit : List[int], optional
             Number of patches per mask unit, by default [2, 12, 12].
         """
         super().__init__()
-        patches_per_mask_unit, q_stride = validate_spatial_dims(
+        patches_per_mask_unit, q_stride = match_tuple_dimensions(
             spatial_dims, [patches_per_mask_unit, q_stride]
         )
 
@@ -189,7 +185,7 @@ class HieraBlock(nn.Module):
 
         self.drop_path = DropPath(drop_path) if drop_path > 0 else nn.Identity()
 
-        # max pooling by q stride within a mask unit
+        # mean pooling by q stride within a mask unit
         if self.spatial_dims == 3:
             skip_connection_pooling = Reduce(
                 "b n (n_patches_z q_stride_z n_patches_y q_stride_y n_patches_x q_stride_x) c -> b n (n_patches_z n_patches_y n_patches_x) c",
@@ -223,6 +219,7 @@ class HieraBlock(nn.Module):
         """
         # Attention + Q Pooling
         x_norm = self.norm1(x)
+
         # change dimension and subsample within mask unit for skip connection
         x = self.proj(x_norm)
 

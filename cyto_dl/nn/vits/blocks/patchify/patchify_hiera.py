@@ -30,7 +30,8 @@ def take_indexes_mask(sequences, indexes):
 
 
 class PatchifyHiera(PatchifyBase):
-    """Class for converting images to a masked sequence of patches with positional embeddings."""
+    """Class for converting images to a sequence of patches with positional embeddings, masked at
+    the level of mask units (groups of patches specified by mask_units_per_dim)."""
 
     def __init__(
         self,

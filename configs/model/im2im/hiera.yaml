@@ -8,15 +8,16 @@ x_key: ${source_col}
 backbone:
   _target_: cyto_dl.nn.vits.mae.HieraMAE
   spatial_dims: ${spatial_dims}
-  patch_size: 2 # patch_size* num_patches should be your patch shape
+  patch_size: 2 # patch_size * num_patches should be your image shape (data._aux.patch_shape)
   num_patches: 8 # patch_size * num_patches = img_shape
-  num_mask_units: 4 #img_shape / num_mask_units = size of each mask unit in pixels, num_patches/num_mask_units = number of patches permask unit
+  num_mask_units: 4 #Mask units are used for local attention. img_shape / num_mask_units = size of each mask unit in pixels, num_patches/num_mask_units = number of patches permask unit
   emb_dim: 4
+  # NOTE: this is a very small model for testing - for best performance, the downsampling ratios, embedding dimension, number of layers and number of heads should be adjusted to your data
   architecture:
     # mask_unit_attention blocks - attention is only done within a mask unit and not across mask units
     # the total amount of q_stride across the architecture must be less than the number of patches per mask unit
-    - repeat: 1
-      q_stride: 2
+    - repeat: 1 # number of times to repeat this block
+      q_stride: 2 # size of downsampling within a mask unit
       num_heads: 1
     - repeat: 1
       q_stride: 1
