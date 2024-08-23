@@ -8,7 +8,7 @@ import torch
 
 from cyto_dl.nn.vits.decoder import CrossMAE_Decoder, MAE_Decoder
 from cyto_dl.nn.vits.encoder import HieraEncoder, MAE_Encoder
-from cyto_dl.nn.vits.utils import validate_spatial_dims
+from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 
 class MAE_Base(torch.nn.Module, ABC):
@@ -16,7 +16,7 @@ class MAE_Base(torch.nn.Module, ABC):
         self, spatial_dims, num_patches, patch_size, mask_ratio, features_only, context_pixels
     ):
         super().__init__()
-        num_patches, patch_size, context_pixels = validate_spatial_dims(
+        num_patches, patch_size, context_pixels = match_tuple_dimensions(
             spatial_dims, [num_patches, patch_size, context_pixels]
         )
 
@@ -213,7 +213,7 @@ class HieraMAE(MAE_Base):
             features_only=features_only,
             context_pixels=context_pixels,
         )
-        num_mask_units = validate_spatial_dims(self.spatial_dims, [num_mask_units])[0]
+        num_mask_units = match_tuple_dimensions(self.spatial_dims, [num_mask_units])[0]
 
         self._encoder = HieraEncoder(
             num_patches=self.num_patches,

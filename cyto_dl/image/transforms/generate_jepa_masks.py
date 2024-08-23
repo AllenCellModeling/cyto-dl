@@ -5,7 +5,7 @@ from einops import rearrange
 from monai.transforms import RandomizableTransform
 from skimage.segmentation import find_boundaries
 
-from cyto_dl.nn.vits.utils import validate_spatial_dims
+from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 
 class JEPAMaskGenerator(RandomizableTransform):
@@ -39,7 +39,7 @@ class JEPAMaskGenerator(RandomizableTransform):
         """
         assert 0 < mask_ratio < 1, "mask_ratio must be between 0 and 1"
 
-        num_patches = validate_spatial_dims(spatial_dims, [num_patches])[0]
+        num_patches = match_tuple_dimensions(spatial_dims, [num_patches])[0]
         assert mask_size * max(block_aspect_ratio) < min(
             num_patches[-2:]
         ), "mask_size * max mask aspect ratio must be less than the smallest dimension of num_patches"

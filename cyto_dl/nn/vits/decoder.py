@@ -12,8 +12,8 @@ from timm.models.vision_transformer import Block
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
 from cyto_dl.nn.vits.utils import (
     get_positional_embedding,
+    match_tuple_dimensions,
     take_indexes,
-    validate_spatial_dims,
 )
 
 
@@ -51,7 +51,7 @@ class MAE_Decoder(torch.nn.Module):
             If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
         """
         super().__init__()
-        num_patches, patch_size = validate_spatial_dims(spatial_dims, [num_patches, patch_size])
+        num_patches, patch_size = match_tuple_dimensions(spatial_dims, [num_patches, patch_size])
 
         self.has_cls_token = has_cls_token
 

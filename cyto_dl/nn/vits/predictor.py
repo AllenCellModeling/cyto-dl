@@ -8,8 +8,8 @@ from timm.models.layers import trunc_normal_
 from cyto_dl.nn.vits.blocks import CrossAttentionBlock
 from cyto_dl.nn.vits.utils import (
     get_positional_embedding,
+    match_tuple_dimensions,
     take_indexes,
-    validate_spatial_dims,
 )
 
 
@@ -56,7 +56,7 @@ class JEPAPredictor(torch.nn.Module):
             ]
         )
 
-        num_patches = validate_spatial_dims(spatial_dims, [num_patches])[0]
+        num_patches = match_tuple_dimensions(spatial_dims, [num_patches])[0]
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = get_positional_embedding(
