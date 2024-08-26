@@ -9,4 +9,4 @@ def resolve_readonly(cfg):
 
 def skip_test(test_name):
     """Skip pretraining models for testing."""
-    return bool(np.any([x in test_name for x in ("mae", "ijepa", "iwm")]))
+    return bool(np.any([x in test_name for x in ("mae", "ijepa", "iwm", "hiera")]))

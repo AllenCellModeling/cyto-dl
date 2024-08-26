@@ -4,76 +4,13 @@ import torch
 import torch.nn.functional
 from einops import rearrange
 from timm.models.layers import trunc_normal_
-from timm.models.vision_transformer import Block
 
-from cyto_dl.nn.vits.blocks import CrossAttentionBlock, Patchify
-from cyto_dl.nn.vits.utils import get_positional_embedding, take_indexes
-
-
-class JEPAEncoder(torch.nn.Module):
-    def __init__(
-        self,
-        num_patches: Union[int, List[int]],
-        spatial_dims: int = 3,
-        patch_size: Union[int, List[int]] = (16, 16, 16),
-        emb_dim: Optional[int] = 192,
-        num_layer: Optional[int] = 12,
-        num_head: Optional[int] = 3,
-        context_pixels: Optional[List[int]] = [0, 0, 0],
-        input_channels: Optional[int] = 1,
-        learnable_pos_embedding: Optional[bool] = True,
-    ) -> None:
-        """
-        Parameters
-        ----------
-        num_patches: List[int]
-            Number of patches in each dimension
-        spatial_dims: int
-            Number of spatial dimensions
-        patch_size: List[int]
-            Size of each patch
-        emb_dim: int
-            Dimension of embedding
-        num_layer: int
-            Number of transformer layers
-        num_head: int
-            Number of heads in transformer
-        context_pixels: List[int]
-            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.
-        input_channels: int
-            Number of input channels
-        learnable_pos_embedding: bool
-            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.
-        """
-        super().__init__()
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(patch_size, int):
-            patch_size = [patch_size] * spatial_dims
-        self.patchify = Patchify(
-            patch_size,
-            emb_dim,
-            num_patches,
-            spatial_dims,
-            context_pixels,
-            input_channels,
-            learnable_pos_embedding=learnable_pos_embedding,
-        )
-
-        self.transformer = torch.nn.Sequential(
-            *[Block(emb_dim, num_head) for _ in range(num_layer)]
-        )
-
-        self.layer_norm = torch.nn.LayerNorm(emb_dim)
-
-    def forward(self, img, patchify=True):
-        if patchify:
-            patches, _, _, _ = self.patchify(img, mask_ratio=0)
-        else:
-            patches = img
-        patches = rearrange(patches, "t b c -> b t c")
-        features = self.layer_norm(self.transformer(patches))
-        return features
+from cyto_dl.nn.vits.blocks import CrossAttentionBlock
+from cyto_dl.nn.vits.utils import (
+    get_positional_embedding,
+    match_tuple_dimensions,
+    take_indexes,
+)
 
 
 class JEPAPredictor(torch.nn.Module):
@@ -81,7 +18,8 @@ class JEPAPredictor(torch.nn.Module):
 
     def __init__(
         self,
-        num_patches: List[int],
+        num_patches: Union[int, List[int]],
+        spatial_dims: int = 3,
         input_dim: Optional[int] = 192,
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
@@ -91,8 +29,12 @@ class JEPAPredictor(torch.nn.Module):
         """
         Parameters
         ----------
-        num_patches: List[int]
-            Number of patches in each dimension
+        num_patches: List[int], int
+            Number of patches in each dimension. If int, the same number of patches is used for all spatial dimensions
+        spatial_dims: int
+            Number of spatial dimensions
+        input_dim: int
+            Dimension of input
         emb_dim: int
             Dimension of embedding
         num_layer: int
@@ -113,6 +55,8 @@ class JEPAPredictor(torch.nn.Module):
                 for _ in range(num_layer)
             ]
         )
+
+        num_patches = match_tuple_dimensions(spatial_dims, [num_patches])[0]
 
         self.mask_token = torch.nn.Parameter(torch.zeros(1, 1, emb_dim))
         self.pos_embedding = get_positional_embedding(
@@ -160,7 +104,8 @@ class IWMPredictor(JEPAPredictor):
     def __init__(
         self,
         domains: List[str],
-        num_patches: List[int],
+        num_patches: Union[int, List[int]],
+        spatial_dims: int = 3,
         input_dim: Optional[int] = 192,
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 12,
@@ -172,7 +117,11 @@ class IWMPredictor(JEPAPredictor):
         domains: List[str]
             List of names of target domains
         num_patches: List[int]
-            Number of patches in each dimension
+            Number of patches in each dimension. If int, the same number of patches is used for all spatial dimensions
+        spatial_dims: int
+            Number of spatial dimensions
+        spatial_dims: int
+            Number of spatial dimensions
         emb_dim: int
             Dimension of embedding
         num_layer: int
@@ -180,7 +129,14 @@ class IWMPredictor(JEPAPredictor):
         num_head: int
             Number of heads in transformer
         """
-        super().__init__(num_patches, input_dim, emb_dim, num_layer, num_head)
+        super().__init__(
+            num_patches=num_patches,
+            spatial_dims=spatial_dims,
+            input_dim=input_dim,
+            emb_dim=emb_dim,
+            num_layer=num_layer,
+            num_head=num_head,
+        )
 
         self.domain_embeddings = torch.nn.ParameterDict(
             {d: torch.nn.Parameter(torch.zeros(1, 1, emb_dim)) for d in domains}

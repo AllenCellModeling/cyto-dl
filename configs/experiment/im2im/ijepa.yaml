@@ -37,10 +37,3 @@ data:
     # patch_shape: [16, 16]
     # 3D
     patch_shape: [16, 16, 16]
-
-model:
-  _aux:
-    # 3D
-    num_patches: [8, 8, 8]
-    # 2d
-    # num_patches: [8, 8]

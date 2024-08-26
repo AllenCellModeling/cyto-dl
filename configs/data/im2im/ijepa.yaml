@@ -39,6 +39,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
         mask_size: 4
         num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
 
   test:
     _target_: monai.transforms.Compose
@@ -69,6 +70,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
         mask_size: 4
         num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
 
   predict:
     _target_: monai.transforms.Compose
@@ -127,6 +129,7 @@ transforms:
       - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
         mask_size: 4
         num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
 
 _aux:
   _scales_dict:
