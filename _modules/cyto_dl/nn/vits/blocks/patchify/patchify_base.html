@@ -1,0 +1,667 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../../search.html" />
+
+    <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
+        <title>cyto_dl.nn.vits.blocks.patchify.patchify_base - cyto-dl 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../../../index.html"><div class="brand">cyto-dl 0.4.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">cyto-dl 0.4.0 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../using_examples.html">Modifying the Example Configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../api.html">Using the API</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../../modules.html">Package modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../../cyto_dl.html">cyto_dl package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.api.html">cyto_dl.api package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.api.cyto_dl_model.html">cyto_dl.api.cyto_dl_model package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html">cyto_dl.api.cyto_dl_model.cyto_dl_base_model module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html">cyto_dl.api.cyto_dl_model.segmentation_plugin_model module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.api.data.html">cyto_dl.api.data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.api.model.html">cyto_dl.api.model module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.html">cyto_dl.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.transforms.html">cyto_dl.dataframe.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.transforms.filter.html">cyto_dl.dataframe.transforms.filter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.transforms.group_cols.html">cyto_dl.dataframe.transforms.group_cols module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.transforms.misc.html">cyto_dl.dataframe.transforms.misc module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.transforms.split.html">cyto_dl.dataframe.transforms.split module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.dataframe.readers.html">cyto_dl.dataframe.readers module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.html">cyto_dl.datamodules package</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.dataframe.html">cyto_dl.datamodules.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.dataframe.dataframe_datamodule.html">cyto_dl.datamodules.dataframe.dataframe_datamodule module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.html">cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.dataframe.utils.html">cyto_dl.datamodules.dataframe.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.array.html">cyto_dl.datamodules.array module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.data_dict.html">cyto_dl.datamodules.data_dict module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.folder.html">cyto_dl.datamodules.folder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.multidim_image.html">cyto_dl.datamodules.multidim_image module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.smartcache.html">cyto_dl.datamodules.smartcache module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.image.html">cyto_dl.image package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.image.io.html">cyto_dl.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.aicsimage_loader.html">cyto_dl.image.io.aicsimage_loader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.numpy_reader.html">cyto_dl.image.io.numpy_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.ome_zarr_reader.html">cyto_dl.image.io.ome_zarr_reader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.polygon_loader.html">cyto_dl.image.io.polygon_loader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.io.skimage_reader.html">cyto_dl.image.io.skimage_reader module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.add_meta.html">cyto_dl.image.transforms.add_meta module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.clip.html">cyto_dl.image.transforms.clip module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.generate_jepa_masks.html">cyto_dl.image.transforms.generate_jepa_masks module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.pad.html">cyto_dl.image.transforms.pad module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.project.html">cyto_dl.image.transforms.project module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.rotation_mask_transform.html">cyto_dl.image.transforms.rotation_mask_transform module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.save.html">cyto_dl.image.transforms.save module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.so2_random_rotation.html">cyto_dl.image.transforms.so2_random_rotation module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.image.transforms.track_transforms.html">cyto_dl.image.transforms.track_transforms module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.loggers.html">cyto_dl.loggers package</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.html">cyto_dl.models package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.classification.html">cyto_dl.models.classification package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.classification.classification.html">cyto_dl.models.classification.classification module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.classification.timepoint_classification.html">cyto_dl.models.classification.timepoint_classification module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.contrastive.html">cyto_dl.models.contrastive package</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.contrastive.contrastive.html">cyto_dl.models.contrastive.contrastive module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.handlers.html">cyto_dl.models.handlers package</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.handlers.base_handler.html">cyto_dl.models.handlers.base_handler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.handlers.image_handler.html">cyto_dl.models.handlers.image_handler module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.handlers.load_image_patch.html">cyto_dl.models.handlers.load_image_patch module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.html">cyto_dl.models.im2im package</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.html">cyto_dl.models.im2im.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.postprocessing.html">cyto_dl.models.im2im.utils.postprocessing package</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" role="switch" type="checkbox"/><label for="toctree-checkbox-20"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.postprocessing.act_thresh_label.html">cyto_dl.models.im2im.utils.postprocessing.act_thresh_label module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.postprocessing.auto_thresh.html">cyto_dl.models.im2im.utils.postprocessing.auto_thresh module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.instance_seg.html">cyto_dl.models.im2im.utils.instance_seg module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.gan.html">cyto_dl.models.im2im.gan module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.im2im.multi_task.html">cyto_dl.models.im2im.multi_task module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.jepa.html">cyto_dl.models.jepa package</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.jepa.ijepa.html">cyto_dl.models.jepa.ijepa module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.jepa.iwm.html">cyto_dl.models.jepa.iwm module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.jepa.jepa_base.html">cyto_dl.models.jepa.jepa_base module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.utils.html">cyto_dl.models.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.utils.mlflow.html">cyto_dl.models.utils.mlflow module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.utils.utils.html">cyto_dl.models.utils.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module</a></li>
+</ul>
+</li>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.priors.html">cyto_dl.models.vae.priors package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.priors.abstract_prior.html">cyto_dl.models.vae.priors.abstract_prior module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.priors.gaussian.html">cyto_dl.models.vae.priors.gaussian module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.priors.identity_prior.html">cyto_dl.models.vae.priors.identity_prior module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.priors.joint_prior.html">cyto_dl.models.vae.priors.joint_prior module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.base_vae.html">cyto_dl.models.vae.base_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.image_canon_vae.html">cyto_dl.models.vae.image_canon_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.image_encoder.html">cyto_dl.models.vae.image_encoder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.image_vae.html">cyto_dl.models.vae.image_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.latent_loss_vae.html">cyto_dl.models.vae.latent_loss_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.point_cloud_vae.html">cyto_dl.models.vae.point_cloud_vae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.models.vae.tabular_vae.html">cyto_dl.models.vae.tabular_vae module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.models.base_model.html">cyto_dl.models.base_model module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.models.basic_model.html">cyto_dl.models.basic_model module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.html">cyto_dl.nn package</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" role="switch" type="checkbox"/><label for="toctree-checkbox-26"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.discriminators.html">cyto_dl.nn.discriminators package</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.discriminators.multi_scale_discriminator.html">cyto_dl.nn.discriminators.multi_scale_discriminator module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.discriminators.n_layer_discriminator.html">cyto_dl.nn.discriminators.n_layer_discriminator module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.html">cyto_dl.nn.head package</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.base_head.html">cyto_dl.nn.head.base_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.gan_head.html">cyto_dl.nn.head.gan_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.gan_head_superres.html">cyto_dl.nn.head.gan_head_superres module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.mae_head.html">cyto_dl.nn.head.mae_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.mask_head.html">cyto_dl.nn.head.mask_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.res_blocks_head.html">cyto_dl.nn.head.res_blocks_head module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.head.vic_reg.html">cyto_dl.nn.head.vic_reg module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.html">cyto_dl.nn.losses package</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.adversarial_loss.html">cyto_dl.nn.losses.adversarial_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.chamfer_loss.html">cyto_dl.nn.losses.chamfer_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.continuous_bernoulli.html">cyto_dl.nn.losses.continuous_bernoulli module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.cosine_loss.html">cyto_dl.nn.losses.cosine_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.gan_loss.html">cyto_dl.nn.losses.gan_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.gaussian_nll_loss.html">cyto_dl.nn.losses.gaussian_nll_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.geomloss.html">cyto_dl.nn.losses.geomloss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.loss_wrapper.html">cyto_dl.nn.losses.loss_wrapper module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.spharm_loss.html">cyto_dl.nn.losses.spharm_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.threshold_loss.html">cyto_dl.nn.losses.threshold_loss module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.vic_reg.html">cyto_dl.nn.losses.vic_reg module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.weibull.html">cyto_dl.nn.losses.weibull module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.losses.weighted_mse_loss.html">cyto_dl.nn.losses.weighted_mse_loss module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.point_cloud.html">cyto_dl.nn.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" role="switch" type="checkbox"/><label for="toctree-checkbox-30"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.point_cloud.dgcnn.html">cyto_dl.nn.point_cloud.dgcnn module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.point_cloud.folding_net.html">cyto_dl.nn.point_cloud.folding_net module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.point_cloud.graph_functions.html">cyto_dl.nn.point_cloud.graph_functions module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.point_cloud.vnn.html">cyto_dl.nn.point_cloud.vnn module</a></li>
+</ul>
+</li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.html">cyto_dl.nn.vits package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.html">cyto_dl.nn.vits.blocks package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify.html">cyto_dl.nn.vits.blocks.patchify.patchify module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html">cyto_dl.nn.vits.blocks.patchify.patchify_base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html">cyto_dl.nn.vits.blocks.patchify.patchify_hiera module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.blocks.masked_unit_attention.html">cyto_dl.nn.vits.blocks.masked_unit_attention module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.decoder.html">cyto_dl.nn.vits.decoder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.encoder.html">cyto_dl.nn.vits.encoder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.predictor.html">cyto_dl.nn.vits.predictor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.point_cloud.io.read_pcloud.html">cyto_dl.point_cloud.io.read_pcloud module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.checkpoint.html">cyto_dl.utils.checkpoint module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.download_test_data.html">cyto_dl.utils.download_test_data module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.dummy_dataset.html">cyto_dl.utils.dummy_dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.pylogger.html">cyto_dl.utils.pylogger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.rich_utils.html">cyto_dl.utils.rich_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.rotation.html">cyto_dl.utils.rotation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../../cyto_dl.utils.template_utils.html">cyto_dl.utils.template_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../cyto_dl.compile.html">cyto_dl.compile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../cyto_dl.eval.html">cyto_dl.eval module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../../cyto_dl.train.html">cyto_dl.train module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for cyto_dl.nn.vits.blocks.patchify.patchify_base</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span><span class="p">,</span> <span class="n">Reduce</span>
+<span class="kn">from</span> <span class="nn">timm.models.layers</span> <span class="kn">import</span> <span class="n">trunc_normal_</span>
+
+<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">get_positional_embedding</span><span class="p">,</span> <span class="n">random_indexes</span><span class="p">,</span> <span class="n">take_indexes</span>
+
+
+<div class="viewcode-block" id="PatchifyBase"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase">[docs]</a><span class="k">class</span> <span class="nc">PatchifyBase</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for converting images to a masked sequence of patches with positional embeddings.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">patch_size</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">emb_dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">n_patches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">context_pixels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+        <span class="n">input_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">tasks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">learnable_pos_embedding</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        patch_size: List[int]</span>
+<span class="sd">            Size of each patch in pix (ZYX order for 3D, YX order for 2D)</span>
+<span class="sd">        emb_dim: int</span>
+<span class="sd">            Dimension of encoder</span>
+<span class="sd">        n_patches: List[int]</span>
+<span class="sd">            Number of patches in each spatial dimension (ZYX order for 3D, YX order for 2D)</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        context_pixels: List[int]</span>
+<span class="sd">            Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.</span>
+<span class="sd">        input_channels: int</span>
+<span class="sd">            Number of input channels</span>
+<span class="sd">        tasks: List[str]</span>
+<span class="sd">            List of tasks to encode</span>
+<span class="sd">        learnable_pos_embedding: bool</span>
+<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only 2D and 3D images are supported&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">=</span> <span class="n">spatial_dims</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n_patches</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">get_positional_embedding</span><span class="p">(</span>
+            <span class="n">n_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">learnable</span><span class="o">=</span><span class="n">learnable_pos_embedding</span><span class="p">,</span> <span class="n">use_cls_token</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_patch2img</span><span class="p">(</span><span class="n">n_patches</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_conv</span><span class="p">(</span><span class="n">input_channels</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">,</span> <span class="n">context_pixels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ParameterDict</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">task</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_weight</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">:</span>
+            <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">[</span><span class="n">task</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">img2token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="PatchifyBase.get_mask_args"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.get_mask_args">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_mask_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PatchifyBase.extract_visible_tokens"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.extract_visible_tokens">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">extract_visible_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PatchifyBase.create_conv"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.create_conv">[docs]</a>    <span class="k">def</span> <span class="nf">create_conv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_channels</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">,</span> <span class="n">context_pixels</span><span class="p">):</span>
+        <span class="n">context_pixels</span> <span class="o">=</span> <span class="n">context_pixels</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span><span class="p">]</span>
+        <span class="n">weight_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">patch_size</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">context_pixels</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv3d</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="n">input_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="n">weight_size</span><span class="p">,</span>
+                <span class="n">stride</span><span class="o">=</span><span class="n">patch_size</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="n">context_pixels</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="n">input_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="n">weight_size</span><span class="p">,</span>
+                <span class="n">stride</span><span class="o">=</span><span class="n">patch_size</span><span class="p">,</span>
+                <span class="n">padding</span><span class="o">=</span><span class="n">context_pixels</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PatchifyBase.create_patch2img"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.create_patch2img">[docs]</a>    <span class="k">def</span> <span class="nf">create_patch2img</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_patches</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts boolean array of whether to keep index of each patch to an image-shaped mask of</span>
+<span class="sd">        same size as input image.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">[</span>
+                    <span class="c1"># rearrange tokens to image</span>
+                    <span class="n">Rearrange</span><span class="p">(</span>
+                        <span class="s2">&quot;(n_patch_z n_patch_y n_patch_x) b c -&gt;  b c n_patch_z n_patch_y n_patch_x&quot;</span><span class="p">,</span>
+                        <span class="n">n_patch_z</span><span class="o">=</span><span class="n">n_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">n_patch_y</span><span class="o">=</span><span class="n">n_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">n_patch_x</span><span class="o">=</span><span class="n">n_patches</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="p">),</span>
+                    <span class="c1"># nearest neighbor resize image to match input image size</span>
+                    <span class="n">Reduce</span><span class="p">(</span>
+                        <span class="s2">&quot;b c n_patch_z n_patch_y n_patch_x -&gt; b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
+                        <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
+                        <span class="n">patch_size_z</span><span class="o">=</span><span class="n">patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">patch_size_y</span><span class="o">=</span><span class="n">patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">patch_size_x</span><span class="o">=</span><span class="n">patch_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                    <span class="p">),</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">[</span>
+                    <span class="n">Rearrange</span><span class="p">(</span>
+                        <span class="s2">&quot;(n_patch_y n_patch_x) b c -&gt;  b c n_patch_y n_patch_x&quot;</span><span class="p">,</span>
+                        <span class="n">n_patch_y</span><span class="o">=</span><span class="n">n_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">n_patch_x</span><span class="o">=</span><span class="n">n_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="p">),</span>
+                    <span class="n">Reduce</span><span class="p">(</span>
+                        <span class="s2">&quot;b c n_patch_y n_patch_x -&gt; b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
+                        <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
+                        <span class="n">patch_size_y</span><span class="o">=</span><span class="n">patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">patch_size_x</span><span class="o">=</span><span class="n">patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="p">),</span>
+                <span class="p">]</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PatchifyBase.get_mask"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.get_mask">[docs]</a>    <span class="k">def</span> <span class="nf">get_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">n_visible_patches</span><span class="p">,</span> <span class="n">num_patches</span><span class="p">):</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">random_indexes</span><span class="p">(</span><span class="n">num_patches</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">B</span><span class="p">)]</span>
+        <span class="c1"># forward indexes : index in image -&gt; shuffledpatch</span>
+        <span class="n">forward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># backward indexes : shuffled patch -&gt; index in image</span>
+        <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">indexes</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_patches</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="c1"># visible patches are first</span>
+        <span class="n">mask</span><span class="p">[:</span><span class="n">n_visible_patches</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mask</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span></div>
+
+<div class="viewcode-block" id="PatchifyBase.forward"><a class="viewcode-back" href="../../../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">mask_ratio</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># generate mask</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">bool</span><span class="p">()</span>
+        <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">mask_ratio</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">n_visible_patches</span><span class="p">,</span> <span class="n">num_patches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask_args</span><span class="p">(</span><span class="n">mask_ratio</span><span class="p">)</span>
+            <span class="n">mask</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mask</span><span class="p">(</span>
+                <span class="n">img</span><span class="p">,</span> <span class="n">n_visible_patches</span><span class="p">,</span> <span class="n">num_patches</span>
+            <span class="p">)</span>
+        <span class="c1"># generate patches</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">img</span> <span class="o">*</span> <span class="n">mask</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img2token</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+        <span class="c1"># add position embedding</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">tokens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span>
+
+        <span class="c1"># extract visible patches</span>
+        <span class="k">if</span> <span class="n">mask_ratio</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_visible_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">n_visible_patches</span><span class="p">)</span>
+
+        <span class="c1"># add task embedding</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">:</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="n">tokens</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_embedding</span><span class="p">[</span><span class="n">task</span><span class="p">]</span>
+
+        <span class="c1"># mask is used above to mask out patches, we need to invert it for loss calculation</span>
+        <span class="k">return</span> <span class="n">tokens</span><span class="p">,</span> <span class="o">~</span><span class="n">mask</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span></div></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../../../../../" id="documentation_options" src="../../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../../_static/doctools.js"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../../../_static/scripts/furo.js"></script>
+    </body>
+</html>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.vits.blocks.cross_attention module" href="cyto_dl.nn.vits.blocks.cross_attention.html" /><link rel="prev" title="cyto_dl.nn.vits package" href="cyto_dl.nn.vits.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.vits.blocks.patchify package" href="cyto_dl.nn.vits.blocks.patchify.html" /><link rel="prev" title="cyto_dl.nn.vits package" href="cyto_dl.nn.vits.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
         <title>cyto_dl.nn.vits.blocks package - cyto-dl 0.4.0 documentation</title>
@@ -350,14 +350,21 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.vits.html">cyto_dl.nn.vits package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 current has-children current-page"><a class="current reference internal" href="#">cyto_dl.nn.vits.blocks package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify.html">cyto_dl.nn.vits.blocks.patchify.patchify module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_base.html">cyto_dl.nn.vits.blocks.patchify.patchify_base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html">cyto_dl.nn.vits.blocks.patchify.patchify_hiera module</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.cross_mae.html">cyto_dl.nn.vits.cross_mae module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.jepa.html">cyto_dl.nn.vits.jepa module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html">cyto_dl.nn.vits.blocks.masked_unit_attention module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.decoder.html">cyto_dl.nn.vits.decoder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.encoder.html">cyto_dl.nn.vits.encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.predictor.html">cyto_dl.nn.vits.predictor module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
 </ul>
@@ -369,15 +376,15 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.point_cloud.io.read_pcloud.html">cyto_dl.point_cloud.io.read_pcloud module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -436,6 +443,32 @@
         <article role="main">
           <section id="module-cyto_dl.nn.vits.blocks">
 <span id="cyto-dl-nn-vits-blocks-package"></span><h1>cyto_dl.nn.vits.blocks package<a class="headerlink" href="#module-cyto_dl.nn.vits.blocks" title="Permalink to this heading">#</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading">#</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify.html">cyto_dl.nn.vits.blocks.patchify.patchify module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify.html#cyto_dl.nn.vits.blocks.patchify.patchify.Patchify"><code class="docutils literal notranslate"><span class="pre">Patchify</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_base.html">cyto_dl.nn.vits.blocks.patchify.patchify_base module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase"><code class="docutils literal notranslate"><span class="pre">PatchifyBase</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html">cyto_dl.nn.vits.blocks.patchify.patchify_hiera module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html#cyto_dl.nn.vits.blocks.patchify.patchify_hiera.PatchifyHiera"><code class="docutils literal notranslate"><span class="pre">PatchifyHiera</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html#cyto_dl.nn.vits.blocks.patchify.patchify_hiera.take_indexes_mask"><code class="docutils literal notranslate"><span class="pre">take_indexes_mask()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
@@ -466,13 +499,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify"><code class="docutils literal notranslate"><span class="pre">Patchify</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify.forward"><code class="docutils literal notranslate"><span class="pre">Patchify.forward()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.Patchify.get_mask"><code class="docutils literal notranslate"><span class="pre">Patchify.get_mask()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html">cyto_dl.nn.vits.blocks.masked_unit_attention module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html#cyto_dl.nn.vits.blocks.masked_unit_attention.HieraBlock"><code class="docutils literal notranslate"><span class="pre">HieraBlock</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html#cyto_dl.nn.vits.blocks.masked_unit_attention.HieraBlock.forward"><code class="docutils literal notranslate"><span class="pre">HieraBlock.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html#cyto_dl.nn.vits.blocks.patchify.random_indexes"><code class="docutils literal notranslate"><span class="pre">random_indexes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html#cyto_dl.nn.vits.blocks.masked_unit_attention.MaskUnitAttention"><code class="docutils literal notranslate"><span class="pre">MaskUnitAttention</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html#cyto_dl.nn.vits.blocks.masked_unit_attention.MaskUnitAttention.forward"><code class="docutils literal notranslate"><span class="pre">MaskUnitAttention.forward()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -485,12 +520,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.nn.vits.blocks.cross_attention.html">
+          <a class="next-page" href="cyto_dl.nn.vits.blocks.patchify.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.nn.vits.blocks.cross_attention module</div>
+                <div class="title">cyto_dl.nn.vits.blocks.patchify package</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -536,6 +571,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">cyto_dl.nn.vits.blocks package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 </ul>
 </li>

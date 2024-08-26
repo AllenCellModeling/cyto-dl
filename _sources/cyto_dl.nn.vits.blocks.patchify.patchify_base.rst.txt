@@ -1,0 +1,7 @@
+cyto\_dl.nn.vits.blocks.patchify.patchify\_base module
+======================================================
+
+.. automodule:: cyto_dl.nn.vits.blocks.patchify.patchify_base
+   :members:
+   :undoc-members:
+   :show-inheritance:

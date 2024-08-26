@@ -1,0 +1,7 @@
+cyto\_dl.nn.vits.predictor module
+=================================
+
+.. automodule:: cyto_dl.nn.vits.predictor
+   :members:
+   :undoc-members:
+   :show-inheritance:

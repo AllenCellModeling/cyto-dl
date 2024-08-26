@@ -1,7 +1,0 @@
-cyto\_dl.nn.vits.jepa module
-============================
-
-.. automodule:: cyto_dl.nn.vits.jepa
-   :members:
-   :undoc-members:
-   :show-inheritance:

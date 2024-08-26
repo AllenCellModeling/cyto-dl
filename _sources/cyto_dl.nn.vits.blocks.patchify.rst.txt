@@ -1,7 +1,17 @@
-cyto\_dl.nn.vits.blocks.patchify module
-=======================================
+cyto\_dl.nn.vits.blocks.patchify package
+========================================
 
 .. automodule:: cyto_dl.nn.vits.blocks.patchify
    :members:
    :undoc-members:
    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cyto_dl.nn.vits.blocks.patchify.patchify
+   cyto_dl.nn.vits.blocks.patchify.patchify_base
+   cyto_dl.nn.vits.blocks.patchify.patchify_hiera

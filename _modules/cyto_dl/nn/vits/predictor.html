@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.vits.cross_mae - cyto-dl 0.4.0 documentation</title>
+        <title>cyto_dl.nn.vits.predictor - cyto-dl 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -349,14 +349,21 @@
 </li>
 <li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.vits.html">cyto_dl.nn.vits package</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.html">cyto_dl.nn.vits.blocks package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.patchify.patchify.html">cyto_dl.nn.vits.blocks.patchify.patchify module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.patchify.patchify_base.html">cyto_dl.nn.vits.blocks.patchify.patchify_base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html">cyto_dl.nn.vits.blocks.patchify.patchify_hiera module</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.cross_mae.html">cyto_dl.nn.vits.cross_mae module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.jepa.html">cyto_dl.nn.vits.jepa module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="../../../../cyto_dl.nn.vits.blocks.masked_unit_attention.html">cyto_dl.nn.vits.blocks.masked_unit_attention module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.decoder.html">cyto_dl.nn.vits.decoder module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.encoder.html">cyto_dl.nn.vits.encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.predictor.html">cyto_dl.nn.vits.predictor module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
 </ul>
@@ -368,15 +375,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.point_cloud.io.read_pcloud.html">cyto_dl.point_cloud.io.read_pcloud module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../../cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -432,43 +439,44 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.vits.cross_mae</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+          <h1>Source code for cyto_dl.nn.vits.predictor</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span>
 <span class="kn">from</span> <span class="nn">einops</span> <span class="kn">import</span> <span class="n">rearrange</span>
-<span class="kn">from</span> <span class="nn">einops.layers.torch</span> <span class="kn">import</span> <span class="n">Rearrange</span>
 <span class="kn">from</span> <span class="nn">timm.models.layers</span> <span class="kn">import</span> <span class="n">trunc_normal_</span>
 
 <span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.blocks</span> <span class="kn">import</span> <span class="n">CrossAttentionBlock</span>
-<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="n">get_positional_embedding</span><span class="p">,</span> <span class="n">take_indexes</span>
+<span class="kn">from</span> <span class="nn">cyto_dl.nn.vits.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_positional_embedding</span><span class="p">,</span>
+    <span class="n">match_tuple_dimensions</span><span class="p">,</span>
+    <span class="n">take_indexes</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<div class="viewcode-block" id="CrossMAE_Decoder"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder">[docs]</a><span class="k">class</span> <span class="nc">CrossMAE_Decoder</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decoder inspired by [CrossMAE](https://crossmae.github.io/) where masked tokens only attend</span>
-<span class="sd">    to visible tokens.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="JEPAPredictor"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor">[docs]</a><span class="k">class</span> <span class="nc">JEPAPredictor</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for predicting target features from context embedding.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">num_patches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">num_patches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
         <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-        <span class="n">base_patch_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
-        <span class="n">enc_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">768</span><span class="p">,</span>
+        <span class="n">input_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
         <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
-        <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
         <span class="n">num_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">learnable_pos_embedding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        num_patches: List[int]</span>
-<span class="sd">            Number of patches in each dimension</span>
-<span class="sd">        base_patch_size: Tuple[int]</span>
-<span class="sd">            Size of each patch</span>
-<span class="sd">        enc_dim: int</span>
-<span class="sd">            Dimension of encoder</span>
+<span class="sd">        num_patches: List[int], int</span>
+<span class="sd">            Number of patches in each dimension. If int, the same number of patches is used for all spatial dimensions</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        input_dim: int</span>
+<span class="sd">            Dimension of input</span>
 <span class="sd">        emb_dim: int</span>
 <span class="sd">            Dimension of embedding</span>
 <span class="sd">        num_layer: int</span>
@@ -476,10 +484,9 @@
 <span class="sd">        num_head: int</span>
 <span class="sd">            Number of heads in transformer</span>
 <span class="sd">        learnable_pos_embedding: bool</span>
-<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used. Empirically, fixed positional embeddings work better for brightfield images.</span>
+<span class="sd">            If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ParameterList</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">CrossAttentionBlock</span><span class="p">(</span>
@@ -490,119 +497,110 @@
                 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layer</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">decoder_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">enc_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
+        <span class="n">num_patches</span> <span class="o">=</span> <span class="n">match_tuple_dimensions</span><span class="p">(</span><span class="n">spatial_dims</span><span class="p">,</span> <span class="p">[</span><span class="n">num_patches</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span> <span class="o">=</span> <span class="n">get_positional_embedding</span><span class="p">(</span>
-            <span class="n">num_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">learnable</span><span class="o">=</span><span class="n">learnable_pos_embedding</span>
+            <span class="n">num_patches</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">use_cls_token</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">learnable</span><span class="o">=</span><span class="n">learnable_pos_embedding</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">base_patch_size</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">num_patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">num_patches</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor_embed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;(n_patch_z n_patch_y n_patch_x) b (c patch_size_z patch_size_y patch_size_x) -&gt;  b c (n_patch_z patch_size_z) (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
-                <span class="n">n_patch_z</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">n_patch_y</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">n_patch_x</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-                <span class="n">patch_size_z</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">patch_size_y</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">patch_size_x</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">spatial_dims</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span> <span class="o">=</span> <span class="n">Rearrange</span><span class="p">(</span>
-                <span class="s2">&quot;(n_patch_y n_patch_x) b (c patch_size_y patch_size_x) -&gt;  b c (n_patch_y patch_size_y) (n_patch_x patch_size_x)&quot;</span><span class="p">,</span>
-                <span class="n">n_patch_y</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">n_patch_x</span><span class="o">=</span><span class="n">num_patches</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                <span class="n">patch_size_y</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                <span class="n">patch_size_x</span><span class="o">=</span><span class="n">base_patch_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">projector_embed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">,</span> <span class="n">input_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">emb_dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_weight</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CrossMAE_Decoder.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
+<div class="viewcode-block" id="JEPAPredictor.init_weight"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor.init_weight">[docs]</a>    <span class="k">def</span> <span class="nf">init_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+        <span class="n">trunc_normal_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CrossMAE_Decoder.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.cross_mae.html#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">):</span>
-        <span class="c1"># HACK TODO allow usage of multiple intermediate feature weights, this works when decoder is 0 layers</span>
-        <span class="c1"># features can be n t b c (if intermediate feature weighter used) or t b c if not</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="k">else</span> <span class="n">features</span>
-        <span class="n">T</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span>
-        <span class="c1"># we could do cross attention between decoder_dim queries and encoder_dim features, but it seems to work fine having both at decoder_dim for now</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">features</span><span class="p">))</span>
+<div class="viewcode-block" id="JEPAPredictor.predict_target_features"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor.predict_target_features">[docs]</a>    <span class="k">def</span> <span class="nf">predict_target_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_emb</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">):</span>
+        <span class="n">t</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">target_masks</span><span class="o">.</span><span class="n">shape</span>
+        <span class="c1"># add masked positional embedding to mask tokens</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pe</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">pe</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">+</span> <span class="n">pe</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
 
-        <span class="c1"># add cls token</span>
-        <span class="n">backward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                    <span class="mi">1</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">backward_indexes</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span>
-                <span class="p">),</span>
-                <span class="n">backward_indexes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">forward_indexes</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                    <span class="mi">1</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">forward_indexes</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span>
-                <span class="p">),</span>
-                <span class="n">forward_indexes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="c1"># fill in masked regions</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">features</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">mask_token</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span>
-                    <span class="n">backward_indexes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="p">),</span>
-            <span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="c1"># unshuffle to original positions for positional embedding so we can do cross attention during decoding</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">)</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">features</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_embedding</span>
-
-        <span class="c1"># reshuffle to shuffled positions for cross attention</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">forward_indexes</span><span class="p">)</span>
-        <span class="n">features</span><span class="p">,</span> <span class="n">masked</span> <span class="o">=</span> <span class="n">features</span><span class="p">[:</span><span class="n">T</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">T</span><span class="p">:]</span>
-
-        <span class="n">masked</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="s2">&quot;t b c -&gt; b t c&quot;</span><span class="p">)</span>
-
+        <span class="c1"># cross attention from mask tokens to context embedding</span>
         <span class="k">for</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformer</span><span class="p">:</span>
-            <span class="n">masked</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="n">features</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">transformer</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">context_emb</span><span class="p">)</span>
 
-        <span class="c1"># noneed to remove cls token, it&#39;s a part of the features vector</span>
-        <span class="n">masked</span> <span class="o">=</span> <span class="n">rearrange</span><span class="p">(</span><span class="n">masked</span><span class="p">,</span> <span class="s2">&quot;b t c -&gt; t b c&quot;</span><span class="p">)</span>
+        <span class="c1"># norm and project back to input dimension</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projector_embed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">mask</span></div>
 
-        <span class="c1"># (npatches x npatches x npatches) b (emb dim) -&gt; (npatches* npatches * npatches) b (z y x)</span>
-        <span class="n">masked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_norm</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">masked</span><span class="p">)</span>
+<div class="viewcode-block" id="JEPAPredictor.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_emb</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">):</span>
+        <span class="c1"># map context embedding to predictor dimension</span>
+        <span class="n">context_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_embed</span><span class="p">(</span><span class="n">context_emb</span><span class="p">)</span>
+        <span class="n">target_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_target_features</span><span class="p">(</span><span class="n">context_emb</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_features</span></div></div>
 
-        <span class="c1"># add back in visible/encoded tokens that we don&#39;t calculate loss on</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">patches</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
-                    <span class="n">requires_grad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">device</span><span class="o">=</span><span class="n">patches</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">patches</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                <span class="p">),</span>
-                <span class="n">patches</span><span class="p">,</span>
-            <span class="p">],</span>
-            <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+
+<div class="viewcode-block" id="IWMPredictor"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.IWMPredictor">[docs]</a><span class="k">class</span> <span class="nc">IWMPredictor</span><span class="p">(</span><span class="n">JEPAPredictor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specialized JEPA predictor that can conditionally predict between different domains (e.g.</span>
+<span class="sd">    predict from brightfield to multiple fluorescent tags)&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">domains</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">num_patches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">spatial_dims</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">input_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
+        <span class="n">emb_dim</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">192</span><span class="p">,</span>
+        <span class="n">num_layer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+        <span class="n">num_head</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        domains: List[str]</span>
+<span class="sd">            List of names of target domains</span>
+<span class="sd">        num_patches: List[int]</span>
+<span class="sd">            Number of patches in each dimension. If int, the same number of patches is used for all spatial dimensions</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        spatial_dims: int</span>
+<span class="sd">            Number of spatial dimensions</span>
+<span class="sd">        emb_dim: int</span>
+<span class="sd">            Dimension of embedding</span>
+<span class="sd">        num_layer: int</span>
+<span class="sd">            Number of transformer layers</span>
+<span class="sd">        num_head: int</span>
+<span class="sd">            Number of heads in transformer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">num_patches</span><span class="o">=</span><span class="n">num_patches</span><span class="p">,</span>
+            <span class="n">spatial_dims</span><span class="o">=</span><span class="n">spatial_dims</span><span class="p">,</span>
+            <span class="n">input_dim</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span>
+            <span class="n">emb_dim</span><span class="o">=</span><span class="n">emb_dim</span><span class="p">,</span>
+            <span class="n">num_layer</span><span class="o">=</span><span class="n">num_layer</span><span class="p">,</span>
+            <span class="n">num_head</span><span class="o">=</span><span class="n">num_head</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">patches</span> <span class="o">=</span> <span class="n">take_indexes</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">backward_indexes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="c1"># patches to image</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch2img</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">img</span></div></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">domain_embeddings</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">ParameterDict</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">d</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">))</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">domains</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context_mixer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IWMPredictor.forward"><a class="viewcode-back" href="../../../../cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.IWMPredictor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context_emb</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">,</span> <span class="n">target_domain</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">target_masks</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_domain</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">target_domain</span> <span class="o">=</span> <span class="n">target_domain</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="c1"># map context embedding to predictor dimension</span>
+        <span class="n">context_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_embed</span><span class="p">(</span><span class="n">context_emb</span><span class="p">)</span>
+
+        <span class="c1"># add target domain information via concatenation + token mixing</span>
+        <span class="n">target_domain_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_embeddings</span><span class="p">[</span><span class="n">td</span><span class="p">]</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">target_domain</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">context_emb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">context_emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">context_emb</span><span class="p">,</span> <span class="n">target_domain_embedding</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">context_emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context_mixer</span><span class="p">(</span><span class="n">context_emb</span><span class="p">)</span>
+
+        <span class="n">target_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_target_features</span><span class="p">(</span><span class="n">context_emb</span><span class="p">,</span> <span class="n">target_masks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">target_features</span></div></div>
 </pre></div>
         </article>
       </div>

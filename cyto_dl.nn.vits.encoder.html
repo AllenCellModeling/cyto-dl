@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.vits.jepa module" href="cyto_dl.nn.vits.jepa.html" /><link rel="prev" title="cyto_dl.nn.vits.blocks.patchify module" href="cyto_dl.nn.vits.blocks.patchify.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.vits.mae module" href="cyto_dl.nn.vits.mae.html" /><link rel="prev" title="cyto_dl.nn.vits.decoder module" href="cyto_dl.nn.vits.decoder.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.vits.cross_mae module - cyto-dl 0.4.0 documentation</title>
+        <title>cyto_dl.nn.vits.encoder module - cyto-dl 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -350,14 +350,21 @@
 </li>
 <li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.nn.vits.html">cyto_dl.nn.vits package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" role="switch" type="checkbox"/><label for="toctree-checkbox-31"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.nn.vits.blocks.html">cyto_dl.nn.vits.blocks package</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" role="switch" type="checkbox"/><label for="toctree-checkbox-32"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
-<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify module</a></li>
+<li class="toctree-l6 has-children"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.html">cyto_dl.nn.vits.blocks.patchify package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify.html">cyto_dl.nn.vits.blocks.patchify.patchify module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_base.html">cyto_dl.nn.vits.blocks.patchify.patchify_base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html">cyto_dl.nn.vits.blocks.patchify.patchify_hiera module</a></li>
 </ul>
 </li>
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.vits.cross_mae module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.jepa.html">cyto_dl.nn.vits.jepa module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.cross_attention.html">cyto_dl.nn.vits.blocks.cross_attention module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.intermediate_weigher.html">cyto_dl.nn.vits.blocks.intermediate_weigher module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.nn.vits.blocks.masked_unit_attention.html">cyto_dl.nn.vits.blocks.masked_unit_attention module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.decoder.html">cyto_dl.nn.vits.decoder module</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.vits.encoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.mae.html">cyto_dl.nn.vits.mae module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.predictor.html">cyto_dl.nn.vits.predictor module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.seg.html">cyto_dl.nn.vits.seg module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.nn.vits.utils.html">cyto_dl.nn.vits.utils module</a></li>
 </ul>
@@ -369,15 +376,15 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" role="switch" type="checkbox"/><label for="toctree-checkbox-33"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.point_cloud.html">cyto_dl.point_cloud package</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" role="switch" type="checkbox"/><label for="toctree-checkbox-34"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.point_cloud.io.html">cyto_dl.point_cloud.io package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.point_cloud.io.read_pcloud.html">cyto_dl.point_cloud.io.read_pcloud module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-35" name="toctree-checkbox-35" role="switch" type="checkbox"/><label for="toctree-checkbox-35"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
@@ -434,35 +441,123 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.vits.cross_mae">
-<span id="cyto-dl-nn-vits-cross-mae-module"></span><h1>cyto_dl.nn.vits.cross_mae module<a class="headerlink" href="#module-cyto_dl.nn.vits.cross_mae" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.vits.encoder">
+<span id="cyto-dl-nn-vits-encoder-module"></span><h1>cyto_dl.nn.vits.encoder module<a class="headerlink" href="#module-cyto_dl.nn.vits.encoder" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.vits.cross_mae.</span></span><span class="sig-name descname"><span class="pre">CrossMAE_Decoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[4,</span> <span class="pre">8,</span> <span class="pre">8]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">768</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">192</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable_pos_embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/cross_mae.html#CrossMAE_Decoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.HieraEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.vits.encoder.</span></span><span class="sig-name descname"><span class="pre">HieraEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_mask_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">architecture</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#HieraEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.HieraEncoder" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Decoder inspired by [CrossMAE](<a class="reference external" href="https://crossmae.github.io/">https://crossmae.github.io/</a>) where masked tokens only attend
-to visible tokens.</p>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>num_patches</strong> (<em>List[int]</em>) – Number of patches in each dimension</p></li>
-<li><p><strong>base_patch_size</strong> (<em>Tuple[int]</em>) – Size of each patch</p></li>
-<li><p><strong>enc_dim</strong> (<em>int</em>) – Dimension of encoder</p></li>
+<dd class="field-odd"><ul>
+<li><p><strong>num_patches</strong> (<em>int, List[int]</em>) – Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.</p></li>
+<li><p><strong>num_mask_units</strong> (<em>int, List[int]</em>) – Number of mask units in each dimension. If a single int is provided, the number of mask units in each dimension will be the same.</p></li>
+<li><p><strong>architecture</strong> (<em>List[Dict]</em>) – List of dictionaries specifying the architecture of the transformer. Each dictionary should have the following keys:
+- repeat: int</p>
+<blockquote>
+<div><p>Number of times to repeat the block</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>num_heads: int</dt><dd><p>Number of heads in the multihead attention</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>q_stride: int, List[int]</dt><dd><p>Stride for the query in each spatial dimension</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>self_attention: bool</dt><dd><p>Whether to use self attention or mask unit attention</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>On the last repeat of each non-self-attention block, the embedding dimension is doubled and spatial pooling with <cite>q_stride</cite> is performed within each mask unit. For example, a block with a embed_dim=4, q_stride=2, and repeat=2, the first repeat just does mask unit attention, while the second will produce an 8-dimensional output that has been spatially pooled.</p>
+</li>
 <li><p><strong>emb_dim</strong> (<em>int</em>) – Dimension of embedding</p></li>
-<li><p><strong>num_layer</strong> (<em>int</em>) – Number of transformer layers</p></li>
-<li><p><strong>num_head</strong> (<em>int</em>) – Number of heads in transformer</p></li>
-<li><p><strong>learnable_pos_embedding</strong> (<em>bool</em>) – If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings are used. Empirically, fixed positional embeddings work better for brightfield images.</p></li>
+<li><p><strong>spatial_dims</strong> (<em>int</em>) – Number of spatial dimensions</p></li>
+<li><p><strong>patch_size</strong> (<em>List[int]</em>) – Size of each patch</p></li>
+<li><p><strong>context_pixels</strong> (<em>List[int]</em>) – Number of extra pixels around each patch to include in convolutional embedding to encoder dimension.</p></li>
+<li><p><strong>input_channels</strong> (<em>int</em>) – Number of input channels</p></li>
+<li><p><strong>save_layers</strong> (<em>bool</em>) – Whether to save the intermediate layer outputs</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward_indexes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_indexes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/cross_mae.html#CrossMAE_Decoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.HieraEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_ratio</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#HieraEncoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.HieraEncoder.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.JEPAEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.vits.encoder.</span></span><span class="sig-name descname"><span class="pre">JEPAEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">192</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learnable_pos_embedding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#JEPAEncoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.JEPAEncoder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_patches</strong> (<em>List[int], int</em>) – Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.</p></li>
+<li><p><strong>spatial_dims</strong> (<em>int</em>) – Number of spatial dimensions</p></li>
+<li><p><strong>patch_size</strong> (<em>List[int]</em>) – Size of each patch</p></li>
+<li><p><strong>emb_dim</strong> (<em>int</em>) – Dimension of embedding</p></li>
+<li><p><strong>num_layer</strong> (<em>int</em>) – Number of transformer layers</p></li>
+<li><p><strong>num_head</strong> (<em>int</em>) – Number of heads in transformer</p></li>
+<li><p><strong>context_pixels</strong> (<em>List[int], int</em>) – Number of extra pixels around each patch to include in convolutional embedding to encoder dimension. If a single int is provided, the number of context pixels in each dimension will be the same.</p></li>
+<li><p><strong>input_channels</strong> (<em>int</em>) – Number of input channels</p></li>
+<li><p><strong>learnable_pos_embedding</strong> (<em>bool</em>) – If True, learnable positional embeddings are used. If False, fixed sin/cos positional embeddings. Empirically, fixed positional embeddings work better for brightfield images.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.JEPAEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patchify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#JEPAEncoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.JEPAEncoder.forward" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.MAE_Encoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.vits.encoder.</span></span><span class="sig-name descname"><span class="pre">MAE_Encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_patches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">192</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_intermediate_weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#MAE_Encoder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.MAE_Encoder" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_patches</strong> (<em>List[int], int</em>) – Number of patches in each dimension. If a single int is provided, the number of patches in each dimension will be the same.</p></li>
+<li><p><strong>spatial_dims</strong> (<em>int</em>) – Number of spatial dimensions</p></li>
+<li><p><strong>patch_size</strong> (<em>List[int]</em>) – Size of each patch</p></li>
+<li><p><strong>emb_dim</strong> (<em>int</em>) – Dimension of embedding</p></li>
+<li><p><strong>num_layer</strong> (<em>int</em>) – Number of transformer layers</p></li>
+<li><p><strong>num_head</strong> (<em>int</em>) – Number of heads in transformer</p></li>
+<li><p><strong>context_pixels</strong> (<em>List[int], int</em>) – Number of extra pixels around each patch to include in convolutional embedding to encoder dimension. If a single int is provided, the number of context pixels in each dimension will be the same.</p></li>
+<li><p><strong>input_channels</strong> (<em>int</em>) – Number of input channels</p></li>
+<li><p><strong>n_intermediate_weights</strong> (<em>bool</em>) – Whether to use intermediate weights for weighted sum of intermediate layers</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.MAE_Encoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.75</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#MAE_Encoder.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.MAE_Encoder.forward" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.init_weight">
-<span class="sig-name descname"><span class="pre">init_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/cross_mae.html#CrossMAE_Decoder.init_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.init_weight" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.MAE_Encoder.init_weight">
+<span class="sig-name descname"><span class="pre">init_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#MAE_Encoder.init_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.MAE_Encoder.init_weight" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.SpatialMerger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.vits.encoder.</span></span><span class="sig-name descname"><span class="pre">SpatialMerger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downsample_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#SpatialMerger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.SpatialMerger" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Class for converting multi-resolution Hiera features to the same (lowest) spatial resolution
+via convolution.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.nn.vits.encoder.SpatialMerger.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/vits/encoder.html#SpatialMerger.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.vits.encoder.SpatialMerger.forward" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -474,23 +569,23 @@ to visible tokens.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.nn.vits.jepa.html">
+          <a class="next-page" href="cyto_dl.nn.vits.mae.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.nn.vits.jepa module</div>
+                <div class="title">cyto_dl.nn.vits.mae module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.nn.vits.blocks.patchify.html">
+          <a class="prev-page" href="cyto_dl.nn.vits.decoder.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.nn.vits.blocks.patchify module</div>
+                <div class="title">cyto_dl.nn.vits.decoder module</div>
                 
               </div>
             </a>
@@ -524,10 +619,22 @@ to visible tokens.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.vits.cross_mae module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder"><code class="docutils literal notranslate"><span class="pre">CrossMAE_Decoder</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.forward"><code class="docutils literal notranslate"><span class="pre">CrossMAE_Decoder.forward()</span></code></a></li>
-<li><a class="reference internal" href="#cyto_dl.nn.vits.cross_mae.CrossMAE_Decoder.init_weight"><code class="docutils literal notranslate"><span class="pre">CrossMAE_Decoder.init_weight()</span></code></a></li>
+<li><a class="reference internal" href="#">cyto_dl.nn.vits.encoder module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.HieraEncoder"><code class="docutils literal notranslate"><span class="pre">HieraEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.HieraEncoder.forward"><code class="docutils literal notranslate"><span class="pre">HieraEncoder.forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.JEPAEncoder"><code class="docutils literal notranslate"><span class="pre">JEPAEncoder</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.JEPAEncoder.forward"><code class="docutils literal notranslate"><span class="pre">JEPAEncoder.forward()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.MAE_Encoder"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.MAE_Encoder.forward"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder.forward()</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.MAE_Encoder.init_weight"><code class="docutils literal notranslate"><span class="pre">MAE_Encoder.init_weight()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.SpatialMerger"><code class="docutils literal notranslate"><span class="pre">SpatialMerger</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.vits.encoder.SpatialMerger.forward"><code class="docutils literal notranslate"><span class="pre">SpatialMerger.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>

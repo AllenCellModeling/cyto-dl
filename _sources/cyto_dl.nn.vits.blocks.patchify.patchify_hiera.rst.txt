@@ -1,0 +1,7 @@
+cyto\_dl.nn.vits.blocks.patchify.patchify\_hiera module
+=======================================================
+
+.. automodule:: cyto_dl.nn.vits.blocks.patchify.patchify_hiera
+   :members:
+   :undoc-members:
+   :show-inheritance:
