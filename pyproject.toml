@@ -50,7 +50,7 @@ dependencies = [
     "online-stats>=2023",
     "positional-encodings>=6.0.3",
 ]
-requires-python = ">=3.9,<3.11"
+requires-python = ">=3.9,<3.12"
 
 [project.optional-dependencies]
 equiv = [
