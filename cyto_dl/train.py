@@ -60,7 +60,7 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
 
     use_batch_tuner = False
-    if cfg.data.batch_size == "AUTO":
+    if cfg.data.get("batch_size") == "AUTO":
         use_batch_tuner = True
         cfg.data.batch_size = 1
 
