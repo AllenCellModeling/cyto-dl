@@ -145,6 +145,10 @@ class DataframeDatamodule(LightningDataModule):
         self.subsample = subsample or {}
         self.refresh_subsample = refresh_subsample
 
+        self.batch_size = dataloader_kwargs.get("batch_size", 1)
+        # init size is used to check if the batch size has changed (used for Automatic batch size finder)
+        self._init_size = self.batch_size
+
         for key in list(self.subsample.keys()):
             self.subsample[get_canonical_split_name(key)] = self.subsample[key]
 
@@ -161,16 +165,25 @@ class DataframeDatamodule(LightningDataModule):
     def make_dataloader(self, split):
         kwargs = dict(**self.dataloader_kwargs)
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
+        kwargs["batch_size"] = self.batch_size
+
         subset = self.get_dataset(split)
         return DataLoader(dataset=subset, **kwargs)
 
     def get_dataloader(self, split):
         sample_size = self.subsample.get(split, -1)
 
-        if (split not in self.dataloaders) or (sample_size != -1 and self.refresh_subsample):
+        if (
+            (split not in self.dataloaders)
+            or (sample_size != -1 and self.refresh_subsample)
+            # check if batch size has changed (used for Automatic batch size finder)
+            or (self._init_size != self.batch_size)
+        ):
             # if we want to use a subsample per epoch, we need to remake the
             # dataloader, to refresh the sample
             self.dataloaders[split] = self.make_dataloader(split)
+            # reset the init size to the current batch size so dataloader isn't recreated every epoch
+            self._init_size = self.batch_size
 
         return self.dataloaders[split]
 
