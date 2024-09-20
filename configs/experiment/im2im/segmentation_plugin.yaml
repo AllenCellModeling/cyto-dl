@@ -52,7 +52,7 @@ data:
   cache_dir: ${paths.output_dir}/cache # string path to cache_dir (this speeds up data loading)
   num_workers: MUST_OVERRIDE # this should be set based on the number of available CPU cores
   split_column: null
-  batch_size: 1
+  batch_size: AUTO # this will use the automatic batch finder starting with batch_size=1
   _aux:
     patch_shape: [16, 32, 32]
 
