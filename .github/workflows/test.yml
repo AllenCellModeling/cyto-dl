@@ -25,7 +25,6 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          miniconda-version: latest
           python-version: ${{ matrix.python-version }}
           use-mamba: true
 
