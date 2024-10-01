@@ -34,7 +34,8 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
-  overlap: 0.25
+  overlap: 0
+  progress: True
   mode: "gaussian"
 
 _aux:
@@ -44,7 +45,6 @@ _aux:
         loss:
           _target_: cyto_dl.models.im2im.utils.InstanceSegLoss
           dim: ${spatial_dims}
-        save_input: True
         postprocess:
           input:
             _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel

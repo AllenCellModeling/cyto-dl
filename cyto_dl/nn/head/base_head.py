@@ -2,7 +2,6 @@ from abc import ABC
 from pathlib import Path
 
 import torch
-from aicsimageio.writers import OmeTiffWriter
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
 
@@ -14,7 +13,6 @@ class BaseHead(ABC, torch.nn.Module):
         self,
         loss,
         postprocess={"input": detach, "prediction": detach},
-        save_input=False,
     ):
         """
         Parameters
@@ -23,15 +21,12 @@ class BaseHead(ABC, torch.nn.Module):
             Loss function for task
         postprocess={"input": detach, "prediction": detach}
             Postprocessing for `input` and `predictions` of head
-        save_input=False
-            Whether to save out example input images during training
         """
         super().__init__()
         self.loss = loss
         self.postprocess = postprocess
 
         self.model = torch.nn.Sequential(torch.nn.Identity())
-        self.save_input = save_input
 
     def update_params(self, params):
         for k, v in params.items():
@@ -40,39 +35,22 @@ class BaseHead(ABC, torch.nn.Module):
     def _calculate_loss(self, y_hat, y):
         return self.loss(y_hat, y)
 
-    def _postprocess(self, img, img_type):
-        return [self.postprocess[img_type](img[i]) for i in range(img.shape[0])]
+    def _postprocess(self, img, img_type, n_postprocess=1):
+        return [self.postprocess[img_type](img[i]) for i in range(n_postprocess)]
 
-    def generate_io_map(self, meta, stage, batch_idx, step):
-        """generates map between input files and output files for a head."""
-        # filename is determined by step in training during train/val and by its source filename for prediction/testing
-        filename_map = {"input": meta.get("filename_or_obj", [batch_idx])}
-        if stage in ("train", "val", "test"):
-            out_paths = [Path(self.save_dir) / f"{stage}_images" / f"{step}_{self.head_name}.tif"]
-        else:
-            out_paths = [
-                Path(self.save_dir) / self.head_name / f"{Path(fn).stem}.tif"
-                for fn in filename_map["input"]
-            ]
+    def generate_io_map(self, input_filenames):
+        """generates map between input files and output files for a head.
+
+        Only used for prediction
+        """
+        filename_map = {"input": input_filenames}
+        filename_map["output"] = [
+            Path(self.save_dir) / self.head_name / f"{Path(fn).stem}.tif"
+            for fn in filename_map["input"]
+        ]
         # create output directory if it doesn't exist
-        out_paths[0].parent.mkdir(exist_ok=True, parents=True)
-
-        filename_map["output"] = out_paths
-        self.filename_map = filename_map
+        filename_map["output"][0].parent.mkdir(exist_ok=True, parents=True)
         return filename_map
-
-    def save_image(self, y_hat, batch, stage):
-        y_hat_out = self._postprocess(y_hat, img_type="prediction")
-        y_out = None
-        for i, out_path in enumerate(self.filename_map["output"]):
-            OmeTiffWriter.save(data=y_hat_out[i], uri=out_path)
-            if stage in ("train", "val"):
-                y_out = self._postprocess(batch[self.head_name], img_type="input")
-                OmeTiffWriter.save(data=y_out[i], uri=str(out_path).replace(".t", "_label.t"))
-                if self.save_input:
-                    raw_out = self._postprocess(batch[self.x_key][i : i + 1], img_type="input")
-                    OmeTiffWriter.save(data=raw_out, uri=str(out_path).replace(".t", "_input.t"))
-        return y_hat_out, y_out
 
     def forward(self, x):
         return self.model(x)
@@ -82,7 +60,7 @@ class BaseHead(ABC, torch.nn.Module):
         backbone_features,
         batch,
         stage,
-        save_image,
+        n_postprocess=1,
         run_forward=True,
         y_hat=None,
     ):
@@ -98,12 +76,18 @@ class BaseHead(ABC, torch.nn.Module):
         if stage != "predict":
             loss = self._calculate_loss(y_hat, batch[self.head_name])
 
-        y_hat_out, y_out = None, None
-        if save_image:
-            y_hat_out, y_out = self.save_image(y_hat, batch, stage)
-
+        # no need to postprocess input and target during prediction
         return {
             "loss": loss,
-            "y_hat_out": y_hat_out,
-            "y_out": y_out,
+            "pred": self._postprocess(y_hat, img_type="prediction", n_postprocess=n_postprocess),
+            "target": self._postprocess(
+                batch[self.head_name], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
+            "input": self._postprocess(
+                batch[self.x_key], img_type="input", n_postprocess=n_postprocess
+            )
+            if stage != "predict"
+            else None,
         }

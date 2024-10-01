@@ -1,7 +1,7 @@
 from typing import List
 
 import numpy as np
-from aicsimageio import AICSImage
+from bioio import BioImage
 from monai.data import MetaTensor
 from monai.transforms import Transform
 
@@ -32,7 +32,7 @@ class AICSImageLoaderd(Transform):
         scene_key : str = "scene"
             Key for the scene number
         kwargs_keys : List = ["dimension_order_out", "C", "T"]
-            Keys for the kwargs to pass to AICSImage.get_image_dask_data
+            Keys for the kwargs to pass to BioImage.get_image_dask_data. Values in the csv can be comma separated list.
         out_key : str = "raw"
             Key for the output image
         allow_missing_keys : bool = False
@@ -49,16 +49,21 @@ class AICSImageLoaderd(Transform):
         self.dtype = dtype
         self.dask_load = dask_load
 
+    def split_args(self, arg):
+        if "," in str(arg):
+            return list(map(int, arg.split(",")))
+        return arg
+
     def __call__(self, data):
         # copying prevents the dataset from being modified inplace - important when using partially cached datasets so that the memory use doesn't increase over time
         data = data.copy()
         if self.path_key not in data and not self.allow_missing_keys:
             raise KeyError(f"Missing key {self.path_key} in data dictionary")
         path = data[self.path_key]
-        img = AICSImage(path)
+        img = BioImage(path)
         if self.scene_key in data:
             img.set_scene(data[self.scene_key])
-        kwargs = {k: data[k] for k in self.kwargs_keys}
+        kwargs = {k: self.split_args(data[k]) for k in self.kwargs_keys if k in data}
         if self.dask_load:
             img = img.get_image_dask_data(**kwargs).compute()
         else:

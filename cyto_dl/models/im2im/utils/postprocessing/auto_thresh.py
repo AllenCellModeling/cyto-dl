@@ -1,6 +1,8 @@
 import importlib
 from typing import Optional, Union
 
+import numpy as np
+
 
 class AutoThreshold:
     def __init__(self, method: Optional[Union[float, str]] = None):
@@ -21,6 +23,7 @@ class AutoThreshold:
         self.thresh_func = thresh_func
 
     def __call__(self, image):
+        image = image.detach().cpu().float().numpy()
         if self.thresh_func is None:
             return image
-        return image > self.thresh_func(image)
+        return (image > self.thresh_func(image)).astype(np.uint8)

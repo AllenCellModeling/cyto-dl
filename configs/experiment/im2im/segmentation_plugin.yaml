@@ -6,44 +6,77 @@ defaults:
   - override /model: im2im/segmentation_plugin.yaml
   - override /callbacks: default.yaml
   - override /trainer: gpu.yaml
-  - override /logger: mlflow.yaml
+  - override /logger: csv.yaml
 
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
+# parameters with value MUST_OVERRIDE must be overridden before using this config, all other
+# parameters have a reasonable default value
+
 tags: ["dev"]
 seed: 12345
 
-experiment_name: YOUR_EXP_NAME
-run_name: YOUR_RUN_NAME
+checkpoint:
+  ckpt_path: null # must override for prediction
+  weights_only: null
+  strict: False
+
+experiment_name: experiment_name
+run_name: run_name
+
+persist_cache: False
+test: False
 
 # manifest columns
 source_col: raw
 target_col1: seg1
 target_col2: seg2
+target_col1_channel: 0
+target_col2_channel: 0
 merge_mask_col: merge_mask
 exclude_mask_col: exclude_mask
 base_image_col: base_image
 
 # data params
-spatial_dims: 3
+spatial_dims: MUST_OVERRIDE # int value, req for first training, should not change after
 input_channel: 0
 raw_im_channels: 1
 
 trainer:
-  max_epochs: 100
+  max_epochs: 1 # must override for training
+  accelerator: gpu
 
 data:
-  path: ${paths.data_dir}/example_experiment_data/s3_data
-  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  path: MUST_OVERRIDE # string path to manifest
+  cache_dir: ${paths.output_dir}/cache # string path to cache_dir (this speeds up data loading)
+  num_workers: MUST_OVERRIDE # this should be set based on the number of available CPU cores
+  split_column: null
   batch_size: 1
   _aux:
-    patch_shape:
-# small, medium, large
-# 32 pix, 64 pix, 128 pix
+    patch_shape: [16, 32, 32]
 
-# OVERRIDE:
-# data._aux.patch_shape
-# model._aux.strides
-# model._aux.kernel_size
-# model._aux.upsample_kernel_size
+paths:
+  output_dir: MUST_OVERRIDE
+  work_dir: ${paths.output_dir} # it's unclear to me if this is necessary or used
+
+model:
+  _aux:
+    filters: MUST_OVERRIDE
+    overlap: 0
+
+callbacks:
+  # prediction
+  # saving:
+  #   _target_: cyto_dl.callbacks.ImageSaver
+  #   save_dir: ${paths.output_dir}
+  #   save_every_n_epochs: ${model.save_images_every_n_epochs}
+  #   stages: ["predict"]
+  #   save_input: False
+  # training
+  saving:
+    _target_: cyto_dl.callbacks.ImageSaver
+    save_dir: ${paths.output_dir}
+    save_every_n_epochs: ${model.save_images_every_n_epochs}
+    stages: ["train", "test", "val"]
+    save_input: True

@@ -1,0 +1,79 @@
+_aux:
+  patch_shape:
+  _scales_dict:
+    - - ${target_col}
+      - [1]
+    - - ${source_col}
+      - [1]
+
+train_dataloaders:
+  _target_: cyto_dl.datamodules.array.make_array_dataloader
+  data:
+  num_workers: 0
+  batch_size: 1
+  source_key: ${source_col}
+  transforms:
+    - _target_: monai.transforms.ToTensord
+      keys:
+        - ${source_col}
+        - ${target_col}
+    - _target_: cyto_dl.image.transforms.clip.Clipd
+      keys: ${source_col}
+    - _target_: monai.transforms.NormalizeIntensityd
+      keys: ${source_col}
+      channel_wise: true
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: ${target_col}
+      threshold: 0.1
+      above: False
+      cval: 1
+    - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+      keys:
+        - ${source_col}
+        - ${target_col}
+      patch_shape: ${data._aux.patch_shape}
+      patch_per_image: 1
+      scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+    - _target_: monai.transforms.RandHistogramShiftd
+      prob: 0.1
+      keys: ${source_col}
+      num_control_points: [90, 500]
+
+    - _target_: monai.transforms.RandStdShiftIntensityd
+      prob: 0.1
+      keys: ${source_col}
+      factors: 0.1
+
+    - _target_: monai.transforms.RandAdjustContrastd
+      prob: 0.1
+      keys: ${source_col}
+      gamma: [0.9, 1.5]
+
+val_dataloaders:
+  _target_: cyto_dl.datamodules.array.make_array_dataloader
+  data:
+  num_workers: 0
+  batch_size: 1
+  source_key: ${source_col}
+  transforms:
+    - _target_: monai.transforms.ToTensord
+      keys:
+        - ${source_col}
+        - ${target_col}
+    - _target_: cyto_dl.image.transforms.clip.Clipd
+      keys: ${source_col}
+    - _target_: monai.transforms.NormalizeIntensityd
+      keys: ${source_col}
+      channel_wise: true
+    - _target_: monai.transforms.ThresholdIntensityd
+      keys: ${target_col}
+      threshold: 0.1
+      above: False
+      cval: 1
+    - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+      keys:
+        - ${source_col}
+        - ${target_col}
+      patch_shape: ${data._aux.patch_shape}
+      patch_per_image: 1
+      scales_dict: ${kv_to_dict:${data._aux._scales_dict}}

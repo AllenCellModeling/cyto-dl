@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from aicsimageio.writers import OmeTiffWriter
+from bioio.writers import OmeTiffWriter
 from PIL import Image, ImageDraw, ImageFont
 from skimage.exposure import rescale_intensity
 from torchmetrics import MeanMetric
@@ -118,10 +118,7 @@ class Classification(BaseModel):
         return loss, logits.argmax(dim=1), labels
 
     def predict_step(self, batch, batch_idx):
-        logits = self(batch[self.hparams.x_key]).squeeze(0)
+        x = batch[self.hparams.anchor_key]
+        logits = self(x).squeeze(0)
         preds = torch.argmax(logits, dim=1).cpu().numpy()
-        if self.hparams.write_batch_predictions:
-            pd.DataFrame([preds]).to_csv(
-                Path(self.hparams.save_dir) / f"predictions_batch={batch_idx}.csv", index=False
-            )
-        return preds
+        return preds, x.meta

@@ -35,8 +35,9 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
-  overlap: 0.25
+  overlap: 0
   mode: "gaussian"
+  progress: True
 
 _aux:
   _tasks:
@@ -54,4 +55,3 @@ _aux:
             activation:
               _target_: torch.nn.Sigmoid
             rescale_dtype: numpy.uint8
-        save_input: True

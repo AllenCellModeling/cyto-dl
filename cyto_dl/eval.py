@@ -6,8 +6,9 @@ from typing import List, Tuple
 import hydra
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
+from monai.data import DataLoader as MonaiDataLoader
 from omegaconf import DictConfig, ListConfig, OmegaConf
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader as TorchDataLoader
 
 from cyto_dl import utils
 
@@ -19,7 +20,7 @@ with suppress(ValueError):
 
 
 @utils.task_wrapper
-def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
+def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
     """Evaluates given checkpoint on a datamodule testset.
 
     This method is wrapped in optional @task_wrapper decorator which applies extra utilities
@@ -32,7 +33,7 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
         Tuple[dict, dict]: Dict with metrics and dict with all instantiated objects.
     """
 
-    if not cfg.ckpt_path:
+    if not cfg.checkpoint.ckpt_path:
         raise ValueError("Checkpoint path must be included for testing")
 
     # resolve config to avoid unresolvable interpolations in the stored config
@@ -40,9 +41,8 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
 
     # remove aux section after resolving and before instantiating
     utils.remove_aux_key(cfg)
-
-    data = hydra.utils.instantiate(cfg.data)
-    if not isinstance(data, (LightningDataModule, DataLoader)):
+    data = utils.create_dataloader(cfg.data, data)
+    if not isinstance(data, (LightningDataModule, TorchDataLoader, MonaiDataLoader)):
         if isinstance(data, MutableMapping) and not data.dataloaders:
             raise ValueError(
                 "If the `data` config for eval/prediction is a dict it must have a "
@@ -82,9 +82,11 @@ def evaluate(cfg: DictConfig) -> Tuple[dict, dict, dict]:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
 
+    model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
+
     log.info("Starting testing!")
     method = trainer.test if cfg.get("test", False) else trainer.predict
-    output = method(model=model, dataloaders=data, ckpt_path=cfg.ckpt_path)
+    output = method(model=model, dataloaders=data, ckpt_path=load_params.ckpt_path)
     metric_dict = trainer.callback_metrics
 
     return metric_dict, object_dict, output

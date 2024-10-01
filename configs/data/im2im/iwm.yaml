@@ -1,0 +1,182 @@
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 0
+shuffle: True
+batch_size: 1
+pin_memory: True
+
+columns:
+  - ${source_col}
+  - struct
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            # structure and brightfield channels
+            C: [3, 5]
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
+      - _target_: monai.transforms.SplitDimd
+        keys: ${source_col}
+        output_postfixes:
+          - struct
+          - brightfield
+      # delete original key
+      - _target_: monai.transforms.DeleteItemsd
+        keys: ${source_col}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        channel_wise: True
+      - _target_: monai.transforms.RandSpatialCropSamplesd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        roi_size: ${data._aux.patch_shape}
+        num_samples: 1
+        random_size: False
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            # structure and brightfield channels
+            C: [3, 5]
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
+      - _target_: monai.transforms.SplitDimd
+        keys: ${source_col}
+        output_postfixes:
+          - struct
+          - brightfield
+      # delete original key
+      - _target_: monai.transforms.DeleteItemsd
+        keys: ${source_col}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        patch_size: ${data._aux.patch_shape}
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            # structure and brightfield channels
+            C: 3
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys:
+          - ${source_col}
+        channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}
+        patch_size: ${data._aux.patch_shape}
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            # structure and brightfield channels
+            C: [3, 5]
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      # split two channel image into two separate keys called `source_col`_struct and `source_col`_brightfield
+      - _target_: monai.transforms.SplitDimd
+        keys: ${source_col}
+        output_postfixes:
+          - struct
+          - brightfield
+      # delete original key
+      - _target_: monai.transforms.DeleteItemsd
+        keys: ${source_col}
+      - _target_: monai.transforms.ToTensord
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        channel_wise: True
+      - _target_: monai.transforms.RandSpatialCropSamplesd
+        keys:
+          - ${source_col}_struct
+          - ${source_col}_brightfield
+        roi_size: ${data._aux.patch_shape}
+        num_samples: 1
+        random_size: False
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
+
+_aux:

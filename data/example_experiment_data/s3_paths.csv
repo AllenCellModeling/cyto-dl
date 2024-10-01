@@ -1,2 +1,2 @@
-raw,seg
-s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff,s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff
+raw,seg,struct
+s3://allencell/aics/variance_project_dataset/fov_path/008f53c7_3500001156_100X_20170807_1-Scene-09-P9-E07.ome.tiff,s3://allencell/aics/variance_project_dataset/fov_seg_path/a7c64690_3500001156_100X_20170807_1-Scene-09-P9-E07_CellNucSegCombined.ome.tiff,SEC61B

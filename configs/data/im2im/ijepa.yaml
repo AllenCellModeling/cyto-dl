@@ -1,0 +1,137 @@
+_target_: cyto_dl.datamodules.dataframe.DataframeDatamodule
+
+path:
+cache_dir:
+
+num_workers: 0
+shuffle: True
+batch_size: 1
+pin_memory: True
+
+transforms:
+  train:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
+
+  test:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}
+        patch_size: ${data._aux.patch_shape}
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
+
+  predict:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      # extract out all patches
+      - _target_: monai.transforms.GridPatchd
+        keys:
+          - ${source_col}
+        patch_size: ${data._aux.patch_shape}
+
+  valid:
+    _target_: monai.transforms.Compose
+    transforms:
+      # channels are [blank, membrane,blank, structure, blank, nuclear dye, brightfield ]
+      - _target_: monai.transforms.LoadImaged
+        keys: ${source_col}
+        reader:
+          - _target_: cyto_dl.image.io.MonaiBioReader
+            # NOTE: eval is used so only the experiment file is required to change for beginning users. This is not recommended when creating your own configs.
+            dimension_order_out: ${eval:'"CZYX" if ${spatial_dims}==3 else "CYX"'}
+            C: 5
+            Z: ${eval:'None if ${spatial_dims}==3 else 38'}
+      - _target_: monai.transforms.Zoomd
+        keys: ${source_col}
+        zoom: 0.25
+        keep_size: False
+      - _target_: monai.transforms.ToTensord
+        keys: ${source_col}
+      - _target_: monai.transforms.NormalizeIntensityd
+        keys: ${source_col}
+        channel_wise: True
+      - _target_: cyto_dl.image.transforms.RandomMultiScaleCropd
+        keys:
+          - ${source_col}
+        patch_shape: ${data._aux.patch_shape}
+        patch_per_image: 1
+        scales_dict: ${kv_to_dict:${data._aux._scales_dict}}
+      - _target_: cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator
+        mask_size: 4
+        num_patches: ${model._aux.num_patches}
+        spatial_dims: ${spatial_dims}
+
+_aux:
+  _scales_dict:
+    - - ${source_col}
+      - [1]

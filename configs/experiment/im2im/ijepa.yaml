@@ -1,0 +1,39 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=example
+
+defaults:
+  - override /data: im2im/ijepa.yaml
+  - override /model: im2im/ijepa.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: csv.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: YOUR_EXP_NAME
+run_name: YOUR_RUN_NAME
+
+# only source_col is needed for ijepa
+source_col: raw
+spatial_dims: 3
+raw_im_channels: 1
+
+trainer:
+  max_epochs: 100
+  gradient_clip_val: 10
+
+data:
+  path: ${paths.data_dir}/example_experiment_data/segmentation
+  cache_dir: ${paths.data_dir}/example_experiment_data/cache
+  batch_size: 1
+  _aux:
+    # 2D
+    # patch_shape: [16, 16]
+    # 3D
+    patch_shape: [16, 16, 16]

@@ -6,7 +6,7 @@ save_dir: ${paths.output_dir}
 x_key: ${source_col}
 
 backbone:
-  _target_: cyto_dl.nn.vits.MAE_ViT
+  _target_: cyto_dl.nn.vits.MAE
   spatial_dims: ${spatial_dims}
   # base_patch_size* num_patches should be your patch shape
   base_patch_size: [4, 32, 32]
@@ -36,7 +36,8 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
-  overlap: 0.25
+  overlap: 0
+  progress: True
   mode: "gaussian"
 
 _aux:

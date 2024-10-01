@@ -8,8 +8,8 @@ x_key: ${source_col}
 backbone:
   _target_: cyto_dl.nn.vits.Seg_ViT
   spatial_dims: ${spatial_dims}
-  # base_patch_size* num_patches should be your patch shape
-  base_patch_size: 2
+  # patch_size* num_patches should be your patch shape
+  patch_size: 2
   num_patches: 8
   emb_dim: 16
   encoder_layer: 2
@@ -37,7 +37,8 @@ lr_scheduler:
 inference_args:
   sw_batch_size: 1
   roi_size: ${data._aux.patch_shape}
-  overlap: 0.25
+  overlap: 0
+  progress: True
   mode: "gaussian"
 
 _aux:
@@ -47,7 +48,6 @@ _aux:
         loss:
           _target_: cyto_dl.models.im2im.utils.InstanceSegLoss
           dim: ${spatial_dims}
-        save_input: True
         postprocess:
           input:
             _target_: cyto_dl.models.im2im.utils.postprocessing.ActThreshLabel

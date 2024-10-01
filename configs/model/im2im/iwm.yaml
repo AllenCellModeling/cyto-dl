@@ -1,0 +1,42 @@
+_target_: cyto_dl.models.jepa.iwm.IWM
+
+source_key: ${source_col}_brightfield
+target_key: ${source_col}_struct
+target_domain_key: struct
+
+max_epochs: ${trainer.max_epochs}
+save_dir: ${paths.output_dir}
+
+encoder:
+  _target_: cyto_dl.nn.vits.encoder.JEPAEncoder
+  patch_size: 2 # patch_size * num_patches should be the same as data._aux.patch_shape
+  num_patches: ${model._aux.num_patches}
+  emb_dim: 16
+  num_layer: 1
+  num_head: 1
+  spatial_dims: ${spatial_dims}
+
+predictor:
+  _target_: cyto_dl.nn.vits.predictor.IWMPredictor
+  domains: [SEC61B]
+  num_patches: ${model._aux.num_patches}
+  input_dim: ${model.encoder.emb_dim}
+  emb_dim: 8
+  num_layer: 1
+  num_head: 1
+
+optimizer:
+  _partial_: True
+  _target_: torch.optim.AdamW
+  weight_decay: 0.05
+
+lr_scheduler:
+  _partial_: True
+  _target_: torch.optim.lr_scheduler.OneCycleLR
+  max_lr: 0.003
+  epochs: ${trainer.max_epochs}
+  steps_per_epoch: 1
+  pct_start: 0.1
+
+_aux:
+  num_patches: 8
