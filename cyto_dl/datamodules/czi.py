@@ -18,6 +18,7 @@ class CZIDataset(Dataset):
         csv_path: Union[Path, str],
         img_path_column: str,
         channel_column: str,
+        fms_id_column: str,
         out_key: str,
         spatial_dims: int = 3,
         scene_column: str = "scene",
@@ -36,6 +37,8 @@ class CZIDataset(Dataset):
             column in `csv_path` that contains path to CZI file
         channel_column:str
             Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.
+        fms_id_column: str
+            Column in 'csv_path' contianing fms_id
         out_key:str
             Key where single-scene/timepoint/channel is saved in output dictionary
         spatial_dims:int=3
@@ -61,6 +64,7 @@ class CZIDataset(Dataset):
         df = pd.read_csv(csv_path)
         self.img_path_column = img_path_column
         self.channel_column = channel_column
+        self.fms_id_column = fms_id_column
         self.scene_column = scene_column
         self.time_start_column = time_start_column
         self.time_stop_column = time_stop_column
@@ -85,6 +89,11 @@ class CZIDataset(Dataset):
         else:
             scenes = img.scenes
         return scenes
+    
+    def _get_fms_id(self, row):
+        fms_id = row.get(self.fms_id_column, -1)
+        # ToDo - case without fms_id
+        return fms_id
 
     def _get_timepoints(self, row, img):
         start = row.get(self.time_start_column, -1)
@@ -101,6 +110,7 @@ class CZIDataset(Dataset):
             row = row._asdict()
             img = AICSImage(row[self.img_path_column])
             scenes = self._get_scenes(row, img)
+            fms_id = self._get_fms_id(row)
             timepoints = self._get_timepoints(row, img)
             for scene in scenes:
                 for timepoint in timepoints:
@@ -109,6 +119,7 @@ class CZIDataset(Dataset):
                             "img": img,
                             "dimension_order_out": "ZYX"[-self.spatial_dims :],
                             "C": row[self.channel_column],
+                            "fms_id": fms_id,
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
@@ -144,7 +155,8 @@ class CZIDataset(Dataset):
             self.out_key: MetaTensor(
                 output_img,
                 meta={
-                    "filename_or_obj": original_path.replace(".", self._metadata_to_str(img_data))
+                    "filename_or_obj": original_path.replace(".ome.tiff", self._metadata_to_str(img_data)).replace(':','-')
+                    #"filename_or_obj": original_path.replace(".czi", self._metadata_to_str(img_data)).replace(':','-')
                 },
             )
         }
@@ -157,6 +169,7 @@ def make_CZI_dataloader(
     csv_path,
     img_path_column,
     channel_column,
+    fms_id_column,
     out_key,
     spatial_dims=3,
     scene_column="scene",
@@ -177,6 +190,8 @@ def make_CZI_dataloader(
         column in `csv_path` that contains path to CZI file
     channel_column:str
         Column in `csv_path` that contains which channel to extract from CZI file. Should be an integer.
+    fms_id_column: str
+        Column in 'csv_path' contianing fms_id
     out_key:str
         Key where single-scene/timepoint/channel is saved in output dictionary
     spatial_dims:int=3
@@ -202,6 +217,7 @@ def make_CZI_dataloader(
         csv_path,
         img_path_column,
         channel_column,
+        fms_id_column,
         out_key,
         spatial_dims,
         scene_column=scene_column,
