@@ -1,4 +1,4 @@
-from .head import BaseHead, GANHead, GANHead_resize, ResBlocksHead
+from .head import BaseHead, GANHead, GANHead_resize, ResBlocksHead, BaseHead_DS
 from .hr_skip import HRSkip
 from .losses import (
     AdversarialLoss,
