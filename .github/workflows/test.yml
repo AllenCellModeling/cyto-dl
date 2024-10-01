@@ -25,9 +25,9 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          # miniconda-version: latest
+          miniconda-version: latest
           python-version: ${{ matrix.python-version }}
-          # use-mamba: true
+          use-mamba: true
 
       - name: Install dependencies
         shell: bash -el {0}
