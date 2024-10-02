@@ -22,10 +22,9 @@ jobs:
         python-version: [3.9, "3.10"]
     steps:
       - uses: actions/checkout@v3
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          miniconda-version: latest
           python-version: ${{ matrix.python-version }}
           use-mamba: true
 
@@ -69,12 +68,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          miniconda-version: latest
           python-version: "3.10"
 
       - name: Install dependencies
