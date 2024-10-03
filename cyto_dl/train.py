@@ -11,6 +11,7 @@ import pyrootutils
 import torch
 from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers.logger import Logger
+from lightning.pytorch.tuner import Tuner
 from omegaconf import DictConfig, OmegaConf
 
 from cyto_dl import utils
@@ -57,6 +58,12 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
     utils.remove_aux_key(cfg)
 
     log.info(f"Instantiating data <{cfg.data.get('_target_', cfg.data)}>")
+
+    use_batch_tuner = False
+    if cfg.data.get("batch_size") == "AUTO":
+        use_batch_tuner = True
+        cfg.data.batch_size = 1
+
     data = utils.create_dataloader(cfg.data, data)
     if not isinstance(data, LightningDataModule):
         if not isinstance(data, MutableMapping) or "train_dataloaders" not in data:
@@ -92,6 +99,10 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
     if logger:
         log.info("Logging hyperparameters!")
         utils.log_hyperparameters(object_dict)
+
+    if use_batch_tuner:
+        tuner = Tuner(trainer=trainer)
+        tuner.scale_batch_size(model, datamodule=data, mode="power")
 
     if cfg.get("train"):
         log.info("Starting training!")
