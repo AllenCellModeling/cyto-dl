@@ -12,7 +12,7 @@ aniso8601==9.0.1
 anndata==0.10.9
 annotated-types==0.7.0
 antlr4-python3-runtime==4.9.3
-array-api-compat==1.8
+array-api-compat==1.9
 asciitree==0.3.3
 astropy==6.0.1
 astropy-iers-data==0.2024.9.30.0.32.59
