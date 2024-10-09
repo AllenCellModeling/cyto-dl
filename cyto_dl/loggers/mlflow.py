@@ -164,5 +164,5 @@ def _delete_local_artifact(repo, artifact_path):
             else repo._artifact_dir
         )
     )
-    if artifact_path.isfile():
+    if artifact_path.is_file():
         artifact_path.unlink()
