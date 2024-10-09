@@ -6,7 +6,7 @@ save_dir: ${paths.output_dir}
 
 encoder:
   _target_: cyto_dl.nn.vits.encoder.JEPAEncoder
-  patch_size: 2 # patch_size * num_patches should equl data._aux.patch_shape
+  patch_size: 2 # patch_size * num_patches should equal data._aux.patch_shape
   num_patches: ${model._aux.num_patches}
   emb_dim: 16
   num_layer: 2

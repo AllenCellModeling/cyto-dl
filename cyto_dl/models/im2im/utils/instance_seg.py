@@ -90,10 +90,7 @@ class InstanceSegPreprocessd(Transform):
         return tall_skeleton
 
     def label_2d(self, img):
-        """
-        dim = 2: return labeled image
-        dim = 3: label each z slice separately
-        """
+        """Dim = 2: return labeled image dim = 3: label each z slice separately."""
         if self.dim == 2:
             out, _ = label(img)
             return out
@@ -185,9 +182,9 @@ class InstanceSegPreprocessd(Transform):
             if len(object_points) == 2:
                 crop_embedding[:, object_points[0], object_points[1]] = point_embeddings
             elif len(object_points) == 3:
-                crop_embedding[
-                    :, object_points[0], object_points[1], object_points[2]
-                ] = point_embeddings
+                crop_embedding[:, object_points[0], object_points[1], object_points[2]] = (
+                    point_embeddings
+                )
 
             crop_embedding = torch.from_numpy(self.smooth_embedding(crop_embedding))
 
@@ -432,7 +429,7 @@ class InstanceSegCluster:
         return dist, tree.data[idx].T.astype(int)
 
     def kd_clustering(self, embeddings, skel):
-        """assign embedded points to closest skeleton."""
+        """Assign embedded points to closest skeleton."""
         skel = find_boundaries(skel, mode="inner") * skel  # propagate labels to boundaries
         skel_points = np.stack(skel.nonzero()).T
         embed_points = np.stack(embeddings).T
@@ -446,7 +443,7 @@ class InstanceSegCluster:
         return embedding_labels
 
     def remove_small_skeletons(self, skel):
-        """remove small skeletons below self.min_size that are not touching the edge of the
+        """Remove small skeletons below self.min_size that are not touching the edge of the
         image."""
         skel_removed = skel.copy()
         regions = find_objects(skel)

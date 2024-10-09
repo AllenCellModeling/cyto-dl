@@ -163,7 +163,7 @@ class DataframeDatamodule(LightningDataModule):
         return self.datasets[split][sample]
 
     def make_dataloader(self, split):
-        kwargs = dict(**self.dataloader_kwargs)
+        kwargs = {**self.dataloader_kwargs}
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         kwargs["batch_size"] = self.batch_size
 

@@ -24,9 +24,7 @@ def knn(x, k):
     if idx_base.device != idx.device:
         idx_base = idx_base.to(idx.device)
 
-    idx = idx + idx_base
-    idx = idx.view(-1)
-
+    idx = (idx + idx_base).view(-1)
     return idx
 
 

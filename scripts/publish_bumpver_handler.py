@@ -1,7 +1,6 @@
 # this file is intended to be called by a github workflow (.github/workflows/publish_to_pypi.yaml)
 # it makes decisions based on the current version and the component specified for bumping,
 # which the workflow cannot do
-
 """
 TESTING:
 - add and commit any changes (keep track of this commit hash)

@@ -21,9 +21,13 @@ class GaussianNLLLoss(Loss):
         log_sigma = (sigma + self.eps).log().detach()
 
         loss = (
-            0.5 * torch.pow((target - input) / log_sigma.exp(), 2)
-            + log_sigma
-            + 0.5 * np.log(2 * np.pi)
-        ).reshape(input.shape[0], -1)
+            (
+                0.5 * torch.pow((target - input) / log_sigma.exp(), 2)
+                + log_sigma
+                + 0.5 * np.log(2 * np.pi)
+            )
+            .reshape(input.shape[0], -1)
+            .sum(dim=1, keepdim=True)
+        )
 
-        return loss.sum(dim=1, keepdim=True)
+        return loss

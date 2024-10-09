@@ -30,6 +30,7 @@ class BaseVAE(BaseModel):
         **base_kwargs,
     ):
         """Instantiate a basic VAE model.
+
         Parameters
         ----------
         encoder: nn.Module
@@ -107,7 +108,7 @@ class BaseVAE(BaseModel):
         super().__init__(metrics=metrics, **base_kwargs)
 
         for key in prior.keys():
-            if isinstance(prior[key], (str, type(None))):
+            if prior[key] is None or isinstance(prior[key], str):
                 if prior[key] == "gaussian":
                     prior[key] = IsotropicGaussianPrior(dimensionality=latent_dim)
                 else:

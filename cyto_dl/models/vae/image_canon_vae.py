@@ -124,7 +124,7 @@ class ImageCanonicalVAE(BaseVAE):
                 )
             )
 
-        if isinstance(prior, (str, type(None))):
+        if prior is None or isinstance(prior, str):
             if prior == "gaussian":
                 encoder_out_size = 2 * latent_dim
             else:

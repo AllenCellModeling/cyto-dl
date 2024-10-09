@@ -96,7 +96,7 @@ def flip_spharm(input, paired_indices, flips=-1):
 
 
 def get_band_indices(columns, max_band, prefix="", flat=False):
-    """get the tensor indices for each band, based on the column order of the batch loader (given
+    """Get the tensor indices for each band, based on the column order of the batch loader (given
     by `columns`, assuming that it is in the same order).
 
     this is passed to `rotate_spharm` later, to rotate the spherical harmonics around the z axis

@@ -1,3 +1,4 @@
+from itertools import chain
 from pathlib import Path
 from typing import Optional, Union
 
@@ -118,14 +119,18 @@ class SmartcacheDatamodule(LightningDataModule):
             for timepoint in timepoints:
                 img_data.append(
                     {
-                        "dimension_order_out": "ZYX"[-self.spatial_dims :]
-                        if not use_neighbors
-                        else "T" + "ZYX"[-self.spatial_dims :],
+                        "dimension_order_out": (
+                            "ZYX"[-self.spatial_dims :]
+                            if not use_neighbors
+                            else "T" + "ZYX"[-self.spatial_dims :]
+                        ),
                         "C": row[self.channel_column],
                         "scene": scene,
-                        "T": timepoint
-                        if not use_neighbors
-                        else [timepoint + i for i in range(self.num_neighbors + 1)],
+                        "T": (
+                            timepoint
+                            if not use_neighbors
+                            else [timepoint + i for i in range(self.num_neighbors + 1)]
+                        ),
                         "original_path": row[self.img_path_column],
                     }
                 )
@@ -136,7 +141,7 @@ class SmartcacheDatamodule(LightningDataModule):
         timepoints/channels/scenes for each file in the dataframe."""
         with ProgressBar():
             img_data = dask.compute(*[self._get_file_args(row) for row in df.itertuples()])
-        img_data = [item for sublist in img_data for item in sublist]
+        img_data = list(chain.from_iterable(img_data))
         return img_data
 
     def prepare_data(self):

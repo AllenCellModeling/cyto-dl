@@ -55,7 +55,7 @@ class MLFlowLogger(_MLFlowLogger):
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             conf_path = Path(tmp_dir) / f"{mode}.yaml"
-            with open(conf_path, "w") as f:
+            with conf_path.open("w") as f:
                 config = OmegaConf.create(params)
                 OmegaConf.save(config=config, f=f)
 
@@ -133,7 +133,7 @@ class MLFlowLogger(_MLFlowLogger):
                 self.run_id, local_path=best_path, artifact_path=artifact_path
             )
 
-            os.unlink(best_path)
+            best_path.unlink()
 
         else:
             filepath = ckpt_callback.best_model_path
@@ -149,7 +149,7 @@ class MLFlowLogger(_MLFlowLogger):
                     self.run_id, local_path=last_path, artifact_path=artifact_path
                 )
 
-                os.unlink(last_path)
+                last_path.unlink()
             else:
                 self.experiment.log_artifact(
                     self.run_id, local_path=filepath, artifact_path=artifact_path
@@ -157,9 +157,12 @@ class MLFlowLogger(_MLFlowLogger):
 
 
 def _delete_local_artifact(repo, artifact_path):
-    artifact_path = local_file_uri_to_path(
-        os.path.join(repo._artifact_dir, artifact_path) if artifact_path else repo._artifact_dir
+    artifact_path = Path(
+        local_file_uri_to_path(
+            os.path.join(repo._artifact_dir, artifact_path)
+            if artifact_path
+            else repo._artifact_dir
+        )
     )
-
-    if os.path.isfile(artifact_path):
-        os.remove(artifact_path)
+    if artifact_path.is_file():
+        artifact_path.unlink()
