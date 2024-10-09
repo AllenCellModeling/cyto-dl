@@ -30,6 +30,7 @@ class BaseVAE(BaseModel):
         **base_kwargs,
     ):
         """Instantiate a basic VAE model.
+
         Parameters
         ----------
         encoder: nn.Module

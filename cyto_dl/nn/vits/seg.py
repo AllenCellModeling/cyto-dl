@@ -11,10 +11,8 @@ from cyto_dl.nn.vits.mae import MAE_Encoder
 class EncodedSkip(torch.nn.Module):
     def __init__(self, spatial_dims, num_patches, emb_dim, n_decoder_filters, layer):
         super().__init__()
-        """
-        layer = 0 is the smallest resolution, n is the highest
-        as the layer increases, the image size increases and the number of filters decreases
-        """
+        """Layer = 0 is the smallest resolution, n is the highest as the layer increases, the image
+        size increases and the number of filters decreases."""
 
         upsample = 2**layer
         self.n_out_channels = n_decoder_filters // (upsample**spatial_dims)
@@ -50,7 +48,7 @@ class EncodedSkip(torch.nn.Module):
 
 
 class SuperresDecoder(torch.nn.Module):
-    """create unet-like decoder where each decoder layer is a fed a skip connection consisting of a
+    """Create unet-like decoder where each decoder layer is a fed a skip connection consisting of a
     different weighted sum of intermediate layer features."""
 
     def __init__(

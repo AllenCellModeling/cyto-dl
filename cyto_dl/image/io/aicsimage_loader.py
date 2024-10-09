@@ -9,9 +9,9 @@ from monai.transforms import Transform
 class AICSImageLoaderd(Transform):
     """Enumerates scenes and timepoints for dictionary with format.
 
-    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}.
-    Differs from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of
-    fixed at initialization.
+    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}. Differs
+    from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of fixed at
+    initialization.
     """
 
     def __init__(

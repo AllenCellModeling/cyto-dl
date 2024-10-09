@@ -39,7 +39,7 @@ class BaseHead(ABC, torch.nn.Module):
         return [self.postprocess[img_type](img[i]) for i in range(n_postprocess)]
 
     def generate_io_map(self, input_filenames):
-        """generates map between input files and output files for a head.
+        """Generates map between input files and output files for a head.
 
         Only used for prediction
         """
@@ -80,14 +80,16 @@ class BaseHead(ABC, torch.nn.Module):
         return {
             "loss": loss,
             "pred": self._postprocess(y_hat, img_type="prediction", n_postprocess=n_postprocess),
-            "target": self._postprocess(
-                batch[self.head_name], img_type="input", n_postprocess=n_postprocess
-            )
-            if stage != "predict"
-            else None,
-            "input": self._postprocess(
-                batch[self.x_key], img_type="input", n_postprocess=n_postprocess
-            )
-            if stage != "predict"
-            else None,
+            "target": (
+                self._postprocess(
+                    batch[self.head_name], img_type="input", n_postprocess=n_postprocess
+                )
+                if stage != "predict"
+                else None
+            ),
+            "input": (
+                self._postprocess(batch[self.x_key], img_type="input", n_postprocess=n_postprocess)
+                if stage != "predict"
+                else None
+            ),
         }

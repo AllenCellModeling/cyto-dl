@@ -130,8 +130,9 @@ class DiagonalGaussianPrior(IsotropicGaussianPrior):
 
     @classmethod
     def kl_divergence(cls, mu1, mu2, logvar1, logvar2, tc_penalty_weight=None, reduction="sum"):
-        """Computes the Kullback-Leibler divergence between two diagonal
-        gaussians (not necessarily isotropic). It also works batch-wise.
+        """Computes the Kullback-Leibler divergence between two diagonal gaussians (not necessarily
+        isotropic). It also works batch-wise.
+
         Parameters
         ----------
         mu1: torch.Tensor
