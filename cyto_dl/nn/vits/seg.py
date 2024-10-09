@@ -221,7 +221,7 @@ class Seg_ViT(torch.nn.Module):
             **encoder_kwargs,
         )
         if encoder_ckpt is not None:
-            model = torch.load(encoder_ckpt, map_location="cuda:0") # nosec B614
+            model = torch.load(encoder_ckpt, map_location="cuda:0")  # nosec B614
             enc_state_dict = {
                 k.replace("backbone.encoder.", ""): v
                 for k, v in model["state_dict"].items()

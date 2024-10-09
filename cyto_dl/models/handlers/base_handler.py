@@ -76,12 +76,12 @@ class BaseHandler(_BaseHandler):
         mode = self.config["return"].get("mode", "network")
 
         if mode == "path":
-            path = self.config["return"].get("path", "/tmp") # nosec B108
+            path = self.config["return"].get("path", "/tmp")  # nosec B108
             response_path = Path(path) / f"{uuid.uuid4()}.pt"
-            torch.save(data, response_path) # nosec B614
+            torch.save(data, response_path)  # nosec B614
             return [str(response_path)]
 
         buf = io.BytesIO()
-        torch.save(data, buf) # nosec B614
+        torch.save(data, buf)  # nosec B614
         buf.seek(0)
         return [buf.read()]
