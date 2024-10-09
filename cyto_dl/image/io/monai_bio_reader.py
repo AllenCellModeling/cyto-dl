@@ -30,10 +30,7 @@ class MonaiBioReader(ImageReader):
 
     def read(self, data: Union[Sequence[PathLike], PathLike]):
         filenames: Sequence[PathLike] = ensure_tuple(data)
-        img_ = []
-        for name in filenames:
-            img_.append(BioImage(f"{name}"))
-
+        img_ = [BioImage(name) for name in filenames]
         return img_ if len(filenames) > 1 else img_[0]
 
     def get_data(self, img) -> Tuple[np.ndarray, Dict]:

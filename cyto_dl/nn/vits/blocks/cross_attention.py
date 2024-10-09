@@ -60,15 +60,18 @@ class CrossAttention(nn.Module):
         )
         k, v = kv[0], kv[1]
 
-        attn = F.scaled_dot_product_attention(
-            q,
-            k,
-            v,
-            dropout_p=self.attn_drop,
+        attn = (
+            F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                dropout_p=self.attn_drop,
+            )
+            .transpose(1, 2)
+            .reshape(B, N, C)
         )
-        x = attn.transpose(1, 2).reshape(B, N, C)
 
-        x = self.proj(x)
+        x = self.proj(attn)
         x = self.proj_drop(x)
         return x
 

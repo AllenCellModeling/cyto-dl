@@ -33,7 +33,7 @@ class NLayerDiscriminator(nn.Module):
         super().__init__()
         if dim not in (2, 3):
             raise ValueError(f"dim must be 2 or 3, got {dim}")
-        if type(norm_layer) == functools.partial:
+        if isinstance(norm_layer, functools.partial):
             use_bias = norm_layer.func != nn.BatchNorm3d
         else:
             use_bias = norm_layer != nn.BatchNorm3d

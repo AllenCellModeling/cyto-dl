@@ -135,6 +135,8 @@ repos:
         args:
           - --ignore
           - FURB120
+          - --ignore
+          - FURB123
 
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.19.0

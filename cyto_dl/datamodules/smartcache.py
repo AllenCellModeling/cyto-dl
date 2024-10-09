@@ -1,3 +1,4 @@
+from itertools import chain
 from pathlib import Path
 from typing import Optional, Union
 
@@ -140,7 +141,7 @@ class SmartcacheDatamodule(LightningDataModule):
         timepoints/channels/scenes for each file in the dataframe."""
         with ProgressBar():
             img_data = dask.compute(*[self._get_file_args(row) for row in df.itertuples()])
-        img_data = [item for sublist in img_data for item in sublist]
+        img_data = list(chain.from_iterable(img_data))
         return img_data
 
     def prepare_data(self):

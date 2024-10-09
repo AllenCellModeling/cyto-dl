@@ -59,7 +59,7 @@ class BasicModel(BaseModel):
 
         super().__init__(metrics=metrics)
 
-        if network is None and pretrained_weights is None:
+        if network is pretrained_weights is None:
             raise ValueError("`network` and `pretrained_weights` can't both be None.")
 
         if pretrained_weights is not None:

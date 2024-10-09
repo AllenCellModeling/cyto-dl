@@ -55,7 +55,8 @@ class GANLoss(nn.Module):
             A label tensor filled with ground truth label, and with the size of input
         """
         target_tensor = self.real_label if target_is_real else self.fake_label
-        return target_tensor.expand_as(prediction)
+        target_tensor = target_tensor.expand_as(prediction)  # noqa: FURB184
+        return target_tensor
 
     def __call__(self, prediction: torch.Tensor, target_is_real: bool):
         """Calculate loss given Discriminator's output and grount truth labels.

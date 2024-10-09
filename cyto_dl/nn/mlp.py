@@ -30,7 +30,7 @@ class MLP(nn.Module):
 
         net = [_make_block(sum(self.input_dims), hidden_layers[0])]
 
-        net += [
+        net += [  # noqa: FURB140
             _make_block(input_dim, output_dim)
             for (input_dim, output_dim) in zip(hidden_layers[0:], hidden_layers[1:])
         ]

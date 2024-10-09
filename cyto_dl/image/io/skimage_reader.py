@@ -25,7 +25,7 @@ class SkimageReader(ImageReader):
         filenames: Sequence[PathLike] = ensure_tuple(data)
         img_ = []
         for name in filenames:
-            this_im = imread(f"{name}")
+            this_im = imread(name)
             if self.channels:
                 this_im = this_im[self.channels]
 

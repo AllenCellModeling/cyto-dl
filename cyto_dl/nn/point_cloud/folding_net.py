@@ -71,10 +71,8 @@ class FoldingNet(nn.Module):
     def forward(self, x):
         x = self.project(x)
 
-        grid = self.grid.unsqueeze(0).expand(x.shape[0], -1, -1)
-        grid = grid.type_as(x)
-        x = x.unsqueeze(1)
-        cw_exp = x.expand(-1, grid.shape[1], -1)
+        grid = self.grid.unsqueeze(0).expand(x.shape[0], -1, -1).type_as(x)
+        cw_exp = x.unsqueeze(1).expand(-1, grid.shape[1], -1)
 
         cat1 = torch.cat((cw_exp, grid), dim=2)
         folding_result1 = self.folding1(cat1)
