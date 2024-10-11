@@ -117,6 +117,7 @@ class MultiDimImageDataset(Dataset):
                             "original_path": row[self.img_path_column],
                         }
                     )
+        img_data.reverse()
         return img_data
 
     def _metadata_to_str(self, metadata):
@@ -166,7 +167,7 @@ class MultiDimImageDataset(Dataset):
         # some monai transforms return a batch. When collated, the batch dimension gets moved to the channel dimension
         if self.is_batch(output_img):
             return [{self.out_key: img} for img in output_img]
-        return {self.out_key: img}
+        return {self.out_key: output_img}
 
     def __len__(self):
         return len(self.img_data)
