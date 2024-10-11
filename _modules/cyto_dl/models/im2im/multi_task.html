@@ -553,7 +553,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">scheds</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_train_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">n_postprocess</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;during training we are only dealing with patches,so we can calculate per-patch loss,</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;During training we are only dealing with patches,so we can calculate per-patch loss,</span>
 <span class="sd">        metrics, postprocessing etc.&quot;&quot;&quot;</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backbone</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">x_key</span><span class="p">])</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -566,7 +566,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="n">task</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">task_heads</span><span class="p">[</span><span class="n">task</span><span class="p">](</span><span class="n">z</span><span class="p">)</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">run_heads</span><span class="p">}</span></div>
 
     <span class="k">def</span> <span class="nf">_inference_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">n_postprocess</span><span class="p">,</span> <span class="n">run_heads</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;during inference, we need to calculate per-fov loss/metrics/postprocessing.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;During inference, we need to calculate per-fov loss/metrics/postprocessing.</span>
 
 <span class="sd">        To avoid storing and passing to each head the intermediate results of the backbone, we need</span>
 <span class="sd">        to run backbone + taskheads patch by patch, then do saving/postprocessing/etc on the entire</span>
@@ -615,7 +615,7 @@
         <span class="k">return</span> <span class="n">losses</span>
 
     <span class="k">def</span> <span class="nf">_get_unrun_heads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">io_map</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns heads that don&#39;t have outputs yet.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns heads that don&#39;t have outputs yet.&quot;&quot;&quot;</span>
         <span class="n">updated_run_heads</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># check that all output files exist for each head</span>
         <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">head_io_map</span> <span class="ow">in</span> <span class="n">io_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -626,7 +626,7 @@
         <span class="k">return</span> <span class="n">updated_run_heads</span>
 
     <span class="k">def</span> <span class="nf">_combine_io_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">io_maps</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;aggregate io_maps from per-head to per-input image.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregate io_maps from per-head to per-input image.&quot;&quot;&quot;</span>
         <span class="n">io_map</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># create input-&gt; per head output mapping</span>
         <span class="k">for</span> <span class="n">head</span><span class="p">,</span> <span class="n">head_io_map</span> <span class="ow">in</span> <span class="n">io_maps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -660,7 +660,7 @@
         <span class="k">return</span> <span class="n">run_heads</span><span class="p">,</span> <span class="n">io_map</span>
 
     <span class="k">def</span> <span class="nf">_to_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;convert monai metatensors to tensors.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert monai metatensors to tensors.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">MetaTensor</span><span class="p">):</span>
                 <span class="n">batch</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">()</span>

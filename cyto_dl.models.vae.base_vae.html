@@ -447,10 +447,11 @@
 <dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.models.vae.base_vae.</span></span><span class="sig-name descname"><span class="pre">BaseVAE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel" title="cyto_dl.models.base_model.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
-<p>Instantiate a basic VAE model.
-:Parameters: * <strong>encoder</strong> (<em>nn.Module</em>) – Encoder network</p>
-<blockquote>
-<div><ul class="simple">
+<p>Instantiate a basic VAE model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoder</strong> (<em>nn.Module</em>) – Encoder network</p></li>
 <li><p><strong>decoder</strong> (<em>nn.Module</em>) – Decoder network</p></li>
 <li><p><strong>x_label</strong> (<em>Optional[str] = None</em>)</p></li>
 <li><p><strong>id_label</strong> (<em>Optional[str] = None</em>)</p></li>
@@ -463,7 +464,8 @@ i.e. subclasses torch.nn.modules._Loss</p></li>
 keys it depends on</p></li>
 <li><p><strong>**base_kwargs</strong> – Additional arguments passed to BaseModel</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo">
 <span class="sig-name descname"><span class="pre">calculate_elbo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xhat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/base_vae.html#BaseVAE.calculate_elbo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.base_vae.BaseVAE.calculate_elbo" title="Permalink to this definition">#</a></dt>

@@ -493,8 +493,8 @@
 <div class="viewcode-block" id="IsotropicGaussianPrior.sample"><a class="viewcode-back" href="../../../../../cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.sample">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">logvar</span><span class="p">):</span>
         <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">logvar</span><span class="p">)</span>
-        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn_like</span><span class="p">(</span><span class="n">std</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">eps</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span></div>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn_like</span><span class="p">(</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">eps</span></div>
 
 <div class="viewcode-block" id="IsotropicGaussianPrior.forward"><a class="viewcode-back" href="../../../../../cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.IsotropicGaussianPrior.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;kl&quot;</span><span class="p">,</span> <span class="n">inference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">mean_logvar</span> <span class="o">=</span> <span class="n">z</span>
@@ -572,8 +572,9 @@
 
 <div class="viewcode-block" id="DiagonalGaussianPrior.kl_divergence"><a class="viewcode-back" href="../../../../../cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mu1</span><span class="p">,</span> <span class="n">mu2</span><span class="p">,</span> <span class="n">logvar1</span><span class="p">,</span> <span class="n">logvar2</span><span class="p">,</span> <span class="n">tc_penalty_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the Kullback-Leibler divergence between two diagonal</span>
-<span class="sd">        gaussians (not necessarily isotropic). It also works batch-wise.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the Kullback-Leibler divergence between two diagonal gaussians (not necessarily</span>
+<span class="sd">        isotropic). It also works batch-wise.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        mu1: torch.Tensor</span>

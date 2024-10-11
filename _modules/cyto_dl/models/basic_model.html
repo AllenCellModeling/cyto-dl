@@ -501,11 +501,11 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pretrained_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="n">pretrained_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`network` and `pretrained_weights` can&#39;t both be None.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">pretrained_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pretrained_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pretrained_weights</span><span class="p">)</span>
+            <span class="n">pretrained_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pretrained_weights</span><span class="p">)</span>  <span class="c1"># nosec B614</span>
 
         <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>

@@ -440,7 +440,8 @@
         </div>
         <article role="main">
           <h1>Source code for cyto_dl.datamodules.smartcache</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">dask</span>
@@ -560,14 +561,18 @@
             <span class="k">for</span> <span class="n">timepoint</span> <span class="ow">in</span> <span class="n">timepoints</span><span class="p">:</span>
                 <span class="n">img_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;dimension_order_out&quot;</span><span class="p">:</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:]</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
-                        <span class="k">else</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:],</span>
+                        <span class="s2">&quot;dimension_order_out&quot;</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:]</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
+                            <span class="k">else</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="s2">&quot;ZYX&quot;</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_dims</span> <span class="p">:]</span>
+                        <span class="p">),</span>
                         <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channel_column</span><span class="p">],</span>
                         <span class="s2">&quot;scene&quot;</span><span class="p">:</span> <span class="n">scene</span><span class="p">,</span>
-                        <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">timepoint</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
-                        <span class="k">else</span> <span class="p">[</span><span class="n">timepoint</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span>
+                        <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="n">timepoint</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">use_neighbors</span>
+                            <span class="k">else</span> <span class="p">[</span><span class="n">timepoint</span> <span class="o">+</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_neighbors</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+                        <span class="p">),</span>
                         <span class="s2">&quot;original_path&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">img_path_column</span><span class="p">],</span>
                     <span class="p">}</span>
                 <span class="p">)</span>
@@ -578,7 +583,7 @@
 <span class="sd">        timepoints/channels/scenes for each file in the dataframe.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">ProgressBar</span><span class="p">():</span>
             <span class="n">img_data</span> <span class="o">=</span> <span class="n">dask</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_file_args</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">itertuples</span><span class="p">()])</span>
-        <span class="n">img_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">img_data</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+        <span class="n">img_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">img_data</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">img_data</span></div>
 
 <div class="viewcode-block" id="SmartcacheDatamodule.prepare_data"><a class="viewcode-back" href="../../../cyto_dl.datamodules.smartcache.html#cyto_dl.datamodules.smartcache.SmartcacheDatamodule.prepare_data">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

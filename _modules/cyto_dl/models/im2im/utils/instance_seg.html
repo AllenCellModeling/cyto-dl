@@ -532,10 +532,7 @@
         <span class="k">return</span> <span class="n">tall_skeleton</span></div>
 
 <div class="viewcode-block" id="InstanceSegPreprocessd.label_2d"><a class="viewcode-back" href="../../../../../cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd.label_2d">[docs]</a>    <span class="k">def</span> <span class="nf">label_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        dim = 2: return labeled image</span>
-<span class="sd">        dim = 3: label each z slice separately</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dim = 2: return labeled image dim = 3: label each z slice separately.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">out</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">label</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">out</span>
@@ -627,9 +624,9 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_points</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">crop_embedding</span><span class="p">[:,</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">point_embeddings</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">object_points</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="n">crop_embedding</span><span class="p">[</span>
-                    <span class="p">:,</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="n">point_embeddings</span>
+                <span class="n">crop_embedding</span><span class="p">[:,</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">object_points</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">point_embeddings</span>
+                <span class="p">)</span>
 
             <span class="n">crop_embedding</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">smooth_embedding</span><span class="p">(</span><span class="n">crop_embedding</span><span class="p">))</span>
 
@@ -874,7 +871,7 @@
         <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InstanceSegCluster.kd_clustering"><a class="viewcode-back" href="../../../../../cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegCluster.kd_clustering">[docs]</a>    <span class="k">def</span> <span class="nf">kd_clustering</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">skel</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;assign embedded points to closest skeleton.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign embedded points to closest skeleton.&quot;&quot;&quot;</span>
         <span class="n">skel</span> <span class="o">=</span> <span class="n">find_boundaries</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="n">skel</span>  <span class="c1"># propagate labels to boundaries</span>
         <span class="n">skel_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">skel</span><span class="o">.</span><span class="n">nonzero</span><span class="p">())</span><span class="o">.</span><span class="n">T</span>
         <span class="n">embed_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
@@ -888,7 +885,7 @@
         <span class="k">return</span> <span class="n">embedding_labels</span></div>
 
 <div class="viewcode-block" id="InstanceSegCluster.remove_small_skeletons"><a class="viewcode-back" href="../../../../../cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegCluster.remove_small_skeletons">[docs]</a>    <span class="k">def</span> <span class="nf">remove_small_skeletons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skel</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;remove small skeletons below self.min_size that are not touching the edge of the</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove small skeletons below self.min_size that are not touching the edge of the</span>
 <span class="sd">        image.&quot;&quot;&quot;</span>
         <span class="n">skel_removed</span> <span class="o">=</span> <span class="n">skel</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">regions</span> <span class="o">=</span> <span class="n">find_objects</span><span class="p">(</span><span class="n">skel</span><span class="p">)</span>

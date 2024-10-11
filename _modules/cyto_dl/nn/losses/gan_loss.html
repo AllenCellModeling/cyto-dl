@@ -497,7 +497,8 @@
 <span class="sd">            A label tensor filled with ground truth label, and with the size of input</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">target_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_label</span> <span class="k">if</span> <span class="n">target_is_real</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_label</span>
-        <span class="k">return</span> <span class="n">target_tensor</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span></div>
+        <span class="n">target_tensor</span> <span class="o">=</span> <span class="n">target_tensor</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">prediction</span><span class="p">)</span>  <span class="c1"># noqa: FURB184</span>
+        <span class="k">return</span> <span class="n">target_tensor</span></div>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prediction</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">target_is_real</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate loss given Discriminator&#39;s output and grount truth labels.</span>

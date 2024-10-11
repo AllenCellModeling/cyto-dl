@@ -506,7 +506,7 @@
         <span class="k">return</span> <span class="n">fn</span></div>
 
     <span class="k">def</span> <span class="nf">_update_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">layer_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;record spatial mean and cov of channel activations per image in batch.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record spatial mean and cov of channel activations per image in batch.&quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten_activations</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="n">layer_name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mu</span><span class="p">[</span><span class="n">layer_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -518,7 +518,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="OutlierDetection.on_train_epoch_start"><a class="viewcode-back" href="../../../cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_train_epoch_start">[docs]</a>    <span class="k">def</span> <span class="nf">on_train_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;set forward hook.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set forward hook.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">current_epoch</span> <span class="o">==</span> <span class="n">trainer</span><span class="o">.</span><span class="n">max_epochs</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_epochs</span><span class="p">:</span>
             <span class="n">named_modules</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="o">*</span><span class="n">pl_module</span><span class="o">.</span><span class="n">backbone</span><span class="o">.</span><span class="n">named_modules</span><span class="p">()])</span>
             <span class="k">for</span> <span class="n">layer_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_names</span><span class="p">:</span>
@@ -543,7 +543,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">activations</span><span class="p">[</span><span class="n">layer_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_inference_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;add mahalanobis calculation hook and calculate inverse covariance matrix.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add mahalanobis calculation hook and calculate inverse covariance matrix.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">:</span>
             <span class="n">named_modules</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([</span><span class="o">*</span><span class="n">pl_module</span><span class="o">.</span><span class="n">backbone</span><span class="o">.</span><span class="n">named_modules</span><span class="p">()])</span>
             <span class="k">for</span> <span class="n">layer_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_names</span><span class="p">:</span>

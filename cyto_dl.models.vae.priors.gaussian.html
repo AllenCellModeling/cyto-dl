@@ -455,16 +455,18 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kl_divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tc_penalty_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/models/vae/priors/gaussian.html#DiagonalGaussianPrior.kl_divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior.kl_divergence" title="Permalink to this definition">#</a></dt>
-<dd><p>Computes the Kullback-Leibler divergence between two diagonal
-gaussians (not necessarily isotropic). It also works batch-wise.
-:Parameters: * <strong>mu1</strong> (<em>torch.Tensor</em>) – Mean of the first gaussian (or batch of first gaussians)</p>
-<blockquote>
-<div><ul class="simple">
+<dd><p>Computes the Kullback-Leibler divergence between two diagonal gaussians (not necessarily
+isotropic). It also works batch-wise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu1</strong> (<em>torch.Tensor</em>) – Mean of the first gaussian (or batch of first gaussians)</p></li>
 <li><p><strong>mu2</strong> (<em>torch.Tensor</em>) – Mean of the second gaussian (or batch of second gaussians)</p></li>
 <li><p><strong>logvar1</strong> (<em>torch.Tensor</em>) – Log-variance of the first gaussian (or batch of first gaussians)</p></li>
 <li><p><strong>logvar2</strong> (<em>torch.Tensor</em>) – Log-variance of the second gaussian (or batch of second gaussians)</p></li>
 </ul>
-</div></blockquote>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
