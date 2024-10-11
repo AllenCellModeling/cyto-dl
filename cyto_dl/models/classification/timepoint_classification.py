@@ -50,7 +50,7 @@ class TimepointClassification(Classification):
                 batch,
                 "predict",
                 logits,
-                name=f"{batch['track_id'].cpu().item()}",
+                name=str(batch["track_id"].cpu().item()),
             )
 
         timepoints = np.array(batch["timepoints"][0][1:-1].split(",")).astype(int)

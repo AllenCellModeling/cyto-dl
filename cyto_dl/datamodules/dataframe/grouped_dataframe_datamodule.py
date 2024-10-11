@@ -116,7 +116,7 @@ class GroupedDataframeDatamodule(DataframeDatamodule):
         self.target_columns = target_columns
 
     def make_dataloader(self, split):
-        kwargs = dict(**self.dataloader_kwargs)
+        kwargs = {**self.dataloader_kwargs}
         kwargs["shuffle"] = kwargs.get("shuffle", True) and split == "train"
         subset = self.get_dataset(split)
 

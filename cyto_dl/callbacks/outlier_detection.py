@@ -64,7 +64,7 @@ class OutlierDetection(Callback):
         return fn
 
     def _update_covariance(self, output, layer_name):
-        """record spatial mean and cov of channel activations per image in batch."""
+        """Record spatial mean and cov of channel activations per image in batch."""
         output = self.flatten_activations(output)
         if self.mu[layer_name] is None:
             self.mu[layer_name] = np.zeros(output.shape[1])
@@ -76,7 +76,7 @@ class OutlierDetection(Callback):
             self.n += 1
 
     def on_train_epoch_start(self, trainer, pl_module):
-        """set forward hook."""
+        """Set forward hook."""
         if trainer.current_epoch == trainer.max_epochs - self.n_epochs:
             named_modules = dict([*pl_module.backbone.named_modules()])
             for layer_name in self.layer_names:
@@ -101,7 +101,7 @@ class OutlierDetection(Callback):
             self.activations[layer_name].append(out)
 
     def _inference_start(self, pl_module):
-        """add mahalanobis calculation hook and calculate inverse covariance matrix."""
+        """Add mahalanobis calculation hook and calculate inverse covariance matrix."""
         if self._run:
             named_modules = dict([*pl_module.backbone.named_modules()])
             for layer_name in self.layer_names:

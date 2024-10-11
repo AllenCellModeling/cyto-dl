@@ -254,8 +254,9 @@ class DGCNN(nn.Module):
         # scatter plane features from points
         fea_plane = cond.new_zeros(*view_dims1)
         cond = cond.permute(*permute_dims1)  # B x 512 x T
-        fea_plane = scatter_mean(cond, index, out=fea_plane)  # B x 512 x reso^2
-        fea_plane = fea_plane.reshape(*view_dims2)  # sparce matrix (B x 512 x reso x reso)
+        fea_plane = scatter_mean(cond, index, out=fea_plane).reshape(
+            *view_dims2
+        )  # sparse matrix (B x 512 x reso x reso)
 
         # process the plane features with UNet
         if self.unet is not None:
@@ -269,10 +270,9 @@ class DGCNN(nn.Module):
         # scatter grid features from points
         fea_grid = c.new_zeros(p.size(0), self.num_features, self.reso_grid**3)
         c = c.permute(0, 2, 1)
-        fea_grid = scatter_mean(c, index, out=fea_grid)  # B x C x reso^3
-        fea_grid = fea_grid.reshape(
+        fea_grid = scatter_mean(c, index, out=fea_grid).reshape(
             p.size(0), self.num_features, self.reso_grid, self.reso_grid, self.reso_grid
-        )  # sparce matrix (B x 512 x reso x reso)
+        )  # sparse matrix (B x 512 x reso x reso)
 
         if self.unet3d is not None:
             fea_grid = self.unet3d(fea_grid)

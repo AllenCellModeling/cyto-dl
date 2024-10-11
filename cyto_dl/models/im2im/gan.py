@@ -95,7 +95,7 @@ class GAN(MultiTaskIm2Im):
         return (opts, scheds)
 
     def _train_forward(self, batch, stage, save_image, run_heads):
-        """during training we are only dealing with patches,so we can calculate per-patch loss,
+        """During training we are only dealing with patches,so we can calculate per-patch loss,
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
@@ -106,7 +106,7 @@ class GAN(MultiTaskIm2Im):
         }
 
     def _inference_forward(self, batch, stage, save_image, run_heads):
-        """during inference, we need to calculate per-fov loss/metrics/postprocessing.
+        """During inference, we need to calculate per-fov loss/metrics/postprocessing.
 
         To avoid storing and passing to each head the intermediate results of the backbone, we need
         to run backbone + taskheads patch by patch, then do saving/postprocessing/etc on the entire

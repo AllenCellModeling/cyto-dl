@@ -49,7 +49,7 @@ class CrossAttention(nn.Module):
         self.proj_drop = nn.Dropout(proj_drop)
 
     def forward(self, x, y):
-        """query from decoder (x), key and value from encoder (y)"""
+        """Query from decoder (x), key and value from encoder (y)"""
         B, N, C = x.shape
         Ny = y.shape[1]
         q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
@@ -60,15 +60,18 @@ class CrossAttention(nn.Module):
         )
         k, v = kv[0], kv[1]
 
-        attn = F.scaled_dot_product_attention(
-            q,
-            k,
-            v,
-            dropout_p=self.attn_drop,
+        attn = (
+            F.scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                dropout_p=self.attn_drop,
+            )
+            .transpose(1, 2)
+            .reshape(B, N, C)
         )
-        x = attn.transpose(1, 2).reshape(B, N, C)
 
-        x = self.proj(x)
+        x = self.proj(attn)
         x = self.proj_drop(x)
         return x
 

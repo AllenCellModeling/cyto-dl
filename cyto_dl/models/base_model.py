@@ -23,7 +23,7 @@ _DEFAULT_METRICS = {
 
 
 def _is_primitive(value):
-    if isinstance(value, (type(None), bool, str, int, float)):
+    if value is None or isinstance(value, (bool, str, int, float)):
         return True
 
     if isinstance(value, (tuple, list)):

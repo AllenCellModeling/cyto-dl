@@ -149,7 +149,7 @@ def read_dataframe(
     include_columns = sorted(list(include_columns))
     required_columns = sorted(list(required_columns))
 
-    if len(include_columns) == 0:
+    if not include_columns:
         include_columns = None
 
     if isinstance(dataframe, str):

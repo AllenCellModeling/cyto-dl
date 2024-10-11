@@ -47,6 +47,7 @@ dependencies = [
     "bioio-czi",
     "bioio-ome-tiff",
     "bioio-tifffile",
+    "tifffile>=2024.0.0",
     "online-stats>=2023",
     "positional-encodings>=6.0.3",
 ]

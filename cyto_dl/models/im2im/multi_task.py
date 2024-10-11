@@ -111,7 +111,7 @@ class MultiTaskIm2Im(BaseModel):
         return (opts, scheds)
 
     def _train_forward(self, batch, stage, n_postprocess, run_heads):
-        """during training we are only dealing with patches,so we can calculate per-patch loss,
+        """During training we are only dealing with patches,so we can calculate per-patch loss,
         metrics, postprocessing etc."""
         z = self.backbone(batch[self.hparams.x_key])
         return {
@@ -124,7 +124,7 @@ class MultiTaskIm2Im(BaseModel):
         return {task: self.task_heads[task](z) for task in run_heads}
 
     def _inference_forward(self, batch, stage, n_postprocess, run_heads):
-        """during inference, we need to calculate per-fov loss/metrics/postprocessing.
+        """During inference, we need to calculate per-fov loss/metrics/postprocessing.
 
         To avoid storing and passing to each head the intermediate results of the backbone, we need
         to run backbone + taskheads patch by patch, then do saving/postprocessing/etc on the entire
@@ -173,7 +173,7 @@ class MultiTaskIm2Im(BaseModel):
         return losses
 
     def _get_unrun_heads(self, io_map):
-        """returns heads that don't have outputs yet."""
+        """Returns heads that don't have outputs yet."""
         updated_run_heads = []
         # check that all output files exist for each head
         for head, head_io_map in io_map.items():
@@ -184,7 +184,7 @@ class MultiTaskIm2Im(BaseModel):
         return updated_run_heads
 
     def _combine_io_maps(self, io_maps):
-        """aggregate io_maps from per-head to per-input image."""
+        """Aggregate io_maps from per-head to per-input image."""
         io_map = {}
         # create input-> per head output mapping
         for head, head_io_map in io_maps.items():
@@ -218,7 +218,7 @@ class MultiTaskIm2Im(BaseModel):
         return run_heads, io_map
 
     def _to_tensor(self, batch):
-        """convert monai metatensors to tensors."""
+        """Convert monai metatensors to tensors."""
         for k, v in batch.items():
             if isinstance(v, MetaTensor):
                 batch[k] = v.as_tensor()

@@ -92,7 +92,7 @@ class RandomMultiScaleCropd(RandomizableTransform):
     @staticmethod
     def _generate_slice(start_coords: Sequence[int], roi_size: Sequence[int]) -> slice:
         """Creates slice starting at `start_coords` of size `roi_size`"""
-        return [slice(None, None)] + [
+        return [slice(None, None)] + [  # noqa: FURB140
             slice(start, end) for start, end in zip(start_coords, start_coords + roi_size)
         ]
 

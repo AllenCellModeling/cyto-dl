@@ -56,8 +56,7 @@ class STN(torch.nn.Module):
         self.fc_loc[2].bias.data.copy_(torch.tensor([0, 0, 0], dtype=torch.float))
 
     def forward(self, x):
-        xs = self.localization(x)
-        xs = xs.view(-1, self.output_shape)
+        xs = self.localization(x).view(-1, self.output_shape)
         offsets = self.fc_loc(xs).squeeze()
         # create identity transformation matrix with only shifts
         theta = torch.eye(3, 4).reshape(1, 3, 4).repeat(x.shape[0], 1, 1)

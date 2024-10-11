@@ -143,8 +143,7 @@ class ImageEncoder(torch.nn.Module):
         y = self.net(x)
 
         pool_dims = (2, 3) if self.spatial_dims == 2 else (2, 3, 4)
-        y = y.tensor
-        y = y.mean(dim=pool_dims)
+        y = y.tensor.mean(dim=pool_dims)
 
         y_embedding = y[:, : self.out_dim]
 
