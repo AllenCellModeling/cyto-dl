@@ -1,0 +1,44 @@
+# @package _global_
+# to execute this experiment run:
+# python train.py experiment=example
+defaults:
+  - override /data: local/segmentation_all_cells_mask_from_zarr.yaml
+  - override /model: local/segmentation_all_cells_mask.yaml
+  - override /callbacks: default.yaml
+  - override /trainer: gpu.yaml
+  - override /logger: mlflow.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["dev"]
+seed: 12345
+
+experiment_name: train_cytogfp_seg_model_v0
+run_name: test_v0_patch1
+source_col: raw
+target_col: seg
+spatial_dims: 3
+raw_im_channels: 1
+checkpoint:
+  ckpt_path: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/all_cells_mask_seg_model_checkpoint.ckpt
+trainer:
+  max_epochs: 1000
+  devices: [0]
+
+model:
+  compile: True
+  #save_dir: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/eval_whole_movie_multiscale_patch1_zarr_aws
+
+data:
+  csv_path: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/sample_csv/predict_all_cells_mask_zarr_aws_v0.csv #path to csv containing test movies
+  #batch_size: 1
+  _aux: 
+    patch_shape: [16, 128, 128]
+
+callbacks:
+  predict_saving:
+    _target_: cyto_dl.callbacks.ImageSaver
+    save_dir: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/eval_whole_movie_multiscale_patch1_zarr_aws
+    stages: ["predict"]
+    save_input: False

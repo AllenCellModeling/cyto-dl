@@ -1,0 +1,18 @@
+_target_: cyto_dl.datamodules.multidim_image.make_multidim_image_dataloader #MultiDimImageDataset #dataframe.DataframeDatamodule
+
+num_workers: 0
+batch_size: 1
+pin_memory: True
+#persistent_workers: False
+
+
+csv_path:
+img_path_column: movie_path
+channel_column: bf_channel
+#fms_id_column: fms_id
+out_key: ${source_col}
+transforms:
+  - _target_: monai.transforms.ToTensor
+  - _target_: monai.transforms.NormalizeIntensity
+
+
