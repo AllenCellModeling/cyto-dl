@@ -97,9 +97,9 @@ class MultiDimImageDataset(Dataset):
         step = row.get(self.time_step_column, 1)
         timepoints = range(start, stop + 1, step) if stop > 0 else range(img.dims.T)
         return list(timepoints)
-    
+
     def _get_filename(self, image_input_path):
-        return image_input_path.split('/')[-1].split('.')[0]
+        return image_input_path.split("/")[-1].split(".")[0]
 
     def get_per_file_args(self, df):
         img_data = []
@@ -120,7 +120,7 @@ class MultiDimImageDataset(Dataset):
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
-                            "filename_or_obj": filename, # needs to be part of metadata to generate IO maps
+                            "filename_or_obj": filename,  # needs to be part of metadata to generate IO maps
                         }
                     )
         img_data.reverse()

@@ -19,9 +19,9 @@ class ImageSaver(Callback):
 
         Parameters
         ----------
-        save_dir: Union[str, Path] 
+        save_dir: Union[str, Path]
             Directory to save images. Only testing saves in this directory, prediction
-            saves in model save directory 
+            saves in model save directory
         save_every_n_epochs:int=1
             Frequency to save images
         stages:List[str]=["train", "val"]
