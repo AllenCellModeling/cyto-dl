@@ -28,17 +28,17 @@ trainer:
 
 model:
   compile: True
-  #save_dir: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/eval_whole_movie_multiscale_patch1_zarr_aws
+  save_dir: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/eval_whole_movie_multiscale_patch1_zarr_aws
 
 data:
   csv_path: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/sample_csv/predict_all_cells_mask_zarr_aws_v0.csv #path to csv containing test movies
   #batch_size: 1
-  _aux: 
+  _aux:
     patch_shape: [16, 128, 128]
 
 callbacks:
   predict_saving:
     _target_: cyto_dl.callbacks.ImageSaver
-    save_dir: /allen/aics/assay-dev/users/Suraj/EMT_Work/image_analysis_test/EMT_image_analysis/Colony_mask_training_inference/eval_whole_movie_multiscale_patch1_zarr_aws
+    save_dir: ${model.save_dir}
     stages: ["predict"]
     save_input: False

@@ -5,7 +5,6 @@ batch_size: 1
 pin_memory: True
 #persistent_workers: False
 
-
 csv_path:
 img_path_column: movie_path
 channel_column: bf_channel
@@ -14,5 +13,3 @@ out_key: ${source_col}
 transforms:
   - _target_: monai.transforms.ToTensor
   - _target_: monai.transforms.NormalizeIntensity
-
-

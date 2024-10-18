@@ -20,7 +20,8 @@ class ImageSaver(Callback):
         Parameters
         ----------
         save_dir: Union[str, Path]
-            Directory to save images
+            Directory to save images. Only testing saves in this directory, prediction
+            saves in model save directory
         save_every_n_epochs:int=1
             Frequency to save images
         stages:List[str]=["train", "val"]
@@ -49,6 +50,7 @@ class ImageSaver(Callback):
             if outputs is None:
                 # image has already been saved
                 return
+
             for i, head_io_map in enumerate(io_map.values()):
                 for k, save_path in head_io_map.items():
                     self._save(save_path, outputs[k]["pred"][i])

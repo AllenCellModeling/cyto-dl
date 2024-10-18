@@ -41,7 +41,7 @@ _aux:
     - - ${target_col}
       - _target_: cyto_dl.nn.BaseHead
         loss:
-          _target_: monai.losses.GeneralizedDiceFocalLoss  ##Main loss
+          _target_: monai.losses.GeneralizedDiceFocalLoss ##Main loss
           sigmoid: True
         postprocess:
           input:

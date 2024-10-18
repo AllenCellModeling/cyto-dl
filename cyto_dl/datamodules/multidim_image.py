@@ -98,6 +98,9 @@ class MultiDimImageDataset(Dataset):
         timepoints = range(start, stop + 1, step) if stop > 0 else range(img.dims.T)
         return list(timepoints)
 
+    def _get_filename(self, image_input_path):
+        return image_input_path.split("/")[-1].split(".")[0]
+
     def get_per_file_args(self, df):
         img_data = []
         for row in df.itertuples():
@@ -105,6 +108,8 @@ class MultiDimImageDataset(Dataset):
             img = BioImage(row[self.img_path_column])
             scenes = self._get_scenes(row, img)
             timepoints = self._get_timepoints(row, img)
+            filename = self._get_filename(row[self.img_path_column])
+
             for scene in scenes:
                 for timepoint in timepoints:
                     img_data.append(
@@ -115,6 +120,7 @@ class MultiDimImageDataset(Dataset):
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
+                            "filename_or_obj": filename + f"_{timepoint}",  # needs to be part of metadata to generate IO maps
                         }
                     )
         img_data.reverse()
