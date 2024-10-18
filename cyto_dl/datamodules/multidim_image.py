@@ -120,7 +120,7 @@ class MultiDimImageDataset(Dataset):
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
-                            "filename_or_obj": filename,  # needs to be part of metadata to generate IO maps
+                            "filename_or_obj": filename + f"_{timepoint}",  # needs to be part of metadata to generate IO maps
                         }
                     )
         img_data.reverse()
