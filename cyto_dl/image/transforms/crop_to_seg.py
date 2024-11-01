@@ -7,10 +7,7 @@ from skimage.measure import regionprops
 
 
 class CentroidCrop:
-    """Class for cropping patches around passed centroids in an image.
-
-    N
-    """
+    """Class for cropping patches around passed centroids in an image."""
 
     def __init__(self, crop_size: Sequence[str], remove_edge: bool = True):
         self.crop_size = crop_size
