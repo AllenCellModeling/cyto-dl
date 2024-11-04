@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.losses.threshold_loss - cyto-dl 0.4.1 documentation</title>
+        <title>cyto_dl.image.transforms.crop_to_seg - cyto-dl 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -440,37 +440,143 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.losses.threshold_loss</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+          <h1>Source code for cyto_dl.image.transforms.crop_to_seg</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">monai.transforms</span> <span class="kn">import</span> <span class="n">RandomizableTransform</span><span class="p">,</span> <span class="n">Transform</span>
+<span class="kn">from</span> <span class="nn">omegaconf</span> <span class="kn">import</span> <span class="n">ListConfig</span>
+<span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">regionprops</span>
 
 
-<div class="viewcode-block" id="ThresholdLoss"><a class="viewcode-back" href="../../../../cyto_dl.nn.losses.threshold_loss.html#cyto_dl.nn.losses.threshold_loss.ThresholdLoss">[docs]</a><span class="k">class</span> <span class="nc">ThresholdLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">above</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapper Loss that thresholds the target before computing the loss given by loss_fn.</span>
+<div class="viewcode-block" id="CentroidCrop"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCrop">[docs]</a><span class="k">class</span> <span class="nc">CentroidCrop</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for cropping patches around passed centroids in an image.&quot;&quot;&quot;</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">            loss_fn</span>
-<span class="sd">                Loss function</span>
-<span class="sd">            threshold: float = 0.0</span>
-<span class="sd">                Threshold value</span>
-<span class="sd">            above: bool = True</span>
-<span class="sd">                Whether to threshold above or below</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crop_size</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">remove_edge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">half_crop_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">crop_size</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span> <span class="o">=</span> <span class="n">remove_edge</span>
+
+<div class="viewcode-block" id="CentroidCrop.centroid_to_slice"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCrop.centroid_to_slice">[docs]</a>    <span class="k">def</span> <span class="nf">centroid_to_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centroid</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+        <span class="c1"># add empty slice to include channel dimension</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
+            <span class="o">+</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">h</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">h</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">centroid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">half_crop_size</span><span class="p">)]</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_filter_edge</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">centroids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">shape</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">half_crop_size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Image shape and crop_size must have the same dimensionality&quot;</span><span class="p">)</span>
+        <span class="n">centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centroids</span><span class="p">)</span>
+
+        <span class="n">valid_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">centroids</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">half_crop_size</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">centroids</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">half_crop_size</span><span class="p">)),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">valid_centroids</span> <span class="o">=</span> <span class="n">centroids</span><span class="p">[</span><span class="n">valid_mask</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid_centroids</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">valid_centroids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">)[</span><span class="n">valid_mask</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">centroids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># don&#39;t include channel dimension in edge validation</span>
+        <span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_edge</span><span class="p">(</span><span class="n">centroids</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">centroids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid centroids found&quot;</span><span class="p">)</span>
+        <span class="n">crops</span> <span class="o">=</span> <span class="p">[{</span><span class="n">name</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_to_slice</span><span class="p">(</span><span class="n">c</span><span class="p">)],</span> <span class="s2">&quot;centroid&quot;</span><span class="p">:</span> <span class="n">c</span><span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">centroids</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">crop</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">crops</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+                <span class="n">crop</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="k">return</span> <span class="n">crops</span></div>
+
+
+<div class="viewcode-block" id="CentroidCropd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCropd">[docs]</a><span class="k">class</span> <span class="nc">CentroidCropd</span><span class="p">(</span><span class="n">CentroidCrop</span><span class="p">,</span> <span class="n">Transform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transform for cropping patches around dictionary of images and corresponding centroids.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">keys</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">crop_size</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">centroid_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;centroid&quot;</span><span class="p">,</span>
+        <span class="n">label_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span>
+        <span class="n">remove_edge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">crop_size</span><span class="p">,</span> <span class="n">remove_edge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centroid_key</span> <span class="o">=</span> <span class="n">centroid_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_key</span> <span class="o">=</span> <span class="n">label_key</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">centroids</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid_key</span><span class="p">]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_key</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_key</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">all_crops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># data is C[Z]YX</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+            <span class="n">crops</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">all_crops</span><span class="p">:</span>
+                <span class="n">all_crops</span> <span class="o">=</span> <span class="n">crops</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">crop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">crops</span><span class="p">):</span>
+                    <span class="n">all_crops</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">crop</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">all_crops</span></div>
+
+
+<div class="viewcode-block" id="SegCropd"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.SegCropd">[docs]</a><span class="k">class</span> <span class="nc">SegCropd</span><span class="p">(</span><span class="n">RandomizableTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Monai-style transform to crop a given size patch from an input image centered around each of</span>
+<span class="sd">    the objects in an instance segmentation image.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">raw_keys</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">seg_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">crop_size</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">remove_edge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">limit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span> <span class="o">=</span> <span class="n">loss_fn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">above</span> <span class="o">=</span> <span class="n">above</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_keys</span> <span class="o">=</span> <span class="n">raw_keys</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_keys</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">raw_keys</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg_key</span> <span class="o">=</span> <span class="n">seg_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">above</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">target</span> <span class="o">=</span> <span class="p">(</span><span class="n">target</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">type_as</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span> <span class="o">=</span> <span class="n">CentroidCrop</span><span class="p">(</span><span class="n">crop_size</span><span class="p">,</span> <span class="n">remove_edge</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SegCropd.get_centroids"><a class="viewcode-back" href="../../../../cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.SegCropd.get_centroids">[docs]</a>    <span class="k">def</span> <span class="nf">get_centroids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seg</span><span class="p">):</span>
+        <span class="n">props</span> <span class="o">=</span> <span class="n">regionprops</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">centroid</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">props</span><span class="p">],</span> <span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">props</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_key</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">seg</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="k">else</span> <span class="n">seg</span>
+        <span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_centroids</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">centroids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">centroids</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span>
+
+        <span class="n">all_crops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># data is C[Z]YX</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_keys</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_key</span><span class="p">]:</span>
+            <span class="n">crops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropper</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">all_crops</span><span class="p">:</span>
+                <span class="n">all_crops</span> <span class="o">=</span> <span class="n">crops</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">crop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">crops</span><span class="p">):</span>
+                    <span class="n">all_crops</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">crop</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">all_crops</span></div>
 </pre></div>
         </article>
       </div>

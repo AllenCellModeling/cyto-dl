@@ -1,0 +1,7 @@
+cyto\_dl.image.transforms.crop\_to\_seg module
+==============================================
+
+.. automodule:: cyto_dl.image.transforms.crop_to_seg
+   :members:
+   :undoc-members:
+   :show-inheritance:

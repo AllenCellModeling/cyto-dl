@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.models.vae.priors package" href="cyto_dl.models.vae.priors.html" /><link rel="prev" title="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.image.transforms.generate_jepa_masks module" href="cyto_dl.image.transforms.generate_jepa_masks.html" /><link rel="prev" title="cyto_dl.image.transforms.contrastadjust module" href="cyto_dl.image.transforms.contrastadjust.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module - cyto-dl 0.4.1 documentation</title>
+        <title>cyto_dl.image.transforms.crop_to_seg module - cyto-dl 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -208,7 +208,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.io.html">cyto_dl.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.aicsimage_loader.html">cyto_dl.image.io.aicsimage_loader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
@@ -218,12 +218,12 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.skimage_reader.html">cyto_dl.image.io.skimage_reader module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.image.transforms.html">cyto_dl.image.transforms package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.add_meta.html">cyto_dl.image.transforms.add_meta module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.clip.html">cyto_dl.image.transforms.clip module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.crop_to_seg.html">cyto_dl.image.transforms.crop_to_seg module</a></li>
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.image.transforms.crop_to_seg module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.generate_jepa_masks.html">cyto_dl.image.transforms.generate_jepa_masks module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
@@ -241,7 +241,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.loggers.mlflow.html">cyto_dl.loggers.mlflow module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.models.html">cyto_dl.models package</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.classification.html">cyto_dl.models.classification package</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.classification.classification.html">cyto_dl.models.classification.classification module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.classification.timepoint_classification.html">cyto_dl.models.classification.timepoint_classification module</a></li>
@@ -284,10 +284,10 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.utils.utils.html">cyto_dl.models.utils.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l5 current has-children"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.models.vae.html">cyto_dl.models.vae package</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" role="switch" type="checkbox"/><label for="toctree-checkbox-23"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae package</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" role="switch" type="checkbox"/><label for="toctree-checkbox-24"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module</a></li>
-<li class="toctree-l6 current current-page"><a class="current reference internal" href="#">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae.html">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module</a></li>
 </ul>
 </li>
 <li class="toctree-l5 has-children"><a class="reference internal" href="cyto_dl.models.vae.priors.html">cyto_dl.models.vae.priors package</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" role="switch" type="checkbox"/><label for="toctree-checkbox-25"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -436,14 +436,46 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cyto-dl-models-vae-o2-spharm-vae-o2-spharm-vae-module">
-<h1>cyto_dl.models.vae.o2_spharm_vae.o2_spharm_vae module<a class="headerlink" href="#cyto-dl-models-vae-o2-spharm-vae-o2-spharm-vae-module" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.image.transforms.crop_to_seg">
+<span id="cyto-dl-image-transforms-crop-to-seg-module"></span><h1>cyto_dl.image.transforms.crop_to_seg module<a class="headerlink" href="#module-cyto_dl.image.transforms.crop_to_seg" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.crop_to_seg.CentroidCrop">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.crop_to_seg.</span></span><span class="sig-name descname"><span class="pre">CentroidCrop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/crop_to_seg.html#CentroidCrop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCrop" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for cropping patches around passed centroids in an image.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.crop_to_seg.CentroidCrop.centroid_to_slice">
+<span class="sig-name descname"><span class="pre">centroid_to_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centroid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/crop_to_seg.html#CentroidCrop.centroid_to_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCrop.centroid_to_slice" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.crop_to_seg.CentroidCropd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.crop_to_seg.</span></span><span class="sig-name descname"><span class="pre">CentroidCropd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroid_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'centroid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'label'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/crop_to_seg.html#CentroidCropd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCropd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCrop" title="cyto_dl.image.transforms.crop_to_seg.CentroidCrop"><code class="xref py py-class docutils literal notranslate"><span class="pre">CentroidCrop</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
+<p>Transform for cropping patches around dictionary of images and corresponding centroids.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.crop_to_seg.SegCropd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.crop_to_seg.</span></span><span class="sig-name descname"><span class="pre">SegCropd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/crop_to_seg.html#SegCropd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.crop_to_seg.SegCropd" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RandomizableTransform</span></code></p>
+<p>Monai-style transform to crop a given size patch from an input image centered around each of
+the objects in an instance segmentation image.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.crop_to_seg.SegCropd.get_centroids">
+<span class="sig-name descname"><span class="pre">get_centroids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/crop_to_seg.html#SegCropd.get_centroids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.crop_to_seg.SegCropd.get_centroids" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -451,23 +483,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.models.vae.priors.html">
+          <a class="next-page" href="cyto_dl.image.transforms.generate_jepa_masks.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.models.vae.priors package</div>
+                <div class="title">cyto_dl.image.transforms.generate_jepa_masks module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder.html">
+          <a class="prev-page" href="cyto_dl.image.transforms.contrastadjust.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.models.vae.o2_spharm_vae.o2_spharm_encoder module</div>
+                <div class="title">cyto_dl.image.transforms.contrastadjust module</div>
                 
               </div>
             </a>
@@ -489,8 +521,35 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cyto_dl.image.transforms.crop_to_seg module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCrop"><code class="docutils literal notranslate"><span class="pre">CentroidCrop</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCrop.centroid_to_slice"><code class="docutils literal notranslate"><span class="pre">CentroidCrop.centroid_to_slice()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.CentroidCropd"><code class="docutils literal notranslate"><span class="pre">CentroidCropd</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.SegCropd"><code class="docutils literal notranslate"><span class="pre">SegCropd</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.crop_to_seg.SegCropd.get_centroids"><code class="docutils literal notranslate"><span class="pre">SegCropd.get_centroids()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

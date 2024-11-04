@@ -221,6 +221,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.bright_sampler.html">cyto_dl.image.transforms.bright_sampler module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.clip.html">cyto_dl.image.transforms.clip module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.contrastadjust.html">cyto_dl.image.transforms.contrastadjust module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.crop_to_seg.html">cyto_dl.image.transforms.crop_to_seg module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.generate_jepa_masks.html">cyto_dl.image.transforms.generate_jepa_masks module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.merge.html">cyto_dl.image.transforms.merge module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.transforms.multiscale_cropper.html">cyto_dl.image.transforms.multiscale_cropper module</a></li>
@@ -524,6 +525,12 @@
         <li><a href="cyto_dl.nn.losses.continuous_bernoulli.html#cyto_dl.nn.losses.continuous_bernoulli.CBLogLoss">CBLogLoss (class in cyto_dl.nn.losses.continuous_bernoulli)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.CelebA">CelebA (class in cyto_dl.datamodules.torchvision)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCrop.centroid_to_slice">centroid_to_slice() (cyto_dl.image.transforms.crop_to_seg.CentroidCrop method)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCrop">CentroidCrop (class in cyto_dl.image.transforms.crop_to_seg)</a>
+</li>
+        <li><a href="cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.CentroidCropd">CentroidCropd (class in cyto_dl.image.transforms.crop_to_seg)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss">ChamferLoss (class in cyto_dl.nn.losses.chamfer_loss)</a>
 </li>
@@ -923,6 +930,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.image.transforms.crop_to_seg
+
+        <ul>
+          <li><a href="cyto_dl.image.transforms.crop_to_seg.html#module-cyto_dl.image.transforms.crop_to_seg">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.image.transforms.generate_jepa_masks
 
         <ul>
@@ -1013,6 +1027,8 @@
           <li><a href="cyto_dl.models.classification.html#module-cyto_dl.models.classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.classification
 
@@ -1020,8 +1036,6 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1870,6 +1884,8 @@
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_canonical_split_name">get_canonical_split_name() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
+        <li><a href="cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.SegCropd.get_centroids">get_centroids() (cyto_dl.image.transforms.crop_to_seg.SegCropd method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.get_config">get_config() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 
         <ul>
@@ -2347,6 +2363,8 @@
           <li><a href="cyto_dl.image.transforms.clip.html#module-cyto_dl.image.transforms.clip">cyto_dl.image.transforms.clip</a>
 </li>
           <li><a href="cyto_dl.image.transforms.contrastadjust.html#module-cyto_dl.image.transforms.contrastadjust">cyto_dl.image.transforms.contrastadjust</a>
+</li>
+          <li><a href="cyto_dl.image.transforms.crop_to_seg.html#module-cyto_dl.image.transforms.crop_to_seg">cyto_dl.image.transforms.crop_to_seg</a>
 </li>
           <li><a href="cyto_dl.image.transforms.generate_jepa_masks.html#module-cyto_dl.image.transforms.generate_jepa_masks">cyto_dl.image.transforms.generate_jepa_masks</a>
 </li>
@@ -2857,6 +2875,8 @@
 </li>
         <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.Seg_ViT">Seg_ViT (class in cyto_dl.nn.vits.seg)</a>
 </li>
+        <li><a href="cyto_dl.image.transforms.crop_to_seg.html#cyto_dl.image.transforms.crop_to_seg.SegCropd">SegCropd (class in cyto_dl.image.transforms.crop_to_seg)</a>
+</li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.ExperimentType.SEGMENTATION">SEGMENTATION (cyto_dl.api.data.ExperimentType attribute)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.ExperimentType.SEGMENTATION_ARRAY">SEGMENTATION_ARRAY (cyto_dl.api.data.ExperimentType attribute)</a>
@@ -2869,10 +2889,10 @@
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.set_experiment_name">set_experiment_name() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 </li>
-        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_hardware_type">set_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_hardware_type">set_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_input_channel">set_input_channel() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_manifest_column_names">set_manifest_column_names() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
