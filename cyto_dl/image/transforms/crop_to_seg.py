@@ -3,6 +3,7 @@ from typing import Optional, Sequence, Union
 import numpy as np
 import torch
 from monai.transforms import RandomizableTransform, Transform
+from omegaconf import ListConfig
 from skimage.measure import regionprops
 
 
@@ -10,37 +11,36 @@ class CentroidCrop:
     """Class for cropping patches around passed centroids in an image."""
 
     def __init__(self, crop_size: Sequence[str], remove_edge: bool = True):
-        self.crop_size = crop_size
+        self.half_crop_size = np.array(crop_size) // 2
         self.remove_edge = remove_edge
 
-    def centroid_to_slice(self, centroid):
-        # slice across channel dimension
-        slices = [slice(None, None)]
-        for i, c in enumerate(centroid):
-            start = int(c - self.crop_size[i] // 2)
-            end = int(c + self.crop_size[i] // 2)
-            slices.append(slice(start, end))
-        return tuple(slices)
+    def centroid_to_slice(self, centroid: Sequence[int]):
+        # add empty slice to include channel dimension
+        return tuple(
+            [slice(None, None)]
+            + [slice(int(c - h), int(c + h)) for c, h in zip(centroid, self.half_crop_size)]
+        )
 
-    def _filter_edge(self, centroids, shape, labels=None):
-        assert len(shape) == len(
-            self.crop_size
-        ), "Image shape and crop_size must have the same dimensionality"
-        valid_indices = [
-            idx
-            for idx, c in enumerate(centroids)
-            # check distance to edges
-            if all(
-                [
-                    c[i] >= self.crop_size[i] // 2 and c[i] <= (shape[i] - self.crop_size[i] // 2)
-                    for i in range(len(c))
-                ]
-            )
-        ]
-        valid_centroids = np.array(centroids)[valid_indices]
+    def _filter_edge(
+        self,
+        centroids: Sequence[Sequence[int]],
+        shape: Sequence[int],
+        labels: Optional[Sequence[int]] = None,
+    ):
+        if len(shape) != len(self.half_crop_size):
+            raise ValueError("Image shape and crop_size must have the same dimensionality")
+        centroids = np.array(centroids)
+
+        valid_mask = np.all(
+            (centroids >= self.half_crop_size)
+            & (centroids < (np.array(shape) - self.half_crop_size)),
+            axis=1,
+        )
+
+        valid_centroids = centroids[valid_mask]
         if labels is None:
             return valid_centroids, None
-        return valid_centroids, np.array(labels)[valid_indices]
+        return valid_centroids, np.array(labels)[valid_mask]
 
     def __call__(
         self,
@@ -104,7 +104,7 @@ class SegCropd(RandomizableTransform):
         limit: Optional[int] = None,
     ):
         super().__init__()
-        self.raw_keys = raw_keys if isinstance(raw_keys, (list, tuple)) else [raw_keys]
+        self.raw_keys = raw_keys if isinstance(raw_keys, (list, tuple, ListConfig)) else [raw_keys]
         self.seg_key = seg_key
         self.limit = limit
 
