@@ -76,6 +76,13 @@ transforms:
         base_image_key: ${base_image_col}
         output_name: seg
 
+      # remove keys that aren't used for training (e.g. the pre-merged targets)
+      - _target_: monai.transforms.SelectItemsd
+        keys:
+          - ${source_col}
+          - seg
+          - ${exclude_mask_col}
+
       - _target_: monai.transforms.ToTensord
         keys:
           - ${source_col}
@@ -233,6 +240,13 @@ transforms:
           - ${target_col2}
         base_image_key: ${base_image_col}
         output_name: seg
+
+      # remove keys that aren't used for training (e.g. the pre-merged targets)
+      - _target_: monai.transforms.SelectItemsd
+        keys:
+          - ${source_col}
+          - seg
+          - ${exclude_mask_col}
 
       - _target_: monai.transforms.ToTensord
         keys:
