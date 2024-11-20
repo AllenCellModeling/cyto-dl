@@ -18,7 +18,9 @@ from cyto_dl import utils
 
 log = utils.get_pylogger(__name__)
 
+
 with suppress(ValueError):
+    OmegaConf.register_new_resolver("concat", utils.concat_lists)
     OmegaConf.register_new_resolver("kv_to_dict", utils.kv_to_dict)
     OmegaConf.register_new_resolver("eval", eval)
 
