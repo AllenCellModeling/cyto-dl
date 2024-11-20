@@ -1,0 +1,51 @@
+_target_: cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder
+
+save_images_every_n_epochs: 10
+save_dir: ${paths.output_dir}
+batch_is_cond: 
+n_noise_samples: 
+image_shape: ${data._aux.patch_shape}
+
+condition_key: raw
+
+semantic_encoder:
+  _target_: monai.networks.nets.Regressor
+  in_shape: ${concat:1,${data._aux.patch_shape}} # adds channel dimension to spatial dimensions
+  out_shape: 16
+  channels: [2, 4, 8]
+  strides: [2, 2, 2]
+  kernel_size: 3
+
+autoencoder:
+  _target_: generative.networks.nets.diffusion_model_unet.DiffusionModelUNet
+  spatial_dims: ${spatial_dims}
+  in_channels: ${raw_im_channels}
+  out_channels: ${raw_im_channels}
+  with_conditioning: True 
+  cross_attention_dim: 1
+
+optimizer:
+  generator:
+    _partial_: True
+    _target_: torch.optim.AdamW
+
+lr_scheduler:
+  generator:
+    _partial_: True
+    _target_: torch.optim.lr_scheduler.OneCycleLR
+    max_lr: 0.0001
+    epochs: ${trainer.max_epochs}
+    steps_per_epoch: 1
+    pct_start: 0.1
+
+
+# this will be used to infer patch-wise embeddings from the raw images
+spatial_inferer:
+  _target_: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchInferer
+  splitter:
+    _target_: monai.inferers.SlidingWindowSplitter
+    patch_size: ${data._aux.patch_shape}
+    pad_mode: null
+  merger_cls: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger
+  batch_size: 1000
+
