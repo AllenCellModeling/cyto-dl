@@ -170,20 +170,45 @@ class DiffusionAutoEncoder(BaseModel):
         self.compute_metrics(loss, preds, targets, "val")
         return loss, preds
 
-    def generate_from_latent(self, cond, save_name):
+    def generate_from_latent(
+        self,
+        cond: torch.Tensor,
+        save_name: str = 'generated_image',
+        n_noise_samples: int = self.hparams.n_noise_samples,
+        average: bool = True,
+    ):
+        """Generate images from latent features. If average is True, average over n_noise_samples,
+        otherwise make a composite.
+
+        Parameters:
+        ----------
+        cond: torch.Tensor
+            latent features to condition the diffusion model
+        save_name: str
+            name to save the generated image
+        n_noise_samples: int
+            number of noise samples to generate
+        average: bool
+            Whether to average the generated images. If False, composite the images.
+        """
         self.scheduler.set_timesteps(num_inference_steps=100)
         with torch.no_grad():
             recon = None
-            for _ in tqdm.tqdm(range(int(self.hparams.n_noise_samples)), desc="Sampling"):
+            for _ in tqdm.tqdm(range(n_noise_samples), desc="Sampling"):
                 # keep noise constant across walk for consistency
                 noise = torch.stack(
                     [torch.randn([1] + self.hparams.image_shape, device=self.device)]
                     * cond.shape[0]
                 )
                 sample = self._generate_image(noise, cond.unsqueeze(2))
-                recon = sample if recon is None else recon + sample
-            # average reconstruction across samples
-            recon /= self.hparams.n_noise_samples
+                if average:
+                    recon = sample if recon is None else recon + sample
+                else:
+                    recon = [sample] if recon is None else recon.append(sample)
+            if average:
+                recon /= self.hparams.n_noise_samples
+            else:
+                recon = torch.stack(recon)
         OmeTiffWriter.save(
             uri=f"{self.hparams.save_dir}/{save_name}.tiff", data=detach(recon).astype(float)
         )
