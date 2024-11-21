@@ -6,15 +6,14 @@ from bioio import BioImage
 from monai.data import MetaTensor
 from monai.transforms import Transform
 
-from cyto_dl.models.im2im.utils.postprocessing.act_thresh_label import get_dtype
+from cyto_dl.models.im2im.utils.postprocessing.arg_checking import get_dtype
 
 
-class AICSImageLoaderd(Transform):
+class BioIOImageLoaderd(Transform):
     """Enumerates scenes and timepoints for dictionary with format.
-
-    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}. Differs
-    from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of fixed at
-    initialization.
+    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}. 
+    Differs from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of fixed at
+    initialization. The filepath will be saved in the dictionary as 'filename_or_obj' (with or without metadata depending on `include_meta_in_filename`).
     """
 
     def __init__(
