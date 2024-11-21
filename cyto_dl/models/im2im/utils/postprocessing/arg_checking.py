@@ -1,3 +1,4 @@
+from hydra.utils import get_class
 from numpy.typing import DTypeLike
 
 def get_dtype(dtype: DTypeLike) -> DTypeLike:
@@ -9,3 +10,4 @@ def get_dtype(dtype: DTypeLike) -> DTypeLike:
         return dtype
     else:
         raise ValueError(f"Expected dtype to be DtypeLike, string, or None, got {type(dtype)}")
+

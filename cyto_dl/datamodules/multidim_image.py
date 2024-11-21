@@ -10,7 +10,8 @@ from omegaconf import OmegaConf
 class MultiDimImageDataset(CacheDataset):
     """Dataset converting a `.csv` file or dictionary listing multi dimensional (timelapse or
     multi-scene) files and some metadata into batches of metadata intended for the
-    AICSImageLoaderd class."""
+    BioIOImageLoaderd class."""
+
 
     def __init__(
         self,
@@ -36,7 +37,7 @@ class MultiDimImageDataset(CacheDataset):
         channel_column:str
             Column in `csv_path` that contains which channel to extract from multi dimensional (timelapse or multi-scene) file. Should be an integer.
         spatial_dims:int=3
-            Spatial dimension of output image. Must be 2 for YX or 3 for ZYX
+            Spatial dimension of output image. Must be 2 for YX or 3 for ZYX. Spatial dimensions are used to specify the dimension order of the output image, which will be in the format `CZYX` or `CYX` to ensure compatibility with dictionary-based MONAI-style transforms.
         scene_column:str="scene",
             Column in `csv_path` that contains scenes to extract from multi-scene file. If not specified, all scenes will
             be extracted. If multiple scenes are specified, they should be separated by a comma (e.g. `scene1,scene2`)
@@ -52,7 +53,7 @@ class MultiDimImageDataset(CacheDataset):
         dict_meta: Optional[Dict]
             Dictionary version of CSV file. If not provided, CSV file is read from `csv_path`.
         transform: Optional[Callable] = []
-            List (or Compose Object) or Monai dictionary-style transforms to apply to the image metadata. Typically, the first transform should be AICSImageLoaderd.
+            List (or Compose Object) or Monai dictionary-style transforms to apply to the image metadata. Typically, the first transform should be BioIOImageLoaderd.
         cache_kwargs:
             Additional keyword arguments to pass to `CacheDataset`. To skip the caching mechanism, set `cache_num` to 0.
         """

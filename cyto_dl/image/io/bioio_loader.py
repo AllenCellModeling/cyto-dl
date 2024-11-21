@@ -11,7 +11,8 @@ from cyto_dl.models.im2im.utils.postprocessing.arg_checking import get_dtype
 
 class BioIOImageLoaderd(Transform):
     """Enumerates scenes and timepoints for dictionary with format.
-    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}. 
+
+    {path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}.
     Differs from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of fixed at
     initialization. The filepath will be saved in the dictionary as 'filename_or_obj' (with or without metadata depending on `include_meta_in_filename`).
     """
