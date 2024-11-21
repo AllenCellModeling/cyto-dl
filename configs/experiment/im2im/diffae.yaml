@@ -28,7 +28,6 @@ trainer:
   # 32-bit precision is only used for cpu testing, this can be changed if a gpu is used
   precision: 32
 
-
 data:
   path: ${paths.data_dir}/example_experiment_data/segmentation
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
@@ -42,5 +41,4 @@ data:
 callbacks:
   latent_walk:
     _target_: cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk
-    every_n_epoch: ${trainer.check_val_every_n_epoch}  
-
+    every_n_epoch: ${trainer.check_val_every_n_epoch}

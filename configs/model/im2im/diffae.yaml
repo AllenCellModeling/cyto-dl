@@ -2,8 +2,8 @@ _target_: cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder
 
 save_images_every_n_epochs: 10
 save_dir: ${paths.output_dir}
-batch_is_cond: 
-n_noise_samples: 
+batch_is_cond:
+n_noise_samples:
 image_shape: ${data._aux.patch_shape}
 
 condition_key: raw
@@ -26,7 +26,7 @@ autoencoder:
   num_head_channels: 1
   attention_levels: [False, True]
   norm_num_groups: 1
-  with_conditioning: True 
+  with_conditioning: True
   cross_attention_dim: 1
 
 optimizer:
@@ -43,7 +43,6 @@ lr_scheduler:
     steps_per_epoch: 1
     pct_start: 0.1
 
-
 # this will be used to infer patch-wise embeddings from the raw images
 spatial_inferer:
   _target_: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchInferer
@@ -53,4 +52,3 @@ spatial_inferer:
     pad_mode: null
   merger_cls: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger
   batch_size: 1000
-
