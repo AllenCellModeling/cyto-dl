@@ -2,7 +2,6 @@ from typing import Callable
 
 import numpy as np
 import torch
-from hydra.utils import get_class
 from numpy.typing import DTypeLike
 from skimage.exposure import rescale_intensity
 from skimage.measure import label
