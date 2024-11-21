@@ -9,12 +9,11 @@ import tqdm
 from bioio.writers import OmeTiffWriter
 from generative.inferers import DiffusionInferer
 from generative.networks.schedulers.ddim import DDIMScheduler
-from monai.data.meta_tensor import MetaTensor
 from monai.inferers import Inferer
 from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
-from cyto_dl.models.im2im.utils.postprocessing import detach
+from cyto_dl.models.im2im.utils.postprocessing import detach, metatensor_batch_to_tensor
 
 
 class DiffusionAutoEncoder(BaseModel):
@@ -151,15 +150,8 @@ class DiffusionAutoEncoder(BaseModel):
                 data=detach(img).astype(float),
             )
 
-    def _to_tensor(self, batch):
-        """Convert monai metatensors to tensors."""
-        for k, v in batch.items():
-            if isinstance(v, MetaTensor):
-                batch[k] = v.as_tensor()
-        return batch
-
     def model_step(self, stage, batch, batch_idx):
-        batch = self._to_tensor(batch)
+        batch = metatensor_batch_to_tensor(batch)
         cond_img = batch[self.hparams.condition_key]
         diff_img = batch[self.diffusion_key]
         noise, noise_pred, latent = self.forward(cond_img, diff_img)
@@ -178,7 +170,7 @@ class DiffusionAutoEncoder(BaseModel):
         self.compute_metrics(loss, preds, targets, "val")
         return loss, preds
 
-    def latent_walk(self, cond, save_name):
+    def generate_from_latent(self, cond, save_name):
         self.scheduler.set_timesteps(num_inference_steps=100)
         with torch.no_grad():
             recon = None
@@ -226,7 +218,7 @@ class DiffusionAutoEncoder(BaseModel):
             self.latent_walk(batch[self.hparams.condition_key].squeeze(0), "latent_walk")
             return None, None
         meta = batch[self.hparams.condition_key].meta
-        batch = self._to_tensor(batch)
+        batch = metatensor_batch_to_tensor(batch)
         with torch.no_grad():
             z, loc = self.encode_image(batch[self.hparams.condition_key])
         meta.update(loc)

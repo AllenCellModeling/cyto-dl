@@ -63,7 +63,7 @@ class DiffAELatentWalk(Callback):
         walk = np.stack(walk).squeeze()
         walk = self.pca.inverse_transform(walk)
         walk = torch.from_numpy(walk).float().to(model.device)
-        model.latent_walk(walk, stage)
+        model.generate_from_latent(walk, stage)
 
     def on_validation_batch_end(
         self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
