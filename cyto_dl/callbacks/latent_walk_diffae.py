@@ -1,4 +1,5 @@
 from typing import Optional
+from warnings import warn
 
 import numpy as np
 import torch
@@ -8,7 +9,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
-from warnings import warn
+
 
 class DiffAELatentWalk(Callback):
     def __init__(
@@ -41,7 +42,7 @@ class DiffAELatentWalk(Callback):
 
     def _latent_walk(self, feats, model, stage):
         # catch if only one batch for validation
-        if len(feats.shape) == 1 or feats.shape[0]< self.num_pcs:
+        if len(feats.shape) == 1 or feats.shape[0] < self.num_pcs:
             warn(f"Insufficient data for latent walk with {self.num_pcs} PCs. Skipping...")
             return
         pca_data = self.pca.fit_transform(feats)
