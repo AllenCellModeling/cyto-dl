@@ -4,6 +4,16 @@ from omegaconf import DictConfig, ListConfig, OmegaConf, open_dict, read_write
 from omegaconf.errors import InterpolationToMissingValueError, MissingMandatoryValue
 
 
+def concat_lists(*args) -> ListConfig:
+    result = []
+    for arg in args:
+        if isinstance(arg, (list, ListConfig)):
+            result.extend(arg)
+        else:
+            result.append(arg)
+    return ListConfig(result)
+
+
 def kv_to_dict(kv: ListConfig) -> DictConfig:
     """
     Parameters

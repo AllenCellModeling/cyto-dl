@@ -22,6 +22,7 @@ experiment_types = [
     "labelfree",
     "gan",
     "instance_seg",
+    "diffae",
 ]
 
 

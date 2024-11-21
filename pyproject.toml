@@ -50,6 +50,7 @@ dependencies = [
     "tifffile>=2024.0.0",
     "online-stats>=2023",
     "positional-encodings>=6.0.3",
+    "monai-generative>=0.2.3",
 ]
 requires-python = ">=3.9,<3.11"
 
