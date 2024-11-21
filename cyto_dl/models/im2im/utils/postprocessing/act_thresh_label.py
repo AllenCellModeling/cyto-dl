@@ -7,6 +7,8 @@ from numpy.typing import DTypeLike
 from skimage.exposure import rescale_intensity
 from skimage.measure import label
 
+from cyto_dl.models.im2im.utils.postprocessing.arg_checking import get_dtype
+
 
 class ActThreshLabel:
     """General-purpose postprocessing transform for applying any of an activation, threshold,
@@ -40,21 +42,11 @@ class ActThreshLabel:
         self.activation = activation
         self.threshold = threshold
         self.label = label
-        self.dtype = self._get_dtype(dtype)
+        self.dtype = get_dtype(dtype)
         self.ch = ch
-        self.rescale_dtype = self._get_dtype(rescale_dtype)
+        self.rescale_dtype = get_dtype(rescale_dtype)
         if self.rescale_dtype is not None:
             self.dtype = self.rescale_dtype
-
-    def _get_dtype(self, dtype: DTypeLike) -> DTypeLike:
-        if isinstance(dtype, str):
-            return get_class(dtype)
-        elif dtype is None:
-            return dtype
-        elif isinstance(dtype, type):
-            return dtype
-        else:
-            raise ValueError(f"Expected dtype to be DtypeLike, string, or None, got {type(dtype)}")
 
     def __call__(self, img: torch.Tensor) -> np.ndarray:
         if self.ch > 0:
