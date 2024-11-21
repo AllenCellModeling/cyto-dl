@@ -40,5 +40,5 @@ data:
 
 callbacks:
   prediction_saver:
-    _target_: cyto_dl.callbacks.csv_saver.CSVSaver
+    _target_: cyto_dl.callbacks.SaveTabulardata
     save_dir: ${paths.output_dir}
