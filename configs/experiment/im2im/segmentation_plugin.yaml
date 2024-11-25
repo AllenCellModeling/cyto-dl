@@ -78,5 +78,5 @@ callbacks:
     _target_: cyto_dl.callbacks.ImageSaver
     save_dir: ${paths.output_dir}
     save_every_n_epochs: ${model.save_images_every_n_epochs}
-    stages: ["train", "test", "val"]
+    stages: ["train", "test", "val", "predict"]
     save_input: True
