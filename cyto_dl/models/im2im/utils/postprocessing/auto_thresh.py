@@ -23,7 +23,10 @@ class AutoThreshold:
         self.thresh_func = thresh_func
 
     def __call__(self, image):
-        image = image.detach().cpu().float().numpy()
+        # Only get numpy array from torch tensor if tensor is passed in
+        # Allows np.ndarray to be passed in directly
+        if not isinstance(image, np.ndarray):
+            image = image.detach().cpu().float().numpy()
         if self.thresh_func is None:
             return image
         return (image > self.thresh_func(image)).astype(np.uint8)
