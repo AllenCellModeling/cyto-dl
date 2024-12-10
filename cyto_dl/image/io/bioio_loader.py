@@ -21,6 +21,7 @@ class BioIOImageLoaderd(Transform):
         self,
         path_key: str = "path",
         scene_key: str = "scene",
+        resolution_key: str = 'resolution',
         kwargs_keys: List = ["dimension_order_out", "C", "T"],
         out_key: str = "raw",
         allow_missing_keys=False,
@@ -53,6 +54,7 @@ class BioIOImageLoaderd(Transform):
         self.kwargs_keys = kwargs_keys
         self.allow_missing_keys = allow_missing_keys
         self.out_key = out_key
+        self.resolution_key = resolution_key
         self.scene_key = scene_key
         self.dtype = get_dtype(dtype)
         self.dask_load = dask_load
@@ -79,6 +81,8 @@ class BioIOImageLoaderd(Transform):
         img = BioImage(path)
         if self.scene_key in data:
             img.set_scene(data[self.scene_key])
+        if self.resolution_key in data:
+            img.set_resolution_level(data[self.resolution_key])
         kwargs = {k: self.split_args(data[k]) for k in self.kwargs_keys if k in data}
         if self.dask_load:
             img = img.get_image_dask_data(**kwargs).compute()
@@ -86,5 +90,7 @@ class BioIOImageLoaderd(Transform):
             img = img.get_image_data(**kwargs)
         img = img.astype(self.dtype)
         kwargs.update({"filename_or_obj": self._get_filename(path, kwargs)})
+        if self.scene_key in data:
+            kwargs["scene"] = data[self.scene_key]
         data[self.out_key] = MetaTensor(img, meta=kwargs)
         return data
