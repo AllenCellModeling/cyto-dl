@@ -45,7 +45,11 @@ class SaveTabularData(Callback):
 
     def _save(self, feats, stage):
         if self.as_parquet:
-            pd.concat(feats).to_parquet(self.save_dir / f"{stage}.parquet")
+            feats= pd.concat(feats)
+            for col in feats.select_dtypes(include=[np.float16]).columns:
+                feats[col] = feats[col].astype(np.float32)
+            feats.columns = feats.columns.astype(str)
+            feats.to_parquet(self.save_dir / f"{stage}.parquet")
         else:
             pd.concat(feats).to_csv(self.save_dir / f"{stage}.csv", index=False)
 
