@@ -20,6 +20,7 @@ class MultiDimImageDataset(CacheDataset):
         channel_column: str = "channel",
         spatial_dims: int = 3,
         scene_column: str = "scene",
+        resolution_column: str = "resolution",
         time_start_column: str = "start",
         time_stop_column: str = "stop",
         time_step_column: str = "step",
@@ -60,11 +61,12 @@ class MultiDimImageDataset(CacheDataset):
         df = (
             pd.read_csv(csv_path)
             if csv_path is not None
-            else pd.DataFrame(OmegaConf.to_container(dict_meta))
+            else pd.DataFrame(dict_meta) #OmegaConf.to_container(dict_meta))
         )
         self.img_path_column = img_path_column
         self.channel_column = channel_column
         self.scene_column = scene_column
+        self.resolution_column = resolution_column
         self.time_start_column = time_start_column
         self.time_stop_column = time_stop_column
         self.time_step_column = time_step_column
@@ -100,8 +102,9 @@ class MultiDimImageDataset(CacheDataset):
             row = row._asdict()
             img = BioImage(row[self.img_path_column])
             scenes = self._get_scenes(row, img)
-            timepoints = self._get_timepoints(row, img)
             for scene in scenes:
+                img.set_scene(scene)
+                timepoints = self._get_timepoints(row, img)
                 for timepoint in timepoints:
                     img_data.append(
                         {
@@ -110,6 +113,7 @@ class MultiDimImageDataset(CacheDataset):
                             "scene": scene,
                             "T": timepoint,
                             "original_path": row[self.img_path_column],
+                            "resolution": row.get(self.resolution_column, 0),
                         }
                     )
         return img_data
