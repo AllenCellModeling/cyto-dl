@@ -57,7 +57,6 @@ class CytoDLModel:
         self, experiment_name: str, output_dir: str, train=True, overrides: List = []
     ):
         """Load configuration from directory."""
-        assert experiment_name in DEFAULT_EXPERIMENTS
         config_dir = self.root / "configs"
 
         GlobalHydra.instance().clear()
@@ -65,7 +64,7 @@ class CytoDLModel:
             cfg = compose(
                 config_name="train.yaml" if train else "eval.yaml",
                 return_hydra_config=True,
-                overrides=[f"experiment=im2im/{experiment_name}"] + overrides,
+                overrides=[f"experiment={experiment_name}"] + overrides,
             )
 
         with open_dict(cfg):
@@ -82,7 +81,7 @@ class CytoDLModel:
         OmegaConf.save(
             self.cfg, output_dir / f'{"train" if train else "eval"}_config.yaml'
         )
-
+        
     def print_config(self):
         print_config_tree(self.cfg, resolve=True)
 
