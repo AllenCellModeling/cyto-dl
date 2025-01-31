@@ -21,7 +21,7 @@ class WandBLogger(Logger):
                  config: Optional[Dict[str, Any]] = None,
                  tags: Optional[Dict[str, Any]] = None,
                  fault_tolerant: bool = False):
-        super().__init__(project=experiment_name, name=run_name, config=config)
+        super().__init__(project=experiment_name, name=run_name, config=config, resume="must", reinit=True)
         self.tags = tags
         self.fault_tolerant = fault_tolerant
 
