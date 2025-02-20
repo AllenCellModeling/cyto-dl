@@ -12,7 +12,7 @@ train_dataloaders:
     dict_meta:
       path:
         - /path/to/your/multidim_image.zarr
-      channel: [[0,3]]
+      channel: [[0, 3]]
       # set zarr resolution
       resolution: [1]
       # scene indices to use
@@ -38,7 +38,7 @@ val_dataloaders:
     dict_meta:
       path:
         - /path/to/your/multidim_val_image.zarr
-      channel: [[0,3]]
+      channel: [[0, 3]]
       # which timepoints to use
       start: [0]
       stop: [10]
