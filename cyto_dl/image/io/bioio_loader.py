@@ -8,6 +8,7 @@ from monai.transforms import Transform
 
 from cyto_dl.utils.arg_checking import get_dtype
 
+
 class BioIOImageLoaderd(Transform):
     """Enumerates scenes and timepoints for dictionary with format.
 
@@ -20,7 +21,7 @@ class BioIOImageLoaderd(Transform):
         self,
         path_key: str = "path",
         scene_key: str = "scene",
-        resolution_key: str = 'resolution',
+        resolution_key: str = "resolution",
         kwargs_keys: List[str] = ["dimension_order_out", "C", "T"],
         out_key: str = "raw",
         allow_missing_keys=False,
