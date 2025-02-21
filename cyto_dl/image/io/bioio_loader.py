@@ -89,8 +89,9 @@ class BioIOImageLoaderd(Transform):
         else:
             img = img.get_image_data(**kwargs)
         img = img.astype(self.dtype)
-        kwargs.update({"filename_or_obj": self._get_filename(path, kwargs)})
         if self.scene_key in data:
             kwargs["scene"] = data[self.scene_key]
+        kwargs.update({"filename_or_obj": self._get_filename(path, kwargs)})
+
         data[self.out_key] = MetaTensor(img, meta=kwargs)
         return data
