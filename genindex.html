@@ -208,7 +208,7 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.io.html">cyto_dl.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.aicsimage_loader.html">cyto_dl.image.io.aicsimage_loader module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.bioio_loader.html">cyto_dl.image.io.bioio_loader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.numpy_reader.html">cyto_dl.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.ome_zarr_reader.html">cyto_dl.image.io.ome_zarr_reader module</a></li>
@@ -388,6 +388,7 @@
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.arg_checking.html">cyto_dl.utils.arg_checking module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.checkpoint.html">cyto_dl.utils.checkpoint module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
@@ -462,8 +463,6 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.image.io.aicsimage_loader.html#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd">AICSImageLoaderd (class in cyto_dl.image.io.aicsimage_loader)</a>
-</li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.AlternatingBatchSampler">AlternatingBatchSampler (class in cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="cyto_dl.dataframe.transforms.misc.html#cyto_dl.dataframe.transforms.misc.append_class_weights">append_class_weights() (in module cyto_dl.dataframe.transforms.misc)</a>
@@ -499,6 +498,8 @@
         <li><a href="cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist">batch_pairwise_dist() (cyto_dl.nn.losses.chamfer_loss.ChamferLoss method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.chamfer_loss.html#cyto_dl.nn.losses.chamfer_loss.ChamferLoss.batch_pairwise_dist2">batch_pairwise_dist2() (cyto_dl.nn.losses.chamfer_loss.ChamferLoss method)</a>
+</li>
+        <li><a href="cyto_dl.image.io.bioio_loader.html#cyto_dl.image.io.bioio_loader.BioIOImageLoaderd">BioIOImageLoaderd (class in cyto_dl.image.io.bioio_loader)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.bright_sampler.html#cyto_dl.image.transforms.bright_sampler.BrightSampler">BrightSampler (class in cyto_dl.image.transforms.bright_sampler)</a>
 </li>
@@ -598,8 +599,6 @@
           <li><a href="cyto_dl.nn.vits.blocks.patchify.patchify_hiera.html#cyto_dl.nn.vits.blocks.patchify.patchify_hiera.PatchifyHiera.create_img2token">(cyto_dl.nn.vits.blocks.patchify.patchify_hiera.PatchifyHiera method)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.create_metatensor">create_metatensor() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
-</li>
         <li><a href="cyto_dl.nn.vits.blocks.patchify.patchify_base.html#cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase.create_patch2img">create_patch2img() (cyto_dl.nn.vits.blocks.patchify.patchify_base.PatchifyBase method)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.track_transforms.html#cyto_dl.image.transforms.track_transforms.CropResize">CropResize (class in cyto_dl.image.transforms.track_transforms)</a>
@@ -853,10 +852,10 @@
 </li>
         </ul></li>
         <li>
-    cyto_dl.image.io.aicsimage_loader
+    cyto_dl.image.io.bioio_loader
 
         <ul>
-          <li><a href="cyto_dl.image.io.aicsimage_loader.html#module-cyto_dl.image.io.aicsimage_loader">module</a>
+          <li><a href="cyto_dl.image.io.bioio_loader.html#module-cyto_dl.image.io.bioio_loader">module</a>
 </li>
         </ul></li>
         <li>
@@ -1027,8 +1026,6 @@
           <li><a href="cyto_dl.models.classification.html#module-cyto_dl.models.classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.classification
 
@@ -1036,6 +1033,8 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1548,6 +1547,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.utils.arg_checking
+
+        <ul>
+          <li><a href="cyto_dl.utils.arg_checking.html#module-cyto_dl.utils.arg_checking">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.utils.array
 
         <ul>
@@ -1914,16 +1920,18 @@
           <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.get_dataset">(in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         </ul></li>
+        <li><a href="cyto_dl.utils.arg_checking.html#cyto_dl.utils.arg_checking.get_dtype">get_dtype() (in module cyto_dl.utils.arg_checking)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.get_experiment_name">get_experiment_name() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_feature_matching_loss">get_feature_matching_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.Pix2PixHD.get_gan_loss">get_gan_loss() (cyto_dl.nn.losses.gan_loss.Pix2PixHD method)</a>
 </li>
-        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_hardware_type">get_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_hardware_type">get_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_input_channel">get_input_channel() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.get_manifest_column_names">get_manifest_column_names() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
@@ -2063,8 +2071,6 @@
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.instantiate_loggers">instantiate_loggers() (in module cyto_dl.utils.template_utils)</a>
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher">IntermediateWeigher (class in cyto_dl.nn.vits.blocks.intermediate_weigher)</a>
-</li>
-        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.MultiDimImageDataset.is_batch">is_batch() (cyto_dl.datamodules.multidim_image.MultiDimImageDataset method)</a>
 </li>
         <li><a href="cyto_dl.utils.config.html#cyto_dl.utils.config.is_config">is_config() (in module cyto_dl.utils.config)</a>
 </li>
@@ -2216,8 +2222,6 @@
         </ul></li>
         <li><a href="cyto_dl.datamodules.folder.html#cyto_dl.datamodules.folder.make_folder_dataloader">make_folder_dataloader() (in module cyto_dl.datamodules.folder)</a>
 </li>
-        <li><a href="cyto_dl.datamodules.multidim_image.html#cyto_dl.datamodules.multidim_image.make_multidim_image_dataloader">make_multidim_image_dataloader() (in module cyto_dl.datamodules.multidim_image)</a>
-</li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.make_multiple_dataframe_splits">make_multiple_dataframe_splits() (in module cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="cyto_dl.dataframe.transforms.misc.html#cyto_dl.dataframe.transforms.misc.make_random_df">make_random_df() (in module cyto_dl.dataframe.transforms.misc)</a>
@@ -2342,7 +2346,7 @@
 </li>
           <li><a href="cyto_dl.image.io.html#module-cyto_dl.image.io">cyto_dl.image.io</a>
 </li>
-          <li><a href="cyto_dl.image.io.aicsimage_loader.html#module-cyto_dl.image.io.aicsimage_loader">cyto_dl.image.io.aicsimage_loader</a>
+          <li><a href="cyto_dl.image.io.bioio_loader.html#module-cyto_dl.image.io.bioio_loader">cyto_dl.image.io.bioio_loader</a>
 </li>
           <li><a href="cyto_dl.image.io.monai_bio_reader.html#module-cyto_dl.image.io.monai_bio_reader">cyto_dl.image.io.monai_bio_reader</a>
 </li>
@@ -2539,6 +2543,8 @@
           <li><a href="cyto_dl.train.html#module-cyto_dl.train">cyto_dl.train</a>
 </li>
           <li><a href="cyto_dl.utils.html#module-cyto_dl.utils">cyto_dl.utils</a>
+</li>
+          <li><a href="cyto_dl.utils.arg_checking.html#module-cyto_dl.utils.arg_checking">cyto_dl.utils.arg_checking</a>
 </li>
           <li><a href="cyto_dl.utils.array.html#module-cyto_dl.utils.array">cyto_dl.utils.array</a>
 </li>
@@ -2927,7 +2933,7 @@
 </li>
         <li><a href="cyto_dl.nn.vits.encoder.html#cyto_dl.nn.vits.encoder.SpatialMerger">SpatialMerger (class in cyto_dl.nn.vits.encoder)</a>
 </li>
-        <li><a href="cyto_dl.image.io.aicsimage_loader.html#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd.split_args">split_args() (cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd method)</a>
+        <li><a href="cyto_dl.image.io.bioio_loader.html#cyto_dl.image.io.bioio_loader.BioIOImageLoaderd.split_args">split_args() (cyto_dl.image.io.bioio_loader.BioIOImageLoaderd method)</a>
 </li>
         <li><a href="cyto_dl.dataframe.transforms.split.html#cyto_dl.dataframe.transforms.split.split_dataframe">split_dataframe() (in module cyto_dl.dataframe.transforms.split)</a>
 </li>

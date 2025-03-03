@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.image.io.monai_bio_reader module" href="cyto_dl.image.io.monai_bio_reader.html" /><link rel="prev" title="cyto_dl.image.io package" href="cyto_dl.image.io.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.utils.array module" href="cyto_dl.utils.array.html" /><link rel="prev" title="cyto_dl.utils.spharm.rotation module" href="cyto_dl.utils.spharm.rotation.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.image.io.aicsimage_loader module - cyto-dl 0.4.5 documentation</title>
+        <title>cyto_dl.utils.arg_checking module - cyto-dl 0.4.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -208,9 +208,9 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.datamodules.torchvision.html">cyto_dl.datamodules.torchvision module</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current has-children"><a class="reference internal" href="cyto_dl.image.io.html">cyto_dl.image.io package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">cyto_dl.image.io.aicsimage_loader module</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.image.html">cyto_dl.image package</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.image.io.html">cyto_dl.image.io package</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.bioio_loader.html">cyto_dl.image.io.bioio_loader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.monai_bio_reader.html">cyto_dl.image.io.monai_bio_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.numpy_reader.html">cyto_dl.image.io.numpy_reader module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.image.io.ome_zarr_reader.html">cyto_dl.image.io.ome_zarr_reader module</a></li>
@@ -384,12 +384,13 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="cyto_dl.utils.html">cyto_dl.utils package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-36" name="toctree-checkbox-36" role="switch" type="checkbox"/><label for="toctree-checkbox-36"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4 has-children"><a class="reference internal" href="cyto_dl.utils.spharm.html">cyto_dl.utils.spharm package</a><input class="toctree-checkbox" id="toctree-checkbox-37" name="toctree-checkbox-37" role="switch" type="checkbox"/><label for="toctree-checkbox-37"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.reconstruction.html">cyto_dl.utils.spharm.reconstruction module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.utils.spharm.rotation.html">cyto_dl.utils.spharm.rotation module</a></li>
 </ul>
 </li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.utils.arg_checking module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.array.html">cyto_dl.utils.array module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.checkpoint.html">cyto_dl.utils.checkpoint module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.utils.config.html">cyto_dl.utils.config module</a></li>
@@ -442,34 +443,12 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.image.io.aicsimage_loader">
-<span id="cyto-dl-image-io-aicsimage-loader-module"></span><h1>cyto_dl.image.io.aicsimage_loader module<a class="headerlink" href="#module-cyto_dl.image.io.aicsimage_loader" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.io.aicsimage_loader.</span></span><span class="sig-name descname"><span class="pre">AICSImageLoaderd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">path_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'path',</span> <span class="pre">scene_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'scene',</span> <span class="pre">kwargs_keys:</span> <span class="pre">~typing.List</span> <span class="pre">=</span> <span class="pre">['dimension_order_out',</span> <span class="pre">'C',</span> <span class="pre">'T'],</span> <span class="pre">out_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'raw',</span> <span class="pre">allow_missing_keys=False,</span> <span class="pre">dtype:</span> <span class="pre">~numpy.dtype</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float16'&gt;,</span> <span class="pre">dask_load:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/io/aicsimage_loader.html#AICSImageLoaderd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
-<p>Enumerates scenes and timepoints for dictionary with format.</p>
-<p>{path_key: path, channel_key: channel, scene_key: scene, timepoint_key: timepoint}. Differs
-from monai_bio_reader in that reading kwargs are passed in the dictionary, instead of fixed at
-initialization.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path_key</strong> (<em>str = “path”</em>) – Key for the path to the image</p></li>
-<li><p><strong>scene_key</strong> (<em>str = “scene”</em>) – Key for the scene number</p></li>
-<li><p><strong>kwargs_keys</strong> (<em>List = [“dimension_order_out”, “C”, “T”]</em>) – Keys for the kwargs to pass to BioImage.get_image_dask_data. Values in the csv can be comma separated list.</p></li>
-<li><p><strong>out_key</strong> (<em>str = “raw”</em>) – Key for the output image</p></li>
-<li><p><strong>allow_missing_keys</strong> (<em>bool = False</em>) – Whether to allow missing keys in the data dictionary</p></li>
-<li><p><strong>dask_load</strong> (<em>bool = True</em>) – Whether to use dask to load images. If False, full images are loaded into memory before extracting specified scenes/timepoints.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd.split_args">
-<span class="sig-name descname"><span class="pre">split_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/io/aicsimage_loader.html#AICSImageLoaderd.split_args"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd.split_args" title="Permalink to this definition">#</a></dt>
+          <section id="module-cyto_dl.utils.arg_checking">
+<span id="cyto-dl-utils-arg-checking-module"></span><h1>cyto_dl.utils.arg_checking module<a class="headerlink" href="#module-cyto_dl.utils.arg_checking" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="cyto_dl.utils.arg_checking.get_dtype">
+<span class="sig-prename descclassname"><span class="pre">cyto_dl.utils.arg_checking.</span></span><span class="sig-name descname"><span class="pre">get_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsDType</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_DTypeDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsDType</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">collections.abc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">SupportsIndex</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_DTypeDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/cyto_dl/utils/arg_checking.html#get_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.utils.arg_checking.get_dtype" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
-
-</dd></dl>
 
 </section>
 
@@ -478,23 +457,23 @@ initialization.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.image.io.monai_bio_reader.html">
+          <a class="next-page" href="cyto_dl.utils.array.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.image.io.monai_bio_reader module</div>
+                <div class="title">cyto_dl.utils.array module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.image.io.html">
+          <a class="prev-page" href="cyto_dl.utils.spharm.rotation.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.image.io package</div>
+                <div class="title">cyto_dl.utils.spharm.rotation module</div>
                 
               </div>
             </a>
@@ -528,11 +507,8 @@ initialization.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">cyto_dl.image.io.aicsimage_loader module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd"><code class="docutils literal notranslate"><span class="pre">AICSImageLoaderd</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.image.io.aicsimage_loader.AICSImageLoaderd.split_args"><code class="docutils literal notranslate"><span class="pre">AICSImageLoaderd.split_args()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">cyto_dl.utils.arg_checking module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.utils.arg_checking.get_dtype"><code class="docutils literal notranslate"><span class="pre">get_dtype()</span></code></a></li>
 </ul>
 </li>
 </ul>
