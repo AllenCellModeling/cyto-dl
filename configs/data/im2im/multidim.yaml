@@ -1,0 +1,54 @@
+train_dataloaders:
+  _target_: monai.data.DataLoader
+  num_workers: 8
+  batch_size: 1
+  pin_memory: True
+  persistent_workers: False
+  shuffle: True
+  dataset:
+    _target_: cyto_dl.datamodules.multidim_image.MultiDimImageDataset
+    # number of workers to use for caching initial dataset
+    num_workers: 8
+    dict_meta:
+      path:
+        - /path/to/your/multidim_image.zarr
+      channel: [[0, 3]]
+      # set zarr resolution
+      resolution: [1]
+      # scene indices to use
+      scene: [0, 3]
+    spatial_dims: 2
+    transform:
+      - _target_: cyto_dl.image.io.bioio_loader.BioIOImageLoaderd
+        path_key: original_path
+        out_key: raw
+        dask_load: True
+        dtype: numpy.float32
+      # your transforms here
+
+val_dataloaders:
+  _target_: monai.data.DataLoader
+  num_workers: 8
+  batch_size: 1
+  pin_memory: True
+  persistent_workers: False
+  dataset:
+    _target_: cyto_dl.datamodules.multidim_image.MultiDimImageDataset
+    num_workers: 8
+    dict_meta:
+      path:
+        - /path/to/your/multidim_val_image.zarr
+      channel: [[0, 3]]
+      # which timepoints to use
+      start: [0]
+      stop: [10]
+      step: [2]
+      resolution: [1]
+    spatial_dims: 2
+    transform:
+      - _target_: cyto_dl.image.io.bioio_loader.BioIOImageLoaderd
+        path_key: original_path
+        out_key: raw
+        dask_load: True
+        dtype: numpy.float32
+      # your transforms here
