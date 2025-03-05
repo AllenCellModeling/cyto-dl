@@ -1,16 +1,16 @@
 from typing import Optional
 from warnings import warn
 
+import cv2
 import numpy as np
 import torch
-import cv2
+from bioio.writers import OmeTiffWriter
 from lightning.pytorch.callbacks import Callback
 from sklearn.decomposition import PCA
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from cyto_dl.models.im2im.utils.postprocessing import detach
-from bioio.writers import OmeTiffWriter
 
 
 class DiffAELatentWalk(Callback):
@@ -50,14 +50,14 @@ class DiffAELatentWalk(Callback):
         self.average = average
         self.batch_size = batch_size
 
-        self.pca = Pipeline([ ("pca", PCA(n_components=num_pcs)), ("scaler", StandardScaler())])
+        self.pca = Pipeline([("pca", PCA(n_components=num_pcs)), ("scaler", StandardScaler())])
 
         self.val_feats = []
 
     def _write_text(self, img, text):
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.5
-        color = tuple([img.max()]*3) 
+        color = tuple([img.max()] * 3)
         thickness = 1
         text_size = cv2.getTextSize(text, font, font_scale, thickness)[0]
         text_x = img.shape[1] - text_size[0] - 3  # 3 pixels from the right edge
@@ -66,13 +66,11 @@ class DiffAELatentWalk(Callback):
         return img
 
     def _write_pc_vals(self, walk_img, ranges):
-        """
-        Write PC index and value on image
-        """
+        """Write PC index and value on image."""
         idx = 0
         for i, range_ in enumerate(ranges):
             for val in range_:
-                walk_img[idx]= self._write_text(walk_img[idx], f"PC{i+1}:{val:.1f}")
+                walk_img[idx] = self._write_text(walk_img[idx], f"PC{i+1}:{val:.1f}")
                 idx += 1
         return walk_img
 
@@ -102,7 +100,13 @@ class DiffAELatentWalk(Callback):
         walk = np.stack(walk).squeeze()
         walk = self.pca.inverse_transform(walk)
         walk = torch.from_numpy(walk).float().to(model.device)
-        walk_img = model.generate_from_latent(walk, n_noise_samples=self.n_noise_samples, average=self.average, save=False, batch_size=self.batch_size)
+        walk_img = model.generate_from_latent(
+            walk,
+            n_noise_samples=self.n_noise_samples,
+            average=self.average,
+            save=False,
+            batch_size=self.batch_size,
+        )
         walk_img = self._write_pc_vals(walk_img, ranges)
         OmeTiffWriter.save(uri=save_path, data=walk_img)
 
@@ -117,11 +121,12 @@ class DiffAELatentWalk(Callback):
         if (trainer.current_epoch + 1) % self.every_n_epoch == 0:
             # aggregate all latent features for PCA
             feats = np.concatenate(self.val_feats)
-            self._latent_walk(feats, trainer.model, f"{pl_module.hparams.save_dir}/{trainer.current_epoch+1}_latent_walk.tiff")
+            self._latent_walk(
+                feats,
+                trainer.model,
+                f"{pl_module.hparams.save_dir}/{trainer.current_epoch+1}_latent_walk.tiff",
+            )
 
     def on_predict_epoch_end(self, trainer, pl_module):
         feats = np.concatenate([x[0] for x in trainer.predict_loop.predictions])
         self._latent_walk(feats, trainer.model, f"{pl_module.hparams.save_dir}/latent_walk.tiff")
-
-
-

@@ -35,7 +35,7 @@ data:
     # 2D
     patch_shape: [64, 64]
     # 3D
-    # NOTE 3D requires a chnage in the model config
+    # NOTE 3D requires a change in the model config
     # patch_shape: [16, 32, 32]
 
 callbacks:

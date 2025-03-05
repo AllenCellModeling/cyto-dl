@@ -1,40 +1,39 @@
+import math
 from typing import Optional, Sequence
 
 import torch
 import torch.nn as nn
 import tqdm
 from bioio.writers import OmeTiffWriter
+from monai.inferers import DiffusionInferer, Inferer
+from monai.networks.schedulers import NoiseSchedules
 from monai.networks.schedulers.ddim import DDIMScheduler
-from monai.inferers import Inferer, DiffusionInferer
 from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 from cyto_dl.models.im2im.utils import detach
-
 from cyto_dl.models.utils import metatensor_batch_to_tensor
-import math
-
-from monai.networks.schedulers import NoiseSchedules
 
 
 @NoiseSchedules.add_def("inverse_cosine", "Inverse cosine beta schedule")
-def inverted_cosine_beta_schedule(num_train_timesteps, s = 0.008):
+def inverted_cosine_beta_schedule(num_train_timesteps, s=0.008):
     """
     inverted cosine schedule
     as proposed in https://arxiv.org/pdf/2311.17901.pdf
     """
     steps = num_train_timesteps + 1
-    t = torch.linspace(0, num_train_timesteps, steps) / num_train_timesteps 
+    t = torch.linspace(0, num_train_timesteps, steps) / num_train_timesteps
     alphas_cumprod = (2 * (1 + s) / math.pi) * torch.arccos(torch.sqrt(t)) - s
     alphas_cumprod = alphas_cumprod / alphas_cumprod[0]
     betas = 1 - (alphas_cumprod[1:] / alphas_cumprod[:-1])
-    return torch.clip(betas,0.0001, 0.9999)
+    return torch.clip(betas, 0.0001, 0.9999)
 
 
 class DiffusionAutoEncoder(BaseModel):
     """
     [DiffusionAutoencoder](https://arxiv.org/abs/2111.15640) for representation learning. Code is based on the [MONAI generative tutorial](https://github.com/Project-MONAI/GenerativeModels/blob/main/tutorials/generative/2d_diffusion_autoencoder/2d_diffusion_autoencoder_tutorial.ipynb)
     """
+
     def __init__(
         self,
         *,
@@ -51,7 +50,7 @@ class DiffusionAutoEncoder(BaseModel):
         n_noise_samples: Optional[int] = 1,
         train_encoder: bool = True,
         gamma: float = 5.0,
-        noise_schedule: str='linear_beta',
+        noise_schedule: str = "linear_beta",
         **base_kwargs,
     ):
         """
@@ -100,19 +99,19 @@ class DiffusionAutoEncoder(BaseModel):
         self.autoencoder = autoencoder
 
         self.semantic_encoder = semantic_encoder
-        
+
         if not train_encoder:
             for param in self.semantic_encoder.parameters():
                 param.requires_grad = False
 
-        self.scheduler = DDIMScheduler(n_train_steps, schedule = noise_schedule)
+        self.scheduler = DDIMScheduler(n_train_steps, schedule=noise_schedule)
         self.weights = self.scheduler.alphas_cumprod
 
         self.inferer = DiffusionInferer(self.scheduler)
         self.spatial_inferer = spatial_inferer
 
         # noise prediction loss. Reduction is none to allow per-timestep weighting
-        self.loss = torch.nn.MSELoss(reduction='none')
+        self.loss = torch.nn.MSELoss(reduction="none")
 
     def configure_optimizers(self):
         params = list(self.autoencoder.parameters())
@@ -124,18 +123,18 @@ class DiffusionAutoEncoder(BaseModel):
         return [opt], [sched]
 
     def _get_loss_weight(self, timesteps):
-        '''
+        """
         Min-SNR weighting strategy from https://arxiv.org/pdf/2303.09556
-        '''
+        """
         self.weights = self.weights.to(timesteps.device)
         alpha_prod_t = self.weights[timesteps]
-        beta_prod_t = 1-alpha_prod_t
-        alpha = alpha_prod_t ** 0.5
-        sigma = beta_prod_t ** 0.5
-        snr = (alpha / sigma) **2
-        min_snr = torch.clip(snr, max = self.hparams.gamma)
-        weight = min_snr/snr
-        return weight.view(-1, 1, 1, 1)
+        beta_prod_t = 1 - alpha_prod_t
+        alpha = alpha_prod_t**0.5
+        sigma = beta_prod_t**0.5
+        snr = (alpha / sigma) ** 2
+        min_snr = torch.clip(snr, max=self.hparams.gamma)
+        weight = (min_snr / snr).view(-1, 1, 1, 1)
+        return weight
 
     def forward(self, x_cond, x_diff):
         noise = torch.randn_like(x_diff, device=x_diff.device)
@@ -190,12 +189,10 @@ class DiffusionAutoEncoder(BaseModel):
         diff_img = batch[self.diffusion_key]
         noise, noise_pred, latent, loss_weight = self.forward(cond_img, diff_img)
         if (
-            ((self.trainer.current_epoch + 1) % self.hparams.save_images_every_n_epochs)
-            == batch_idx
-            == 0 and stage == 'val'
-        ):  
+            (self.trainer.current_epoch + 1) % self.hparams.save_images_every_n_epochs
+        ) == batch_idx == 0 and stage == "val":
             self.save_example(stage, cond_img[:1], diff_img[:1])
-        
+
         diffusion_loss = torch.mean(self.loss(noise, noise_pred) * loss_weight)
 
         return {"loss": diffusion_loss}, latent, None
@@ -205,11 +202,10 @@ class DiffusionAutoEncoder(BaseModel):
         self.compute_metrics(loss, preds, targets, "val")
         return loss, preds
 
-
     def generate_from_latent(
         self,
         cond: torch.Tensor,
-        save_name: str = 'generated_image',
+        save_name: str = "generated_image",
         n_noise_samples: Optional[int] = None,
         average: bool = True,
         save: bool = True,
@@ -245,18 +241,24 @@ class DiffusionAutoEncoder(BaseModel):
                     [torch.randn([1] + self.hparams.image_shape, device=self.device)]
                     * cond.shape[0]
                 )
-                sample = torch.cat([self._generate_image(noise[start:stop], cond[start:stop].unsqueeze(2)).squeeze(1) for start, stop in batch_indices], 0)
+                sample = torch.cat(
+                    [
+                        self._generate_image(
+                            noise[start:stop], cond[start:stop].unsqueeze(2)
+                        ).squeeze(1)
+                        for start, stop in batch_indices
+                    ],
+                    0,
+                )
                 sample = sample if average else [sample]
                 recon = sample if recon is None else recon + sample
             if average:
                 recon /= self.hparams.n_noise_samples
             else:
                 recon = torch.cat(recon, -1)
-        recon =detach(recon).astype(float)
+        recon = detach(recon).astype(float)
         if save:
-            OmeTiffWriter.save(
-                uri=f"{self.hparams.save_dir}/{save_name}.tiff", data=recon
-            )
+            OmeTiffWriter.save(uri=f"{self.hparams.save_dir}/{save_name}.tiff", data=recon)
         return recon
 
     def encode_image(self, x):
