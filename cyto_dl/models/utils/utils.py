@@ -1,5 +1,4 @@
 import numpy as np
-from monai.data.meta_tensor import MetaTensor
 
 
 def find_indices(lst, vals):
