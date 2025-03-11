@@ -21,7 +21,7 @@ run_name: YOUR_RUN_NAME
 
 source_col: brightfield
 
-spatial_dims: 3
+spatial_dims: 2
 raw_im_channels: 1
 
 trainer:
