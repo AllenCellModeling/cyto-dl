@@ -5,14 +5,14 @@ import torch
 import torch.nn as nn
 import tqdm
 from bioio.writers import OmeTiffWriter
-from monai.inferers import DiffusionInferer, Inferer
+from monai.inferers import Inferer
 from monai.networks.schedulers import NoiseSchedules
-from monai.networks.schedulers.ddim import DDIMScheduler
+from monai.networks.schedulers.ddim import Scheduler
+from monai.utils import convert_to_tensor
 from torchmetrics import MeanMetric
 
 from cyto_dl.models.base_model import BaseModel
 from cyto_dl.models.im2im.utils import detach
-from cyto_dl.models.utils import metatensor_batch_to_tensor
 
 
 @NoiseSchedules.add_def("inverse_cosine", "Inverse cosine beta schedule")
@@ -41,16 +41,17 @@ class DiffusionAutoEncoder(BaseModel):
         spatial_inferer: Inferer,
         image_shape: Sequence[int],
         condition_key: str,
+        noise_scheduler: Scheduler,
+        diffusion_inferer: Inferer,
+        loss: nn.Module = nn.MSELoss(),
         semantic_encoder: nn.Module = None,
         diffusion_key: Optional[str] = None,
-        n_train_steps: int = 1000,
         n_inference_steps: int = 50,
         save_dir="./",
         save_images_every_n_epochs: int = 1,
         n_noise_samples: Optional[int] = 1,
         train_encoder: bool = True,
-        gamma: float = 5.0,
-        noise_schedule: str = "linear_beta",
+        gamma: float = -1.0,
         **base_kwargs,
     ):
         """
@@ -64,14 +65,18 @@ class DiffusionAutoEncoder(BaseModel):
             [Z]YX shape of the input images
         condition_key: str
             key to access condition images in batch
+        noise_scheduler: Scheduler
+            beta noise scheduler
+        diffusion_inferer: Inferer
+            Inferer to use for diffusion sampling
+        loss: nn.Module
+            loss function to use for training. Should have no reduction.
         semantic_encoder: nn.Module
             model network to encode the condition image
         diffusion_key: Optional[str]
             key to access diffusion images in batch. If None, defaults to condition_key
-        n_train_steps: int
-            number of noise steps used during diffusion model training
         n_inference_steps: int
-            number of noise steps used during inference. Must be less than n_train_steps, and can be much fewer due to DDIM sampling
+            number of noise steps used during inference. Must be less than the number of train steps used in your noise scheduler, and can be much fewer due to DDIM sampling
         save_dir="./"
             directory to save images during training and validation
         save_images_every_n_epochs: int
@@ -81,7 +86,7 @@ class DiffusionAutoEncoder(BaseModel):
         train_encoder: bool
             Whether to train the semantic encoder
         gamma: float
-            Minimum SNR for loss weighting
+            Minimum SNR for loss weighting. If negative, no weighting is applied
         noise_schedule: str
             beta noise schedule. Options are 'inverse_cosine' from the SODA paper or see the MONAI docs for other options
         **base_kwargs:
@@ -104,28 +109,31 @@ class DiffusionAutoEncoder(BaseModel):
             for param in self.semantic_encoder.parameters():
                 param.requires_grad = False
 
-        self.scheduler = DDIMScheduler(n_train_steps, schedule=noise_schedule)
+        self.scheduler = noise_scheduler
         self.weights = self.scheduler.alphas_cumprod
 
-        self.inferer = DiffusionInferer(self.scheduler)
+        self.inferer = diffusion_inferer(self.scheduler)
         self.spatial_inferer = spatial_inferer
 
-        # noise prediction loss. Reduction is none to allow per-timestep weighting
-        self.loss = torch.nn.MSELoss(reduction="none")
+        if gamma > 0 and (not hasattr(loss, "reduction") or loss.reduction != "none"):
+            raise ValueError("Loss must have reduction='none'if using loss weighting (gamma > 0)")
+        self.loss = loss
 
     def configure_optimizers(self):
         params = list(self.autoencoder.parameters())
         if self.hparams.train_encoder:
             params += list(self.semantic_encoder.parameters())
 
-        opt = self.optimizer["generator"](params)
-        sched = self.lr_scheduler["generator"](optimizer=opt)
+        opt = self.optimizer(params)
+        sched = self.lr_scheduler(optimizer=opt)
         return [opt], [sched]
 
     def _get_loss_weight(self, timesteps):
         """
         Min-SNR weighting strategy from https://arxiv.org/pdf/2303.09556
         """
+        if self.hparams.gamma < 0:
+            return None
         self.weights = self.weights.to(timesteps.device)
         alpha_prod_t = self.weights[timesteps]
         beta_prod_t = 1 - alpha_prod_t
@@ -184,7 +192,7 @@ class DiffusionAutoEncoder(BaseModel):
             )
 
     def model_step(self, stage, batch, batch_idx):
-        batch = metatensor_batch_to_tensor(batch)
+        batch = convert_to_tensor(batch)
         cond_img = batch[self.hparams.condition_key]
         diff_img = batch[self.diffusion_key]
         noise, noise_pred, latent, loss_weight = self.forward(cond_img, diff_img)
@@ -193,7 +201,9 @@ class DiffusionAutoEncoder(BaseModel):
         ) == batch_idx == 0 and stage == "val":
             self.save_example(stage, cond_img[:1], diff_img[:1])
 
-        diffusion_loss = torch.mean(self.loss(noise, noise_pred) * loss_weight)
+        diffusion_loss = self.loss(noise, noise_pred)
+        if loss_weight is not None:
+            diffusion_loss = torch.mean(diffusion_loss * loss_weight)
 
         return {"loss": diffusion_loss}, latent, None
 
@@ -263,12 +273,12 @@ class DiffusionAutoEncoder(BaseModel):
 
     def encode_image(self, x):
         with torch.no_grad():
-            z, loc = self.spatial_inferer(x, self.encode)
+            z, loc = self.spatial_inferer(x, self.semantic_encoder)
         return z, loc
 
     def predict_step(self, batch, batch_idx):
         meta = batch[self.hparams.condition_key].meta
-        batch = metatensor_batch_to_tensor(batch)
+        batch = convert_to_tensor(batch)
         z, loc = self.encode_image(batch[self.hparams.condition_key])
         meta.update(loc)
         return detach(z), meta
