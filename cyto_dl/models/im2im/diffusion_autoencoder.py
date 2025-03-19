@@ -62,7 +62,7 @@ class DiffusionAutoEncoder(BaseModel):
         spatial_inferer: Inferer
             Inferer to use for splitting large images into patches during inference
         image_shape: Sequence[int]
-            [Z]YX shape of the input images
+            C[Z]YX shape of the input images
         condition_key: str
             key to access condition images in batch
         noise_scheduler: Scheduler
@@ -248,8 +248,7 @@ class DiffusionAutoEncoder(BaseModel):
             for _ in tqdm.tqdm(range(n_noise_samples), desc="Sampling"):
                 # keep noise constant across walk for consistency
                 noise = torch.stack(
-                    [torch.randn([1] + self.hparams.image_shape, device=self.device)]
-                    * cond.shape[0]
+                    [torch.randn(self.hparams.image_shape, device=self.device)] * cond.shape[0]
                 )
                 sample = torch.cat(
                     [

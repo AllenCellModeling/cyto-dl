@@ -22,7 +22,7 @@ run_name: YOUR_RUN_NAME
 source_col: brightfield
 
 spatial_dims: 2
-raw_im_channels: 1
+raw_im_channels: 1 # model.image_shape should be updated along with this
 
 trainer:
   max_epochs: 100
@@ -31,9 +31,12 @@ data:
   path: ${paths.data_dir}/example_experiment_data/labelfree
   cache_dir: ${paths.data_dir}/example_experiment_data/cache
   batch_size: 1
+  subsample:
+    train: 100
+    valid: 100
   _aux:
     # 2D
-    patch_shape: [64, 64]
+    patch_shape: [64, 64] # model.image_shape should be updated along with this
     # 3D
     # NOTE 3D requires a change in the model config
     # patch_shape: [16, 32, 32]

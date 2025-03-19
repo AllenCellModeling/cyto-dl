@@ -2,7 +2,7 @@ _target_: cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder
 
 save_images_every_n_epochs: 1
 save_dir: ${paths.output_dir}
-image_shape: ${data._aux.patch_shape}
+image_shape: [1, 64, 64] # NOTE this should be changed if `raw_im_channels` or `patch_shape` is changed
 n_noise_samples: 1
 
 condition_key: ${source_col}
