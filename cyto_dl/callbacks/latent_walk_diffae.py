@@ -114,7 +114,7 @@ class DiffAELatentWalk(Callback):
         self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx=0
     ):
         if (trainer.current_epoch + 1) % self.every_n_epoch == 0:
-            latent_feat = detach(outputs[1].squeeze())
+            latent_feat = detach(outputs[1].squeeze(-1))
             self.val_feats.append(latent_feat)
 
     def on_validation_epoch_end(self, trainer, pl_module):
