@@ -4,7 +4,7 @@ from .contrastadjust import ContrastAdjustd
 from .merge import Merged
 from .multiscale_cropper import RandomMultiScaleCropd
 from .pad import PadZd
-from .project import MaxProjectd
+from .project import Projectd
 from .save import Save, Saved
 
 try:
