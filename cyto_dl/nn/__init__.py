@@ -10,3 +10,4 @@ from .losses import (
 from .mlp import MLP
 from .res_unit import ResidualUnit
 from .spatial_transformer import STN
+from .torchvision_wrapper import TorchVisionWrapper
