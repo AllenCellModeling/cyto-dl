@@ -1,0 +1,7 @@
+cyto\_dl.nn.resnet module
+=========================
+
+.. automodule:: cyto_dl.nn.resnet
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -20,5 +20,6 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   cyto_dl.models.im2im.utils.inferers
    cyto_dl.models.im2im.utils.instance_seg
    cyto_dl.models.im2im.utils.noise_annealer

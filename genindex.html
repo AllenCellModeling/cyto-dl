@@ -175,6 +175,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk_diffae.html">cyto_dl.callbacks.latent_walk_diffae module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
@@ -263,10 +264,12 @@
 <li class="toctree-l7"><a class="reference internal" href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html">cyto_dl.models.im2im.utils.postprocessing.dict_to_im module</a></li>
 </ul>
 </li>
+<li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.inferers.html">cyto_dl.models.im2im.utils.inferers module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.instance_seg.html">cyto_dl.models.im2im.utils.instance_seg module</a></li>
 <li class="toctree-l6"><a class="reference internal" href="cyto_dl.models.im2im.utils.noise_annealer.html">cyto_dl.models.im2im.utils.noise_annealer module</a></li>
 </ul>
 </li>
+<li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.im2im.diffusion_autoencoder.html">cyto_dl.models.im2im.diffusion_autoencoder module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.im2im.gan.html">cyto_dl.models.im2im.gan module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="cyto_dl.models.im2im.multi_task.html">cyto_dl.models.im2im.multi_task module</a></li>
 </ul>
@@ -371,6 +374,7 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.resnet.html">cyto_dl.nn.resnet module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
@@ -463,6 +467,8 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.models.im2im.utils.inferers.html#cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger.aggregate">aggregate() (cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger method)</a>
+</li>
         <li><a href="cyto_dl.datamodules.dataframe.utils.html#cyto_dl.datamodules.dataframe.utils.AlternatingBatchSampler">AlternatingBatchSampler (class in cyto_dl.datamodules.dataframe.utils)</a>
 </li>
         <li><a href="cyto_dl.dataframe.transforms.misc.html#cyto_dl.dataframe.transforms.misc.append_class_weights">append_class_weights() (in module cyto_dl.dataframe.transforms.misc)</a>
@@ -568,6 +574,8 @@
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.configure_optimizers">configure_optimizers() (cyto_dl.models.base_model.BaseModel method)</a>
 
         <ul>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.configure_optimizers">(cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.configure_optimizers">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.configure_optimizers">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
@@ -681,6 +689,13 @@
 
         <ul>
           <li><a href="cyto_dl.callbacks.image_saver.html#module-cyto_dl.callbacks.image_saver">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.latent_walk_diffae
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#module-cyto_dl.callbacks.latent_walk_diffae">module</a>
 </li>
         </ul></li>
         <li>
@@ -1033,8 +1048,6 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1042,6 +1055,8 @@
           <li><a href="cyto_dl.models.classification.timepoint_classification.html#module-cyto_dl.models.classification.timepoint_classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.contrastive
 
@@ -1064,6 +1079,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.models.im2im.diffusion_autoencoder
+
+        <ul>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#module-cyto_dl.models.im2im.diffusion_autoencoder">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.models.im2im.gan
 
         <ul>
@@ -1082,6 +1104,13 @@
 
         <ul>
           <li><a href="cyto_dl.models.im2im.utils.html#module-cyto_dl.models.im2im.utils">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.models.im2im.utils.inferers
+
+        <ul>
+          <li><a href="cyto_dl.models.im2im.utils.inferers.html#module-cyto_dl.models.im2im.utils.inferers">module</a>
 </li>
         </ul></li>
         <li>
@@ -1407,6 +1436,13 @@
 </li>
         </ul></li>
         <li>
+    cyto_dl.nn.resnet
+
+        <ul>
+          <li><a href="cyto_dl.nn.resnet.html#module-cyto_dl.nn.resnet">module</a>
+</li>
+        </ul></li>
+        <li>
     cyto_dl.nn.spatial_transformer
 
         <ul>
@@ -1644,13 +1680,17 @@
         </ul></li>
         <li><a href="cyto_dl.utils.download_test_data.html#cyto_dl.utils.download_test_data.delete_test_data">delete_test_data() (in module cyto_dl.utils.download_test_data)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.detach">detach() (in module cyto_dl.models.im2im.utils.postprocessing.dict_to_im)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.vae.priors.gaussian.html#cyto_dl.models.vae.priors.gaussian.DiagonalGaussianPrior">DiagonalGaussianPrior (class in cyto_dl.models.vae.priors.gaussian)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.utils.postprocessing.dict_to_im.html#cyto_dl.models.im2im.utils.postprocessing.dict_to_im.DictToIm">DictToIm (class in cyto_dl.models.im2im.utils.postprocessing.dict_to_im)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk">DiffAELatentWalk (class in cyto_dl.callbacks.latent_walk_diffae)</a>
+</li>
+        <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder">DiffusionAutoEncoder (class in cyto_dl.models.im2im.diffusion_autoencoder)</a>
 </li>
         <li><a href="cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.download_example_data">download_example_data() (cyto_dl.api.model.CytoDLModel method)</a>
 </li>
@@ -1672,9 +1712,15 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd.embed_from_skel">embed_from_skel() (cyto_dl.models.im2im.utils.instance_seg.InstanceSegPreprocessd method)</a>
 </li>
+        <li><a href="cyto_dl.models.im2im.utils.inferers.html#cyto_dl.models.im2im.utils.inferers.EmbeddingPatchInferer">EmbeddingPatchInferer (class in cyto_dl.models.im2im.utils.inferers)</a>
+</li>
+        <li><a href="cyto_dl.models.im2im.utils.inferers.html#cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger">EmbeddingPatchMerger (class in cyto_dl.models.im2im.utils.inferers)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EMNIST">EMNIST (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.models.vae.base_vae.html#cyto_dl.models.vae.base_vae.BaseVAE.encode">encode() (cyto_dl.models.vae.base_vae.BaseVAE method)</a>
+</li>
+        <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.encode_image">encode_image() (cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
 </li>
         <li><a href="cyto_dl.nn.vits.seg.html#cyto_dl.nn.vits.seg.EncodedSkip">EncodedSkip (class in cyto_dl.nn.vits.seg)</a>
 </li>
@@ -1686,10 +1732,10 @@
           <li><a href="cyto_dl.nn.vits.mae.html#cyto_dl.nn.vits.mae.MAE_Base.encoder">(cyto_dl.nn.vits.mae.MAE_Base property)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.enforce_tags">enforce_tags() (in module cyto_dl.utils.rich_utils)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.utils.rich_utils.html#cyto_dl.utils.rich_utils.enforce_tags">enforce_tags() (in module cyto_dl.utils.rich_utils)</a>
+</li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.EuroSAT">EuroSAT (class in cyto_dl.datamodules.torchvision)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.ExperimentType">ExperimentType (class in cyto_dl.api.data)</a>
@@ -1732,6 +1778,8 @@
         </ul></li>
         <li><a href="cyto_dl.dataframe.transforms.filter.html#cyto_dl.dataframe.transforms.filter.filter_rows">filter_rows() (in module cyto_dl.dataframe.transforms.filter)</a>
 </li>
+        <li><a href="cyto_dl.models.im2im.utils.inferers.html#cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger.finalize">finalize() (cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger method)</a>
+</li>
         <li><a href="cyto_dl.models.utils.utils.html#cyto_dl.models.utils.utils.find_indices">find_indices() (in module cyto_dl.models.utils.utils)</a>
 </li>
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.flatten_activations">flatten_activations() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
@@ -1752,6 +1800,8 @@
           <li><a href="cyto_dl.models.classification.classification.html#cyto_dl.models.classification.classification.Classification.forward">(cyto_dl.models.classification.classification.Classification method)</a>
 </li>
           <li><a href="cyto_dl.models.contrastive.contrastive.html#cyto_dl.models.contrastive.contrastive.Contrastive.forward">(cyto_dl.models.contrastive.contrastive.Contrastive method)</a>
+</li>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.forward">(cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.forward">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
@@ -1802,6 +1852,8 @@
           <li><a href="cyto_dl.nn.mlp.html#cyto_dl.nn.mlp.MLP.forward">(cyto_dl.nn.mlp.MLP method)</a>
 </li>
           <li><a href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit.forward">(cyto_dl.nn.res_unit.ResidualUnit method)</a>
+</li>
+          <li><a href="cyto_dl.nn.resnet.html#cyto_dl.nn.resnet.ResNet.forward">(cyto_dl.nn.resnet.ResNet method)</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#cyto_dl.nn.spatial_transformer.ConvPoolReLU.forward">(cyto_dl.nn.spatial_transformer.ConvPoolReLU method)</a>
 </li>
@@ -1877,6 +1929,8 @@
         <li><a href="cyto_dl.nn.losses.gan_loss.html#cyto_dl.nn.losses.gan_loss.GANLoss">GANLoss (class in cyto_dl.nn.losses.gan_loss)</a>
 </li>
         <li><a href="cyto_dl.nn.losses.gaussian_nll_loss.html#cyto_dl.nn.losses.gaussian_nll_loss.GaussianNLLLoss">GaussianNLLLoss (class in cyto_dl.nn.losses.gaussian_nll_loss)</a>
+</li>
+        <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.generate_from_latent">generate_from_latent() (cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
 </li>
         <li><a href="cyto_dl.utils.dummy_dataset.html#cyto_dl.utils.dummy_dataset.DummyDataset.generate_img">generate_img() (cyto_dl.utils.dummy_dataset.DummyDataset method)</a>
 </li>
@@ -2072,6 +2126,8 @@
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.intermediate_weigher.html#cyto_dl.nn.vits.blocks.intermediate_weigher.IntermediateWeigher">IntermediateWeigher (class in cyto_dl.nn.vits.blocks.intermediate_weigher)</a>
 </li>
+        <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.inverted_cosine_beta_schedule">inverted_cosine_beta_schedule() (in module cyto_dl.models.im2im.diffusion_autoencoder)</a>
+</li>
         <li><a href="cyto_dl.utils.config.html#cyto_dl.utils.config.is_config">is_config() (in module cyto_dl.utils.config)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.AutoThresholdMethod.ISODATA">ISODATA (cyto_dl.api.data.AutoThresholdMethod attribute)</a>
@@ -2261,6 +2317,8 @@
 </li>
           <li><a href="cyto_dl.models.contrastive.contrastive.html#cyto_dl.models.contrastive.contrastive.Contrastive.model_step">(cyto_dl.models.contrastive.contrastive.Contrastive method)</a>
 </li>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.model_step">(cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.model_step">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.model_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
@@ -2297,6 +2355,8 @@
           <li><a href="cyto_dl.callbacks.csv_saver.html#module-cyto_dl.callbacks.csv_saver">cyto_dl.callbacks.csv_saver</a>
 </li>
           <li><a href="cyto_dl.callbacks.image_saver.html#module-cyto_dl.callbacks.image_saver">cyto_dl.callbacks.image_saver</a>
+</li>
+          <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#module-cyto_dl.callbacks.latent_walk_diffae">cyto_dl.callbacks.latent_walk_diffae</a>
 </li>
           <li><a href="cyto_dl.callbacks.layer_freeze.html#module-cyto_dl.callbacks.layer_freeze">cyto_dl.callbacks.layer_freeze</a>
 </li>
@@ -2406,11 +2466,15 @@
 </li>
           <li><a href="cyto_dl.models.im2im.html#module-cyto_dl.models.im2im">cyto_dl.models.im2im</a>
 </li>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#module-cyto_dl.models.im2im.diffusion_autoencoder">cyto_dl.models.im2im.diffusion_autoencoder</a>
+</li>
           <li><a href="cyto_dl.models.im2im.gan.html#module-cyto_dl.models.im2im.gan">cyto_dl.models.im2im.gan</a>
 </li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#module-cyto_dl.models.im2im.multi_task">cyto_dl.models.im2im.multi_task</a>
 </li>
           <li><a href="cyto_dl.models.im2im.utils.html#module-cyto_dl.models.im2im.utils">cyto_dl.models.im2im.utils</a>
+</li>
+          <li><a href="cyto_dl.models.im2im.utils.inferers.html#module-cyto_dl.models.im2im.utils.inferers">cyto_dl.models.im2im.utils.inferers</a>
 </li>
           <li><a href="cyto_dl.models.im2im.utils.instance_seg.html#module-cyto_dl.models.im2im.utils.instance_seg">cyto_dl.models.im2im.utils.instance_seg</a>
 </li>
@@ -2503,6 +2567,8 @@
           <li><a href="cyto_dl.nn.mlp.html#module-cyto_dl.nn.mlp">cyto_dl.nn.mlp</a>
 </li>
           <li><a href="cyto_dl.nn.res_unit.html#module-cyto_dl.nn.res_unit">cyto_dl.nn.res_unit</a>
+</li>
+          <li><a href="cyto_dl.nn.resnet.html#module-cyto_dl.nn.resnet">cyto_dl.nn.resnet</a>
 </li>
           <li><a href="cyto_dl.nn.spatial_transformer.html#module-cyto_dl.nn.spatial_transformer">cyto_dl.nn.spatial_transformer</a>
 </li>
@@ -2618,7 +2684,11 @@
 </li>
         </ul></li>
         <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.on_predict_epoch_end">on_predict_epoch_end() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk.on_predict_epoch_end">(cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk method)</a>
 </li>
+        </ul></li>
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_epoch_start">on_predict_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_save_checkpoint">on_save_checkpoint() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
@@ -2642,6 +2712,12 @@
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.on_train_start">on_train_start() (cyto_dl.models.base_model.BaseModel method)</a>
 </li>
         <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_validation_batch_end">on_validation_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk.on_validation_batch_end">(cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk method)</a>
+</li>
+        </ul></li>
+        <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk.on_validation_epoch_end">on_validation_epoch_end() (cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk method)</a>
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.AutoThresholdMethod.OTSU">OTSU (cyto_dl.api.data.AutoThresholdMethod attribute)</a>
 </li>
@@ -2703,10 +2779,10 @@
 </li>
         <li><a href="cyto_dl.models.contrastive.contrastive.html#cyto_dl.models.contrastive.contrastive.Contrastive.plot_neighbors">plot_neighbors() (cyto_dl.models.contrastive.contrastive.Contrastive method)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.image.io.polygon_loader.html#cyto_dl.image.io.polygon_loader.PolygonLoaderd">PolygonLoaderd (class in cyto_dl.image.io.polygon_loader)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.positionalencoding1d">positionalencoding1d() (in module cyto_dl.nn.track_sequence_predictor)</a>
 </li>
         <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.pred_to_csv">pred_to_csv() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
@@ -2737,6 +2813,8 @@
           <li><a href="cyto_dl.models.classification.timepoint_classification.html#cyto_dl.models.classification.timepoint_classification.TimepointClassification.predict_step">(cyto_dl.models.classification.timepoint_classification.TimepointClassification method)</a>
 </li>
           <li><a href="cyto_dl.models.contrastive.contrastive.html#cyto_dl.models.contrastive.contrastive.Contrastive.predict_step">(cyto_dl.models.contrastive.contrastive.Contrastive method)</a>
+</li>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.predict_step">(cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
 </li>
           <li><a href="cyto_dl.models.im2im.gan.html#cyto_dl.models.im2im.gan.GAN.predict_step">(cyto_dl.models.im2im.gan.GAN method)</a>
 </li>
@@ -2817,6 +2895,8 @@
 </li>
         <li><a href="cyto_dl.nn.res_unit.html#cyto_dl.nn.res_unit.ResidualUnit">ResidualUnit (class in cyto_dl.nn.res_unit)</a>
 </li>
+        <li><a href="cyto_dl.nn.resnet.html#cyto_dl.nn.resnet.ResNet">ResNet (class in cyto_dl.nn.resnet)</a>
+</li>
         <li><a href="cyto_dl.utils.rotation.html#cyto_dl.utils.rotation.RotationModule">RotationModule (class in cyto_dl.utils.rotation)</a>
 </li>
         <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.run_forward">run_forward() (cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
@@ -2865,6 +2945,8 @@
           <li><a href="cyto_dl.api.model.html#cyto_dl.api.model.CytoDLModel.save_config">(cyto_dl.api.model.CytoDLModel method)</a>
 </li>
         </ul></li>
+        <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.save_example">save_example() (cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
+</li>
         <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.save_feats">save_feats() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.save_file">save_file() (in module cyto_dl.utils.template_utils)</a>
@@ -3056,6 +3138,8 @@
         <li><a href="cyto_dl.models.base_model.html#cyto_dl.models.base_model.BaseModel.validation_step">validation_step() (cyto_dl.models.base_model.BaseModel method)</a>
 
         <ul>
+          <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.validation_step">(cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
+</li>
           <li><a href="cyto_dl.models.im2im.multi_task.html#cyto_dl.models.im2im.multi_task.MultiTaskIm2Im.validation_step">(cyto_dl.models.im2im.multi_task.MultiTaskIm2Im method)</a>
 </li>
         </ul></li>

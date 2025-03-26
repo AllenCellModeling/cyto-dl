@@ -1,0 +1,7 @@
+cyto\_dl.models.im2im.utils.inferers module
+===========================================
+
+.. automodule:: cyto_dl.models.im2im.utils.inferers
+   :members:
+   :undoc-members:
+   :show-inheritance:

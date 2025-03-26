@@ -1,0 +1,7 @@
+cyto\_dl.models.im2im.diffusion\_autoencoder module
+===================================================
+
+.. automodule:: cyto_dl.models.im2im.diffusion_autoencoder
+   :members:
+   :undoc-members:
+   :show-inheritance:

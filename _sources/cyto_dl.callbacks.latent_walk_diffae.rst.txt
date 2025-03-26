@@ -1,0 +1,7 @@
+cyto\_dl.callbacks.latent\_walk\_diffae module
+==============================================
+
+.. automodule:: cyto_dl.callbacks.latent_walk_diffae
+   :members:
+   :undoc-members:
+   :show-inheritance:
