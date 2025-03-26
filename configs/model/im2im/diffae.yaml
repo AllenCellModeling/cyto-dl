@@ -1,0 +1,79 @@
+_target_: cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder
+
+save_images_every_n_epochs: 1
+save_dir: ${paths.output_dir}
+image_shape: [1, 64, 64] # NOTE this should be changed if `raw_im_channels` or `patch_shape` is changed
+n_noise_samples: 1
+
+condition_key: ${source_col}
+diffusion_key: ${source_col}
+train_encoder: True
+
+noise_scheduler:
+  _target_: monai.networks.schedulers.ddim.DDIMScheduler
+  num_train_timesteps: 1000
+  schedule: "linear_beta"
+
+diffusion_inferer:
+  _target_: monai.inferers.DiffusionInferer
+  _partial_: True
+
+gamma: 5.0
+loss:
+  _target_: torch.nn.MSELoss
+  reduction: none
+
+semantic_encoder:
+  _target_: cyto_dl.nn.resnet.ResNet
+  out_dim: 8
+  base_encoder:
+    _partial_: True
+    _target_: torchvision.models.resnet18
+
+  # 3D
+  # _target_: monai.networks.nets.Regressor
+  # in_shape: [1, 16, 32, 32]
+  # out_shape: 8
+  # channels: [8, 16, 32]
+  # strides: [2, 2, 2]
+
+autoencoder:
+  _target_: monai.networks.nets.diffusion_model_unet.DiffusionModelUNet
+  spatial_dims: ${spatial_dims}
+  in_channels: ${raw_im_channels}
+  out_channels: 1
+  channels:
+    - 16
+    - 32
+    - 64
+  attention_levels:
+    - false
+    - true
+    - true
+  num_res_blocks: 1
+  num_head_channels: 16
+  norm_num_groups: 16
+  with_conditioning: true
+  cross_attention_dim: 1
+
+optimizer:
+  _partial_: True
+  _target_: torch.optim.AdamW
+  lr: 0.0001
+
+lr_scheduler:
+  _partial_: True
+  _target_: torch.optim.lr_scheduler.ExponentialLR
+  gamma: 0.998
+
+# this will be used to infer patch-wise embeddings from the raw images
+spatial_inferer:
+  _target_: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchInferer
+  splitter:
+    _target_: monai.inferers.SlidingWindowSplitter
+    patch_size: ${data._aux.patch_shape}
+    # pad mode null prevents inference on patches that go beyond the image boundary
+    pad_mode: null
+    overlap: 0
+  merger_cls: cyto_dl.models.im2im.utils.inferers.EmbeddingPatchMerger
+  batch_size: ${data.batch_size}
