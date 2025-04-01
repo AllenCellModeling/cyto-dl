@@ -450,16 +450,15 @@
           <section id="module-cyto_dl.image.transforms.project">
 <span id="cyto-dl-image-transforms-project-module"></span><h1>cyto_dl.image.transforms.project module<a class="headerlink" href="#module-cyto_dl.image.transforms.project" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.image.transforms.project.Projectd">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.project.</span></span><span class="sig-name descname"><span class="pre">Projectd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/project.html#Projectd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.project.Projectd" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.image.transforms.project.MaxProjectd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.image.transforms.project.</span></span><span class="sig-name descname"><span class="pre">MaxProjectd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_missing_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/image/transforms/project.html#MaxProjectd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.image.transforms.project.MaxProjectd" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></p>
-<p>Monai-style transform to apply projections (e.g., max, std) to an image.</p>
+<p>Monai-style transform to take max projection of an image.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>keys</strong> (<em>Union[list, str]</em>) – keys to apply projection</p></li>
-<li><p><strong>projection_dim</strong> (<em>int=1</em>) – index into C[Z]YX to compute projection across</p></li>
-<li><p><strong>projection_type</strong> (<em>str=”max”</em>) – Type of projection to apply. Options: “max”, “min”, “std”, “median”, “mode”, “mean”</p></li>
+<li><p><strong>keys</strong> (<em>Union[list, str]</em>) – keys to apply max projection</p></li>
+<li><p><strong>projection_dim</strong> (<em>int=1</em>) – index into NCZYX to compute projection across</p></li>
 <li><p><strong>allow_missing_keys</strong> (<em>bool=False</em>) – Whether to raise error if specified key is missing</p></li>
 </ul>
 </dd>
@@ -524,7 +523,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">cyto_dl.image.transforms.project module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.image.transforms.project.Projectd"><code class="docutils literal notranslate"><span class="pre">Projectd</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.image.transforms.project.MaxProjectd"><code class="docutils literal notranslate"><span class="pre">MaxProjectd</span></code></a></li>
 </ul>
 </li>
 </ul>
