@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.resnet - cyto-dl 0.4.5 documentation</title>
+        <title>cyto_dl.nn.torchvision_wrapper - cyto-dl 0.4.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -375,8 +375,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.resnet.html">cyto_dl.nn.resnet module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.torchvision_wrapper.html">cyto_dl.nn.torchvision_wrapper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
@@ -445,60 +445,82 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.nn.resnet</h1><div class="highlight"><pre>
+          <h1>Source code for cyto_dl.nn.torchvision_wrapper</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
 
 
-<div class="viewcode-block" id="ResNet"><a class="viewcode-back" href="../../../cyto_dl.nn.resnet.html#cyto_dl.nn.resnet.ResNet">[docs]</a><span class="k">class</span> <span class="nc">ResNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resnet wrapper for variable input channels and output dimensions.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TorchVisionWrapper"><a class="viewcode-back" href="../../../cyto_dl.nn.torchvision_wrapper.html#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper">[docs]</a><span class="k">class</span> <span class="nc">TorchVisionWrapper</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="n">VALID_MODELS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;ShuffleNetV2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ConvNeXt&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableShuffleNetV2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MaxVit&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MobileNetV2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableResNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableMobileNetV2&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;VGG&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;GoogLeNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;FCN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MNASNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SwinTransformer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SqueezeNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;VisionTransformer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AlexNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;DenseNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableGoogLeNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ResNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;LRASPP&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableMobileNetV3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Inception3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QuantizableInception3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;RegNet&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MobileNetV3&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;EfficientNet&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">base_encoder</span><span class="p">,</span>
-        <span class="n">num_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-        <span class="n">out_dim</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
-        <span class="n">zero_init_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">normalize_embeddings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_encoder</span><span class="p">,</span> <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrap a torchvision model to accept a different number of input channels.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        base_encoder:</span>
-<span class="sd">            resnet model from torchviion</span>
-<span class="sd">        num_channels:</span>
+<span class="sd">            An initialized torchvision model. The following models are supported: ShuffleNetV2, ConvNeXt, QuantizableShuffleNetV2, MaxVit, MobileNetV2, QuantizableResNet, QuantizableMobileNetV2, VGG, GoogLeNet, FCN, MNASNet, SwinTransformer, SqueezeNet, VisionTransformer, AlexNet, DenseNet, QuantizableGoogLeNet, ResNet, LRASPP, QuantizableMobileNetV3, Inception3, QuantizableInception3, RegNet, MobileNetV3, EfficientNet</span>
+<span class="sd">        in_channels:</span>
 <span class="sd">            number of input channels (default: 1)</span>
-<span class="sd">        out_dim:</span>
-<span class="sd">            feature dimension (default: 2048)</span>
-<span class="sd">        zero_init_residual:</span>
-<span class="sd">            zero-initialize the last BN in each residual branch (default: True)</span>
-<span class="sd">        normalize_embeddings:</span>
-<span class="sd">            whether to normalize embeddings (default: False)</span>
-<span class="sd">        kwargs:</span>
-<span class="sd">            additional arguments to pass to the base encoder.Full arguments can be found [here](https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">base_encoder</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">VALID_MODELS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="n">base_encoder</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> not supported, only </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">VALID_MODELS</span><span class="si">}</span><span class="s2"> are supported&quot;</span>
+            <span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="c1"># create the encoder</span>
-        <span class="c1"># num_classes is the output fc dimension, zero-initialize last BNs</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;num_classes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_dim</span>
-        <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;zero_init_residual&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">zero_init_residual</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">base_encoder</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># make first layer of encoder match num_channels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
-            <span class="n">num_channels</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">out_channels</span><span class="p">,</span>
-            <span class="n">kernel_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span>
-            <span class="n">stride</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">stride</span><span class="p">,</span>
-            <span class="n">padding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="o">.</span><span class="n">conv1</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
-            <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">normalize_embeddings</span> <span class="o">=</span> <span class="n">normalize_embeddings</span>
+        <span class="k">if</span> <span class="n">in_channels</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># find first Conv2D with 3 input channels</span>
+            <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">base_encoder</span><span class="o">.</span><span class="n">modules</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">)</span> <span class="ow">and</span> <span class="n">layer</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">new_layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                        <span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>
+                        <span class="n">out_channels</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">out_channels</span><span class="p">,</span>
+                        <span class="n">kernel_size</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span>
+                        <span class="n">stride</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">stride</span><span class="p">,</span>
+                        <span class="n">padding</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">padding</span><span class="p">,</span>
+                        <span class="n">dilation</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">dilation</span><span class="p">,</span>
+                        <span class="n">groups</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span>
+                        <span class="n">bias</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">bias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">padding_mode</span><span class="o">=</span><span class="n">layer</span><span class="o">.</span><span class="n">padding_mode</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="c1"># Replace the old layer with the new layer</span>
+                    <span class="n">layer</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">new_layer</span><span class="o">.</span><span class="n">weight</span>
+                    <span class="n">layer</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">new_layer</span><span class="o">.</span><span class="n">bias</span>
+                    <span class="n">layer</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Could not find Conv2D layer with 3 input channels. Please create a GitHub issue or provide one of the valid models.&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">base_encoder</span>
 
-<div class="viewcode-block" id="ResNet.forward"><a class="viewcode-back" href="../../../cyto_dl.nn.resnet.html#cyto_dl.nn.resnet.ResNet.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">):</span>
-        <span class="n">emb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_embeddings</span><span class="p">:</span>
-            <span class="n">emb</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">emb</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">emb</span></div></div>
+<div class="viewcode-block" id="TorchVisionWrapper.forward"><a class="viewcode-back" href="../../../cyto_dl.nn.torchvision_wrapper.html#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

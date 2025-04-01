@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.spatial_transformer module" href="cyto_dl.nn.spatial_transformer.html" /><link rel="prev" title="cyto_dl.nn.res_unit module" href="cyto_dl.nn.res_unit.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="cyto_dl.nn.track_sequence_predictor module" href="cyto_dl.nn.track_sequence_predictor.html" /><link rel="prev" title="cyto_dl.nn.spatial_transformer module" href="cyto_dl.nn.spatial_transformer.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.nn.resnet module - cyto-dl 0.4.5 documentation</title>
+        <title>cyto_dl.nn.torchvision_wrapper module - cyto-dl 0.4.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -376,8 +376,8 @@
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.hr_skip.html">cyto_dl.nn.hr_skip module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.mlp.html">cyto_dl.nn.mlp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.res_unit.html">cyto_dl.nn.res_unit module</a></li>
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.resnet module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.spatial_transformer.html">cyto_dl.nn.spatial_transformer module</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">cyto_dl.nn.torchvision_wrapper module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.nn.track_sequence_predictor.html">cyto_dl.nn.track_sequence_predictor module</a></li>
 </ul>
 </li>
@@ -447,28 +447,29 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-cyto_dl.nn.resnet">
-<span id="cyto-dl-nn-resnet-module"></span><h1>cyto_dl.nn.resnet module<a class="headerlink" href="#module-cyto_dl.nn.resnet" title="Permalink to this heading">#</a></h1>
+          <section id="module-cyto_dl.nn.torchvision_wrapper">
+<span id="cyto-dl-nn-torchvision-wrapper-module"></span><h1>cyto_dl.nn.torchvision_wrapper module<a class="headerlink" href="#module-cyto_dl.nn.torchvision_wrapper" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="cyto_dl.nn.resnet.ResNet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.resnet.</span></span><span class="sig-name descname"><span class="pre">ResNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_init_residual</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize_embeddings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/resnet.html#ResNet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.resnet.ResNet" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cyto_dl.nn.torchvision_wrapper.</span></span><span class="sig-name descname"><span class="pre">TorchVisionWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_encoder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/torchvision_wrapper.html#TorchVisionWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Resnet wrapper for variable input channels and output dimensions.</p>
+<p>Wrap a torchvision model to accept a different number of input channels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_encoder</strong> – resnet model from torchviion</p></li>
-<li><p><strong>num_channels</strong> – number of input channels (default: 1)</p></li>
-<li><p><strong>out_dim</strong> – feature dimension (default: 2048)</p></li>
-<li><p><strong>zero_init_residual</strong> – zero-initialize the last BN in each residual branch (default: True)</p></li>
-<li><p><strong>normalize_embeddings</strong> – whether to normalize embeddings (default: False)</p></li>
-<li><p><strong>kwargs</strong> – additional arguments to pass to the base encoder.Full arguments can be found [here](<a class="reference external" href="https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py">https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py</a>)</p></li>
+<li><p><strong>base_encoder</strong> – An initialized torchvision model. The following models are supported: ShuffleNetV2, ConvNeXt, QuantizableShuffleNetV2, MaxVit, MobileNetV2, QuantizableResNet, QuantizableMobileNetV2, VGG, GoogLeNet, FCN, MNASNet, SwinTransformer, SqueezeNet, VisionTransformer, AlexNet, DenseNet, QuantizableGoogLeNet, ResNet, LRASPP, QuantizableMobileNetV3, Inception3, QuantizableInception3, RegNet, MobileNetV3, EfficientNet</p></li>
+<li><p><strong>in_channels</strong> – number of input channels (default: 1)</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.VALID_MODELS">
+<span class="sig-name descname"><span class="pre">VALID_MODELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('ShuffleNetV2',</span> <span class="pre">'ConvNeXt',</span> <span class="pre">'QuantizableShuffleNetV2',</span> <span class="pre">'MaxVit',</span> <span class="pre">'MobileNetV2',</span> <span class="pre">'QuantizableResNet',</span> <span class="pre">'QuantizableMobileNetV2',</span> <span class="pre">'VGG',</span> <span class="pre">'GoogLeNet',</span> <span class="pre">'FCN',</span> <span class="pre">'MNASNet',</span> <span class="pre">'SwinTransformer',</span> <span class="pre">'SqueezeNet',</span> <span class="pre">'VisionTransformer',</span> <span class="pre">'AlexNet',</span> <span class="pre">'DenseNet',</span> <span class="pre">'QuantizableGoogLeNet',</span> <span class="pre">'ResNet',</span> <span class="pre">'LRASPP',</span> <span class="pre">'QuantizableMobileNetV3',</span> <span class="pre">'Inception3',</span> <span class="pre">'QuantizableInception3',</span> <span class="pre">'RegNet',</span> <span class="pre">'MobileNetV3',</span> <span class="pre">'EfficientNet')</span></em><a class="headerlink" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.VALID_MODELS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="cyto_dl.nn.resnet.ResNet.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/resnet.html#ResNet.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.resnet.ResNet.forward" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cyto_dl/nn/torchvision_wrapper.html#TorchVisionWrapper.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.forward" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -480,23 +481,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cyto_dl.nn.spatial_transformer.html">
+          <a class="next-page" href="cyto_dl.nn.track_sequence_predictor.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">cyto_dl.nn.spatial_transformer module</div>
+                <div class="title">cyto_dl.nn.track_sequence_predictor module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="cyto_dl.nn.res_unit.html">
+          <a class="prev-page" href="cyto_dl.nn.spatial_transformer.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">cyto_dl.nn.res_unit module</div>
+                <div class="title">cyto_dl.nn.spatial_transformer module</div>
                 
               </div>
             </a>
@@ -530,9 +531,10 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">cyto_dl.nn.resnet module</a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.resnet.ResNet"><code class="docutils literal notranslate"><span class="pre">ResNet</span></code></a><ul>
-<li><a class="reference internal" href="#cyto_dl.nn.resnet.ResNet.forward"><code class="docutils literal notranslate"><span class="pre">ResNet.forward()</span></code></a></li>
+<li><a class="reference internal" href="#">cyto_dl.nn.torchvision_wrapper module</a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper"><code class="docutils literal notranslate"><span class="pre">TorchVisionWrapper</span></code></a><ul>
+<li><a class="reference internal" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.VALID_MODELS"><code class="docutils literal notranslate"><span class="pre">TorchVisionWrapper.VALID_MODELS</span></code></a></li>
+<li><a class="reference internal" href="#cyto_dl.nn.torchvision_wrapper.TorchVisionWrapper.forward"><code class="docutils literal notranslate"><span class="pre">TorchVisionWrapper.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>

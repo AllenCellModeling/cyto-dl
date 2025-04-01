@@ -1,0 +1,7 @@
+cyto\_dl.nn.torchvision\_wrapper module
+=======================================
+
+.. automodule:: cyto_dl.nn.torchvision_wrapper
+   :members:
+   :undoc-members:
+   :show-inheritance:
