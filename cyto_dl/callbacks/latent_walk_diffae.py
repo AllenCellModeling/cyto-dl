@@ -107,6 +107,8 @@ class DiffAELatentWalk(Callback):
             save=False,
             batch_size=self.batch_size,
         )
+        # if vertically stack multi-channel generations
+        walk_img = walk_img.reshape(walk_img.shape[0], -1, walk_img.shape[-1])
         walk_img = self._write_pc_vals(walk_img, ranges)
         OmeTiffWriter.save(uri=save_path, data=walk_img)
 
