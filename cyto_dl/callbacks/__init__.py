@@ -7,3 +7,4 @@ from .layer_freeze import LayerFreeze
 
 # raise NotImplementedError("TODO: refactor callbacks")
 from .outlier_detection import OutlierDetection
+from .tabular_saver import SaveTabularData
