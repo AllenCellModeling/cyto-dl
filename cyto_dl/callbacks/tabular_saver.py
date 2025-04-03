@@ -9,7 +9,6 @@ from lightning.pytorch.callbacks import Callback
 warnings.simplefilter("once", UserWarning)
 
 
-
 class SaveTabularData(Callback):
     """Callback to save tabular data to disk as a .csv or .parquet after prediction."""
 
@@ -48,9 +47,13 @@ class SaveTabularData(Callback):
         return meta
 
     def _save(self, feats, stage):
-        save_name = self.save_dir / f"{stage}" if self.suffix is None else self.save_dir / f"{stage}_{self.suffix}"
+        save_name = (
+            self.save_dir / str(stage)
+            if self.suffix is None
+            else self.save_dir / f"{stage}_{self.suffix}"
+        )
         if self.as_parquet:
-            feats= pd.concat(feats)
+            feats = pd.concat(feats)
             for col in feats.select_dtypes(include=[np.float16]).columns:
                 feats[col] = feats[col].astype(np.float32)
             feats.columns = feats.columns.astype(str)
@@ -77,25 +80,3 @@ class SaveTabularData(Callback):
         # Access the list of predictions from all predict_steps
         predictions = trainer.predict_loop.predictions
         self.save_feats(predictions, "predict")
-
-
-class MAESaver(SaveTabularData):
-    def pred_to_df(self, x):
-        return pd.DataFrame(x[1:].mean(axis=0))
-
-
-class JEPASaver(SaveTabularData):
-    def pred_to_df(self, pred):
-        source_embed, target_embed, pred_target_embed = pred
-
-        source_feats = pd.DataFrame(source_embed)
-        source_feats["feat_type"] = "source"
-
-        target_feats = pd.DataFrame(target_embed)
-        target_feats["feat_type"] = "target"
-
-        pred_feats = pd.DataFrame(pred_target_embed)
-        pred_feats["feat_type"] = "pred"
-
-        all_feats = pd.concat([source_feats, target_feats, pred_feats])
-        return all_feats
