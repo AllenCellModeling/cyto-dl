@@ -172,13 +172,14 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.grad_monitor.html">cyto_dl.callbacks.grad_monitor module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.latent_walk_diffae.html">cyto_dl.callbacks.latent_walk_diffae module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cyto_dl.callbacks.tabular_saver.html">cyto_dl.callbacks.tabular_saver module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="cyto_dl.dataframe.html">cyto_dl.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -619,8 +620,6 @@
 </li>
         <li><a href="cyto_dl.nn.vits.blocks.cross_attention.html#cyto_dl.nn.vits.blocks.cross_attention.CrossSelfBlock">CrossSelfBlock (class in cyto_dl.nn.vits.blocks.cross_attention)</a>
 </li>
-        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver">CSVSaver (class in cyto_dl.callbacks.csv_saver)</a>
-</li>
         <li>
     cyto_dl
 
@@ -678,10 +677,10 @@
 </li>
         </ul></li>
         <li>
-    cyto_dl.callbacks.csv_saver
+    cyto_dl.callbacks.grad_monitor
 
         <ul>
-          <li><a href="cyto_dl.callbacks.csv_saver.html#module-cyto_dl.callbacks.csv_saver">module</a>
+          <li><a href="cyto_dl.callbacks.grad_monitor.html#module-cyto_dl.callbacks.grad_monitor">module</a>
 </li>
         </ul></li>
         <li>
@@ -717,6 +716,13 @@
 
         <ul>
           <li><a href="cyto_dl.callbacks.outlier_detection.html#module-cyto_dl.callbacks.outlier_detection">module</a>
+</li>
+        </ul></li>
+        <li>
+    cyto_dl.callbacks.tabular_saver
+
+        <ul>
+          <li><a href="cyto_dl.callbacks.tabular_saver.html#module-cyto_dl.callbacks.tabular_saver">module</a>
 </li>
         </ul></li>
         <li>
@@ -1048,6 +1054,8 @@
           <li><a href="cyto_dl.models.classification.classification.html#module-cyto_dl.models.classification.classification">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.classification.timepoint_classification
 
@@ -1055,8 +1063,6 @@
           <li><a href="cyto_dl.models.classification.timepoint_classification.html#module-cyto_dl.models.classification.timepoint_classification">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     cyto_dl.models.contrastive
 
@@ -2040,6 +2046,8 @@
 </li>
         <li><a href="cyto_dl.api.data.html#cyto_dl.api.data.HardwareType.GPU">GPU (cyto_dl.api.data.HardwareType attribute)</a>
 </li>
+        <li><a href="cyto_dl.callbacks.grad_monitor.html#cyto_dl.callbacks.grad_monitor.GradientLoggingCallback">GradientLoggingCallback (class in cyto_dl.callbacks.grad_monitor)</a>
+</li>
         <li><a href="cyto_dl.dataframe.transforms.group_cols.html#cyto_dl.dataframe.transforms.group_cols.GroupCols">GroupCols (class in cyto_dl.dataframe.transforms.group_cols)</a>
 </li>
         <li><a href="cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.html#cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule.GroupedDataframeDatamodule">GroupedDataframeDatamodule (class in cyto_dl.datamodules.dataframe.grouped_dataframe_datamodule)</a>
@@ -2150,13 +2158,11 @@
 </li>
         <li><a href="cyto_dl.nn.vits.encoder.html#cyto_dl.nn.vits.encoder.JEPAEncoder">JEPAEncoder (class in cyto_dl.nn.vits.encoder)</a>
 </li>
-        <li><a href="cyto_dl.image.transforms.generate_jepa_masks.html#cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator">JEPAMaskGenerator (class in cyto_dl.image.transforms.generate_jepa_masks)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor">JEPAPredictor (class in cyto_dl.nn.vits.predictor)</a>
+        <li><a href="cyto_dl.image.transforms.generate_jepa_masks.html#cyto_dl.image.transforms.generate_jepa_masks.JEPAMaskGenerator">JEPAMaskGenerator (class in cyto_dl.image.transforms.generate_jepa_masks)</a>
 </li>
-        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.JEPASaver">JEPASaver (class in cyto_dl.callbacks.csv_saver)</a>
+        <li><a href="cyto_dl.nn.vits.predictor.html#cyto_dl.nn.vits.predictor.JEPAPredictor">JEPAPredictor (class in cyto_dl.nn.vits.predictor)</a>
 </li>
         <li><a href="cyto_dl.models.vae.priors.joint_prior.html#cyto_dl.models.vae.priors.joint_prior.JointPrior">JointPrior (class in cyto_dl.models.vae.priors.joint_prior)</a>
 </li>
@@ -2350,7 +2356,7 @@
 </li>
           <li><a href="cyto_dl.callbacks.html#module-cyto_dl.callbacks">cyto_dl.callbacks</a>
 </li>
-          <li><a href="cyto_dl.callbacks.csv_saver.html#module-cyto_dl.callbacks.csv_saver">cyto_dl.callbacks.csv_saver</a>
+          <li><a href="cyto_dl.callbacks.grad_monitor.html#module-cyto_dl.callbacks.grad_monitor">cyto_dl.callbacks.grad_monitor</a>
 </li>
           <li><a href="cyto_dl.callbacks.image_saver.html#module-cyto_dl.callbacks.image_saver">cyto_dl.callbacks.image_saver</a>
 </li>
@@ -2361,6 +2367,8 @@
           <li><a href="cyto_dl.callbacks.model_utils.html#module-cyto_dl.callbacks.model_utils">cyto_dl.callbacks.model_utils</a>
 </li>
           <li><a href="cyto_dl.callbacks.outlier_detection.html#module-cyto_dl.callbacks.outlier_detection">cyto_dl.callbacks.outlier_detection</a>
+</li>
+          <li><a href="cyto_dl.callbacks.tabular_saver.html#module-cyto_dl.callbacks.tabular_saver">cyto_dl.callbacks.tabular_saver</a>
 </li>
           <li><a href="cyto_dl.dataframe.html#module-cyto_dl.dataframe">cyto_dl.dataframe</a>
 </li>
@@ -2681,10 +2689,10 @@
           <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_batch_end">(cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
         </ul></li>
-        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.on_predict_epoch_end">on_predict_epoch_end() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
+        <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk.on_predict_epoch_end">on_predict_epoch_end() (cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk method)</a>
 
         <ul>
-          <li><a href="cyto_dl.callbacks.latent_walk_diffae.html#cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk.on_predict_epoch_end">(cyto_dl.callbacks.latent_walk_diffae.DiffAELatentWalk method)</a>
+          <li><a href="cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData.on_predict_epoch_end">(cyto_dl.callbacks.tabular_saver.SaveTabularData method)</a>
 </li>
         </ul></li>
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_predict_epoch_start">on_predict_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
@@ -2704,6 +2712,8 @@
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_test_epoch_start">on_test_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
         <li><a href="cyto_dl.callbacks.image_saver.html#cyto_dl.callbacks.image_saver.ImageSaver.on_train_batch_end">on_train_batch_end() (cyto_dl.callbacks.image_saver.ImageSaver method)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.grad_monitor.html#cyto_dl.callbacks.grad_monitor.GradientLoggingCallback.on_train_epoch_end">on_train_epoch_end() (cyto_dl.callbacks.grad_monitor.GradientLoggingCallback method)</a>
 </li>
         <li><a href="cyto_dl.callbacks.outlier_detection.html#cyto_dl.callbacks.outlier_detection.OutlierDetection.on_train_epoch_start">on_train_epoch_start() (cyto_dl.callbacks.outlier_detection.OutlierDetection method)</a>
 </li>
@@ -2783,12 +2793,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="cyto_dl.nn.track_sequence_predictor.html#cyto_dl.nn.track_sequence_predictor.positionalencoding1d">positionalencoding1d() (in module cyto_dl.nn.track_sequence_predictor)</a>
 </li>
-        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.pred_to_csv">pred_to_csv() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
-
-        <ul>
-          <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.JEPASaver.pred_to_csv">(cyto_dl.callbacks.csv_saver.JEPASaver method)</a>
+        <li><a href="cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData.pred_to_df">pred_to_df() (cyto_dl.callbacks.tabular_saver.SaveTabularData method)</a>
 </li>
-        </ul></li>
         <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.predict">predict() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
 
         <ul>
@@ -2945,7 +2951,7 @@
         </ul></li>
         <li><a href="cyto_dl.models.im2im.diffusion_autoencoder.html#cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder.save_example">save_example() (cyto_dl.models.im2im.diffusion_autoencoder.DiffusionAutoEncoder method)</a>
 </li>
-        <li><a href="cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.save_feats">save_feats() (cyto_dl.callbacks.csv_saver.CSVSaver method)</a>
+        <li><a href="cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData.save_feats">save_feats() (cyto_dl.callbacks.tabular_saver.SaveTabularData method)</a>
 </li>
         <li><a href="cyto_dl.utils.template_utils.html#cyto_dl.utils.template_utils.save_file">save_file() (in module cyto_dl.utils.template_utils)</a>
 </li>
@@ -2954,6 +2960,8 @@
         <li><a href="cyto_dl.callbacks.model_utils.html#cyto_dl.callbacks.model_utils.save_predictions_classifier">save_predictions_classifier() (in module cyto_dl.callbacks.model_utils)</a>
 </li>
         <li><a href="cyto_dl.image.transforms.save.html#cyto_dl.image.transforms.save.Saved">Saved (class in cyto_dl.image.transforms.save)</a>
+</li>
+        <li><a href="cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData">SaveTabularData (class in cyto_dl.callbacks.tabular_saver)</a>
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SBDataset">SBDataset (class in cyto_dl.datamodules.torchvision)</a>
 </li>
@@ -2973,10 +2981,10 @@
 </li>
         <li><a href="cyto_dl.datamodules.torchvision.html#cyto_dl.datamodules.torchvision.SEMEION">SEMEION (class in cyto_dl.datamodules.torchvision)</a>
 </li>
-        <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.set_experiment_name">set_experiment_name() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="cyto_dl.api.cyto_dl_model.cyto_dl_base_model.html#cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel.set_experiment_name">set_experiment_name() (cyto_dl.api.cyto_dl_model.cyto_dl_base_model.CytoDLBaseModel method)</a>
+</li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_hardware_type">set_hardware_type() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>
 </li>
         <li><a href="cyto_dl.api.cyto_dl_model.segmentation_plugin_model.html#cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel.set_input_channel">set_input_channel() (cyto_dl.api.cyto_dl_model.segmentation_plugin_model.SegmentationPluginModel method)</a>

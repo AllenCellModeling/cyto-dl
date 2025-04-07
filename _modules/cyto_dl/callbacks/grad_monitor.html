@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 6.1.3 and Furo 2023.03.23 -->
-        <title>cyto_dl.callbacks.csv_saver - cyto-dl 0.5.0 documentation</title>
+        <title>cyto_dl.callbacks.grad_monitor - cyto-dl 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -173,13 +173,14 @@
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../cyto_dl.callbacks.html">cyto_dl.callbacks package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.callback_utils.html">cyto_dl.callbacks.callback_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.csv_saver.html">cyto_dl.callbacks.csv_saver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.grad_monitor.html">cyto_dl.callbacks.grad_monitor module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.image_saver.html">cyto_dl.callbacks.image_saver module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.latent_walk.html">cyto_dl.callbacks.latent_walk module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.latent_walk_diffae.html">cyto_dl.callbacks.latent_walk_diffae module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.layer_freeze.html">cyto_dl.callbacks.layer_freeze module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.model_utils.html">cyto_dl.callbacks.model_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.outlier_detection.html">cyto_dl.callbacks.outlier_detection module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../cyto_dl.callbacks.tabular_saver.html">cyto_dl.callbacks.tabular_saver module</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../cyto_dl.dataframe.html">cyto_dl.dataframe package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -445,52 +446,40 @@
           </label>
         </div>
         <article role="main">
-          <h1>Source code for cyto_dl.callbacks.csv_saver</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+          <h1>Source code for cyto_dl.callbacks.grad_monitor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
 <span class="kn">from</span> <span class="nn">lightning.pytorch.callbacks</span> <span class="kn">import</span> <span class="n">Callback</span>
 
 
-<div class="viewcode-block" id="CSVSaver"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver">[docs]</a><span class="k">class</span> <span class="nc">CSVSaver</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">meta_keys</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span> <span class="o">=</span> <span class="n">meta_keys</span>
+<div class="viewcode-block" id="GradientLoggingCallback"><a class="viewcode-back" href="../../../cyto_dl.callbacks.grad_monitor.html#cyto_dl.callbacks.grad_monitor.GradientLoggingCallback">[docs]</a><span class="k">class</span> <span class="nc">GradientLoggingCallback</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grouping_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grouping_level</span> <span class="o">=</span> <span class="n">grouping_level</span>
 
-<div class="viewcode-block" id="CSVSaver.pred_to_csv"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.pred_to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">pred_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_get_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grouping_level</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">grouping_level</span><span class="p">])</span>
 
-<div class="viewcode-block" id="CSVSaver.save_feats"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.save_feats">[docs]</a>    <span class="k">def</span> <span class="nf">save_feats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
-        <span class="n">feats</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">pred</span><span class="p">,</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">predictions</span><span class="p">:</span>
-            <span class="n">batch_feats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_to_csv</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span><span class="p">:</span>
-                <span class="n">batch_feats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="n">feats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_feats</span><span class="p">)</span>
-        <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">feats</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">.csv&quot;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+<div class="viewcode-block" id="GradientLoggingCallback.on_train_epoch_end"><a class="viewcode-back" href="../../../cyto_dl.callbacks.grad_monitor.html#cyto_dl.callbacks.grad_monitor.GradientLoggingCallback.on_train_epoch_end">[docs]</a>    <span class="k">def</span> <span class="nf">on_train_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
+        <span class="c1"># Initialize a dictionary to store the average norms</span>
+        <span class="n">group_names</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">()}</span>
 
-<div class="viewcode-block" id="CSVSaver.on_predict_epoch_end"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.CSVSaver.on_predict_epoch_end">[docs]</a>    <span class="k">def</span> <span class="nf">on_predict_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
-        <span class="c1"># Access the list of predictions from all predict_steps</span>
-        <span class="n">predictions</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict_loop</span><span class="o">.</span><span class="n">predictions</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_feats</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="s2">&quot;predict&quot;</span><span class="p">)</span></div></div>
+        <span class="n">norms</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">group_names</span><span class="p">}</span>
 
+        <span class="c1"># Iterate over the model parameters</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">pl_module</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+            <span class="c1"># Check if the parameter has a norm</span>
+            <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">grad</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">group_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_group</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="c1"># Store the norm in the dictionary</span>
+                <span class="n">norms</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">parameter</span><span class="o">.</span><span class="n">grad</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
 
-<div class="viewcode-block" id="JEPASaver"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.JEPASaver">[docs]</a><span class="k">class</span> <span class="nc">JEPASaver</span><span class="p">(</span><span class="n">CSVSaver</span><span class="p">):</span>
-<div class="viewcode-block" id="JEPASaver.pred_to_csv"><a class="viewcode-back" href="../../../cyto_dl.callbacks.csv_saver.html#cyto_dl.callbacks.csv_saver.JEPASaver.pred_to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">pred_to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="n">source_embed</span><span class="p">,</span> <span class="n">target_embed</span><span class="p">,</span> <span class="n">pred_target_embed</span> <span class="o">=</span> <span class="n">pred</span>
-
-        <span class="n">source_feats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">source_embed</span><span class="p">)</span>
-        <span class="n">source_feats</span><span class="p">[</span><span class="s2">&quot;feat_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;source&quot;</span>
-
-        <span class="n">target_feats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">target_embed</span><span class="p">)</span>
-        <span class="n">target_feats</span><span class="p">[</span><span class="s2">&quot;feat_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;target&quot;</span>
-
-        <span class="n">pred_feats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pred_target_embed</span><span class="p">)</span>
-        <span class="n">pred_feats</span><span class="p">[</span><span class="s2">&quot;feat_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pred&quot;</span>
-
-        <span class="n">all_feats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">source_feats</span><span class="p">,</span> <span class="n">target_feats</span><span class="p">,</span> <span class="n">pred_feats</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">all_feats</span></div></div>
+        <span class="c1"># Calculate the average norm for each group</span>
+        <span class="n">average_norms</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">norms</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">norms</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">norms</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="c1"># Log the average norms</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log_metrics</span><span class="p">(</span><span class="n">average_norms</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">global_step</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>

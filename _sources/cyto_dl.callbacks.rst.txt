@@ -13,10 +13,11 @@ Submodules
    :maxdepth: 4
 
    cyto_dl.callbacks.callback_utils
-   cyto_dl.callbacks.csv_saver
+   cyto_dl.callbacks.grad_monitor
    cyto_dl.callbacks.image_saver
    cyto_dl.callbacks.latent_walk
    cyto_dl.callbacks.latent_walk_diffae
    cyto_dl.callbacks.layer_freeze
    cyto_dl.callbacks.model_utils
    cyto_dl.callbacks.outlier_detection
+   cyto_dl.callbacks.tabular_saver
