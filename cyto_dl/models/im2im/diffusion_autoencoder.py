@@ -1,4 +1,5 @@
 import math
+from copy import deepcopy
 from typing import Optional, Sequence
 
 import torch
@@ -280,4 +281,4 @@ class DiffusionAutoEncoder(BaseModel):
         batch = convert_to_tensor(batch)
         z, loc = self.encode_image(batch[self.hparams.condition_key])
         meta.update(loc)
-        return detach(z), meta
+        return detach(z), deepcopy(meta)

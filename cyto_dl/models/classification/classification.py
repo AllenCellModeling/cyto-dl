@@ -1,8 +1,8 @@
 import sys
+from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import torch
 import torch.nn as nn
 from bioio.writers import OmeTiffWriter
@@ -121,4 +121,4 @@ class Classification(BaseModel):
         x = batch[self.hparams.anchor_key]
         logits = self(x).squeeze(0)
         preds = torch.argmax(logits, dim=1).cpu().numpy()
-        return preds, x.meta
+        return preds, deepcopy(x.meta)
