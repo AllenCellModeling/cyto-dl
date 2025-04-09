@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import torch
 import torch.nn as nn
 from einops import rearrange, repeat
@@ -95,7 +97,7 @@ class IWM(JEPABase):
             embeddings = self.predictor(
                 embeddings, target_masks, batch[self.hparams.target_domain_key]
             )
-        return self.extract_embeddings(embeddings), source.meta
+        return self.extract_embeddings(embeddings), deepcopy(source.meta)
 
     def test_step(self, batch, batch_idx):
         source = batch[self.hparams.source_key]

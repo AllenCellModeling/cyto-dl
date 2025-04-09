@@ -1,3 +1,4 @@
+from copy import deepcopy
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -131,4 +132,4 @@ class Contrastive(BaseModel):
     def predict_step(self, batch, batch_idx):
         x = batch[self.hparams.anchor_key]
         embeddings = self.backbone(x if isinstance(x, torch.Tensor) else x.as_tensor())
-        return embeddings.detach().cpu().numpy(), x.meta
+        return embeddings.detach().cpu().numpy(), deepcopy(x.meta)

@@ -120,4 +120,4 @@ class JEPABase(BaseModel):
 
         embeddings = self(x)
 
-        return embeddings.detach().cpu().numpy(), x.meta
+        return embeddings.detach().cpu().numpy(), copy.deepcopy(x.meta)
