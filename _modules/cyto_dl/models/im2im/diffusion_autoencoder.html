@@ -448,6 +448,7 @@
         <article role="main">
           <h1>Source code for cyto_dl.models.im2im.diffusion_autoencoder</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
@@ -729,7 +730,7 @@
         <span class="n">batch</span> <span class="o">=</span> <span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
         <span class="n">z</span><span class="p">,</span> <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode_image</span><span class="p">(</span><span class="n">batch</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hparams</span><span class="o">.</span><span class="n">condition_key</span><span class="p">])</span>
         <span class="n">meta</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">detach</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">meta</span></div></div>
+        <span class="k">return</span> <span class="n">detach</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span></div></div>
 </pre></div>
         </article>
       </div>
