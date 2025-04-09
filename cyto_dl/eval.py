@@ -42,19 +42,23 @@ def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
     # remove aux section after resolving and before instantiating
     utils.remove_aux_key(cfg)
     data = utils.create_dataloader(cfg.data, data)
+
+    is_test = cfg.get("test", False)
     if not isinstance(data, (LightningDataModule, TorchDataLoader, MonaiDataLoader)):
-        if isinstance(data, MutableMapping) and not data.dataloaders:
-            raise ValueError(
-                "If the `data` config for eval/prediction is a dict it must have a "
-                "key `dataloaders` with the corresponding value being a DataLoader "
-                "(or list thereof)."
-            )
+        if isinstance(data, MutableMapping):
+            dataloaders_key = "test_dataloaders" if is_test else "predict_dataloaders"
+            if not hasattr(data, dataloaders_key):
+                raise AttributeError(
+                    f"If the `data` config is a dict, it must have a key `{dataloaders_key}` if `test` is {is_test} "
+                    f" with the corresponding value being a DataLoader (or list thereof)."
+                )
+            data = getattr(data, dataloaders_key)
         elif not isinstance(data, (list, ListConfig)):
             raise ValueError(
                 "`data` config for eval/prediction must be either:\n"
                 " - a LightningDataModule\n"
                 " - a DataLoader (or list thereof)\n"
-                " - a dict with key `dataloaders`, with the corresponding value "
+                " - a dict with key `predict_dataloaders`, or `test_dataloaders` with the corresponding value "
                 "being a DataLoader (or list thereof)"
             )
 
@@ -85,7 +89,7 @@ def evaluate(cfg: DictConfig, data=None) -> Tuple[dict, dict, dict]:
     model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
 
     log.info("Starting testing!")
-    method = trainer.test if cfg.get("test", False) else trainer.predict
+    method = trainer.test if is_test else trainer.predict
     output = method(model=model, dataloaders=data, ckpt_path=load_params.ckpt_path)
     metric_dict = trainer.callback_metrics
 
