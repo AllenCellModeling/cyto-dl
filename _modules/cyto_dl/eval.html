@@ -491,19 +491,23 @@
     <span class="c1"># remove aux section after resolving and before instantiating</span>
     <span class="n">utils</span><span class="o">.</span><span class="n">remove_aux_key</span><span class="p">(</span><span class="n">cfg</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">create_dataloader</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="n">is_test</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">LightningDataModule</span><span class="p">,</span> <span class="n">TorchDataLoader</span><span class="p">,</span> <span class="n">MonaiDataLoader</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;If the `data` config for eval/prediction is a dict it must have a &quot;</span>
-                <span class="s2">&quot;key `dataloaders` with the corresponding value being a DataLoader &quot;</span>
-                <span class="s2">&quot;(or list thereof).&quot;</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
+            <span class="n">dataloaders_key</span> <span class="o">=</span> <span class="s2">&quot;test_dataloaders&quot;</span> <span class="k">if</span> <span class="n">is_test</span> <span class="k">else</span> <span class="s2">&quot;predict_dataloaders&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dataloaders_key</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;If the `data` config is a dict, it must have a key `</span><span class="si">{</span><span class="n">dataloaders_key</span><span class="si">}</span><span class="s2">` if `test` is </span><span class="si">{</span><span class="n">is_test</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; with the corresponding value being a DataLoader (or list thereof).&quot;</span>
+                <span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dataloaders_key</span><span class="p">)</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">ListConfig</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;`data` config for eval/prediction must be either:</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot; - a LightningDataModule</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot; - a DataLoader (or list thereof)</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="s2">&quot; - a dict with key `dataloaders`, with the corresponding value &quot;</span>
+                <span class="s2">&quot; - a dict with key `predict_dataloaders`, or `test_dataloaders` with the corresponding value &quot;</span>
                 <span class="s2">&quot;being a DataLoader (or list thereof)&quot;</span>
             <span class="p">)</span>
 
@@ -534,7 +538,7 @@
     <span class="n">model</span><span class="p">,</span> <span class="n">load_params</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;checkpoint&quot;</span><span class="p">))</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting testing!&quot;</span><span class="p">)</span>
-    <span class="n">method</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span> <span class="k">if</span> <span class="n">cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict</span>
+    <span class="n">method</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span> <span class="k">if</span> <span class="n">is_test</span> <span class="k">else</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predict</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">method</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloaders</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">ckpt_path</span><span class="o">=</span><span class="n">load_params</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">)</span>
     <span class="n">metric_dict</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">callback_metrics</span>
 
