@@ -39,7 +39,7 @@ dependencies = [
     "tqdm>=4.64",
     "lightning>=2.0",
     "einops>=0.6.1",
-    "edt>=2.3.1",
+    "edt>=3.0.0",
     "astropy>=5.2",
     "rich",
     "boto3",
