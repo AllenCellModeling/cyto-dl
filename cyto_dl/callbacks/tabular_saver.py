@@ -12,7 +12,14 @@ warnings.simplefilter("once", UserWarning)
 class SaveTabularData(Callback):
     """Callback to save tabular data to disk as a .csv or .parquet after prediction."""
 
-    def __init__(self, save_dir, meta_keys=[], as_parquet: bool = True, suffix: str = None):
+    def __init__(
+        self,
+        save_dir,
+        meta_keys=[],
+        as_parquet: bool = True,
+        save_suffix: str = None,
+        col_prefix: str = "feat",
+    ):
         """
         Parameters
         ----------
@@ -22,15 +29,20 @@ class SaveTabularData(Callback):
             list of keys in the metadata to include as columns in the saved data
         as_parquet: bool
             Saves data as parquet if True, otherwise saves as csv
+        save_suffix: str
+            suffix to add to the saved file name
+        col_prefix: str
+            prefix to add to the column names of the saved data
         """
         self.save_dir = Path(save_dir)
         self.save_dir.mkdir(parents=True, exist_ok=True)
         self.meta_keys = meta_keys
         self.as_parquet = as_parquet
-        self.suffix = suffix
+        self.save_suffix = save_suffix
+        self.col_prefix = col_prefix
 
     def pred_to_df(self, pred):
-        return pd.DataFrame(pred)
+        return pd.DataFrame(pred, columns=[f"{self.col_prefix}_{i}" for i in range(pred.shape[1])])
 
     def _parse_meta(self, meta):
         """Turn tensors in metadata into numpy arrays and single-element tensors/arrays/lists into
@@ -49,8 +61,8 @@ class SaveTabularData(Callback):
     def _save(self, feats, stage):
         save_name = (
             self.save_dir / str(stage)
-            if self.suffix is None
-            else self.save_dir / f"{stage}_{self.suffix}"
+            if self.save_suffix is None
+            else self.save_dir / f"{stage}_{self.save_suffix}"
         )
         if self.as_parquet:
             feats = pd.concat(feats)
