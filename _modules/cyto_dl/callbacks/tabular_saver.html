@@ -461,7 +461,14 @@
 <div class="viewcode-block" id="SaveTabularData"><a class="viewcode-back" href="../../../cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData">[docs]</a><span class="k">class</span> <span class="nc">SaveTabularData</span><span class="p">(</span><span class="n">Callback</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Callback to save tabular data to disk as a .csv or .parquet after prediction.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">meta_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">as_parquet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">save_dir</span><span class="p">,</span>
+        <span class="n">meta_keys</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">as_parquet</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">save_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">col_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;feat&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -471,15 +478,20 @@
 <span class="sd">            list of keys in the metadata to include as columns in the saved data</span>
 <span class="sd">        as_parquet: bool</span>
 <span class="sd">            Saves data as parquet if True, otherwise saves as csv</span>
+<span class="sd">        save_suffix: str</span>
+<span class="sd">            suffix to add to the saved file name</span>
+<span class="sd">        col_prefix: str</span>
+<span class="sd">            prefix to add to the column names of the saved data</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meta_keys</span> <span class="o">=</span> <span class="n">meta_keys</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">as_parquet</span> <span class="o">=</span> <span class="n">as_parquet</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_suffix</span> <span class="o">=</span> <span class="n">save_suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_prefix</span> <span class="o">=</span> <span class="n">col_prefix</span>
 
 <div class="viewcode-block" id="SaveTabularData.pred_to_df"><a class="viewcode-back" href="../../../cyto_dl.callbacks.tabular_saver.html#cyto_dl.callbacks.tabular_saver.SaveTabularData.pred_to_df">[docs]</a>    <span class="k">def</span> <span class="nf">pred_to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">col_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span></div>
 
     <span class="k">def</span> <span class="nf">_parse_meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Turn tensors in metadata into numpy arrays and single-element tensors/arrays/lists into</span>
@@ -498,8 +510,8 @@
     <span class="k">def</span> <span class="nf">_save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feats</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
         <span class="n">save_name</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">stage</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_suffix</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stage</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_suffix</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_parquet</span><span class="p">:</span>
             <span class="n">feats</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">feats</span><span class="p">)</span>
