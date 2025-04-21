@@ -70,13 +70,17 @@ test-full: ## Run all tests
 uv.lock: pyproject.toml
 	uv lock
 
+requirements/requirements.txt: uv.lock
+	mkdir -p requirements/
+	uv export --locked -o $@
+
+requirements/all-requirements.txt: uv.lock
+	mkdir -p requirements/
+	uv export --locked --all-groups -o $@
+
 requirements/%-requirements.txt: uv.lock
 	mkdir -p requirements/
 	uv export --locked --group $(subst -requirements.txt,,$(notdir $@)) -o $@
-
-requirements/requirements.txt: uv.lock
-	mkdir -p requirements/$(PLATFORM)
-	uv export --locked -o $@
 
 sync-reqs-files: requirements/requirements.txt \
                  requirements/torchserve-requirements.txt \
