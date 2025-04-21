@@ -10,85 +10,45 @@ on:
 
 jobs:
   make-requirements:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@deb8d8a4e2a03aabcef6f2cc981923fc6b29ef99 # v4.3
+      - name: Set up UV
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5.4.2
         with:
-          python-version: "3.10"
-          version: 2.18.1
+          python-version-file: "pyproject.toml"
 
-      - name:
+      - name: 
         shell: bash
         run: |
-          case "${{ matrix.os }}" in
-              "ubuntu-latest")
-                  export PLATFORM="linux"
-                  ;;
-              "macOS-latest")
-                  export PLATFORM="macos"
-                  ;;
-              "windows-latest")
-                  export PLATFORM="windows"
-                  ;;
-          esac
-
           rm -r requirements/*
           make sync-reqs-files
 
-      - name: Get platform variable
-        id: platform
-        shell: bash
-        run: |
-          case "${{ matrix.os }}" in
-              "ubuntu-latest")
-                  echo "::set-output name=platform::linux"
-                  ;;
-              "macOS-latest")
-                  echo "::set-output name=platform::macos"
-                  ;;
-              "windows-latest")
-                  echo "::set-output name=platform::windows"
-                  ;;
-          esac
-
-      - name: Upload pdm.lock and requirements files
+      - name: Upload uv.lock
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.platform.outputs.platform }}-requirements
-          path: requirements/${{ steps.platform.outputs.platform }}
+          name: uv.lock
+          path: uv.lock
+
+      - name: Upload requirements files
+        uses: actions/upload-artifact@v4
+        with:
+          name: requirements
+          path: requirements
 
   open-PR:
     needs: [make-requirements]
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Download linux pdm.lock and requirements files
+      - name: Download uv.lock
         uses: actions/download-artifact@v4
         with:
-          name: linux-requirements
-          path: requirements/linux
-
-      - name: Download windows pdm.lock and requirements files
+          name: uv.lock
+          path: uv.lock
+      - name: Download requirements files
         uses: actions/download-artifact@v4
         with:
-          name: windows-requirements
-          path: requirements/windows
-
-      - name: Download macOS pdm.lock and requirements files
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-requirements
-          path: requirements/macos
-
-      - name: Clean-up CRLF
-        shell: bash
-        run: find requirements -type f -exec sed -i 's/\r//g' {} \;
+          name: requirements
+          path: requirements
 
       - name: Get timestamp
         id: timestamp

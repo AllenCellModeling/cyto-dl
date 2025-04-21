@@ -54,11 +54,11 @@ dependencies = [
 ]
 requires-python = ">=3.9,<3.11"
 
-[project.optional-dependencies]
+[dependency-groups]
 equiv = [
     "lie_learn==0.0.1.post1",
     "escnn~=1.0.7",
-    "py3nj==0.1.2",
+    "py3nj==0.2.1",
     "e3nn~=0.5.1"
 ]
 spharm = [
