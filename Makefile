@@ -72,15 +72,15 @@ uv.lock: pyproject.toml
 
 requirements/requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --locked -o $@
+	uv export -o $@
 
 requirements/all-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --locked --all-extras -o $@
+	uv export --all-extras -o $@
 
 requirements/%-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --locked --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
+	uv export --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
 
 sync-reqs-files: requirements/requirements.txt \
                  requirements/torchserve-requirements.txt \
