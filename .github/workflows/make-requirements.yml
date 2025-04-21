@@ -19,13 +19,14 @@ jobs:
       - name: Check if lockfile is up to date
         shell: bash
         run: |
-          result=$(uv lock --check)
-          echo "::set-output name=outdated::$result"
+          set +e
+          test -f uv.lock && uv lock --check
+          echo "uptodate=$?" >> $GITHUB_OUTPUT
 
   make-requirements:
     runs-on: ubuntu-latest
     needs: check-lockfile
-    if: ${{ needs.check-lockfile.outputs.outdated == 'true' }}
+    if: ${{ needs.check-lockfile.outputs.uptodate == 0 }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up UV
@@ -36,7 +37,7 @@ jobs:
       - name: Generate lockfile and requirements files
         shell: bash
         run: |
-          rm -r requirements/*
+          rm -r requirements/
           make sync-reqs-files
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403  # v5.2.0
