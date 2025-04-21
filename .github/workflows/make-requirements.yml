@@ -10,6 +10,7 @@ on:
 
 jobs:
   make-requirements:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Set up UV
@@ -37,6 +38,7 @@ jobs:
 
   open-PR:
     needs: [make-requirements]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Download uv.lock
