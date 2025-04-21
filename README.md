@@ -37,7 +37,7 @@ For im2im models, we provide a handful of example 3D images for training the bas
 
 ## How to run
 
-Install dependencies. Dependencies are platform specific, please replace `PLATFORM` with your platform - either `linux`, `windows`, or `mac`
+Install dependencies.
 
 ```bash
 # clone project
@@ -48,10 +48,10 @@ cd cyto-dl
 conda create -n myenv python=3.9
 conda activate myenv
 
-pip install -r requirements/PLATFORM/requirements.txt
+pip install -r requirements/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
-pip install -r requirements/PLATFORM/equiv-requirements.txt
+pip install -r requirements/equiv-requirements.txt
 
 pip install -e .
 
