@@ -76,11 +76,11 @@ requirements/requirements.txt: uv.lock
 
 requirements/all-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --locked --all-groups -o $@
+	uv export --locked --all-extras -o $@
 
 requirements/%-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --locked --group $(subst -requirements.txt,,$(notdir $@)) -o $@
+	uv export --locked --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
 
 sync-reqs-files: requirements/requirements.txt \
                  requirements/torchserve-requirements.txt \

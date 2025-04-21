@@ -54,7 +54,7 @@ dependencies = [
 ]
 requires-python = ">=3.9,<3.11"
 
-[dependency-groups]
+[project.optional-dependencies]
 equiv = [
     "lie_learn==0.0.1.post1",
     "escnn~=1.0.7",
