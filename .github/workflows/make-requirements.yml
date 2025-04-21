@@ -2,14 +2,12 @@ name: Make requirements files
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  pull_request:
     paths:
       - "pyproject.toml"
 
 jobs:
-  make-requirements:
+  check-lockfile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,51 +15,28 @@ jobs:
         uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5.4.2
         with:
           python-version-file: "pyproject.toml"
+          version: "0.6.14"
+      - name: Check if lockfile is up to date
+        shell: bash
+        run: |
+          result=$(uv lock --check)
+          echo "::set-output name=outdated::$result"
 
-      - name: 
+  make-requirements:
+    runs-on: ubuntu-latest
+    needs: check-lockfile
+    if: ${{ needs.check-lockfile.outputs.outdated == 'true' }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up UV
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86  # v5.4.2
+        with:
+          python-version-file: "pyproject.toml"
+          version: "0.6.14"
+      - name: Generate lockfile and requirements files
         shell: bash
         run: |
           rm -r requirements/*
           make sync-reqs-files
-
-      - name: Upload uv.lock
-        uses: actions/upload-artifact@v4
-        with:
-          name: uv.lock
-          path: uv.lock
-
-      - name: Upload requirements files
-        uses: actions/upload-artifact@v4
-        with:
-          name: requirements
-          path: requirements
-
-  open-PR:
-    needs: [make-requirements]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download uv.lock
-        uses: actions/download-artifact@v4
-        with:
-          name: uv.lock
-          path: uv.lock
-      - name: Download requirements files
-        uses: actions/download-artifact@v4
-        with:
-          name: requirements
-          path: requirements
-
-      - name: Get timestamp
-        id: timestamp
-        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d_%H-%M')"
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          base: main
-          title: admin/requirements-update_${{ steps.timestamp.outputs.timestamp }}
-          body: Updating lock files and requirements
-          branch: admin/requirements-update_${{ steps.timestamp.outputs.timestamp }}
-          commit-message: Updating lock files and requirements
-          delete-branch: true
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403  # v5.2.0
