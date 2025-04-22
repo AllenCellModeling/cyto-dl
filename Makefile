@@ -65,8 +65,8 @@ test: ## Run not slow tests
 test-full: ## Run all tests
 	pytest
 
-# to handle different platforms, specially for pytorch we can use these
-# in Github Actions
+# `uv lock` should respect versions in an existing uv.lock file if they do not conflict
+# with the pyproject.toml
 uv.lock: pyproject.toml
 	uv lock
 
