@@ -7,7 +7,7 @@ from cyto_dl.image.io import PolygonLoaderd
 
 def test_load_polygon(tmp_path):
     # create random image and find contours
-    image = random_shapes((500, 500), max_shapes=1, num_channels=1, random_seed=3)[0].squeeze()
+    image = random_shapes((500, 500), max_shapes=1, num_channels=1, rng=3)[0].squeeze()
     # create polygon from background
     image = image == 255
     contours = find_contours(label(image))
