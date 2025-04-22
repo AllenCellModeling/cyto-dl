@@ -48,12 +48,13 @@ cd cyto-dl
 conda create -n myenv python=3.9
 conda activate myenv
 
-pip install -r requirements/requirements.txt
+# If you have a recent version of pip (e.g., 25.0.1), the --no-deps may be unnecessary
+pip install --no-deps -r requirements/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
 # This step requires that you have a fortran compiler installed
 # (e.g., on Ubuntu use apt get install gfortran).
-pip install -r requirements/equiv-requirements.txt
+pip install --no-deps -r requirements/equiv-requirements.txt
 
 pip install -e .
 
