@@ -154,3 +154,10 @@ push            = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "version.toml" = ['version = "{version}"']
 "cyto_dl/__init__.py" = ['__version__ = "{version}"']
+
+[tool.uv]
+# lie_learn 0.0.1.post1 has a build-time dependency on numpy that is not declared in its
+# metadata. Therefore, we must disable PEP 517 build isolation to install it.
+# This means that uv users who want to use equivariant models must install dependencies
+# in two steps: `uv sync`, then `uv sync --extra equiv`.
+no-build-isolation-package = ["lie_learn"]
