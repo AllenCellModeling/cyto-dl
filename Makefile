@@ -70,17 +70,19 @@ test-full: ## Run all tests
 uv.lock: pyproject.toml
 	uv lock
 
+# --no-emit-project is required here because the requirements.txt files have hashes
+# and the cyto-dl source is a directory, which pip cannot hash.
 requirements/requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export -o $@
+	uv export --no-emit-project -o $@
 
 requirements/all-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --all-extras -o $@
+	uv export --no-emit-project --all-extras -o $@
 
 requirements/%-requirements.txt: uv.lock
 	mkdir -p requirements/
-	uv export --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
+	uv export --no-emit-project --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
 
 sync-reqs-files: requirements/requirements.txt \
                  requirements/torchserve-requirements.txt \
