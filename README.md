@@ -51,6 +51,8 @@ conda activate myenv
 pip install -r requirements/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
+# This step requires that you have a fortran compiler installed
+# (e.g., on Ubuntu use apt get install gfortran).
 pip install -r requirements/equiv-requirements.txt
 
 pip install -e .
