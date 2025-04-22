@@ -45,15 +45,13 @@ git clone https://github.com/AllenCellModeling/cyto-dl
 cd cyto-dl
 
 # [OPTIONAL] create conda environment
-conda create -n myenv python=3.9
+conda install -c conda-forge -n myenv python=3.10 fortran-compiler blas-devel
 conda activate myenv
 
 # If you have a recent version of pip (e.g., 25.0.1), the --no-deps may be unnecessary
 pip install --no-deps -r requirements/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
-# This step requires that you have a fortran compiler installed
-# (e.g., on Ubuntu use apt get install gfortran).
 pip install --no-deps -r requirements/equiv-requirements.txt
 
 pip install -e .
