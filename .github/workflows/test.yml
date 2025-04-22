@@ -31,25 +31,13 @@ jobs:
       - name: Install dependencies
         shell: bash -el {0}
         run: |
-          case "${{ matrix.os }}" in
-              "ubuntu-latest")
-                  export PLATFORM="linux"
-                  ;;
-              "macOS-latest")
-                  export PLATFORM="macos"
-                  ;;
-              "windows-latest")
-                  export PLATFORM="windows"
-                  ;;
-          esac
-
           conda activate test
           conda install -c conda-forge -n test fortran-compiler blas-devel
 
           pip install greenlet
           # need numpy for some builds. make sure to install a compatible version
-          grep -E '^numpy==' requirements/$PLATFORM/test-requirements.txt | xargs -n 1 pip install
-          pip install -r requirements/$PLATFORM/test-requirements.txt
+          grep -E '^numpy==' requirements/test-requirements.txt | xargs -n 1 pip install
+          pip install -r requirements/test-requirements.txt
           pip install .
 
       - name: List dependencies
@@ -82,8 +70,8 @@ jobs:
           conda install -c conda-forge -n test pip fftw gfortran blas-devel
 
           # need numpy for some builds. make sure to install a compatible version
-          grep -E '^numpy==' requirements/linux/test-requirements.txt | xargs -n 1 pip install
-          pip install -r requirements/linux/test-requirements.txt
+          grep -E '^numpy==' requirements/test-requirements.txt | xargs -n 1 pip install
+          pip install -r requirements/test-requirements.txt
           pip install .
 
       - name: Run tests and collect coverage
