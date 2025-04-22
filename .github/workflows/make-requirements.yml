@@ -23,4 +23,5 @@ jobs:
           make sync-reqs-files
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5.2.0
-        commit_message: Update lockfile and requirements files
+        with:
+          commit_message: Update lockfile and requirements files
