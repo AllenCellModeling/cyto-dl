@@ -464,7 +464,7 @@ resolution-markers = [
     "python_full_version < '3.10' and sys_platform == 'win32'",
 ]
 dependencies = [
-    { name = "bioio-base", version = "1.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-base", version = "1.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "dask", version = "2024.8.0", source = { registry = "https://pypi.org/simple" }, extra = ["array"], marker = "python_full_version < '3.10'" },
     { name = "fsspec", marker = "python_full_version < '3.10'" },
     { name = "imageio", version = "2.27.0", source = { registry = "https://pypi.org/simple" }, extra = ["ffmpeg"], marker = "python_full_version < '3.10'" },
@@ -518,7 +518,7 @@ wheels = [
 
 [[package]]
 name = "bioio-base"
-version = "1.0.6"
+version = "1.0.5"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version < '3.10' and platform_machine == 'arm64' and sys_platform == 'darwin'",
@@ -533,9 +533,9 @@ dependencies = [
     { name = "ome-types", marker = "python_full_version < '3.10'" },
     { name = "xarray", version = "2024.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/12/f7a90b46282a3a42ec4d1d9e5a6f895b2fc0714f223b2ba9d9e347522f1e/bioio_base-1.0.6.tar.gz", hash = "sha256:ae329fd4d4bea0cadf1399d6fc3f5f6dfbf7f9809dae77186220b458507162d6", size = 36457 }
+sdist = { url = "https://files.pythonhosted.org/packages/28/dd/355b255fdd04e92c13bec33697e0b01ad19541d24e0e8eeb81d63cd74c71/bioio_base-1.0.5.tar.gz", hash = "sha256:688aa5632df93a5a535fe52a08c633b29c3d2d9c7f64139c9da7d9d846af04c6", size = 35211 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c7/76/e8f09e995cfd8ee6a3f38e6519c44f0104895947ac05433223804f845d2c/bioio_base-1.0.6-py3-none-any.whl", hash = "sha256:68c970ec951152ba0cac1c96c737b4dc4cfc2c3a65b7a6bbe5565fc349ed0cd8", size = 33458 },
+    { url = "https://files.pythonhosted.org/packages/61/e6/98e2119735d5095adfb2930882997816d11dd6c0454ce368e5ce05f655ee/bioio_base-1.0.5-py3-none-any.whl", hash = "sha256:2a6f497a8ba71399fa053043e1f2d0b0e8cd7739e9d74176ce96b9a1aa91f59e", size = 31921 },
 ]
 
 [[package]]
@@ -577,7 +577,7 @@ resolution-markers = [
 dependencies = [
     { name = "aicspylibczi", marker = "python_full_version < '3.10'" },
     { name = "aiohttp", marker = "python_full_version < '3.10'" },
-    { name = "bioio-base", version = "1.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-base", version = "1.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "dask", version = "2024.8.0", source = { registry = "https://pypi.org/simple" }, extra = ["array"], marker = "python_full_version < '3.10'" },
     { name = "fsspec", marker = "python_full_version < '3.10'" },
     { name = "lxml", version = "4.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -634,7 +634,7 @@ resolution-markers = [
     "python_full_version < '3.10' and sys_platform == 'win32'",
 ]
 dependencies = [
-    { name = "bioio-base", version = "1.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-base", version = "1.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "dask", version = "2024.8.0", source = { registry = "https://pypi.org/simple" }, extra = ["array"], marker = "python_full_version < '3.10'" },
     { name = "fsspec", marker = "python_full_version < '3.10'" },
     { name = "imagecodecs", version = "2024.12.30", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -696,7 +696,7 @@ resolution-markers = [
     "python_full_version < '3.10' and sys_platform == 'win32'",
 ]
 dependencies = [
-    { name = "bioio-base", version = "1.0.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-base", version = "1.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "dask", version = "2024.8.0", source = { registry = "https://pypi.org/simple" }, extra = ["array"], marker = "python_full_version < '3.10'" },
     { name = "fsspec", marker = "python_full_version < '3.10'" },
     { name = "imagecodecs", version = "2024.12.30", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1073,6 +1073,8 @@ dependencies = [
     { name = "astropy", version = "6.1.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "bioio", version = "1.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "bioio", version = "1.5.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "bioio-base", version = "1.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-base", version = "1.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "bioio-czi", version = "2.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "bioio-czi", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "bioio-ome-tiff", version = "1.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1178,6 +1180,7 @@ requires-dist = [
     { name = "anndata", specifier = ">=0.8" },
     { name = "astropy", specifier = ">=5.2" },
     { name = "bioio", specifier = ">=1.0.1" },
+    { name = "bioio-base", specifier = "!=1.0.6" },
     { name = "bioio-czi" },
     { name = "bioio-ome-tiff" },
     { name = "bioio-tifffile" },

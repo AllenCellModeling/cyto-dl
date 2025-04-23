@@ -158,14 +158,15 @@ bioio==1.5.2 ; python_full_version >= '3.10' \
     --hash=sha256:7ba1e191482337aba6e2aa53a83272807b4470a2d8ae137b60d5f24d45454fa3 \
     --hash=sha256:f31d5fef319e7d6f39b31011d538624db9514d56c25a3fc37311d5b7282dbb87
     # via cyto-dl
-bioio-base==1.0.6 ; python_full_version < '3.10' \
-    --hash=sha256:68c970ec951152ba0cac1c96c737b4dc4cfc2c3a65b7a6bbe5565fc349ed0cd8 \
-    --hash=sha256:ae329fd4d4bea0cadf1399d6fc3f5f6dfbf7f9809dae77186220b458507162d6
+bioio-base==1.0.5 ; python_full_version < '3.10' \
+    --hash=sha256:2a6f497a8ba71399fa053043e1f2d0b0e8cd7739e9d74176ce96b9a1aa91f59e \
+    --hash=sha256:688aa5632df93a5a535fe52a08c633b29c3d2d9c7f64139c9da7d9d846af04c6
     # via
     #   bioio
     #   bioio-czi
     #   bioio-ome-tiff
     #   bioio-tifffile
+    #   cyto-dl
 bioio-base==1.0.7 ; python_full_version >= '3.10' \
     --hash=sha256:ae8f7d7cf72ac195b90d43e3f4b9f1696fd250799c456ab37ec9dd01b9e62d99 \
     --hash=sha256:dfa3c1f9d373ca3a56f66e3694286a3db20dab972d9fe455eebe0d0ddb075a7d
@@ -174,6 +175,7 @@ bioio-base==1.0.7 ; python_full_version >= '3.10' \
     #   bioio-czi
     #   bioio-ome-tiff
     #   bioio-tifffile
+    #   cyto-dl
 bioio-czi==2.0.0 ; python_full_version < '3.10' \
     --hash=sha256:262df357ae745dc001a5b08fc3632adbaad040626b02ad3c84f48490e66994a4 \
     --hash=sha256:a7e866af72e1041b602531b7ac3b9d9f36a6963b0705a27bff2268ac2597f874
