@@ -44,6 +44,7 @@ dependencies = [
     "rich",
     "boto3",
     "bioio>=1.0.1",
+    "bioio-base!=1.0.6", # This version has a major bug
     "bioio-czi",
     "bioio-ome-tiff",
     "bioio-tifffile",
