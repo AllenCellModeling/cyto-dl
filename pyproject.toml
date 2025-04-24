@@ -44,7 +44,7 @@ dependencies = [
     "rich",
     "boto3",
     "bioio>=1.0.1",
-    "bioio-base!=1.0.6", # This version has a major bug
+    "bioio-base!=1.0.5,!=1.0.6", # These versions have issues resolved by 1.0.7, which only supports Python 3.10+
     "bioio-czi",
     "bioio-ome-tiff",
     "bioio-tifffile",
