@@ -44,6 +44,7 @@ dependencies = [
     "rich",
     "boto3",
     "bioio>=1.0.1",
+    "bioio-base!=1.0.5,!=1.0.6", # These versions have issues resolved by 1.0.7, which only supports Python 3.10+
     "bioio-czi",
     "bioio-ome-tiff",
     "bioio-tifffile",
@@ -58,7 +59,7 @@ requires-python = ">=3.9,<3.11"
 equiv = [
     "lie_learn==0.0.1.post1",
     "escnn~=1.0.7",
-    "py3nj==0.1.2",
+    "py3nj>=0.2.1",
     "e3nn~=0.5.1"
 ]
 spharm = [
@@ -154,3 +155,10 @@ push            = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "version.toml" = ['version = "{version}"']
 "cyto_dl/__init__.py" = ['__version__ = "{version}"']
+
+[tool.uv]
+# lie_learn 0.0.1.post1 has a build-time dependency on numpy that is not declared in its
+# metadata. Therefore, we must disable PEP 517 build isolation to install it.
+# This means that uv users who want to use equivariant models must install dependencies
+# in two steps: `uv sync`, then `uv sync --extra equiv`.
+no-build-isolation-package = ["lie_learn"]

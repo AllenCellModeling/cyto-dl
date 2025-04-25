@@ -37,7 +37,7 @@ For im2im models, we provide a handful of example 3D images for training the bas
 
 ## How to run
 
-Install dependencies. Dependencies are platform specific, please replace `PLATFORM` with your platform - either `linux`, `windows`, or `mac`
+Install dependencies.
 
 ```bash
 # clone project
@@ -45,13 +45,14 @@ git clone https://github.com/AllenCellModeling/cyto-dl
 cd cyto-dl
 
 # [OPTIONAL] create conda environment
-conda create -n myenv python=3.9
+conda install -c conda-forge -n myenv python=3.10 fortran-compiler blas-devel
 conda activate myenv
 
-pip install -r requirements/PLATFORM/requirements.txt
+# If you have a recent version of pip (e.g., 25.0.1), the --no-deps may be unnecessary
+pip install --no-deps -r requirements/requirements.txt
 
 # [OPTIONAL] install extra dependencies - equivariance related
-pip install -r requirements/PLATFORM/equiv-requirements.txt
+pip install --no-deps -r requirements/equiv-requirements.txt
 
 pip install -e .
 

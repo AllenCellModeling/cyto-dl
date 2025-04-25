@@ -65,25 +65,29 @@ test: ## Run not slow tests
 test-full: ## Run all tests
 	pytest
 
-# to handle different platforms, specially for pytorch we can use these
-# in Github Actions
-requirements/$(PLATFORM)/pdm.lock: pyproject.toml
-	mkdir -p requirements/$(PLATFORM)
-	pdm lock -G :all --no-cross-platform -L requirements/$(PLATFORM)/pdm.lock
+# `uv lock` should respect versions in an existing uv.lock file if they do not conflict
+# with the pyproject.toml
+uv.lock: pyproject.toml
+	uv lock
 
-requirements/$(PLATFORM)/%-requirements.txt: requirements/$(PLATFORM)/pdm.lock
-	pdm export -L requirements/$(PLATFORM)/pdm.lock -f requirements -G $(subst -requirements.txt,,$(notdir $@)) --without-hashes -o $@
+# --no-emit-project is required here because the requirements.txt files have hashes
+# and the cyto-dl source is a directory, which pip cannot hash.
+requirements/requirements.txt: uv.lock
+	mkdir -p requirements/
+	uv export --no-emit-project -o $@
 
-requirements/$(PLATFORM)/requirements.txt:
-	mkdir -p requirements/$(PLATFORM)
-	pdm lock --no-cross-platform -L simple.lock
-	pdm export -L simple.lock -f requirements --without-hashes -o requirements/$(PLATFORM)/requirements.txt
-	rm simple.lock
+requirements/all-requirements.txt: uv.lock
+	mkdir -p requirements/
+	uv export --no-emit-project --all-extras -o $@
 
-sync-reqs-files: requirements/$(PLATFORM)/requirements.txt \
-                 requirements/$(PLATFORM)/torchserve-requirements.txt \
-                 requirements/$(PLATFORM)/equiv-requirements.txt \
-                 requirements/$(PLATFORM)/spharm-requirements.txt \
-                 requirements/$(PLATFORM)/all-requirements.txt \
-                 requirements/$(PLATFORM)/test-requirements.txt \
-                 requirements/$(PLATFORM)/docs-requirements.txt
+requirements/%-requirements.txt: uv.lock
+	mkdir -p requirements/
+	uv export --no-emit-project --extra $(subst -requirements.txt,,$(notdir $@)) -o $@
+
+sync-reqs-files: requirements/requirements.txt \
+                 requirements/torchserve-requirements.txt \
+                 requirements/equiv-requirements.txt \
+                 requirements/spharm-requirements.txt \
+                 requirements/all-requirements.txt \
+                 requirements/test-requirements.txt \
+                 requirements/docs-requirements.txt

@@ -2,104 +2,26 @@ name: Make requirements files
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  pull_request:
     paths:
       - "pyproject.toml"
 
 jobs:
   make-requirements:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up PDM
-        uses: pdm-project/setup-pdm@deb8d8a4e2a03aabcef6f2cc981923fc6b29ef99 # v4.3
-        with:
-          python-version: "3.10"
-          version: 2.18.1
-
-      - name:
-        shell: bash
-        run: |
-          case "${{ matrix.os }}" in
-              "ubuntu-latest")
-                  export PLATFORM="linux"
-                  ;;
-              "macOS-latest")
-                  export PLATFORM="macos"
-                  ;;
-              "windows-latest")
-                  export PLATFORM="windows"
-                  ;;
-          esac
-
-          rm -r requirements/*
-          make sync-reqs-files
-
-      - name: Get platform variable
-        id: platform
-        shell: bash
-        run: |
-          case "${{ matrix.os }}" in
-              "ubuntu-latest")
-                  echo "::set-output name=platform::linux"
-                  ;;
-              "macOS-latest")
-                  echo "::set-output name=platform::macos"
-                  ;;
-              "windows-latest")
-                  echo "::set-output name=platform::windows"
-                  ;;
-          esac
-
-      - name: Upload pdm.lock and requirements files
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.platform.outputs.platform }}-requirements
-          path: requirements/${{ steps.platform.outputs.platform }}
-
-  open-PR:
-    needs: [make-requirements]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Download linux pdm.lock and requirements files
-        uses: actions/download-artifact@v4
+      - name: Set up UV
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5.4.2
         with:
-          name: linux-requirements
-          path: requirements/linux
-
-      - name: Download windows pdm.lock and requirements files
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-requirements
-          path: requirements/windows
-
-      - name: Download macOS pdm.lock and requirements files
-        uses: actions/download-artifact@v4
-        with:
-          name: macos-requirements
-          path: requirements/macos
-
-      - name: Clean-up CRLF
+          python-version-file: "pyproject.toml"
+          version: "0.6.14"
+      - name: Generate lockfile and requirements files
         shell: bash
-        run: find requirements -type f -exec sed -i 's/\r//g' {} \;
-
-      - name: Get timestamp
-        id: timestamp
-        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d_%H-%M')"
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        run: |
+          rm -r requirements/
+          make sync-reqs-files
+      - name: Commit and push
+        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5.2.0
         with:
-          base: main
-          title: admin/requirements-update_${{ steps.timestamp.outputs.timestamp }}
-          body: Updating lock files and requirements
-          branch: admin/requirements-update_${{ steps.timestamp.outputs.timestamp }}
-          commit-message: Updating lock files and requirements
-          delete-branch: true
+          commit_message: Update lockfile and requirements files
