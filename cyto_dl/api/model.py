@@ -5,6 +5,7 @@ import pyrootutils
 from hydra import compose, initialize_config_dir
 from hydra.core.global_hydra import GlobalHydra
 from omegaconf import OmegaConf, open_dict
+from omegaconf.errors import ConfigIndexError
 
 from cyto_dl.api.data import ExperimentType
 from cyto_dl.eval import evaluate
@@ -85,7 +86,14 @@ class CytoDLModel:
             raise ValueError("Configuration must be loaded before overriding!")
 
         for k, v in overrides.items():
-            OmegaConf.update(self.cfg, k, v)
+            try:
+                OmegaConf.update(self.cfg, k, v)
+            except ConfigIndexError:
+                print("Index for override is out of bounds, appending to list")
+                # if index is out of range, append it to key
+                delimiter = "[" if k.endswith("]") else "."
+                parent_key = k[: k.rfind(delimiter)]
+                OmegaConf.select(self.cfg, parent_key).append(v)
 
     def save_config(self, path: Path) -> None:
         """Save current config to provided path.
