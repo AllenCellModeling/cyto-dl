@@ -24,6 +24,7 @@ class MultiDimImageDataset(CacheDataset):
         time_start_column: str = "start",
         time_stop_column: str = "stop",
         time_step_column: str = "step",
+        extra_columns: Sequence[str] = [],
         dict_meta: Optional[Dict] = None,
         transform: Optional[Union[Callable, Sequence[Callable]]] = [],
         **cache_kwargs,
@@ -53,6 +54,9 @@ class MultiDimImageDataset(CacheDataset):
         time_step_column:str="step"
             Column in `csv_path` specifying step between timepoints. For example, values in this column should be `2` if every other timepoint should be run.
             If any of `start_column`, `stop_column`, or `step_column` are not specified, all timepoints are extracted.
+        extra_columns: Sequence[str] = []
+            List of extra columns to include in the output dictionary. These columns will be added to the output dictionary as-is if found, otherwise their value
+            will be set to None.
         dict_meta: Optional[Dict]
             Dictionary version of CSV file. If not provided, CSV file is read from `csv_path`.
         transform: Optional[Callable] = []
@@ -72,6 +76,7 @@ class MultiDimImageDataset(CacheDataset):
         self.time_start_column = time_start_column
         self.time_stop_column = time_stop_column
         self.time_step_column = time_step_column
+        self.extra_columns = list(extra_columns)
         if spatial_dims not in (2, 3):
             raise ValueError(f"`spatial_dims` must be 2 or 3, got {spatial_dims}")
         self.spatial_dims = spatial_dims
@@ -110,15 +115,16 @@ class MultiDimImageDataset(CacheDataset):
                 img.set_scene(scene)
                 timepoints = self._get_timepoints(row, img)
                 for timepoint in timepoints:
-                    row_data.append(
-                        {
-                            "dimension_order_out": "C" + "ZYX"[-self.spatial_dims :],
-                            "C": row[self.channel_column],
-                            "scene": scene,
-                            "T": timepoint,
-                            "original_path": row[self.img_path_column],
-                            "resolution": row.get(self.resolution_column, 0),
-                        }
-                    )
+                    image_loading_args = {
+                        "dimension_order_out": "C" + "ZYX"[-self.spatial_dims :],
+                        "C": row[self.channel_column],
+                        "scene": scene,
+                        "T": timepoint,
+                        "original_path": row[self.img_path_column],
+                        "resolution": row.get(self.resolution_column, 0),
+                    }
+                    extra_columns = {col: row.get(col) for col in self.extra_columns}
+                    extra_columns.update(image_loading_args)
+                    row_data.append(extra_columns)
             img_data.extend(row_data)
         return img_data
