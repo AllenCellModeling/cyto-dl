@@ -89,11 +89,16 @@ class CytoDLModel:
             try:
                 OmegaConf.update(self.cfg, k, v)
             except ConfigIndexError:
-                print("Index for override is out of bounds, appending to list")
                 # if index is out of range, append it to key
                 delimiter = "[" if k.endswith("]") else "."
                 parent_key = k[: k.rfind(delimiter)]
-                OmegaConf.select(self.cfg, parent_key).append(v)
+                if OmegaConf.select(self.cfg, parent_key) is not None:
+                    OmegaConf.select(self.cfg, parent_key).append(v)
+                else:
+                    raise ValueError(
+                        f"Attempting append to key `{parent_key}`, but it does not exist in the config. Cannot append value {v}"
+                    )
+                print(f"Index for override `{k}` is out of bounds, appending value `{v}` to `{parent_key}`")
 
     def save_config(self, path: Path) -> None:
         """Save current config to provided path.
