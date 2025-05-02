@@ -98,7 +98,9 @@ class CytoDLModel:
                     raise ValueError(
                         f"Attempting append to key `{parent_key}`, but it does not exist in the config. Cannot append value {v}"
                     )
-                print(f"Index for override `{k}` is out of bounds, appending value `{v}` to `{parent_key}`")
+                print(
+                    f"Index for override `{k}` is out of bounds, appending value `{v}` to `{parent_key}`"
+                )
 
     def save_config(self, path: Path) -> None:
         """Save current config to provided path.
