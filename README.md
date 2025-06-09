@@ -57,6 +57,9 @@ pip install --no-deps -r requirements/equiv-requirements.txt
 pip install -e .
 
 
+#[OPTIONAL] to run tests successfully with torch 2.6
+export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 # based on https://github.com/Lightning-AI/pytorch-lightning/issues/20058
+
 #[OPTIONAL] if you want to use default experiments on example data
 python scripts/download_test_data.py
 ```

@@ -63,7 +63,7 @@ class BasicModel(BaseModel):
             raise ValueError("`network` and `pretrained_weights` can't both be None.")
 
         if pretrained_weights is not None:
-            pretrained_weights = torch.load(pretrained_weights)  # nosec B614
+            pretrained_weights = torch.load(pretrained_weights, weights_only=False)  # nosec B614
 
         if network is not None:
             self.network = network
