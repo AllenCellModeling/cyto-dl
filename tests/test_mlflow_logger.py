@@ -12,9 +12,9 @@ from cyto_dl.loggers import MLFlowLogger
 from cyto_dl.models.utils.mlflow import get_config
 
 
-# @mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
+@mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
 @pytest.mark.parametrize("monitor", [True, False])
-def test_mlflow_log_model(tmpdir, monitor):
+def test_mlflow_log_model(_, tmpdir, monitor):
     """Test that the logger creates the folders and files in the right place."""
 
     max_epochs = 10
@@ -53,10 +53,7 @@ def test_mlflow_log_model(tmpdir, monitor):
     local_ckpt_root = os.path.join(tmpdir, "local_ckpt")
 
     logger = MLFlowLogger("test", save_dir=mlflow_root, fault_tolerant=False)
-    import ipdb
-    ipdb.set_trace()
-    print("MLflow tracking URI:", logger._tracking_uri)
-    print("Run ID:", logger.run_id)
+
     if monitor:
         checkpoint_callback = ModelCheckpoint(
             dirpath=local_ckpt_root, save_top_k=2, monitor=monitor_key
@@ -75,11 +72,6 @@ def test_mlflow_log_model(tmpdir, monitor):
     trainer.fit(model)
 
     run_folders = [_ for _ in Path(mlflow_root).glob("*") if _.name not in ("0", ".trash")]
-
-    print("Run folders:", run_folders)
-    print("MLflow root:", mlflow_root)
-    print("Logger run_id:", logger.run_id)
-
     assert len(run_folders) == 1
     run_root = run_folders.pop()
 
@@ -96,8 +88,8 @@ def test_mlflow_log_model(tmpdir, monitor):
         assert os.path.isfile(os.path.join(ckpt_folder, "last.ckpt"))
 
 
-# @mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
-def test_mlflow_log_hyperparams(tmpdir):
+@mock.patch("lightning.pytorch.loggers.mlflow._MLFLOW_AVAILABLE", return_value=True)
+def test_mlflow_log_hyperparams(_, tmpdir):
     """Test that the logger creates the folders and files in the right place."""
 
     mlflow_root = os.path.join(tmpdir, "mlflow/")
