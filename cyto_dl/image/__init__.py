@@ -1,4 +1,4 @@
-from .io import MonaiBioReader, OmeZarrReader
+from .io import MonaiBioReader
 from .transforms import (
     BrightSampler,
     RandomMultiScaleCropd,

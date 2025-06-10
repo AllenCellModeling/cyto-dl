@@ -9,45 +9,7 @@ try:
     import modin.pandas as pd
 except ModuleNotFoundError:
     import pandas as pd
-
-import anndata
 import pyarrow.parquet
-
-
-def read_h5ad(path, include_columns=None, backed=None):
-    """Read an annData object stored in a .h5ad file.
-
-    Parameters
-    ----------
-
-    path: Union[Path, str]
-        Path to the .h5ad file
-
-    include_columns: Optional[Sequence[str]] = None
-        List of column names and/or regex expressions, used to only include the
-        desired columns in the resulting dataframe.
-
-    backed: Optional[str] = None
-        Can be (either "r" or "r+").
-        See anndata's docs for details:
-        https://anndata.readthedocs.io/en/latest/generated/anndata.read_h5ad.html#anndata.read_h5ad
-
-    Returns
-    -------
-    annData
-    """
-
-    if backed:
-        assert backed in ("r", "r+")
-    dataframe = anndata.read_hda5(path, backed=backed)
-
-    if include_columns is not None:
-        columns = []
-        for filter_ in include_columns:
-            columns += filter_columns(dataframe.obs.columns.tolist(), regex=filter_)
-
-        dataframe.obs = dataframe.obs[columns]
-    return dataframe
 
 
 def read_parquet(path, include_columns=None):
