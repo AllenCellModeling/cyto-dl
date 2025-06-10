@@ -140,27 +140,11 @@ def read_dataframe(
                 columns += filter_columns(dataframe.columns, regex=filter_)
 
             dataframe = dataframe[columns]
-    elif isinstance(dataframe, anndata.AnnData):
-        if include_columns is not None:
-            columns = []
-            for filter_ in include_columns:
-                columns += filter_columns(dataframe.obs.columns, regex=filter_)
-
-            dataframe.obs = dataframe.obs[columns]
     else:
         raise TypeError(
             f"`dataframe` must be either a pd.DataFrame or a path to "
             f"a file to load one. You passed {type(dataframe)}"
         )
-
-    if isinstance(dataframe, anndata.AnnData):
-        # Make dataframe out of anndata object
-        X = dataframe.X.toarray()
-        X = pd.DataFrame(X, columns=[f"X_{i}" for i in range(X.shape[1])]).reset_index(drop=True)
-        index = pd.DataFrame(dataframe.obs_names)
-        dataframe = dataframe.obs.reset_index(drop=True)
-        dataframe = pd.concat([X, dataframe], axis=1)
-        dataframe = pd.concat([index, dataframe], axis=1)
 
     if required_columns is not None:
         missing_columns = set(required_columns) - set(dataframe.columns)
