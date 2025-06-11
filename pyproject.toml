@@ -146,7 +146,6 @@ exclude_lines = [
 # https://pypi.org/project/bumpver
 [tool.bumpver]
 current_version = "0.6.1"
-
 version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
