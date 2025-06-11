@@ -24,11 +24,10 @@ loss:
   reduction: none
 
 semantic_encoder:
-  _target_: cyto_dl.nn.resnet.ResNet
-  out_dim: 8
+  _target_: cyto_dl.nn.TorchVisionWrapper
   base_encoder:
-    _partial_: True
     _target_: torchvision.models.resnet18
+    num_classes: 8
 
   # 3D
   # _target_: monai.networks.nets.Regressor
