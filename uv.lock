@@ -747,6 +747,59 @@ wheels = [
 ]
 
 [[package]]
+name = "bioio-ome-zarr"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.10' and platform_machine == 'arm64' and sys_platform == 'darwin'",
+    "python_full_version < '3.10' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.10' and platform_machine != 'arm64' and sys_platform == 'darwin') or (python_full_version < '3.10' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.10' and sys_platform != 'darwin' and sys_platform != 'linux' and sys_platform != 'win32')",
+    "python_full_version < '3.10' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "bioio-base", version = "1.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "fsspec", marker = "python_full_version < '3.10'" },
+    { name = "ome-zarr", version = "0.10.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "xarray", version = "2024.7.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "zarr", version = "2.18.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b4/88/4a3e0d67d17b9d36d8c3829299610bb8fde1d840dca35c11d602d3b6e112/bioio_ome_zarr-1.1.2.tar.gz", hash = "sha256:00474ddb0caa3acde3fbef5b5ec75b76b829ee3ef6a399c6c39d73b0d1ff58ce", size = 20558 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c6/a7/03b58f08ab1c6b2fe9ebcfe10298e29354355a6e4f6c6444edcedcf3f1b0/bioio_ome_zarr-1.1.2-py3-none-any.whl", hash = "sha256:3ea86031788bb42076438f7ca8315b3280cc6eae189208e9afd56856d06af850", size = 14906 },
+]
+
+[[package]]
+name = "bioio-ome-zarr"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.11' and sys_platform == 'darwin'",
+    "python_full_version >= '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.11' and sys_platform != 'darwin' and sys_platform != 'linux' and sys_platform != 'win32')",
+    "python_full_version >= '3.11' and sys_platform == 'win32'",
+    "python_full_version > '3.10' and python_full_version < '3.11' and sys_platform == 'darwin'",
+    "python_full_version > '3.10' and python_full_version < '3.11' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version > '3.10' and python_full_version < '3.11' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version > '3.10' and python_full_version < '3.11' and sys_platform != 'darwin' and sys_platform != 'linux' and sys_platform != 'win32')",
+    "python_full_version == '3.10' and sys_platform == 'darwin'",
+    "python_full_version == '3.10' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version == '3.10' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.10' and sys_platform != 'darwin' and sys_platform != 'linux' and sys_platform != 'win32')",
+    "python_full_version > '3.10' and python_full_version < '3.11' and sys_platform == 'win32'",
+    "python_full_version == '3.10' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "bioio-base", version = "1.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "fsspec", marker = "python_full_version >= '3.10'" },
+    { name = "ome-zarr", version = "0.10.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10'" },
+    { name = "ome-zarr", version = "0.10.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version > '3.10'" },
+    { name = "xarray", version = "2025.3.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "zarr", version = "2.18.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/d1/0aa2c85cc2fb3d9546d5ebcc55a5b10f8c3f3a981dc372da7e40fdc0fc24/bioio_ome_zarr-1.2.0.tar.gz", hash = "sha256:dd517effdc9b945813fa82b1a867b9a936dc3ff4706719045bab10ea5179221d", size = 20567 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/38/ffac4900f8bd945a434c3f692b94f3ae250c59b6d58f5bcefdbcd76f6d7c/bioio_ome_zarr-1.2.0-py3-none-any.whl", hash = "sha256:f4bb66ab89f8e2be5b00fbf0a1dcd7eccad527d5c8820007c94c26287558f9bb", size = 14906 },
+]
+
+[[package]]
 name = "bioio-tifffile"
 version = "1.0.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1179,7 +1232,7 @@ wheels = [
 
 [[package]]
 name = "cyto-dl"
-version = "0.5.1"
+version = "0.6.1"
 source = { editable = "." }
 dependencies = [
     { name = "anndata", version = "0.10.9", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
@@ -1194,6 +1247,8 @@ dependencies = [
     { name = "bioio-czi", version = "2.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "bioio-ome-tiff", version = "1.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "bioio-ome-tiff", version = "1.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "bioio-ome-zarr", version = "1.1.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "bioio-ome-zarr", version = "1.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "bioio-tifffile", version = "1.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "bioio-tifffile", version = "1.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "boto3" },
@@ -1298,6 +1353,7 @@ requires-dist = [
     { name = "bioio-base", specifier = "!=1.0.5,!=1.0.6" },
     { name = "bioio-czi" },
     { name = "bioio-ome-tiff" },
+    { name = "bioio-ome-zarr" },
     { name = "bioio-tifffile" },
     { name = "boto3" },
     { name = "boto3", marker = "extra == 's3'", specifier = ">=1.23.5,<1.24.5" },
