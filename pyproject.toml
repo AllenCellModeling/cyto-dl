@@ -46,6 +46,7 @@ dependencies = [
     "bioio-base!=1.0.5,!=1.0.6", # These versions have issues resolved by 1.0.7, which only supports Python 3.10+
     "bioio-czi",
     "bioio-ome-tiff",
+    "bioio-ome-zarr",
     "bioio-tifffile",
     "tifffile>=2024.0.0,<2025.2.18",
     "online-stats>=2023",

@@ -214,6 +214,7 @@ bioio-base==1.0.4 ; python_full_version < '3.10' \
     #   bioio
     #   bioio-czi
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   cyto-dl
 bioio-base==1.0.7 ; python_full_version >= '3.10' \
@@ -223,6 +224,7 @@ bioio-base==1.0.7 ; python_full_version >= '3.10' \
     #   bioio
     #   bioio-czi
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   cyto-dl
 bioio-czi==1.0.3 ; python_full_version < '3.10' \
@@ -240,6 +242,14 @@ bioio-ome-tiff==1.0.2 ; python_full_version < '3.10' \
 bioio-ome-tiff==1.1.0 ; python_full_version >= '3.10' \
     --hash=sha256:c25b88d77e169c19a275a5b376fcf772315395f7c37b732dc0c19c9190bd0b4d \
     --hash=sha256:fa7e5e6a112f5f7613f54281d9702e60d9bf2f95a2f8714f917a8a1e3156350e
+    # via cyto-dl
+bioio-ome-zarr==1.1.2 ; python_full_version < '3.10' \
+    --hash=sha256:00474ddb0caa3acde3fbef5b5ec75b76b829ee3ef6a399c6c39d73b0d1ff58ce \
+    --hash=sha256:3ea86031788bb42076438f7ca8315b3280cc6eae189208e9afd56856d06af850
+    # via cyto-dl
+bioio-ome-zarr==1.2.0 ; python_full_version >= '3.10' \
+    --hash=sha256:dd517effdc9b945813fa82b1a867b9a936dc3ff4706719045bab10ea5179221d \
+    --hash=sha256:f4bb66ab89f8e2be5b00fbf0a1dcd7eccad527d5c8820007c94c26287558f9bb
     # via cyto-dl
 bioio-tifffile==1.0.1 ; python_full_version < '3.10' \
     --hash=sha256:6d752a765942032bdd6f966f1907ff49616cb25a12ebd7a90a40c300a6a93e4f \
@@ -664,6 +674,7 @@ fsspec==2023.3.0 \
     #   bioio-base
     #   bioio-czi
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   dask
     #   huggingface-hub
@@ -1547,12 +1558,14 @@ ome-zarr==0.10.2 ; python_full_version <= '3.10' \
     --hash=sha256:9fcc401681708a67c4449d2d085c5d3182bb4d371c34c87b6dc603d485f62df3
     # via
     #   bioio
+    #   bioio-ome-zarr
     #   cyto-dl
 ome-zarr==0.10.3 ; python_full_version > '3.10' \
     --hash=sha256:83f0d7ffb4118a7f4b9cb1a95bc62e873a7c11a1676abd660e7d5154679268b9 \
     --hash=sha256:b562b3a1866036df99bf4bf80f0cb38106f464ea65243efce8a18f1e628aa877
     # via
     #   bioio
+    #   bioio-ome-zarr
     #   cyto-dl
 ome-zarr-models==0.1.5 ; python_full_version >= '3.11' \
     --hash=sha256:430be3c54fccefd7605b2ed78bafc363e65b4d444afcc1c0f51963017d0fd745 \
@@ -2587,6 +2600,7 @@ xarray==2024.7.0 ; python_full_version < '3.10' \
     #   bioio-base
     #   bioio-czi
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   pyshtools
 xarray==2025.3.1 ; python_full_version >= '3.10' \
@@ -2596,6 +2610,7 @@ xarray==2025.3.1 ; python_full_version >= '3.10' \
     #   bioio-base
     #   bioio-czi
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   pyshtools
 xmlschema==4.0.1 \
@@ -2671,6 +2686,7 @@ zarr==2.18.2 ; python_full_version < '3.10' \
     # via
     #   bioio
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   ngff-zarr
     #   ome-zarr
@@ -2680,6 +2696,7 @@ zarr==2.18.3 ; python_full_version >= '3.10' \
     # via
     #   bioio
     #   bioio-ome-tiff
+    #   bioio-ome-zarr
     #   bioio-tifffile
     #   ngff-zarr
     #   ome-zarr
