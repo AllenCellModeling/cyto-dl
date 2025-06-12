@@ -47,3 +47,5 @@ callbacks:
     num_pcs: 4
     n_steps: 3
     every_n_epoch: ${model.save_images_every_n_epochs}
+  model_checkpoint:
+    monitor: null
