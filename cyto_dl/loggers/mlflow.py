@@ -13,7 +13,6 @@ from mlflow.store.artifact.artifact_repository_registry import get_artifact_repo
 from mlflow.store.artifact.local_artifact_repo import LocalArtifactRepository
 from mlflow.utils.file_utils import local_file_uri_to_path
 from omegaconf import OmegaConf
-
 from cyto_dl import utils
 
 log = utils.get_pylogger(__name__)
@@ -47,7 +46,17 @@ class MLFlowLogger(_MLFlowLogger):
         self.fault_tolerant = fault_tolerant
 
         if tracking_uri is not None:
+            log.info(f"Setting tracking URI: {tracking_uri}")
             mlflow.set_tracking_uri(tracking_uri)
+            
+        log.info(f"Creating or fetching experiment: {experiment_name}")
+        try: 
+            mlflow.create_experiment(experiment_name)
+        except:
+            pass
+        mlflow.set_experiment(experiment_name)
+
+        log.info('done setting experiment')
 
     @rank_zero_only
     def log_hyperparams(self, params: Union[Dict[str, Any], Namespace], mode="train") -> None:

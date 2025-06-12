@@ -84,6 +84,7 @@ class BioIOImageLoaderd(Transform):
         if self.resolution_key in data:
             img.set_resolution_level(data[self.resolution_key])
         kwargs = {k: self.split_args(data[k]) for k in self.kwargs_keys if k in data}
+
         if self.dask_load:
             img = img.get_image_dask_data(**kwargs).compute()
         else:
