@@ -104,6 +104,8 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
         tuner = Tuner(trainer=trainer)
         tuner.scale_batch_size(model, datamodule=data, mode="power")
 
+    logger.start_system_metrics_logging()
+
     if cfg.get("train"):
         log.info("Starting training!")
         model, load_params = utils.load_checkpoint(model, cfg.get("checkpoint"))
@@ -117,6 +119,9 @@ def train(cfg: DictConfig, data=None) -> Tuple[dict, dict]:
                 ckpt_path=load_params.get("ckpt_path"),
             )
 
+    logger.stop_system_metrics_logging()
+    logger = trainer.logger 
+    logger.log_profiler_artifacts(cfg.paths.output_dir + "/profile")
     train_metrics = trainer.callback_metrics
 
     if cfg.get("test"):

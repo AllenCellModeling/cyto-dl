@@ -4,7 +4,16 @@ import warnings
 from argparse import Namespace
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
-
+import threading
+import time
+import psutil
+from pynvml import (
+    nvmlInit,
+    nvmlShutdown,
+    nvmlDeviceGetHandleByIndex,
+    nvmlDeviceGetMemoryInfo,
+    NVMLError,
+)
 import mlflow
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.loggers import MLFlowLogger as _MLFlowLogger
@@ -58,6 +67,64 @@ class MLFlowLogger(_MLFlowLogger):
 
         log.info('done setting experiment')
 
+    def start_system_metrics_logging(self, interval: int = 5):
+        """
+        Starts a background thread that logs CPU, memory, and GPU usage to MLflow every `interval` seconds.
+        """
+        def log_metrics_loop():
+            try:
+                nvmlInit()
+                handle = nvmlDeviceGetHandleByIndex(0)
+            except NVMLError:
+                log.warning("Unable to initialize NVML for GPU monitoring.")
+                return
+
+            while getattr(threading.current_thread(), "keep_running", True):
+                cpu = psutil.cpu_percent()
+                mem = psutil.virtual_memory().percent
+
+                try:
+                    gpu_mem = nvmlDeviceGetMemoryInfo(handle)
+                    gpu_used = gpu_mem.used // (1024 * 1024)  # MB
+                except NVMLError:
+                    gpu_used = 0
+
+                try:
+                    self.experiment.log_metrics(
+                        self.run_id,
+                        {
+                            "system/cpu_percent": cpu,
+                            "system/mem_percent": mem,
+                            "system/gpu_mem_used_mb": gpu_used,
+                        },
+                        step=int(time.time()),
+                    )
+                except Exception as e:
+                    if self.fault_tolerant:
+                        log.warn(f"[MLFlowLogger] Failed to log system metrics: {e}")
+                    else:
+                        raise e
+
+                time.sleep(interval)
+
+            try:
+                nvmlShutdown()
+            except Exception:
+                pass
+
+        self._sys_metrics_thread = threading.Thread(
+            target=log_metrics_loop,
+            daemon=True,
+        )
+        self._sys_metrics_thread.keep_running = True
+        self._sys_metrics_thread.start()
+
+    def stop_system_metrics_logging(self):
+        """Stops the system metrics thread cleanly."""
+        if hasattr(self, "_sys_metrics_thread"):
+            self._sys_metrics_thread.keep_running = False
+            self._sys_metrics_thread.join(timeout=10)
+
     @rank_zero_only
     def log_hyperparams(self, params: Union[Dict[str, Any], Namespace], mode="train") -> None:
         requirements = params.pop("requirements", [])
@@ -75,6 +142,23 @@ class MLFlowLogger(_MLFlowLogger):
             self.experiment.log_artifact(
                 self.run_id, local_path=reqs_path, artifact_path="requirements"
             )
+
+    @rank_zero_only
+    def log_profiler_artifacts(self, profiler_output_dir: str):
+        """
+        Logs profiler artifacts (e.g., from PyTorchProfiler) to MLflow under the 'profiler' artifact path.
+        """
+        if not os.path.isdir(profiler_output_dir):
+            log.warn(f"No profiler output found at: {profiler_output_dir}")
+            return
+        try:
+            self.experiment.log_artifacts(self.run_id, local_dir=profiler_output_dir, artifact_path="profiler")
+            log.info(f"Profiler artifacts logged from {profiler_output_dir}")
+        except Exception as e:
+            if self.fault_tolerant:
+                log.warn(f"Failed to log profiler artifacts: {e}")
+            else:
+                raise e
 
     @rank_zero_only
     def log_metrics(self, metrics, step):
