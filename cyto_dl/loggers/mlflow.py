@@ -90,14 +90,14 @@ class MLFlowLogger(_MLFlowLogger):
                     gpu_used = 0
 
                 try:
-                    self.experiment.log_metrics(
-                        self.run_id,
+                    mlflow.log_metrics(
                         {
                             "system/cpu_percent": cpu,
                             "system/mem_percent": mem,
                             "system/gpu_mem_used_mb": gpu_used,
                         },
                         step=int(time.time()),
+                        run_id=self.run_id,
                     )
                 except Exception as e:
                     if self.fault_tolerant:
