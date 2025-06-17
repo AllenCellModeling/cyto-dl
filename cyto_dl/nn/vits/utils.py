@@ -16,7 +16,9 @@ def take_indexes(sequences, indexes):
 
 
 def random_indexes(size: int, device):
+    # forward indices match original index to shuffled index
     forward_indexes = torch.randperm(size, device=device, dtype=torch.long)
+    # backward indices match shuffled index to original index
     backward_indexes = torch.argsort(forward_indexes)
     return forward_indexes, backward_indexes
 
