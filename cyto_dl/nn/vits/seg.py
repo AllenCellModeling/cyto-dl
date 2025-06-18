@@ -6,6 +6,7 @@ from einops.layers.torch import Rearrange
 from monai.networks.blocks import UnetOutBlock, UnetResBlock, UpSample
 
 from cyto_dl.nn.vits.mae import MAE_Encoder
+from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 
 class EncodedSkip(torch.nn.Module):
@@ -55,7 +56,7 @@ class SuperresDecoder(torch.nn.Module):
         self,
         spatial_dims: int = 3,
         num_patches: Optional[List[int]] = [2, 32, 32],
-        base_patch_size: Optional[List[int]] = [4, 8, 8],
+        patch_size: Optional[List[int]] = [4, 8, 8],
         emb_dim: Optional[int] = 192,
         n_decoder_filters: Optional[int] = 16,
         out_channels: Optional[int] = 6,
@@ -63,9 +64,8 @@ class SuperresDecoder(torch.nn.Module):
         num_layer: Optional[int] = 3,
     ) -> None:
         super().__init__()
-        total_upsample_factor = np.array(upsample_factor) * np.array(base_patch_size)
-        self.num_layer = np.min(np.log2(total_upsample_factor)).astype(int)
-        print(self.num_layer)
+        total_upsample_factor = np.array(upsample_factor) * np.array(patch_size)
+        self.num_layer = np.min(np.log2(total_upsample_factor)).astype(int) - 1
         residual_resize_factor = list(total_upsample_factor / 2**self.num_layer)
 
         input_n_decoder_filters = n_decoder_filters
@@ -146,7 +146,15 @@ class SuperresDecoder(torch.nn.Module):
         features: torch.Tensor,
     ):
         # remove global token
-        features = features[:, 1:]
+        if len(features.shape) == 4:
+            assert (
+                features.shape[0] == self.num_layer + 1
+            ), f"Please set the `n_intermediate_weights` for your encoder to {self.num_layer+1}"
+            features = features[:, 1:]
+        elif len(features.shape) == 3:
+            features = features[1:]
+            # duplicate features to match num decoder layers
+            features = torch.stack([features] * (self.num_layer + 1))
         prev = None
         for i in range(self.num_layer + 1):
             skip = self.upsampling[f"layer_{i}"]["skip"](features[i])
@@ -163,7 +171,7 @@ class Seg_ViT(torch.nn.Module):
         self,
         spatial_dims: int = 3,
         num_patches: Optional[List[int]] = [2, 32, 32],
-        base_patch_size: Optional[List[int]] = [16, 16, 16],
+        patch_size: Optional[List[int]] = [16, 16, 16],
         emb_dim: Optional[int] = 768,
         decoder_layer: Optional[int] = 3,
         n_decoder_filters: Optional[int] = 16,
@@ -180,7 +188,7 @@ class Seg_ViT(torch.nn.Module):
             Number of spatial dimensions
         num_patches: Optional[List[int]]=[2, 32, 32]
             Number of patches in each dimension (ZYX) order
-        base_patch_size: Optional[List[int]]=[16, 16, 16]
+        patch_size: Optional[List[int]]=[16, 16, 16]
             Base patch size in each dimension (ZYX) order
         emb_dim: Optional[int] =768
             Embedding dimension of ViT backbone
@@ -202,21 +210,13 @@ class Seg_ViT(torch.nn.Module):
             Path to pretrained ViT backbone checkpoint
         """
         super().__init__()
-        assert spatial_dims in (2, 3)
-        if isinstance(num_patches, int):
-            num_patches = [num_patches] * spatial_dims
-        if isinstance(base_patch_size, int):
-            base_patch_size = [base_patch_size] * spatial_dims
-        if isinstance(upsample_factor, int):
-            upsample_factor = [upsample_factor] * spatial_dims
-        assert len(num_patches) == spatial_dims
-        assert len(base_patch_size) == spatial_dims
-        assert len(upsample_factor) == spatial_dims
-
+        num_patches, patch_size, upsample_factor = match_tuple_dimensions(
+            spatial_dims, [num_patches, patch_size, upsample_factor]
+        )
         self.encoder = MAE_Encoder(
             spatial_dims=spatial_dims,
             num_patches=num_patches,
-            base_patch_size=base_patch_size,
+            patch_size=patch_size,
             emb_dim=emb_dim,
             **encoder_kwargs,
         )
@@ -237,7 +237,7 @@ class Seg_ViT(torch.nn.Module):
         self.decoder = SuperresDecoder(
             spatial_dims=spatial_dims,
             num_patches=num_patches,
-            base_patch_size=base_patch_size,
+            patch_size=patch_size,
             emb_dim=emb_dim,
             num_layer=decoder_layer,
             n_decoder_filters=n_decoder_filters,

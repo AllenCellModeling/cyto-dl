@@ -136,6 +136,7 @@ class MAE(MAE_Base):
             num_layer=decoder_layer,
             num_head=decoder_head,
             learnable_pos_embedding=learnable_pos_embedding,
+            n_output_channels=input_channels,
         )
 
     @property

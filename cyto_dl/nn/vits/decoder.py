@@ -27,6 +27,7 @@ class MAE_Decoder(torch.nn.Module):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        n_output_channels: Optional[int] = 1,
         has_cls_token: Optional[bool] = False,
         learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
@@ -66,7 +67,7 @@ class MAE_Decoder(torch.nn.Module):
         self.transformer = torch.nn.Sequential(
             *[Block(emb_dim, num_head) for _ in range(num_layer)]
         )
-        out_dim = torch.prod(torch.as_tensor(patch_size)).item()
+        out_dim = torch.prod(torch.as_tensor(patch_size)).item() * n_output_channels
         self.decoder_norm = nn.LayerNorm(emb_dim)
         self.head = torch.nn.Linear(emb_dim, out_dim)
         self.num_patches = torch.as_tensor(num_patches)
@@ -157,6 +158,7 @@ class CrossMAE_Decoder(MAE_Decoder):
         emb_dim: Optional[int] = 192,
         num_layer: Optional[int] = 4,
         num_head: Optional[int] = 3,
+        n_output_channels: Optional[int] = 1,
         has_cls_token: Optional[bool] = True,
         learnable_pos_embedding: Optional[bool] = True,
     ) -> None:
@@ -188,6 +190,7 @@ class CrossMAE_Decoder(MAE_Decoder):
             emb_dim,
             num_layer,
             num_head,
+            n_output_channels,
             has_cls_token,
             learnable_pos_embedding,
         )
