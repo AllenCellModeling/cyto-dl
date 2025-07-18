@@ -101,7 +101,7 @@ class MultiDimImageDataset(CacheDataset):
         start = row.get(self.time_start_column, 0)
         stop = row.get(self.time_stop_column, -1)
         step = row.get(self.time_step_column, 1)
-        timepoints = range(start, stop + 1, step) if stop > 0 else range(img.dims.T)
+        timepoints = range(start, stop + 1, step) if stop >= 0 else range(img.dims.T)
         return list(timepoints)
 
     def get_per_file_args(self, df):
