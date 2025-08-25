@@ -33,7 +33,8 @@ def make_array_dataloader(
     """
     if isinstance(transforms, (list, tuple, ListConfig)):
         transforms = Compose(transforms)
-    data = OmegaConf.to_object(data)
+    if OmegaConf.is_config(data):
+        data = OmegaConf.to_object(data)
     if isinstance(data, (list, tuple, ListConfig)):
         data = [{source_key: d} if isinstance(d, np.ndarray) else d for d in data]
     elif isinstance(data, np.ndarray):
