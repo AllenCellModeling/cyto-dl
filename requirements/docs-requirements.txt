@@ -125,7 +125,7 @@ array-api-compat==1.11.2 \
     --hash=sha256:a3b7f7b6af18f4c42e79423b1b2479798998b6a74355069d77a01a5282755b5d \
     --hash=sha256:b1d0059714a4153b3ae37c989e47b07418f727be5b22908dd3cf9d19bdc2c547
     # via anndata
-asciitree==0.3.3 \
+asciitree==0.3.3 ; python_full_version < '3.11' \
     --hash=sha256:4aa4b9b649f85e3fcb343363d97564aa1fb62e249677f2e18a96765145cc0f6e
     # via zarr
 astropy==6.0.1 ; python_full_version < '3.10' \
@@ -197,9 +197,9 @@ bioio==1.2.1 ; python_full_version < '3.10' \
     --hash=sha256:516dbf5daa097abb416e94204d4153cf96b16c5c98a4ff2d3a48b947d67c23ba \
     --hash=sha256:f6cbc18833a9e1add98b51b470cf5584321f29970790b53dfe36aa8025cec5dd
     # via cyto-dl
-bioio==1.5.2 ; python_full_version >= '3.10' \
-    --hash=sha256:7ba1e191482337aba6e2aa53a83272807b4470a2d8ae137b60d5f24d45454fa3 \
-    --hash=sha256:f31d5fef319e7d6f39b31011d538624db9514d56c25a3fc37311d5b7282dbb87
+bioio==3.0.0 ; python_full_version >= '3.10' \
+    --hash=sha256:8be25df70b611e62d1f1c3b11b47e039f3626e08e17e0dc792d824be3e4aeb89 \
+    --hash=sha256:c8a796d2ddf0b60fb240603c51c6b7e48fa1b3d8d2da9ade137f67d04f0707c0
     # via cyto-dl
 bioio-base==1.0.4 ; python_full_version < '3.10' \
     --hash=sha256:187ae976323b15250c978527fe271e1a9707f5712f3517ddeff1e160b2515e53 \
@@ -211,9 +211,9 @@ bioio-base==1.0.4 ; python_full_version < '3.10' \
     #   bioio-ome-zarr
     #   bioio-tifffile
     #   cyto-dl
-bioio-base==1.0.7 ; python_full_version >= '3.10' \
-    --hash=sha256:ae8f7d7cf72ac195b90d43e3f4b9f1696fd250799c456ab37ec9dd01b9e62d99 \
-    --hash=sha256:dfa3c1f9d373ca3a56f66e3694286a3db20dab972d9fe455eebe0d0ddb075a7d
+bioio-base==3.0.0 ; python_full_version >= '3.10' \
+    --hash=sha256:278f44aa79bbd50217521d8a4347716d5b07123f892ba7b7d1a6709c86021724 \
+    --hash=sha256:47ba5aa50b9c068116b0b505f8c5816c346fc7ad1c65116052c6a734e662d680
     # via
     #   bioio
     #   bioio-czi
@@ -233,9 +233,9 @@ bioio-ome-tiff==1.0.2 ; python_full_version < '3.10' \
     --hash=sha256:068c3b7897501cf10e8b4d9083a20e3ff00263b6eddb462720e94e9f776472e5 \
     --hash=sha256:146751e7dc1002faacb732d9985b7fc389f895e511d63ac04fb6ac7e0571dc3f
     # via cyto-dl
-bioio-ome-tiff==1.1.0 ; python_full_version >= '3.10' \
-    --hash=sha256:c25b88d77e169c19a275a5b376fcf772315395f7c37b732dc0c19c9190bd0b4d \
-    --hash=sha256:fa7e5e6a112f5f7613f54281d9702e60d9bf2f95a2f8714f917a8a1e3156350e
+bioio-ome-tiff==1.4.0 ; python_full_version >= '3.10' \
+    --hash=sha256:0073ff612926ea17c72a32f378d62361e282dd7afbc561e8c0a53316fd8d2e29 \
+    --hash=sha256:98107a847244a7b515c7a8c39b5119e67f4047b63661238b49b3d0cc36a86cd9
     # via cyto-dl
 bioio-ome-zarr==1.1.2 ; python_full_version < '3.10' \
     --hash=sha256:00474ddb0caa3acde3fbef5b5ec75b76b829ee3ef6a399c6c39d73b0d1ff58ce \
@@ -249,9 +249,13 @@ bioio-tifffile==1.0.1 ; python_full_version < '3.10' \
     --hash=sha256:6d752a765942032bdd6f966f1907ff49616cb25a12ebd7a90a40c300a6a93e4f \
     --hash=sha256:710466ee857d4915c4a7c56558f755310471ea41643d161e363a8ffc446d5ec9
     # via cyto-dl
-bioio-tifffile==1.1.0 ; python_full_version >= '3.10' \
+bioio-tifffile==1.1.0 ; python_full_version == '3.10.*' \
     --hash=sha256:005f74cc99866066c4c4235a29aa77c52e5051819106e108968f410279abaa44 \
     --hash=sha256:bc244a0a12e4ba006156c20bddbcb67e722e891a96a0ae5cf17c7782fda4de69
+    # via cyto-dl
+bioio-tifffile==1.3.0 ; python_full_version >= '3.11' \
+    --hash=sha256:1354b28f018cf85279eab75eabca10d82412b47aca1cc39af4a1335891fe0b31 \
+    --hash=sha256:b10878f7fc356fa8a78829903628634a38970145359a6db4aba68d69bbd4144d
     # via cyto-dl
 blinker==1.9.0 \
     --hash=sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf \
@@ -454,6 +458,52 @@ contourpy==1.3.2 ; python_full_version >= '3.10' \
     --hash=sha256:f939a054192ddc596e031e50bb13b657ce318cf13d264f095ce9db7dc6ae81c0 \
     --hash=sha256:fd93cc7f3139b6dd7aab2f26a90dde0aa9fc264dbf70f6740d498a70b860b82c
     # via matplotlib
+crc32c==2.7.1 ; python_full_version >= '3.11' \
+    --hash=sha256:17a2c3f8c6d85b04b5511af827b5dbbda4e672d188c0b9f20a8156e93a1aa7b6 \
+    --hash=sha256:19e03a50545a3ef400bd41667d5525f71030488629c57d819e2dd45064f16192 \
+    --hash=sha256:1fd1f9c6b50d7357736676278a1b8c8986737b8a1c76d7eab4baa71d0b6af67f \
+    --hash=sha256:22a72e81ec08a7ece6a35ac68d1ed32dd4a8be7949b164db88d4b4a4bade5c5a \
+    --hash=sha256:2e83fedebcdeb80c19e76b7a0e5103528bb062521c40702bf34516a429e81df3 \
+    --hash=sha256:30004a7383538ef93bda9b22f7b3805bc0aa5625ab2675690e1b676b19417d4b \
+    --hash=sha256:3208764c29688f91a35392073229975dd7687b6cb9f76b919dae442cabcd5126 \
+    --hash=sha256:36ffa999b72e3c17f6a066ae9e970b40f8c65f38716e436c39a33b809bc6ed9f \
+    --hash=sha256:3950d3c340c9d70889630ef81fba8666abfd0cf0aa19fd9c3a55634e0b383b0f \
+    --hash=sha256:39ca842586084bca24f9c4ab43e2d99191b1186b2f89b2122b470d0730254d1b \
+    --hash=sha256:4181240f6080c38eec9dd1539cd23a304a12100d3f4ffe43234f32064fae5ef0 \
+    --hash=sha256:488a0feba1bb005d0dd2f702c1da4849d083e88d82cd27b83ac2d2d93af80755 \
+    --hash=sha256:51ffba582c95a281e5a3f71eacdafc96b9a1835ddae245385639458fff197034 \
+    --hash=sha256:522fba1770aad8f7eb189f21fca591a51d96dcc749859088f462281324aec30b \
+    --hash=sha256:54d6f8c5be6815eabd6e3e90fa0bc13045183a6aa33a30dd684eb0f062b92213 \
+    --hash=sha256:676f5b46da268b5190f9fb91b3f037a00d114b411313664438525db876adc71f \
+    --hash=sha256:6793fcfe9d4130230d196abbe4021c01ffe8e85c92633bf3c8559f9836c227f5 \
+    --hash=sha256:6f0fadc741e79dc705e2d9ee967473e8a061d26b04310ed739f1ee292f33674f \
+    --hash=sha256:805c2be1bc0e251c48439a62b0422385899c15289483692bc70e78473c1039f1 \
+    --hash=sha256:80ebbf144a1a56a532b353e81fa0f3edca4f4baa1bf92b1dde2c663a32bb6a15 \
+    --hash=sha256:812723e222b6a9fe0562554d72f4f072c3a95720c60ee500984e7d0e568caac3 \
+    --hash=sha256:887f6844bb3ad35f0778cd10793ad217f7123a5422e40041231b8c4c7329649d \
+    --hash=sha256:8c03286b1e5ce9bed7090084f206aacd87c5146b4b10de56fe9e86cbbbf851cf \
+    --hash=sha256:8d0e660c9ed269e90692993a4457a932fc22c9cc96caf79dd1f1a84da85bb312 \
+    --hash=sha256:919262b7a12ef63f222ec19c0e092f39268802652e11669315257ae6249ec79f \
+    --hash=sha256:91ced31055d26d59385d708bbd36689e1a1d604d4b0ceb26767eb5a83156f85d \
+    --hash=sha256:96b794fd11945298fdd5eb1290a812efb497c14bc42592c5c992ca077458eeba \
+    --hash=sha256:98d5f7fc364bb9c4c4123d149406fbee063f2e8c2cff19a12f13e50faa146237 \
+    --hash=sha256:9c855726d71dee7ae25f81c6b54293455fc66802f34d334d22bea1f6ce8bc21c \
+    --hash=sha256:9df7194dd3c0efb5a21f5d70595b7a8b4fd9921fbbd597d6d8e7a11eca3e2d27 \
+    --hash=sha256:a01b0983aa87f517c12418f9898ecf2083bf86f4ea04122e053357c3edb0d73f \
+    --hash=sha256:a1738259802978cdf428f74156175da6a5fdfb7256f647fdc0c9de1bc6cd7173 \
+    --hash=sha256:a911abc33d453b3f171a3200b1e18b3fc39c204670b5b0a353cca99e4c664332 \
+    --hash=sha256:cb2b963c42128b38872e9ed63f04a73ce1ff89a1dfad7ea38add6fe6296497b8 \
+    --hash=sha256:cdd5e576fee5d255c1e68a4dae4420f21e57e6f05900b38d5ae47c713fc3330d \
+    --hash=sha256:d2a051f296e6e92e13efee3b41db388931cdb4a2800656cd1ed1d9fe4f13a086 \
+    --hash=sha256:d698eec444b18e296a104d0b9bb6c596c38bdcb79d24eba49604636e9d747305 \
+    --hash=sha256:e07cf10ef852d219d179333fd706d1c415626f1f05e60bd75acf0143a4d8b225 \
+    --hash=sha256:e80114dd7f462297e54d5da1b9ff472e5249c5a2b406aa51c371bb0edcbf76bd \
+    --hash=sha256:e89d51c90f6730b67b12c97d49099ba18d0fdce18541fab94d2be95d1c939adb \
+    --hash=sha256:f4333e62b7844dfde112dbb8489fd2970358eddc3310db21e943a9f6994df749 \
+    --hash=sha256:f7786d219a1a1bf27d0aa1869821d11a6f8e90415cfffc1e37791690d4a848a1 \
+    --hash=sha256:f91b144a21eef834d64178e01982bb9179c354b3e9e5f4c803b0e5096384968c \
+    --hash=sha256:fedde1e53507d0ede1980e8109442edd108c04ab100abcd5145c274820dacd4f
+    # via numcodecs
 cycler==0.12.1 \
     --hash=sha256:85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30 \
     --hash=sha256:88bb128f02ba341da8ef447245a9e138fae777f6a23943da4540077d3601eb1c
@@ -480,7 +530,6 @@ dask==2025.3.0 ; python_full_version >= '3.10' \
     #   bioio-ome-tiff
     #   bioio-tifffile
     #   distributed
-    #   ngff-zarr
     #   ome-zarr
 databricks-sdk==0.50.0 \
     --hash=sha256:485a604389fad7e9e26c7c4aeeebab3f486e7740c3f54ed64a13cbec1adbd0c0 \
@@ -514,6 +563,10 @@ docutils==0.19 \
     # via
     #   m2r2
     #   sphinx
+donfig==0.8.1.post1 ; python_full_version >= '3.11' \
+    --hash=sha256:2a3175ce74a06109ff9307d90a230f81215cbac9a751f4d1c6194644b8204f9d \
+    --hash=sha256:3bef3413a4c1c601b585e8d297256d0c1470ea012afa6e8461dc28bfb7c23f52
+    # via zarr
 edt==3.0.0 \
     --hash=sha256:0ee488f0480a9209a47372494c95dd64a3bb556b99178ce198a84f2fd4ea9b03 \
     --hash=sha256:0f5fef7132c8e2897be287a972f85cc4eada0da2969c0c54389f518a8355c48f \
@@ -546,10 +599,6 @@ elementpath==4.8.0 \
     --hash=sha256:5393191f84969bcf8033b05ec4593ef940e58622ea13cefe60ecefbbf09d58d9 \
     --hash=sha256:5822a2560d99e2633d95f78694c7ff9646adaa187db520da200a8e9479dc46ae
     # via xmlschema
-eval-type-backport==0.1.3 ; python_full_version >= '3.11' \
-    --hash=sha256:519d2a993b3da286df9f90e17f503f66435106ad870cf26620c5720e2158ddf2 \
-    --hash=sha256:d83ee225331dfa009493cec1f3608a71550b515ee4749abe78da14e3c5e314f5
-    # via pydantic-zarr
 exceptiongroup==1.2.2 ; python_full_version < '3.11' \
     --hash=sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b \
     --hash=sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc
@@ -560,7 +609,7 @@ fastapi==0.115.12 \
     --hash=sha256:1e2c2a2646905f9e83d32f04a3f86aff4a286669c6c950ca95b5fd68c2602681 \
     --hash=sha256:e94613d6c05e27be7ffebdd6ea5f388112e5e430c8f7d6494a9d1d88d43e814d
     # via mlflow-skinny
-fasteners==0.19 ; sys_platform != 'emscripten' \
+fasteners==0.19 ; python_full_version < '3.11' and sys_platform != 'emscripten' \
     --hash=sha256:758819cb5d94cdedf4e836988b74de396ceacb8e2794d21f82d131fd9ee77237 \
     --hash=sha256:b4f37c3ac52d8a445af3a66bce57b33b5e90b97c696b7b984f530cf8f0ded09c
     # via zarr
@@ -675,10 +724,12 @@ fsspec==2023.3.0 \
     #   bioio-tifffile
     #   dask
     #   huggingface-hub
+    #   kerchunk
     #   lightning
     #   ome-zarr
     #   pytorch-lightning
     #   s3fs
+    #   tifffile
     #   universal-pathlib
 furo==2023.3.23 \
     --hash=sha256:1cdf0730496f6ac0ecf394845fe55010539d987a3085f29d819e49a8e87da60a \
@@ -855,10 +906,8 @@ imageio==2.27.0 ; python_full_version < '3.10' \
 imageio==2.37.0 ; python_full_version >= '3.10' \
     --hash=sha256:11efa15b87bc7871b61590326b2d635439acc321cf7f8ce996f812543ce10eed \
     --hash=sha256:71b57b3669666272c818497aebba2b4c5f20d5b37c81720e5e1a56d59c492996
-    # via
-    #   bioio
-    #   scikit-image
-imageio-ffmpeg==0.6.0 \
+    # via scikit-image
+imageio-ffmpeg==0.6.0 ; python_full_version < '3.10' \
     --hash=sha256:02fa47c83703c37df6bfe4896aab339013f62bf02c5ebf2dce6da56af04ffc0a \
     --hash=sha256:196faa79366b4a82f95c0f4053191d2013f4714a715780f0ad2a68ff37483cc2 \
     --hash=sha256:1d47bebd83d2c5fc770720d211855f208af8a596c82d17730aa51e815cdee6dc \
@@ -883,15 +932,14 @@ importlib-metadata==8.6.1 \
     #   mlflow-skinny
     #   opentelemetry-api
     #   sphinx
-importlib-resources==6.5.2 ; python_full_version < '3.11' \
+importlib-resources==6.5.2 ; python_full_version < '3.10' \
     --hash=sha256:185f87adef5bcc288449d98fb4fba07cea78bc036455dd44c5fc4a2fe78fed2c \
     --hash=sha256:789cfdc3ed28c78b67a06acb8126751ced69a3d5f79c095a98298cd8a760ccec
     # via
     #   itkwasm-downsample-wasi
     #   matplotlib
-    #   ngff-zarr
     #   wasmtime
-itkwasm==1.0b189 ; python_full_version < '3.11' \
+itkwasm==1.0b189 ; python_full_version < '3.10' \
     --hash=sha256:2ae8d05bfb4e4d86edc73887fa03503e20cc5f24287284cc65e493eefe987828 \
     --hash=sha256:8ef28105feef5432b82cf5393ed25046c473fcf3d23bfeb6516bbf372e9746ba
     # via
@@ -899,15 +947,15 @@ itkwasm==1.0b189 ; python_full_version < '3.11' \
     #   itkwasm-downsample-emscripten
     #   itkwasm-downsample-wasi
     #   ngff-zarr
-itkwasm-downsample==1.6.0 ; python_full_version < '3.11' \
+itkwasm-downsample==1.6.0 ; python_full_version < '3.10' \
     --hash=sha256:538517cf7d00c42febfa03a76d0cf94c73a791a3b75f8a8f6c1fb4fb0fa4a5a4 \
     --hash=sha256:8c29f29c374cfc153891be89527a02a2db17287bc7f4c1337c572aa1512eb777
     # via ngff-zarr
-itkwasm-downsample-emscripten==1.6.0 ; python_full_version < '3.11' and sys_platform == 'emscripten' \
+itkwasm-downsample-emscripten==1.6.0 ; python_full_version < '3.10' and sys_platform == 'emscripten' \
     --hash=sha256:69f993cc85b2a7dd30e30e333d93c4ea8986097b819acd5ff4aec785160e61fc \
     --hash=sha256:c5ce54d5a4da105f1bc6624b74b644fa18f7abe540d6f25f93cbd312b16b9975
     # via itkwasm-downsample
-itkwasm-downsample-wasi==1.6.0 ; python_full_version < '3.11' and sys_platform != 'emscripten' \
+itkwasm-downsample-wasi==1.6.0 ; python_full_version < '3.10' and sys_platform != 'emscripten' \
     --hash=sha256:2bb373b10c1d602d05f3470a235142cb10b909833ad32e5800b2bc756c2cb54c \
     --hash=sha256:de0b9ad163185984ddfaea06a13744bb254504b0b38dbde3ed1020e62a8705a7
     # via itkwasm-downsample
@@ -934,6 +982,10 @@ joblib==1.4.2 \
     --hash=sha256:06d478d5674cbc267e7496a410ee875abd68e4340feff4490bcb7afb88060ae6 \
     --hash=sha256:2382c5816b2636fbd20a09e0f4e9dad4736765fdfb7dca582943b9c1366b3f0e
     # via scikit-learn
+kerchunk==0.2.8 ; python_full_version >= '3.11' \
+    --hash=sha256:85a932ffb6a26a38bebc45d5f978c962263704e34dd99f66008b402cded316af \
+    --hash=sha256:9174d4febcb53521849f3d00193e76d51470c706f622a202aa427cdff7efacdd
+    # via tifffile
 kiwisolver==1.4.7 ; python_full_version < '3.10' \
     --hash=sha256:0c18ec74c0472de033e1bebb2911c3c310eef5649133dd0bedf2a169a1b269e5 \
     --hash=sha256:0c6c43471bc764fad4bc99c5c2d6d16a676b1abf844ca7c8702bdae92df01ee0 \
@@ -1408,10 +1460,6 @@ ngff-zarr==0.9.0 ; python_full_version < '3.10' \
     --hash=sha256:aa73fef78798fdbaea6382ed6551ab0d5bc7c00c3552c5fff8f07c4a007cf4c5 \
     --hash=sha256:e3b048fc703b0859aa4b236356ddc059d3b3609b0f80946ab3a5763486e99c54
     # via bioio
-ngff-zarr==0.13.0 ; python_full_version == '3.10.*' \
-    --hash=sha256:447310a0b4945ec8555f349c86e6d99e53fc1844ff9d7d1d4585b746a87af77d \
-    --hash=sha256:d73acfc4407640311d7c498c38d8d354f46fe890febedb8c860cc72d81b351fe
-    # via bioio
 numcodecs==0.12.1 ; python_full_version < '3.10' \
     --hash=sha256:05d91a433733e7eef268d7e80ec226a0232da244289614a8f3826901aec1098e \
     --hash=sha256:0e79bf9d1d37199ac00a60ff3adb64757523291d19d03116832e600cac391c51 \
@@ -1427,7 +1475,7 @@ numcodecs==0.12.1 ; python_full_version < '3.10' \
     --hash=sha256:ef964d4860d3e6b38df0633caf3e51dc850a6293fd8e93240473642681d95136 \
     --hash=sha256:f2207871868b2464dc11c513965fd99b958a9d7cde2629be7b2dc84fdaab013b
     # via zarr
-numcodecs==0.13.1 ; python_full_version >= '3.10' \
+numcodecs==0.13.1 ; python_full_version == '3.10.*' \
     --hash=sha256:233bc7f26abce24d57e44ea8ebeb5cd17084690b4e7409dd470fdb75528d615f \
     --hash=sha256:237b7171609e868a20fd313748494444458ccd696062f67e198f7f8f52000c15 \
     --hash=sha256:2a86f5367af9168e30f99727ff03b27d849c31ad4522060dde0bce2923b3a8bc \
@@ -1438,6 +1486,16 @@ numcodecs==0.13.1 ; python_full_version >= '3.10' \
     --hash=sha256:a3cf37881df0898f3a9c0d4477df88133fe85185bffe57ba31bcc2fa207709bc \
     --hash=sha256:eda7d7823c9282e65234731fd6bd3986b1f9e035755f7fed248d7d366bb291ab
     # via zarr
+numcodecs==0.16.2 ; python_full_version >= '3.11' \
+    --hash=sha256:276f657ec4ffef9e2cc344b732b8906fe8612c3b9484504830ccdc7a2dd0715a \
+    --hash=sha256:4c1f1357896cfc5451157fd90a2858aa0f6a66409f91f3016d257b76c4c244c1 \
+    --hash=sha256:559163a7d97ec8aef1654e47c6e97f88dcc4c38a975338bf1bfb214d3c8d70f9 \
+    --hash=sha256:9922dae0c3b01b5bed3b4bae239f4787e891daa3262c27971298669d029d10e9 \
+    --hash=sha256:b1b7d8174e14c66191e0e1a4a44dd264bd776fb96b1ce3adc0216154f34b755c \
+    --hash=sha256:d88aa4f82bb8fe3fa2e9c19fd44b6c268acec6fc7bcff59c92e169830d09531a
+    # via
+    #   kerchunk
+    #   zarr
 numpy==1.26.4 \
     --hash=sha256:1af303d6b2210eb850fcf03064d364652b7120803a0b872f5211f5234b399f20 \
     --hash=sha256:2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010 \
@@ -1485,6 +1543,7 @@ numpy==1.26.4 \
     #   imagecodecs
     #   imageio
     #   itkwasm
+    #   kerchunk
     #   lightning
     #   matplotlib
     #   mlflow
@@ -1562,17 +1621,18 @@ ome-zarr==0.10.2 ; python_full_version <= '3.10' \
     #   bioio
     #   bioio-ome-zarr
     #   cyto-dl
-ome-zarr==0.10.3 ; python_full_version > '3.10' \
+ome-zarr==0.10.3 ; python_full_version > '3.10' and python_full_version < '3.11' \
     --hash=sha256:83f0d7ffb4118a7f4b9cb1a95bc62e873a7c11a1676abd660e7d5154679268b9 \
     --hash=sha256:b562b3a1866036df99bf4bf80f0cb38106f464ea65243efce8a18f1e628aa877
     # via
-    #   bioio
     #   bioio-ome-zarr
     #   cyto-dl
-ome-zarr-models==0.1.5 ; python_full_version >= '3.11' \
-    --hash=sha256:430be3c54fccefd7605b2ed78bafc363e65b4d444afcc1c0f51963017d0fd745 \
-    --hash=sha256:cb82de1831f2eea48ff1827a467f3dff7698a131dbcfdc86fea1b9e93f1b73d4
-    # via bioio
+ome-zarr==0.12.2 ; python_full_version >= '3.11' \
+    --hash=sha256:655fe1b11ca01148603f9931a5b0af31207dfc03a3a35f9b0ab8639790282bbd \
+    --hash=sha256:834e801e9aa4b870bed3dde2dc2a3ad7f388f1a13ffa6b3d7aade90691b9de64
+    # via
+    #   bioio-ome-zarr
+    #   cyto-dl
 omegaconf==2.3.0 \
     --hash=sha256:7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b \
     --hash=sha256:d5d4b6d29955cc50ad50c46dc269bcd92c6e00f5f90d23ab5fee7bfca4ba4cc7
@@ -1634,6 +1694,7 @@ packaging==24.2 \
     #   sphinx
     #   torchmetrics
     #   xarray
+    #   zarr
 pandas==2.2.3 \
     --hash=sha256:1948ddde24197a0f7add2bdc4ca83bf2b1ef84a1bc8ccffd95eda17fd836ecb5 \
     --hash=sha256:29401dbfa9ad77319367d36940cd8a0b3a11aba16063e39632d98b0e931ddf32 \
@@ -1724,7 +1785,7 @@ pillow==11.2.1 \
     #   matplotlib
     #   scikit-image
     #   torchvision
-platformdirs==4.3.7 ; python_full_version < '3.11' \
+platformdirs==4.3.7 ; python_full_version < '3.10' \
     --hash=sha256:a03875334331946f13c549dbd8f4bac7a13a50a895a0eb1e8c6a8ace80d40a94 \
     --hash=sha256:eb437d586b6a0986388f0d6f74aa0cde27b48d0e3d66843640bfb6bdcdb6e351
     # via
@@ -1860,9 +1921,7 @@ pydantic==2.11.3 \
     #   fastapi
     #   mlflow-skinny
     #   ome-types
-    #   ome-zarr-models
     #   pydantic-extra-types
-    #   pydantic-zarr
 pydantic-core==2.33.1 \
     --hash=sha256:0483847fa9ad5e3412265c1bd72aad35235512d9ce9d27d81a56d935ef489672 \
     --hash=sha256:048831bd363490be79acdd3232f74a0e9951b11b2b4cc058aeb72b22fdc3abe1 \
@@ -1937,10 +1996,6 @@ pydantic-extra-types==2.10.3 \
     --hash=sha256:dcc0a7b90ac9ef1b58876c9b8fdede17fbdde15420de9d571a9fccde2ae175bb \
     --hash=sha256:e8b372752b49019cd8249cc192c62a820d8019f5382a8789d0f887338a59c0f3
     # via ome-types
-pydantic-zarr==0.7.0 ; python_full_version >= '3.11' \
-    --hash=sha256:8fafb481e7dfa77b3202b91937b777b266387d03e9f6dad5b7eaeca3ae4b5baf \
-    --hash=sha256:fdb0129722d5a3454f5107de56ec8370a7dc8ccb3fa34f2729632ed4f8da3acd
-    # via ome-zarr-models
 pyerfa==2.0.1.5 \
     --hash=sha256:07b80cd70701f5d066b1ac8cce406682cfcd667a1186ec7d7ade597239a6021d \
     --hash=sha256:0e43c7194e3242083f2350b46c09fd4bf8ba1bcc0ebd1460b98fc47fe2389906 \
@@ -2051,6 +2106,7 @@ pyyaml==6.0.2 \
     #   cyto-dl
     #   dask
     #   distributed
+    #   donfig
     #   huggingface-hub
     #   lightning
     #   mlflow-skinny
@@ -2078,7 +2134,7 @@ rich==14.0.0 \
     #   cyto-dl
     #   ngff-zarr
     #   rich-argparse
-rich-argparse==1.7.0 ; python_full_version < '3.11' \
+rich-argparse==1.7.0 ; python_full_version < '3.10' \
     --hash=sha256:b8ec8943588e9731967f4f97b735b03dc127c416f480a083060433a97baf2fd3 \
     --hash=sha256:f31d809c465ee43f367d599ccaf88b73bc2c4d75d74ed43f2d538838c53544ba
     # via ngff-zarr
@@ -2143,9 +2199,7 @@ scikit-image==0.25.2 ; python_full_version >= '3.10' \
     --hash=sha256:d989d64ff92e0c6c0f2018c7495a5b20e2451839299a018e0e5108b2680f71e0 \
     --hash=sha256:e5a37e6cd4d0c018a7a55b9d601357e3382826d3888c10d0213fc63bff977dde \
     --hash=sha256:f4bac9196fb80d37567316581c6060763b0f4893d3aca34a9ede3825bc035b17
-    # via
-    #   bioio
-    #   ome-zarr
+    # via ome-zarr
 scikit-learn==1.6.1 \
     --hash=sha256:0c8d036eb937dbb568c6242fa598d551d88fb4399c0344d95c001980ec1c7d36 \
     --hash=sha256:25fc636bdaf1cc2f4a124a116312d837148b5e10872147bdaf4887926b8c03d8 \
@@ -2352,7 +2406,7 @@ threadpoolctl==3.6.0 \
     --hash=sha256:43a0b8fd5a2928500110039e43a5eed8480b918967083ea48dc3ab9f13c4a7fb \
     --hash=sha256:8ab8b4aa3491d812b623328249fab5302a68d2d71745c8a4c719a2fcaba9f44e
     # via scikit-learn
-tifffile==2024.8.30 ; python_full_version < '3.10' \
+tifffile==2024.8.30 ; python_full_version < '3.11' \
     --hash=sha256:2c9508fe768962e30f87def61819183fb07692c258cb175b3c114828368485a4 \
     --hash=sha256:8bc59a8f02a2665cd50a910ec64961c5373bee0b8850ec89d3b7b485bf7be7ad
     # via
@@ -2361,14 +2415,12 @@ tifffile==2024.8.30 ; python_full_version < '3.10' \
     #   bioio-tifffile
     #   cyto-dl
     #   scikit-image
-tifffile==2025.1.10 ; python_full_version >= '3.10' \
-    --hash=sha256:baaf0a3b87bf7ec375fa1537503353f70497eabe1bdde590f2e41cc0346e612f \
-    --hash=sha256:ed24cf4c99fb13b4f5fb29f8a0d5605e60558c950bccbdca2a6470732a27cfb3
+tifffile==2025.9.9 ; python_full_version >= '3.11' \
+    --hash=sha256:239247551fa10b5679036ee030cdbeb7762bc1b3f11b1ddaaf50759ef8b4eb26 \
+    --hash=sha256:6cf97ef548970eee9940cf8fc4203e57b4462a72e1e5e7a667ecdeb96113bc5f
     # via
-    #   bioio
     #   bioio-ome-tiff
     #   bioio-tifffile
-    #   cyto-dl
     #   scikit-image
 timm==1.0.15 \
     --hash=sha256:5a3dc460c24e322ecc7fd1f3e3eb112423ddee320cb059cc1956fbc9731748ef \
@@ -2476,11 +2528,11 @@ typing-extensions==4.13.2 \
     #   mlflow-skinny
     #   multidict
     #   ngff-zarr
+    #   numcodecs
     #   opentelemetry-sdk
     #   pydantic
     #   pydantic-core
     #   pydantic-extra-types
-    #   pydantic-zarr
     #   pytorch-lightning
     #   rich
     #   sqlalchemy
@@ -2489,6 +2541,7 @@ typing-extensions==4.13.2 \
     #   typing-inspection
     #   uvicorn
     #   xsdata
+    #   zarr
 typing-inspection==0.4.0 \
     --hash=sha256:50e72559fcd2a6367a19f7a7e610e6afcb9fac940c650290eed893d61386832f \
     --hash=sha256:9765c87de36671694a67904bf2c96e395be9c6439bb6c87b5142569dcdd65122
@@ -2497,6 +2550,48 @@ tzdata==2025.2 \
     --hash=sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8 \
     --hash=sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9
     # via pandas
+ujson==5.11.0 ; python_full_version >= '3.11' \
+    --hash=sha256:0654a2691fc252c3c525e3d034bb27b8a7546c9d3eb33cd29ce6c9feda361a6a \
+    --hash=sha256:16ccb973b7ada0455201808ff11d48fe9c3f034a6ab5bd93b944443c88299f89 \
+    --hash=sha256:181fb5b15703a8b9370b25345d2a1fd1359f0f18776b3643d24e13ed9c036d4c \
+    --hash=sha256:185f93ebccffebc8baf8302c869fac70dd5dd78694f3b875d03a31b03b062cdb \
+    --hash=sha256:30f607c70091483550fbd669a0b37471e5165b317d6c16e75dba2aa967608723 \
+    --hash=sha256:3134b783ab314d2298d58cda7e47e7a0f7f71fc6ade6ac86d5dbeaf4b9770fa6 \
+    --hash=sha256:3d2720e9785f84312b8e2cb0c2b87f1a0b1c53aaab3b2af3ab817d54409012e0 \
+    --hash=sha256:416389ec19ef5f2013592f791486bef712ebce0cd59299bf9df1ba40bb2f6e04 \
+    --hash=sha256:446e8c11c06048611c9d29ef1237065de0af07cabdd97e6b5b527b957692ec25 \
+    --hash=sha256:4598bf3965fc1a936bd84034312bcbe00ba87880ef1ee33e33c1e88f2c398b49 \
+    --hash=sha256:4843f3ab4fe1cc596bb7e02228ef4c25d35b4bb0809d6a260852a4bfcab37ba3 \
+    --hash=sha256:4b42c115c7c6012506e8168315150d1e3f76e7ba0f4f95616f4ee599a1372bbc \
+    --hash=sha256:5600202a731af24a25e2d7b6eb3f648e4ecd4bb67c4d5cf12f8fab31677469c9 \
+    --hash=sha256:65f3c279f4ed4bf9131b11972040200c66ae040368abdbb21596bf1564899694 \
+    --hash=sha256:674f306e3e6089f92b126eb2fe41bcb65e42a15432c143365c729fdb50518547 \
+    --hash=sha256:683f57f0dd3acdd7d9aff1de0528d603aafcb0e6d126e3dc7ce8b020a28f5d01 \
+    --hash=sha256:6b6ec7e7321d7fc19abdda3ad809baef935f49673951a8bab486aea975007e02 \
+    --hash=sha256:6eff24e1abd79e0ec6d7eae651dd675ddbc41f9e43e29ef81e16b421da896915 \
+    --hash=sha256:7855ccea3f8dad5e66d8445d754fc1cf80265a4272b5f8059ebc7ec29b8d0835 \
+    --hash=sha256:7e0ec1646db172beb8d3df4c32a9d78015e671d2000af548252769e33079d9a6 \
+    --hash=sha256:7f1a27ab91083b4770e160d17f61b407f587548f2c2b5fbf19f94794c495594a \
+    --hash=sha256:85e6796631165f719084a9af00c79195d3ebf108151452fefdcb1c8bb50f0105 \
+    --hash=sha256:86baf341d90b566d61a394869ce77188cc8668f76d7bb2c311d77a00f4bdf844 \
+    --hash=sha256:94fcae844f1e302f6f8095c5d1c45a2f0bfb928cccf9f1b99e3ace634b980a2a \
+    --hash=sha256:952c0be400229940248c0f5356514123d428cba1946af6fa2bbd7503395fef26 \
+    --hash=sha256:99c49400572cd77050894e16864a335225191fd72a818ea6423ae1a06467beac \
+    --hash=sha256:9aacbeb23fdbc4b256a7d12e0beb9063a1ba5d9e0dbb2cfe16357c98b4334596 \
+    --hash=sha256:a4df61a6df0a4a8eb5b9b1ffd673429811f50b235539dac586bb7e9e91994138 \
+    --hash=sha256:aa6b3d4f1c0d3f82930f4cbd7fe46d905a4a9205a7c13279789c1263faf06dba \
+    --hash=sha256:abae0fb58cc820092a0e9e8ba0051ac4583958495bfa5262a12f628249e3b362 \
+    --hash=sha256:c6618f480f7c9ded05e78a1938873fde68baf96cdd74e6d23c7e0a8441175c4b \
+    --hash=sha256:d06e87eded62ff0e5f5178c916337d2262fdbc03b31688142a3433eabb6511db \
+    --hash=sha256:d7c46cb0fe5e7056b9acb748a4c35aa1b428025853032540bb7e41f46767321f \
+    --hash=sha256:d8951bb7a505ab2a700e26f691bdfacf395bc7e3111e3416d325b513eea03a58 \
+    --hash=sha256:da473b23e3a54448b008d33f742bcd6d5fb2a897e42d1fc6e7bf306ea5d18b1b \
+    --hash=sha256:e204ae6f909f099ba6b6b942131cee359ddda2b6e4ea39c12eb8b991fe2010e0 \
+    --hash=sha256:e979fbc469a7f77f04ec2f4e853ba00c441bf2b06720aa259f0f720561335e34 \
+    --hash=sha256:ecd6ff8a3b5a90c292c2396c2d63c687fd0ecdf17de390d852524393cd9ed052 \
+    --hash=sha256:f62b9976fabbcde3ab6e413f4ec2ff017749819a0786d84d7510171109f2d53c \
+    --hash=sha256:fac6c0649d6b7c3682a0a6e18d3de6857977378dce8d419f57a0b20e3d775b39
+    # via kerchunk
 universal-pathlib==0.2.6 \
     --hash=sha256:50817aaeaa9f4163cb1e76f5bdf84207fa05ce728b23fd779479b3462e5430ac \
     --hash=sha256:700dec2b58ef34b87998513de6d2ae153b22f083197dfafb8544744edabd1b18
@@ -2521,7 +2616,7 @@ waitress==3.0.2 ; sys_platform == 'win32' \
     --hash=sha256:682aaaf2af0c44ada4abfb70ded36393f0e307f4ab9456a215ce0020baefc31f \
     --hash=sha256:c56d67fd6e87c2ee598b76abdd4e96cfad1f24cacdea5078d382b1f9d7b5ed2e
     # via mlflow
-wasmtime==32.0.0 ; python_full_version < '3.11' and sys_platform != 'emscripten' \
+wasmtime==32.0.0 ; python_full_version < '3.10' and sys_platform != 'emscripten' \
     --hash=sha256:33ae41f6ac9a3435444c3135c8364590633a331cba5e1bab7554f0436ce7c6c4 \
     --hash=sha256:4566a5fd5f6c2832c703b13d029b660203756ade8f297ed50a62f2a53e7c55dd \
     --hash=sha256:4d7aa59936f9db651048e0192ff2ae8e94923379b2c0c31b748da8062f90c3fc \
@@ -2685,18 +2780,22 @@ zarr==2.18.2 ; python_full_version < '3.10' \
     #   bioio-tifffile
     #   ngff-zarr
     #   ome-zarr
-zarr==2.18.3 ; python_full_version >= '3.10' \
+zarr==2.18.3 ; python_full_version == '3.10.*' \
     --hash=sha256:2580d8cb6dd84621771a10d31c4d777dca8a27706a1a89b29f42d2d37e2df5ce \
     --hash=sha256:b1f7dfd2496f436745cdd4c7bcf8d3b4bc1dceef5fdd0d589c87130d842496dd
     # via
-    #   bioio
-    #   bioio-ome-tiff
     #   bioio-ome-zarr
     #   bioio-tifffile
-    #   ngff-zarr
     #   ome-zarr
-    #   ome-zarr-models
-    #   pydantic-zarr
+    #   tifffile
+zarr==3.1.2 ; python_full_version >= '3.11' \
+    --hash=sha256:688e4eb79045c110128cd16f301f2f58fa19507b1803dcbea0ea894e66e06274 \
+    --hash=sha256:c3e180f53ee0ef91b86f7feff6f9dd381ddd1b512d1a46580530966a493387b6
+    # via
+    #   bioio-ome-zarr
+    #   kerchunk
+    #   ome-zarr
+    #   tifffile
 zict==3.0.0 \
     --hash=sha256:5796e36bd0e0cc8cf0fbc1ace6a68912611c1dbd74750a3f3026b9b9d6a327ae \
     --hash=sha256:e321e263b6a97aafc0790c3cfb3c04656b7066e6738c37fffcca95d803c9fba5
