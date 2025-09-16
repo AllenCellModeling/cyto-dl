@@ -46,10 +46,11 @@ dependencies = [
     "bioio>=1.0.1",
     "bioio-base!=1.0.5,!=1.0.6", # These versions have issues resolved by 1.0.7, which only supports Python 3.10+
     "bioio-czi",
-    "bioio-ome-tiff",
+    'bioio-ome-tiff>=1.4.0; python_version >= "3.10"', # handles tifffile/OmeTiffWriter issue, but requires python >= 3.10
+    'bioio-ome-tiff; python_version < "3.10"',
+    'tifffile>=2024.0.0,<2025.2.18; python_version < "3.10"', # handle tifffile/OmeTiffWriter issue ourselves for python 3.9
     "bioio-ome-zarr",
     "bioio-tifffile",
-    "tifffile>=2024.0.0,<2025.2.18",
     "online-stats>=2023",
     "opencv-python>=4.10.0",
     "positional-encodings>=6.0.3",
