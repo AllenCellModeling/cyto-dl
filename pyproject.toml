@@ -43,11 +43,11 @@ dependencies = [
     "astropy>=5.2",
     "rich",
     "boto3",
-    "bioio==2.0.0",
+    "bioio==3.0.0",
     "bioio-base!=1.0.5,!=1.0.6", # These versions have issues resolved by 1.0.7, which only supports Python 3.10+
     "bioio-czi==2.2.0",
     "bioio-ome-tiff",
-    "bioio-ome-zarr",
+    "bioio-ome-zarr==1.2.0",
     "bioio-tifffile",
     "tifffile>=2024.0.0,<2025.2.18",
     "online-stats>=2023",
