@@ -2,6 +2,7 @@ import sys
 import warnings
 from pathlib import Path
 from typing import Dict, List, Union
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -14,7 +15,7 @@ from cyto_dl.models.base_model import BaseModel
 warnings.simplefilter("once", UserWarning)
 
 
-class MultiTaskIm2Im(BaseModel):
+class MAE_Features(BaseModel):
     def __init__(
         self,
         *,
@@ -91,33 +92,24 @@ class MultiTaskIm2Im(BaseModel):
         for k, head in self.task_heads.items():
             head.update_params({"head_name": k, "x_key": x_key, "save_dir": save_dir})
 
-    def configure_optimizers(self):
-        opts = []
-        scheds = []
-        for key in ("generator", "discriminator"):
-            if key in self.optimizer.keys():
-                if key == "generator":
-                    opt = self.optimizer[key](
-                        filter(
-                            lambda p: p.requires_grad,
-                            list(self.backbone.parameters()) + list(self.task_heads.parameters()),
-                        )
-                    )
-                elif key == "discriminator":
-                    opt = self.optimizer[key](self.discriminator.parameters())
-                scheduler = self.lr_scheduler[key](optimizer=opt)
-                opts.append(opt)
-                scheds.append(scheduler)
-        return (opts, scheds)
-
-    def _train_forward(self, batch, stage, n_postprocess, run_heads):
-        """During training we are only dealing with patches,so we can calculate per-patch loss,
-        metrics, postprocessing etc."""
-        z = self.backbone(batch[self.hparams.x_key])
-        return {
-            task: self.task_heads[task].run_head(z, batch, stage, n_postprocess)
-            for task in run_heads
-        }
+    # def configure_optimizers(self):
+    #     opts = []
+    #     scheds = []
+    #     for key in ("generator", "discriminator"):
+    #         if key in self.optimizer.keys():
+    #             if key == "generator":
+    #                 opt = self.optimizer[key](
+    #                     filter(
+    #                         lambda p: p.requires_grad,
+    #                         list(self.backbone.parameters()) + list(self.task_heads.parameters()),
+    #                     )
+    #                 )
+    #             elif key == "discriminator":
+    #                 opt = self.optimizer[key](self.discriminator.parameters())
+    #             scheduler = self.lr_scheduler[key](optimizer=opt)
+    #             opts.append(opt)
+    #             scheds.append(scheduler)
+    #     return (opts, scheds)
 
     def forward(self, x, run_heads):
         z = self.backbone(x)
@@ -130,37 +122,20 @@ class MultiTaskIm2Im(BaseModel):
         to run backbone + taskheads patch by patch, then do saving/postprocessing/etc on the entire
         fov.
         """
-        # import pdb; pdb.set_trace()
         with torch.no_grad():
-            # import pdb; pdb.set_trace()
-            # return self._train_forward(batch, stage, n_postprocess, run_heads)
-            raw_pred_images = sliding_window_inference(
-                inputs=batch[self.hparams.x_key],
-                predictor=self.forward,
-                run_heads=run_heads,
-                **self.hparams.inference_args,
-            )
-        # # import pdb; pdb.set_trace()
-        return {
-            head_name:{'pred': raw_pred_images[head_name].cpu().numpy()}
-            for head_name in run_heads
-        }
+            features = []
+            for patch in range(batch[self.hparams.x_key].shape[1]):
+                pred = self.forward(batch[self.hparams.x_key][:,patch,...],run_heads)[self.hparams.x_key].to(dtype=torch.float16, device='cpu').numpy().squeeze()
+                # import pdb; pdb.set_trace()
+                pred = np.mean(pred.reshape((-1,pred.shape[-1])), axis=0).squeeze()
 
-        # return {
-        #     head_name: self.task_heads[head_name].run_head(
-        #         None,
-        #         batch,
-        #         stage,
-        #         n_postprocess,
-        #         run_forward=True,
-        #         y_hat=raw_pred_images[head_name],
-        #     )
-        #     for head_name in run_heads
-        # }
+                features.append(pred)
+            features = np.stack(features)
+        meta = {key:val[0] for key, val in batch.items() if key not in run_heads}
+        return (meta, features)
+        
 
     def run_forward(self, batch, stage, n_postprocess, run_heads):
-        if stage in ("train", "val", "test"):
-            return self._train_forward(batch, stage, n_postprocess, run_heads)
         return self._inference_forward(batch, stage, n_postprocess, run_heads)
 
     def get_n_postprocess_image(self, batch, batch_idx, stage):
@@ -255,21 +230,26 @@ class MultiTaskIm2Im(BaseModel):
 
         return results
 
-    def training_step(self, batch, batch_idx):
-        return self.model_step("train", batch, batch_idx)
-
-    def validation_step(self, batch, batch_idx):
-        return self.model_step("val", batch, batch_idx)
-
-    def test_step(self, batch, batch_idx):
-        return self.model_step("test", batch, batch_idx)
-
     def predict_step(self, batch, batch_idx):
         stage = "predict"
         run_heads, io_map = self._get_run_heads(batch, stage, batch_idx)
         outs = None
         if len(run_heads) > 0:
             n_postprocess = self.get_n_postprocess_image(batch, batch_idx, stage)
+            
+            locs = batch[self.hparams.x_key].meta['location'].cpu().numpy().squeeze()
+            shapes = batch[self.hparams.x_key].meta['spatial_shape'].cpu().numpy().squeeze()
+            p = np.concatenate((locs,shapes), axis=0)
+
+            rois = [[p[0,i], p[0,i]+p[2,i], p[1,i], p[1,i]+p[3,i]] for i in range(p.shape[1])]
+            m = np.max(np.array(rois),axis=0)
+            rel_rois = [[r[0]/m[1], r[1]/m[1], r[2]/m[3], r[3]/m[3]] for r in rois]
+
+            vole_args = ['?c1=ven:1&reg={0:.3f}:{1:.3f},{2:.3f}:{3:.3f},0:1&mode=maxproject'.format(r[2],r[3],r[0],r[1]) for r in rel_rois]
+
             batch = self._to_tensor(batch)
             outs = self.run_forward(batch, stage, n_postprocess, run_heads)
+            outs[0]['roi'] = rois
+            outs[0]['Link Path'] = vole_args
+        
         return io_map, outs

@@ -3,6 +3,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Union
 
+from click import Option
 import numpy as np
 import torch
 
@@ -13,7 +14,7 @@ from cyto_dl.nn.vits.utils import match_tuple_dimensions
 
 class MAE_Base(torch.nn.Module, ABC):
     def __init__(
-        self, spatial_dims, num_patches, patch_size, mask_ratio, features_only, context_pixels
+        self, spatial_dims, num_patches, patch_size, mask_ratio, features_only, context_pixels, inference_mode=False
     ):
         super().__init__()
         num_patches, patch_size, context_pixels = match_tuple_dimensions(
@@ -26,6 +27,7 @@ class MAE_Base(torch.nn.Module, ABC):
         self.mask_ratio = mask_ratio
         self.features_only = features_only
         self.context_pixels = context_pixels
+        self.inference_mode = inference_mode
 
     # encoder and decoder must be defined in subclasses
     @property
@@ -49,7 +51,9 @@ class MAE_Base(torch.nn.Module, ABC):
         if self.features_only:
             return features
         predicted_img = self.decoder(features, forward_indexes, backward_indexes)
-        return predicted_img, mask
+        if self.inference_mode:
+            return predicted_img
+        return predicted_img , mask
 
 
 class MAE(MAE_Base):
@@ -70,6 +74,7 @@ class MAE(MAE_Base):
         input_channels: Optional[int] = 1,
         features_only: Optional[bool] = False,
         learnable_pos_embedding: Optional[bool] = True,
+        inference_mode: Optional[bool] = False
     ) -> None:
         """
         Parameters
@@ -110,6 +115,7 @@ class MAE(MAE_Base):
             mask_ratio=mask_ratio,
             features_only=features_only,
             context_pixels=context_pixels,
+            inference_mode=inference_mode
         )
 
         self._encoder = MAE_Encoder(

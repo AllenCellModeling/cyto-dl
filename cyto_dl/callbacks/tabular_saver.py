@@ -75,20 +75,21 @@ class SaveTabularData(Callback):
 
     def save_feats(self, predictions, stage):
         feats = []
-        for pred, meta in predictions:
-            meta = self._parse_meta(meta)
-            batch_feats = self.pred_to_df(pred)
-            for k in self.meta_keys:
-                if k in meta:
-                    batch_feats[k] = meta[k]
-                else:
-                    warnings.warn(
-                        f"Metadata key {k} not found in metadata. Available keys are {meta.keys()}"
-                    )
-            feats.append(batch_feats)
+        for _, batch in predictions:
+            meta, pred = batch
+            batch_feats = {key: [val.replace('\0','') if isinstance(val,str) else val] for key,val in meta.items() if key not in ['roi', 'Link Path']}
+            # batch_feats['features'] = [pred.tolist()]
+            for patch, roi, link in zip(pred.tolist(), meta['roi'], meta['Link Path']):
+                patch_feats = batch_feats.copy()
+                patch_feats['features'] = [patch]
+                patch_feats['roi'] = [roi]
+                patch_feats['Link Path'] = [link]
+                patch_feats = pd.DataFrame(patch_feats)
+                feats.append(patch_feats)
         self._save(feats, stage)
 
     def on_predict_epoch_end(self, trainer, pl_module):
         # Access the list of predictions from all predict_steps
         predictions = trainer.predict_loop.predictions
+        # import pdb; pdb.set_trace()
         self.save_feats(predictions, "predict")

@@ -169,6 +169,7 @@ class PatchifyBase(torch.nn.Module, ABC):
                 img, n_visible_patches, num_patches
             )
         # generate patches
+        # import pdb; pdb.set_trace()
         tokens = self.conv(img * mask)
         tokens = self.img2token(tokens)
 
