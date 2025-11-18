@@ -263,7 +263,7 @@ class DiffusionAutoEncoder(BaseModel):
                 sample = torch.cat(
                     [
                         self._generate_image(
-                            noise[start:stop], cond[start:stop].unsqueeze(2)
+                            noise[start:stop], cond[start:stop].unsqueeze(1)
                         ).squeeze(1)
                         for start, stop in tqdm.tqdm(batch_indices, desc="Generating batch")
                     ],
