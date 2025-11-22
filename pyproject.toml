@@ -17,10 +17,10 @@ authors = [
     { name = "Ritvik Vasan", email = "ritvik.vasan@alleninstitute.org" },
 ]
 dependencies = [
-    "hydra-core~=1.3.0",
+    "hydra-core>=1.3.0",
     "hydra-colorlog>=1.2",
     "hydra-optuna-sweeper>=1.2",
-    "torch~=2.0.0",
+    "torch>=2.9.1",
     "numpy>=1.23",
     "matplotlib>=3.7",
     "pandas>=1.5",
@@ -49,28 +49,28 @@ dependencies = [
     "bioio-ome-tiff",
     "bioio-ome-zarr",
     "bioio-tifffile",
-    "tifffile>=2024.0.0,<2025.2.18",
+    "tifffile>=2024.0.0",
     "online-stats>=2023",
     "opencv-python>=4.10.0",
     "positional-encodings>=6.0.3",
 ]
-requires-python = ">=3.9,<3.12"
+requires-python = ">=3.10,<3.13"
 
 [project.optional-dependencies]
 equiv = [
-    "lie_learn==0.0.1.post1",
-    "escnn~=1.0.7",
+    "lie_learn>=0.0.1.post1",
+    "escnn>=1.0.7",
     "py3nj>=0.2.1",
-    "e3nn~=0.5.1"
+    "e3nn>=0.5.1"
 ]
 spharm = [
-    "vtk~=9.2",
-    "aicscytoparam~=0.1",
-    "pyshtools==4.10.3",
+    "vtk>=9.2",
+    "aicscytoparam>=0.1",
+    "pyshtools>=4.10.3",
 ]
 s3 = [
-    "boto3>=1.23.5,<1.24.5",
-    "s3fs~=2023.1"
+    "boto3>=1.23.5",
+    "s3fs>=2023.1"
 ]
 torchserve = [
     "torchserve>=0.8.0",
@@ -90,14 +90,14 @@ all = [
 ]
 test = [
     "cyto-dl",
-    "pytest~=7.2",
-    "pytest-cov[toml]~=4.0",
+    "pytest>=7.2",
+    "pytest-cov[toml]>=4.0",
 ]
 docs = [
     "cyto-dl",
-    "furo<=2023.3.23",
-    "m2r2<=0.3.3.post2",
-    "sphinx<=6.1.3",
+    "furo>=2023.3.23",
+    "m2r2>=0.3.3.post2",
+    "sphinx>=6.1.3",
 ]
 
 
