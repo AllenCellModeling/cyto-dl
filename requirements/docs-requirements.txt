@@ -716,7 +716,9 @@ torchmetrics==1.7.1
     #   lightning
     #   pytorch-lightning
 torchvision==0.24.1
-    # via timm
+    # via
+    #   cyto-dl
+    #   timm
 tornado==6.4.2
     # via distributed
 tqdm==4.67.1

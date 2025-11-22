@@ -21,6 +21,7 @@ dependencies = [
     "hydra-colorlog>=1.2",
     "hydra-optuna-sweeper>=1.2",
     "torch>=2.9.1",
+    "torchvision",
     "numpy>=1.23",
     "matplotlib>=3.7",
     "pandas>=1.5",
@@ -163,3 +164,4 @@ push            = false
 # This means that uv users who want to use equivariant models must install dependencies
 # in two steps: `uv sync`, then `uv sync --extra equiv`.
 no-build-isolation-package = ["lie_learn"]
+extra-index-url = ["https://download.pytorch.org/whl/cu130"]

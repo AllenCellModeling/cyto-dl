@@ -877,6 +877,7 @@ dependencies = [
     { name = "tifffile" },
     { name = "timm" },
     { name = "torch" },
+    { name = "torchvision" },
     { name = "tqdm" },
     { name = "universal-pathlib" },
 ]
@@ -1001,6 +1002,7 @@ requires-dist = [
     { name = "torch-geometric", marker = "extra == 'pcloud'", specifier = ">=2.3.1" },
     { name = "torchio", marker = "extra == 'pcloud'", specifier = ">=0.19.1" },
     { name = "torchserve", marker = "extra == 'torchserve'", specifier = ">=0.8.0" },
+    { name = "torchvision" },
     { name = "tqdm", specifier = ">=4.64" },
     { name = "universal-pathlib", specifier = ">=0.0" },
     { name = "vtk", marker = "extra == 'spharm'", specifier = ">=9.2" },
