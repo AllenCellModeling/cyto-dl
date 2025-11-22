@@ -48,8 +48,8 @@ cd cyto-dl
 conda install -c conda-forge -n myenv python=3.11 fortran-compiler blas-devel
 conda activate myenv
 
-# Install PyTorch with CUDA 13.0 support (recommended for GPU training)
-# Note: Use uv for faster installation
+# Install PyTorch with CUDA 13.0 support (recommended for GPU training on Windows/Linux)
+# Note: Works on both Windows and Linux. Use uv for faster installation.
 uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
 
 # Install remaining dependencies
