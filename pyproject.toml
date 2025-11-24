@@ -4,7 +4,7 @@ build-backend = "pdm.pep517.api"
 
 [project]
 name = "cyto-dl"
-version = "0.6.1"
+version = "0.6.2"
 description = """\
   Collection of representation learning models, techniques, callbacks, utils, \
   used to create latent variable models of cell shape, morphology and \
@@ -145,7 +145,7 @@ exclude_lines = [
 
 # https://pypi.org/project/bumpver
 [tool.bumpver]
-current_version = "0.6.1"
+current_version = "0.6.2"
 version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
