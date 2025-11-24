@@ -12,10 +12,12 @@ cyto-dl is now fully compatible with zarr-3 format.
 ### 1. Updated Dependencies
 - Added explicit `zarr>=3.0.0` dependency in `pyproject.toml`
 - Updated `ome-zarr>=0.12.0` to ensure zarr-3 compatibility
+- Updated `anndata>=0.12.0` to ensure zarr-3 compatibility (anndata 0.12+ required for zarr 3.x support)
 - Current versions being used:
   - `zarr==3.1.5`
   - `ome-zarr==0.12.2`
   - `bioio-ome-zarr==3.1.0`
+  - `anndata>=0.12.0`
 
 ### 2. Testing Performed
 
@@ -104,11 +106,14 @@ print(f"Loaded image with shape: {img_data.shape}")
 Minimum versions required for zarr-3 compatibility:
 - `zarr>=3.0.0`
 - `ome-zarr>=0.12.0`
+- `anndata>=0.12.0` (version 0.12.0+ required for zarr 3.x support)
 - `bioio>=3.0.0`
 - `bioio-base>=3.0.0`
 - `bioio-ome-zarr>=3.1.0`
 
 All dependencies are now properly specified in `pyproject.toml`.
+
+**Important Note:** AnnData added zarr 3.x support in version 0.12.0. Using earlier versions (like 0.11.x) will cause an `ImportError: zarr-python major version > 2 is not supported` error.
 
 ## Conclusion
 
